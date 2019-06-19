@@ -1,0 +1,13 @@
+bin/
+target/
+*~
+*.iml
+.idea/
+.metadata/
+**/*.classpath
+**/*.project
+**/*.settings
+*.class
+.DS_Store
+
+**/src-gen/

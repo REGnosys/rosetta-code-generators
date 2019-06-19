@@ -1,0 +1,8 @@
+namespace "com.rosetta.sample.model"
+version "test"
+
+basicType string
+basicType int
+basicType number
+basicType boolean
+basicType time

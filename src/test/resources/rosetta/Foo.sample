@@ -1,0 +1,6 @@
+package com.rosetta.sample.model
+
+class Foo {
+	private final string stringAttribute
+	private final int intAttribute
+}
