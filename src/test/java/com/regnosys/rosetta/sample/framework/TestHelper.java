@@ -11,7 +11,7 @@ import org.eclipse.xtext.testing.util.ParseHelper;
 import com.google.common.base.Charsets;
 import com.google.inject.Injector;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.sample.SampleCodeGenerator;
+import com.regnosys.rosetta.sample.GroovyCodeGenerator;
 import com.regnosys.rosetta.sample.setup.ExternalGeneratorsProvider;
 
 public class TestHelper {
@@ -19,7 +19,7 @@ public class TestHelper {
 	private final Injector injector;
 
 	public TestHelper() {
-		ExternalGeneratorsProvider provider = new ExternalGeneratorsProvider(List.of(new SampleCodeGenerator()));
+		ExternalGeneratorsProvider provider = new ExternalGeneratorsProvider(List.of(new GroovyCodeGenerator()));
 		this.injector = new RosettaServerSetup(provider).createInjectorDoSetup();
 	}
 

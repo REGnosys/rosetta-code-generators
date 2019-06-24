@@ -18,6 +18,8 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<org.eclipse.emf.ecore.version>2.15.0</org.eclipse.emf.ecore.version>
 		<regnosys.rosetta.version>0.0.0.master</regnosys.rosetta.version>
+		<xtext.version>2.15.0</xtext.version>
+
 		<guava.version>21.0</guava.version>
 		<guice.version>3.0</guice.version>
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
@@ -25,15 +27,14 @@
 	</properties>
 
 	<dependencies>
-
 		<dependency>
-			<groupId>com.regnosys.rosetta</groupId>
-			<artifactId>com.regnosys.rosetta</artifactId>
-			<version>${regnosys.rosetta.version}</version>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>${guice.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>
-			<artifactId>com.regnosys.rosetta.ide</artifactId>
+			<artifactId>com.regnosys.rosetta</artifactId>
 			<version>${regnosys.rosetta.version}</version>
 		</dependency>
 		<dependency>
@@ -49,7 +50,14 @@
 		<dependency>
 			<groupId>org.eclipse.xtext</groupId>
 			<artifactId>org.eclipse.xtext.util</artifactId>
-			<version>2.15.0</version>
+			<version>${xtext.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.ide</artifactId>
+			<version>${regnosys.rosetta.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -70,33 +78,17 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-			<version>${guice.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>org.eclipse.xtext</groupId>
-			<artifactId>org.eclipse.xtext.testing</artifactId>
-			<version>2.15.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.xtext</groupId>
-			<artifactId>org.eclipse.xtext.xbase.junit</artifactId>
-			<version>2.10.0</version>
-		</dependency> -->
-
 	</dependencies>
 
 	<build>
-		<pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+		<!-- lock down plugins versions to avoid using Maven defaults-->
+		<pluginManagement>
 			<plugins>
 
 				<plugin>
@@ -151,6 +143,5 @@
 			<url>https://regnosys.jfrog.io/regnosys/libs-snapshot-local</url>
 		</repository>
 	</distributionManagement>
-
 
 </project>

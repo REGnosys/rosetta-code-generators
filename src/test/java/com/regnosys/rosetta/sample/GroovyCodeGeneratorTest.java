@@ -16,7 +16,7 @@ import com.regnosys.rosetta.rosetta.RosettaHeader;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.sample.framework.TestHelper;
 
-class SampleCodeGeneratorTest {
+class GroovyCodeGeneratorTest {
 
 	@Test
 	void singleAttributeClass() throws Exception {
@@ -25,13 +25,13 @@ class SampleCodeGeneratorTest {
 		RosettaModel model = helper.parse(pathToRosetta);
 		RosettaHeader header = model.getHeader();
 		RosettaJavaPackages packages = new RosettaJavaPackages(header.getNamespace());
-		ExternalGenerator gen = new SampleCodeGenerator();
+		ExternalGenerator gen = new GroovyCodeGenerator();
 		// TODO use a different technique, ie. a Captor
-		URL pathToClass = this.getClass().getResource("/rosetta/Foo.sample");
+		URL pathToClass = this.getClass().getResource("/rosetta/Foo.groovy");
 		Consumer<Map<String, ? extends CharSequence>> consumer = map -> {
 			map.entrySet().forEach(e -> {
 				System.out.println(e.getKey());
-				assertThat(e.getKey(), is("com/rosetta/sample/model/Foo.sample"));
+				assertThat(e.getKey(), is("com/rosetta/sample/model/Foo.groovy"));
 				System.out.println(e.getValue());
 				assertThat(e.getValue(), is(toStringContents(pathToClass)));
 			});
