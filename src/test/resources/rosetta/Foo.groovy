@@ -8,4 +8,5 @@ package com.rosetta.sample.model
 class Foo {
 	String stringAttribute
 	Integer intAttribute
+	List<String> multipleAttribute
 }

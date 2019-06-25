@@ -5,4 +5,5 @@ class Foo<"A sample class">
 {
     stringAttribute string (1..1);
     intAttribute int (1..1);
+    multipleAttribute string (1..*);
 }
