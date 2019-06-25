@@ -5,6 +5,7 @@ import static com.regnosys.rosetta.sample.GeneratorUtils.toGroovyType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class GroovyCodeGenerator implements ExternalGenerator {
 
 	@Override
 	public void generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version,
-			Consumer<Map<String, ? extends CharSequence>> processResults, Resource resource) {
+			Consumer<Map<String, ? extends CharSequence>> processResults, Resource resource, ReadWriteLock generateLock) {
 		// where might we need this??
 		String resourceAsString = resource.getURI().toString();
 		//

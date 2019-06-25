@@ -7,6 +7,9 @@ import static org.hamcrest.Matchers.is;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,7 @@ import com.regnosys.rosetta.sample.framework.TestHelper;
 class GroovyCodeGeneratorTest {
 
 	@Test
-	void singleAttributeClass() throws Exception {
+	void simpleClass() throws Exception {
 		URL pathToRosetta = this.getClass().getResource("/rosetta/sample.rosetta");
 		TestHelper helper = new TestHelper();
 		RosettaModel model = helper.parse(pathToRosetta);
@@ -30,7 +33,7 @@ class GroovyCodeGeneratorTest {
 		// TODO improve this
 		URL generatedSource = this.getClass().getResource("/rosetta/Foo.groovy");
 		Consumer<Map<String, ? extends CharSequence>> consumer = map -> validate(generatedSource, map);
-		gen.generate(packages, model.getElements(), header.getVersion(), consumer, model.eResource());
+		gen.generate(packages, model.getElements(), header.getVersion(), consumer, model.eResource(), new ReentrantReadWriteLock());
 	}
 
 	private void validate(URL generated, Map<String, ? extends CharSequence> map) {
