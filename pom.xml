@@ -128,12 +128,4 @@
 		</plugins>
 	</build>
 
-	<distributionManagement>
-		<repository>
-			<id>snapshots</id>
-			<name>libs-snapshots</name>
-			<url>https://regnosys.jfrog.io/regnosys/libs-snapshot-local</url>
-		</repository>
-	</distributionManagement>
-
 </project>

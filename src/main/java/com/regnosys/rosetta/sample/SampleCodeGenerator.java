@@ -17,9 +17,9 @@ import com.regnosys.rosetta.rosetta.RosettaRootElement;
 /**
  * Implementation of a code generator for the Groovy language
  */
-public class GroovyCodeGenerator extends AbstractExternalGenerator {
+public class SampleCodeGenerator extends AbstractExternalGenerator {
 
-	public GroovyCodeGenerator() {
+	public SampleCodeGenerator() {
 		super("Groovy");
 	}
 
@@ -35,7 +35,7 @@ public class GroovyCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	private String generateFilename(RosettaJavaPackages packages, RosettaClass clazz) {
-		return packages.model().directoryName() + "/" + clazz.getName() + ".groovy";
+		return packages.model().directoryName() + "/" + clazz.getName() + ".sample";
 	}
 
 	private String generateClass(RosettaJavaPackages packages, RosettaClass clazz, String version) {

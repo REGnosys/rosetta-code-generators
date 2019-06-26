@@ -17,16 +17,16 @@ To provide your own, you simply need to subclass the ``` AbstractExternalGenerat
 public abstract Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version);
 ```
  
-There is already an example that generates Groovy source code:
+There is already an example that generates some sample source code (it is valid Groovy code):
 
 ```
-src/main/java/com/regnosys/rosetta/sample/GroovyCodeGenerator.java
+src/main/java/com/regnosys/rosetta/sample/SampleCodeGenerator.java
 ```
 
 You can then test your code with a JUnit test, like 
 
 ```
-src/test/java/com/regnosys/rosetta/sample/GroovyCodeGeneratorTest.java
+src/test/java/com/regnosys/rosetta/sample/SampleCodeGeneratorTest.java
 ```
 
 In package ```src/test/java/com/regnosys/rosetta/sample/framework``` there is some infrastructure code 
@@ -45,7 +45,7 @@ These types are used to bootstrap the rosetta enabled app.
 
 ```sample.rosetta``` contains a simple rosetta class with a few attributes of type ```string``` & ```int```
 
-Finally, in  ```src/test/resources/groovy/Foo.groovy``` the file contains the correct source code, against which we will compare our results  
+Finally, in  ```src/test/resources/sample/Foo.groovy.sample``` the file contains the correct source code, against which we will compare our results  
 
 
 ### Clone from github and work on your own branch
