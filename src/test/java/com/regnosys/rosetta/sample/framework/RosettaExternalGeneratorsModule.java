@@ -1,18 +1,19 @@
 package com.regnosys.rosetta.sample.framework;
 
 import com.google.inject.AbstractModule;
-import com.regnosys.rosetta.generator.external.ExternalGenerators;
-import com.regnosys.rosetta.sample.setup.ExternalGeneratorsProvider;
+import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
+import com.regnosys.rosetta.sample.setup.ExternalGeneratorProvider;
 
 public class RosettaExternalGeneratorsModule extends AbstractModule {
-	private final ExternalGeneratorsProvider externalGeneratorsProvider;
 
-	public RosettaExternalGeneratorsModule(ExternalGeneratorsProvider externalGeneratorsProvider) {
-		this.externalGeneratorsProvider = externalGeneratorsProvider;
+	private final ExternalGeneratorProvider externalGeneratorProvider;
+
+	public RosettaExternalGeneratorsModule(ExternalGeneratorProvider externalGeneratorProvider) {
+		this.externalGeneratorProvider = externalGeneratorProvider;
 	}
 
 	@Override
 	protected void configure() {
-		bind(ExternalGenerators.class).toProvider(externalGeneratorsProvider);
+		bind(AbstractExternalGenerator.class).toProvider(externalGeneratorProvider);
 	}
 }

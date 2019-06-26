@@ -2,7 +2,6 @@ package com.regnosys.rosetta.sample.framework;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -10,16 +9,17 @@ import org.eclipse.xtext.testing.util.ParseHelper;
 
 import com.google.common.base.Charsets;
 import com.google.inject.Injector;
+import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.sample.GroovyCodeGenerator;
-import com.regnosys.rosetta.sample.setup.ExternalGeneratorsProvider;
+import com.regnosys.rosetta.sample.setup.ExternalGeneratorProvider;
 
 public class TestHelper {
 
 	private final Injector injector;
 
 	public TestHelper() {
-		ExternalGeneratorsProvider provider = new ExternalGeneratorsProvider(List.of(new GroovyCodeGenerator()));
+		ExternalGeneratorProvider provider = new ExternalGeneratorProvider(new GroovyCodeGenerator());
 		this.injector = new RosettaServerSetup(provider).createInjectorDoSetup();
 	}
 
@@ -30,6 +30,12 @@ public class TestHelper {
 		RosettaModel parsedModel = parseHelper.parse(toStringContents(model), resourceSet);
 		return parsedModel;
 	}
+
+
+	public <T extends AbstractExternalGenerator> T  getExternalGenerator() {
+		return (T) injector.getInstance(AbstractExternalGenerator.class);
+	}
+
 
 	private String basicTypes() {
 		URL resource = this.getClass().getResource("/rosetta/types.rosetta");

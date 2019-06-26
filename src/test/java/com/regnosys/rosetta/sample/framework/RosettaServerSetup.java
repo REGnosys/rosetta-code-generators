@@ -6,13 +6,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.regnosys.rosetta.RosettaRuntimeModule;
 import com.regnosys.rosetta.RosettaStandaloneSetup;
-import com.regnosys.rosetta.sample.setup.ExternalGeneratorsProvider;
+import com.regnosys.rosetta.sample.setup.ExternalGeneratorProvider;
 
 public class RosettaServerSetup extends RosettaStandaloneSetup {
 
-	private final ExternalGeneratorsProvider externalGeneratorsProvider;
+	private final ExternalGeneratorProvider externalGeneratorsProvider;
 
-	public RosettaServerSetup(ExternalGeneratorsProvider externalGeneratorsProvider) {
+	public RosettaServerSetup(ExternalGeneratorProvider externalGeneratorsProvider) {
 		this.externalGeneratorsProvider = externalGeneratorsProvider;
 	}
 

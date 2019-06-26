@@ -1,44 +1,37 @@
 package com.regnosys.rosetta.sample;
 
-import static com.regnosys.rosetta.sample.GeneratorUtils.*;
+import static com.regnosys.rosetta.sample.GeneratorUtils.LINE_SEPARATOR;
+import static com.regnosys.rosetta.sample.GeneratorUtils.groovyDocWithVersion;
 import static com.regnosys.rosetta.sample.GeneratorUtils.toGroovyType;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.resource.Resource;
-
-import com.regnosys.rosetta.generator.external.ExternalGenerator;
-import com.regnosys.rosetta.generator.external.ExternalOutputConfiguration;
+import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.rosetta.RosettaClass;
 import com.regnosys.rosetta.rosetta.RosettaRegularAttribute;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 
-public class GroovyCodeGenerator implements ExternalGenerator {
+/**
+ * Implementation of a code generator for the Groovy language
+ */
+public class GroovyCodeGenerator extends AbstractExternalGenerator {
 
-	private static final String NAME = "groovy_sample";
-
-	@Override
-	public ExternalOutputConfiguration getOutputConfiguration() {
-		return new ExternalOutputConfiguration(NAME, "Code generation configuration");
+	public GroovyCodeGenerator() {
+		super("Groovy");
 	}
 
 	@Override
-	public void generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version,
-			Consumer<Map<String, ? extends CharSequence>> processResults, Resource resource, ReadWriteLock generateLock) {
-		// where might we need this??
-		String resourceAsString = resource.getURI().toString();
-		//
-		Map<String, ? extends CharSequence> classFiles = elements.stream()
+	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
+		Map<String, ? extends CharSequence> generatedFiles = elements.stream()
 																 .filter(RosettaClass.class::isInstance)
 																 .map(RosettaClass.class::cast)
 																 .collect(Collectors.toMap(e -> generateFilename(packages, e),
 																		 e -> generateClass(packages, e, version)));
-		processResults.accept(classFiles);
+
+		return generatedFiles;
 	}
 
 	private String generateFilename(RosettaJavaPackages packages, RosettaClass clazz) {
