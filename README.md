@@ -9,7 +9,7 @@ Did you want to leverage the power of the Rosetta DSL for your project but in a 
 
 You can use this guide and write your own code generator in the language of your choosing.
 
-##### Writing a generator
+### Writing a generator
 
 To provide your own, you simply need to subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
 
@@ -48,7 +48,7 @@ These types are used to bootstrap the rosetta enabled app.
 Finally, in  ```src/test/resources/groovy/Foo.groovy``` the file contains the correct source code, against which we will compare our results  
 
 
-##### Clone from github and work on your own branch
+### Clone from github and work on your own branch
 
 You can clone this repository and create your own local branch to work on and set it to upstream, so that it is built in our codefresh CI infrastructure
  
