@@ -2,7 +2,6 @@ package com.regnosys.rosetta.sample.framework;
 
 import com.google.inject.AbstractModule;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.sample.setup.ExternalGeneratorProvider;
 
 public class RosettaExternalGeneratorsModule extends AbstractModule {
 

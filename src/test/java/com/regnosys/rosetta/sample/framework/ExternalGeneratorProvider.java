@@ -1,4 +1,4 @@
-package com.regnosys.rosetta.sample.setup;
+package com.regnosys.rosetta.sample.framework;
 
 import com.google.inject.Provider;
 import com.google.inject.Singleton;

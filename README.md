@@ -1,4 +1,4 @@
-# rosetta-code-generators
+# Rosetta Code Generators
 
 
 
@@ -8,6 +8,12 @@
 Did you want to leverage the power of the Rosetta DSL for your project but in a language other than the (Java) default implementation?
 
 You can use this guide and write your own code generator in the language of your choosing.
+
+### What is it
+
+ It is a tool to translate Ecore model instances, created by parsing rosetta files, to classes in any programming language
+ 
+ [Here is an illustration of how code generation works](/blob/master/rosetta-language-code-generation.png)
 
 ### Writing a generator
 
@@ -32,10 +38,6 @@ src/test/java/com/regnosys/rosetta/sample/SampleCodeGeneratorTest.java
 In package ```src/test/java/com/regnosys/rosetta/sample/framework``` there is some infrastructure code 
 
 that weaves together, using the Google Guice dependency injection mechanism, all the necessary elements to run a rosetta enabled app and then parses a sample rosetta file.
-
-Then we filter the rosetta root elements to get the rosetta classes and then we construct a map,
- 
-the keys of which are the produced source code file names while the corresponding values contain the actual source for that file name
 
 In folder ```src/test/resources/rosetta``` you can see two files: 
 

@@ -6,7 +6,7 @@
 	<groupId>com.regnosys.rosetta</groupId>
 	<artifactId>com.regnosys.rosetta.code-generators</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.0.master</version>
+	<version>0.0.1</version>
 
 	<name>Rosetta Code Generators</name>
 
@@ -17,7 +17,7 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<org.eclipse.emf.ecore.version>2.15.0</org.eclipse.emf.ecore.version>
-		<regnosys.rosetta.version>0.0.0.master</regnosys.rosetta.version>
+		<regnosys.rosetta.version>2.0.94</regnosys.rosetta.version>
 		<xtext.version>2.15.0</xtext.version>
 		<guava.version>21.0</guava.version>
 		<guice.version>3.0</guice.version>
@@ -31,6 +31,7 @@
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>${guice.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>
@@ -128,12 +129,13 @@
 		</plugins>
 	</build>
 
-	<distributionManagement>
+	<repositories>
 		<repository>
-			<id>snapshots</id>
-			<name>libs-snapshots</name>
+			<id>regnosys-snapshots</id>
+			<name>Regnosys</name>
 			<url>https://regnosys.jfrog.io/regnosys/libs-snapshot-local</url>
 		</repository>
-	</distributionManagement>
+	</repositories>
+
 
 </project>

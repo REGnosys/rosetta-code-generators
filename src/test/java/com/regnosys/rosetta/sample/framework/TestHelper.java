@@ -12,7 +12,6 @@ import com.google.inject.Injector;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.sample.SampleCodeGenerator;
-import com.regnosys.rosetta.sample.setup.ExternalGeneratorProvider;
 
 public class TestHelper {
 
