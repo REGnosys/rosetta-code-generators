@@ -50,16 +50,5 @@ These types are used to bootstrap the rosetta enabled app.
 Finally, in  ```src/test/resources/sample/Foo.groovy.sample``` the file contains the correct source code, against which we will compare our results  
 
 
-### Clone from github and work on your own branch
-
-You can clone this repository and create your own local branch to work on and set it to upstream, so that it is built in our codefresh CI infrastructure
- 
-```git clone https://github.com/REGnosys/rosetta-code-generators ```
-
-```git checkout -b your_own_branch``` 
-
- ```git push --set-upstream origin your_own_branch```
- 
-Once your are happy with your code, your can open a PR on github and ask for your changes to be included on the master branch
-
-```https://github.com/REGnosys/rosetta-code-generators/pulls```
+### How to contribute
+[Read the guide ](/CONTRIBUTING.md)
