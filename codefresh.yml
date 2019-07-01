@@ -24,6 +24,10 @@ steps:
     title: Maven build
     fail_fast: true
     image: r.cfcr.io/regnosysops/regnosys/mvn-docker-build:java-11
+    when:
+      branch:
+        only:
+          - master
     working_directory: ./
     commands:
       - rm -rf /codefresh/volume/.m2/com/regnosys

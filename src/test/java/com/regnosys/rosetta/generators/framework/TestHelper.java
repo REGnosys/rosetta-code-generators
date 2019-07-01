@@ -1,4 +1,4 @@
-package com.regnosys.rosetta.sample.framework;
+package com.regnosys.rosetta.generators.framework;
 
 import java.io.IOException;
 import java.net.URL;
@@ -10,8 +10,8 @@ import org.eclipse.xtext.testing.util.ParseHelper;
 import com.google.common.base.Charsets;
 import com.google.inject.Injector;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
+import com.regnosys.rosetta.generators.sample.SampleCodeGenerator;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.sample.SampleCodeGenerator;
 
 public class TestHelper {
 

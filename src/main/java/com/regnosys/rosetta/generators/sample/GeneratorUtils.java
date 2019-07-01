@@ -1,4 +1,4 @@
-package com.regnosys.rosetta.sample;
+package com.regnosys.rosetta.generators.sample;
 
 import com.google.common.html.HtmlEscapers;
 

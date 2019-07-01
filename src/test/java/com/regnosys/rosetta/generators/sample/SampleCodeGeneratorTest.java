@@ -1,6 +1,6 @@
-package com.regnosys.rosetta.sample;
+package com.regnosys.rosetta.generators.sample;
 
-import static com.regnosys.rosetta.sample.framework.TestHelper.toStringContents;
+import static com.regnosys.rosetta.generators.framework.TestHelper.toStringContents;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.rosetta.RosettaHeader;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.sample.framework.TestHelper;
+import com.regnosys.rosetta.generators.framework.TestHelper;
 
 class SampleCodeGeneratorTest {
 

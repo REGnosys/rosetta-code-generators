@@ -17,7 +17,8 @@ You can use this guide and write your own code generator in the language of your
 
 ### Writing a generator
 
-To provide your own, you simply need to subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
+To provide your own, simply create a new package under ``` src/main/java/com/regnosys/rosetta/generators/``` 
+and subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
 
 ```
 public abstract Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version);
@@ -26,16 +27,16 @@ public abstract Map<String, ? extends CharSequence> generate(RosettaJavaPackages
 There is already an example that generates some sample source code (it is valid Groovy code):
 
 ```
-src/main/java/com/regnosys/rosetta/sample/SampleCodeGenerator.java
+src/main/java/com/regnosys/rosetta/generators/sample/SampleCodeGenerator.java
 ```
 
 You can then test your code with a JUnit test, like
 
 ```
-src/test/java/com/regnosys/rosetta/sample/SampleCodeGeneratorTest.java
+src/test/java/com/regnosys/rosetta/generators/sample/SampleCodeGeneratorTest.java
 ```
 
-In package ```src/test/java/com/regnosys/rosetta/sample/framework``` there is some infrastructure code
+In package ```src/test/java/com/regnosys/rosetta/generators/framework``` there is some infrastructure code
 
 that weaves together, using the Google Guice dependency injection mechanism, all the necessary elements to run a rosetta enabled app and then parses a sample rosetta file.
 
@@ -51,4 +52,4 @@ Finally, in  ```src/test/resources/sample/Foo.groovy.sample``` the file contains
 
 
 ### How to contribute
-[Read the guide ](/CONTRIBUTING.md)
+[Please read the guide ](/CONTRIBUTING.md)

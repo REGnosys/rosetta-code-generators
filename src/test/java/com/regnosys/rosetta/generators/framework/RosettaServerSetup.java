@@ -1,4 +1,4 @@
-package com.regnosys.rosetta.sample.framework;
+package com.regnosys.rosetta.generators.framework;
 
 import org.eclipse.xtext.util.Modules2;
 

@@ -1,8 +1,4 @@
-package com.regnosys.rosetta.sample;
-
-import static com.regnosys.rosetta.sample.GeneratorUtils.LINE_SEPARATOR;
-import static com.regnosys.rosetta.sample.GeneratorUtils.groovyDocWithVersion;
-import static com.regnosys.rosetta.sample.GeneratorUtils.toGroovyType;
+package com.regnosys.rosetta.generators.sample;
 
 import java.util.List;
 import java.util.Map;
@@ -41,13 +37,13 @@ public class SampleCodeGenerator extends AbstractExternalGenerator {
 	private String generateClass(RosettaJavaPackages packages, RosettaClass clazz, String version) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("package ").append(packages.model().packageName());
-		sb.append(LINE_SEPARATOR).append(LINE_SEPARATOR);
-		sb.append(groovyDocWithVersion(clazz.getDefinition(), version));
+		sb.append(GeneratorUtils.LINE_SEPARATOR).append(GeneratorUtils.LINE_SEPARATOR);
+		sb.append(GeneratorUtils.groovyDocWithVersion(clazz.getDefinition(), version));
 		sb.append("class ").append(clazz.getName()).append(" {");
-		sb.append(LINE_SEPARATOR);
+		sb.append(GeneratorUtils.LINE_SEPARATOR);
 		sb.append(attributes(clazz));
 		sb.append("}");
-		sb.append(LINE_SEPARATOR);
+		sb.append(GeneratorUtils.LINE_SEPARATOR);
 		return sb.toString();
 	}
 
@@ -55,9 +51,10 @@ public class SampleCodeGenerator extends AbstractExternalGenerator {
 		StringBuilder sb = new StringBuilder();
 		for (RosettaRegularAttribute attr : clazz.getRegularAttributes()) {
 			if (attr.getCard().getSup() == 1) {
-				sb.append("\t").append(toGroovyType(attr.getType().getName()) + " ").append(attr.getName()).append(LINE_SEPARATOR);
+				sb.append("\t").append(GeneratorUtils.toGroovyType(attr.getType().getName()) + " ").append(attr.getName()).append(GeneratorUtils.LINE_SEPARATOR);
 			} else if (attr.getCard().isIsMany()) {
-				sb.append("\t").append("List<").append(toGroovyType(attr.getType().getName()) + "> ").append(attr.getName()).append(LINE_SEPARATOR);
+				sb.append("\t").append("List<").append(GeneratorUtils.toGroovyType(attr.getType().getName()) + "> ").append(attr.getName()).append(
+						GeneratorUtils.LINE_SEPARATOR);
 			}
 		}
 		return sb.toString();
