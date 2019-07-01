@@ -13,7 +13,7 @@ You can use this guide and write your own code generator in the language of your
 
  It is a tool to translate Ecore model instances, created by parsing rosetta files, to classes in any programming language
 
- [Here is an illustration of how code generation works](/images/rosetta-language-code-generation.png?raw=true)
+ ![Here is an illustration of how code generation works](/images/rosetta-language-code-generation.png?raw=true)
 
 ### Writing a generator
 
