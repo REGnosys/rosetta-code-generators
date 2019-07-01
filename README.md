@@ -13,7 +13,7 @@ You can use this guide and write your own code generator in the language of your
 
  Here is an illustration of how code generation works
  
- [[/images/rosetta-language-code-generation.png)|alt=how code generation works]]
+ [[https://github.com/REGnosys/rosetta-code-generators/blob/master/images/rosetta-language-code-generation.png|alt=how code generation works]]
 
 ### Writing a generator
 
