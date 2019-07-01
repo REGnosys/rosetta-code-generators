@@ -1,6 +1,8 @@
 # Rosetta Code Generators
 
 
+
+**Continuous Integration:**[![Codefresh build status]( https://g.codefresh.io/api/badges/pipeline/regnosysops/REGnosys%2Frosetta-code-generators%2Frosetta-code-generators?branch=master&key=eyJhbGciOiJIUzI1NiJ9.NWE1N2EyYTlmM2JiOTMwMDAxNDRiODMz.ZDeqVUhB-oMlbZGj4tfEiOg0cy6azXaBvoxoeidyL0g&type=cf-1)]( https://g.codefresh.io/pipelines/rosetta-code-generators/builds?repoOwner=REGnosys&repoName=rosetta-code-generators&serviceName=REGnosys%2Frosetta-code-generators&filter=trigger:build~Build;branch:master;pipeline:5d0a15a6a52a3deca9db7236~rosetta-code-generators) <br/>
 **License:** [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 Did you want to leverage the power of the Rosetta DSL for your project but in a language other than the (Java) default implementation?
@@ -9,11 +11,9 @@ You can use this guide and write your own code generator in the language of your
 
 ### What is it
 
- It is a tool to translate Ecore model instances, created by parsing rosetta files, to any programming language
+ It is a tool to translate Ecore model instances, created by parsing rosetta files, to classes in any programming language
 
- Here is an illustration of how code generation works
- 
- [[https://github.com/REGnosys/rosetta-code-generators/blob/master/images/rosetta-language-code-generation.png|alt=how code generation works]]
+ [Here is an illustration of how code generation works](/images/rosetta-language-code-generation.png?raw=true)
 
 ### Writing a generator
 
