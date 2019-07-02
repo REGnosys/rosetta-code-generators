@@ -13,13 +13,13 @@ You can use this guide and write your own code generator in the language of your
 
 ### What is it
 
-*Rosetta* is an open source DSL comprising of a grammar and a set of code generators. To learn more, visit [*Rosetta*](https://github.com/REGnosys/rosetta-dsl).
+*Rosetta* is an open source DSL comprising of a grammar and a set of code generators. To learn more, visit the [*Rosetta DSL* repository](https://github.com/REGnosys/rosetta-dsl), which is also public.
 
-The DSL repository has 2 build in code generators:
+The DSL repository has 2 built-in code generators:
  - [Java](https://www.oracle.com/java/).  See code generator [here](https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend)
  - [DAML](https://daml.com/). See code generator [here](https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend)
 
-The DAML code generator will be moved to this repo in good time. 
+The DAML code generator will be moved to this repository in good time. 
 
 This repository allows the *Rosetta* community to contribute code generators e.g. Go, Python etc. It works by allowing API hooks to get access to the [Ecore](https://wiki.eclipse.org/Ecore) model which represents the data elements in the *Rosetta* DSL, and allows you to perform a model transformation.
 
