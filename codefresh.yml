@@ -24,13 +24,8 @@ steps:
     title: Maven build
     fail_fast: true
     image: r.cfcr.io/regnosysops/regnosys/mvn-docker-build:java-11
-    when:
-      branch:
-        only:
-          - master
     working_directory: ./
     commands:
       - rm -rf /codefresh/volume/.m2/com/regnosys
       - mvn -s /settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
-      - mvn -s /settings.xml versions:update-property -Dproperty=rosetta.workbench.version -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true
       - mvn -U -s /settings.xml clean deploy
