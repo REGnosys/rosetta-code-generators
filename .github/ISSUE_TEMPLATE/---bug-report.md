@@ -22,7 +22,7 @@ Existing issues often contain information about workarounds, resolution, or prog
 
 ### Is this a regression?
 
-<!-- Did this behaviour use to work in the previous version? -->
+<!-- Did this behaviour work previously? -->
 <!-- ✍️--> Yes, the previous version in which this bug was not present was: ....
 
 
