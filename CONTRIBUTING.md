@@ -11,7 +11,8 @@ a just a few small guidelines you need to follow.
      feature you're intending to fix.  Even if you think it's relatively minor,
      it's helpful to know what people are working on.  Mention in the initial
      issue that you are planning to work on that bug or feature so that it can
-     be assigned to you.
+     be assigned to you.  
+     You can read more information about [github issues here]
 
   1. Follow the normal process of [forking][] the project, and setup a new
      branch to work in.  It's important that each group of changes be done in
@@ -35,3 +36,4 @@ a just a few small guidelines you need to follow.
 [forking]: https://help.github.com/articles/fork-a-repo
 [well-formed commit messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 [pull request]: https://help.github.com/articles/creating-a-pull-request
+[github issues here]:https://guides.github.com/features/issues
