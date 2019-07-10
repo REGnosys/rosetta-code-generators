@@ -31,38 +31,44 @@ The *Rosetta* files are parsed and an Ecore model instance is produced. This Eco
 
 ### Writing a generator
 
-To provide your own, simply create a new package under ``` src/main/java/com/regnosys/rosetta/generators/``` 
-and subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
+This project follows the Maven [multi-module](https://maven.apache.org/guides/mini/guide-multiple-modules.html) format, to make it easier to provide your own generator in its own separate module.
+
+Simply create a module with a sensible name (that is, one relating to the language of the generated code) and add it to the parent pom. You will need to include your module's own ``` pom.xml ``` and source files.
+
+There is already an example module named *sample* to help you get going:  we have written a rudimentary code generator (that generates some valid [Groovy](https://groovy-lang.org/) code): 
+
+```
+sample/src/main/java/com/regnosys/rosetta/generators/sample/SampleCodeGenerator.java
+```
+
+All that is required is to create your own package and source file - inside your module -  which must subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
 
 ```
 public abstract Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version);
 ```
 
-There is already an example that generates some sample source code (it is valid Groovy code):
+You can then test your code with a JUnit test, like in
 
 ```
-src/main/java/com/regnosys/rosetta/generators/sample/SampleCodeGenerator.java
+sample/src/test/java/com/regnosys/rosetta/generators/sample/SampleCodeGeneratorTest.java
 ```
 
-You can then test your code with a JUnit test, like
+In folder ```sample/src/test/resources/rosetta``` you can see the file
 
-```
-src/test/java/com/regnosys/rosetta/generators/sample/SampleCodeGeneratorTest.java
-```
+```sample.rosetta```: it contains a simple rosetta text file with a few attributes of type ```string``` & ```int```
 
-In package ```src/test/java/com/regnosys/rosetta/generators/framework``` there is some infrastructure code
+Finally, file ```sample/src/test/resources/sample/Foo.groovy.sample```contains the correct source code, against which we will compare our results.
 
-that weaves together, using the Google Guice dependency injection mechanism, all the necessary elements to run a rosetta enabled app and then parses a sample rosetta file.
+Module ```test-helper``` contains some infrastructure code that is used to drive the tests in the other modules.
 
-In folder ```src/test/resources/rosetta``` you can see two files:
+It weaves together, using the [Google Guice](https://github.com/google/guice/) dependency injection mechanism, all the necessary elements to run a rosetta enabled app and parses a rosetta file to the corresponding root Ecore object.
 
-```types.rosetta``` contains the basic types that a rosetta DSL can contain, like  ```string```, ```int```, ```time``` etc.
+In folder ```test-helper/src/main/resources/rosetta``` you can see the file
+
+```types.rosetta```: it contains the basic types that a rosetta DSL can contain, like  ```string```, ```int```, ```time``` etc.
 
 These types are used to bootstrap the rosetta enabled app.
 
-```sample.rosetta``` contains a simple rosetta class with a few attributes of type ```string``` & ```int```
-
-Finally, in  ```src/test/resources/sample/Foo.groovy.sample``` the file contains the correct source code, against which we will compare our results  
 
 
 ### How to contribute
