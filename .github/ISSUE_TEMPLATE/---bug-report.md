@@ -23,7 +23,7 @@ Existing issues often contain information about workarounds, resolution, or prog
 ### Is this a regression?
 
 <!-- Did this behaviour work previously? -->
-<!-- ✍️--> Yes, the previous version in which this bug was not present was: ....
+<!-- ✍️--> Yes, the previous working version was: ....
 
 
 ### Expected behaviour
