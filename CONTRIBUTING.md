@@ -19,9 +19,6 @@ We promise to extend courtesy and respect to everyone involved in this project. 
 
 If any member of the community violates this code of conduct, the maintainers of this may take action, removing issues, comments, and PRs as deemed appropriate.
 
-If you are subject to or witness unacceptable behavior, or have any other concerns, please email us at [XYZ@regnosys.com](mailto:XYZ@regnosys.com).
-
-
 ## <a name="issue"></a> Found a Bug?
 If you find a bug in the source code, you can [submit an issue](#submit-issue) to our [GitHub Repository][github]. 
 You can get more information about [github issues here].
@@ -87,7 +84,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     ```
 
 1. In GitHub, create a [pull request] to `rosetta-code-generators:master` and choose as reviewer 
-    the team _REGnosys / REGnosys-reviewers_
+    a member of the team
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the build to ensure tests are still passing.
@@ -133,7 +130,7 @@ from the main (upstream) repository:
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
 * All public API methods **should be documented**.
-* We format the code using a version of the built-in Eclipse java formatter (allows for 120 characters line length), which can be imported in both Eclipse and IntelliJ IDEA and check the build with matcghing [checkstyle rules]. At the moment this does not fail the build, but only produces warning messages; this can change in future releases.
+* We format the code using a version of the built-in Eclipse java formatter (allows for 120 characters line length), which can be imported in both Eclipse and IntelliJ IDEA and check the build with matching [checkstyle rules]. At the moment this does not fail the build, but only produces warning messages; this can change in future releases.
   
 
 [More information about forking]: https://help.github.com/articles/fork-a-repo
