@@ -10,14 +10,17 @@ import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
  * @param <T>
  */
 @Singleton
-public class ExternalGeneratorProvider<T extends AbstractExternalGenerator> implements Provider<T> {
+class ExternalGeneratorProvider<T extends AbstractExternalGenerator> implements Provider<T> {
 
 	private final T externalGenerator;
 
-	public ExternalGeneratorProvider(T externalGenerator) {
+	ExternalGeneratorProvider(T externalGenerator) {
 		this.externalGenerator = externalGenerator;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@Singleton
 	public T get() {
