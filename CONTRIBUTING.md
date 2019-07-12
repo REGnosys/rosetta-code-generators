@@ -62,7 +62,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
      ```
 
 1. Create your patch, **including appropriate test cases**.
-1. Follow our [TODO Coding Rules](#rules).
+1. Follow our [Coding Rules](#rules).
 1. Run the full build at the *parent* level of the project and ensure that all tests pass.
 
      ```shell
@@ -138,4 +138,4 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 [pull request]: https://help.github.com/articles/creating-a-pull-request
 [github issues here]:https://guides.github.com/features/issues
 [github]: https://github.com/REGnosys/rosetta-code-generators
-[checkstyle rules]: https://github.com/REGnosys/rosetta-code-generators/checkstyle/checkstyle.xml
+[checkstyle rules]: https://github.com/REGnosys/rosetta-code-generators/tree/master/checkstyle/checkstyle.xml
