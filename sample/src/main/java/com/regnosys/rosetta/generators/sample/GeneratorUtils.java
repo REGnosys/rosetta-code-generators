@@ -2,9 +2,16 @@ package com.regnosys.rosetta.generators.sample;
 
 import com.google.common.html.HtmlEscapers;
 
-class GeneratorUtils {
+/*
+ * Static utility methods for generation
+ */
+final class GeneratorUtils {
 
 	static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
+	private GeneratorUtils() {
+		// suppress instantiation
+	}
 
 	static String toGroovyType(String typeName) {
 		switch (typeName) {

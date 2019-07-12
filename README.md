@@ -29,11 +29,27 @@ The *Rosetta* files are parsed and an Ecore model instance is produced. This Eco
 
 ![Here is an illustration of how code generation works](/images/rosetta-language-code-generation.png?raw=true)
 
-### Writing a generator
 
+### Quick start guide
+You will need [Maven] and [Git] installed and configured in your envirornment.
+
+[Fork and clone] the project in your own workspace.
+Then run the first build;
+
+```
+  /path/to/workspace/rosetta-code-generators > mvn clean install
+```
 This project follows the Maven [multi-module](https://maven.apache.org/guides/mini/guide-multiple-modules.html) format, to make it easier to provide your own generator in its own separate module.
 
-Simply create a module with a sensible name (that is, one relating to the language of the generated code) and add it to the parent pom. You will need to include your module's own ``` pom.xml ``` and source files.
+Simply come up with a sensible name for your module (that is, one relating to the progamming language that you want to generate code in!) and run the following command:
+
+```
+  > mvn archetype:generate -DgroupId=com.regnosys.rosetta.code-generators  -DartifactId=my-language
+```
+
+This will create a module named after your artifactId with the appropriate maven structure and also update the parent ```pom.xml```.
+
+#### Writing a generator
 
 There is already an example module named *sample* to help you get going:  we have written a rudimentary code generator (that generates some valid [Groovy](https://groovy-lang.org/) code): 
 
@@ -41,11 +57,14 @@ There is already an example module named *sample* to help you get going:  we hav
 sample/src/main/java/com/regnosys/rosetta/generators/sample/SampleCodeGenerator.java
 ```
 
-All that is required is to create your own package and source file - inside your module -  which must subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
+Within your just created module, create your own package under ```com/regnosys/rosetta/generators``` and add your source file(s).
+Your generator must subclass the ``` AbstractExternalGenerator```  class and provide a concrete implementation of its generate method.
 
 ```
 public abstract Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version);
 ```
+
+#### Testing your generator
 
 You can then test your code with a JUnit test, like in
 
@@ -72,4 +91,8 @@ These types are used to bootstrap the rosetta enabled app.
 
 
 ### How to contribute
-[Please read the guide ](/CONTRIBUTING.md)
+[Please read the detailed guide](/CONTRIBUTING.md)
+
+[Maven]: http://maven.apache.org/
+[Git]: https://git-scm.com/
+[Fork and clone]: https://help.github.com/articles/fork-a-repo

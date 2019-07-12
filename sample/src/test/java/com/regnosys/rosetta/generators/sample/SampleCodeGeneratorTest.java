@@ -26,7 +26,8 @@ class SampleCodeGeneratorTest {
 		RosettaHeader header = model.getHeader();
 		RosettaJavaPackages packages = new RosettaJavaPackages(header.getNamespace());
 		SampleCodeGenerator generator = helper.getExternalGenerator();
-		Map<String, ? extends CharSequence> files = generator.generate(packages, model.getElements(), header.getVersion());
+		Map<String, ? extends CharSequence> files = generator.generate(packages, model.getElements(),
+				header.getVersion());
 		assertGenerated(Resources.getResource("sample/Foo.groovy.sample"), files);
 	}
 
@@ -37,4 +38,3 @@ class SampleCodeGeneratorTest {
 		assertThat(entry.getValue(), is(toStringContents(source)));
 	}
 }
-
