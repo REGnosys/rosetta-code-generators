@@ -1,5 +1,5 @@
-Overview of the Rosetta Code Generators
-=======================================
+Rosetta Code Generators
+=======================
 
 
 .. role:: raw-html(raw)
@@ -19,12 +19,12 @@ What are the Rosetta Code Generators
 
 Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The open source `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 2 built-in code generators:
 
-- `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
-- `DAML <https://daml.com/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
+- `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`__
+- `DAML <https://daml.com/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`__
 
 The Rosetta Code Generators repository allows the community to contribute code generators in other languages: e.g. Go, Python etc.
 
-**Note**: The DAML code generator will be moved to this repository in good time. 
+**Note**: The DAML code generator will be moved to this repository in good time.
 
 It works by allowing API hooks to get access to the `Ecore <https://wiki.eclipse.org/Ecore>`_ model, which represents the model elements in the Rosetta DSL and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed and an *Ecore* model instance is produced. This Ecore model is then accessible via an API hook in this repo.
 
@@ -32,8 +32,8 @@ A comprehensive guide on how to write Rosetta files will be available soon.
 
 Here is an illustration of how code generation works:
 
-.. figure:: /images/rosetta-language-code-generation.png?raw=true
-
+.. figure:: images/rosetta-language-code-generation.png
+   :target: images/rosetta-language-code-generation.png?raw=true
 
 Quick start guide
 -----------------
@@ -59,7 +59,7 @@ This will create a module named after your artifactId with the appropriate maven
 Writing a generator
 ^^^^^^^^^^^^^^^^^^^
 
-There is already an example module named *sample* to help you get going:  we have written a rudimentary code generator (that generates some valid `Groovy <https://groovy-lang.org/>`_ code): 
+There is already an example module named *sample* to help you get going:  we have written a rudimentary code generator (that generates some valid `Groovy <https://groovy-lang.org/>`_ code):
 
 .. code-block:: Java
 
