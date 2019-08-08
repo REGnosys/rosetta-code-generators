@@ -22,11 +22,13 @@ Rosetta is an open source DSL comprising a grammar and a set of default code gen
 - `Java <https://www.oracle.com/java/>`_. See `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
 - `DAML <https://daml.com/>`_. See `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
 
+The Rosetta Code Generators repository allows the community to contribute code generators in other languages: e.g. Go, Python etc.
+
 **Note**: The DAML code generator will be moved to this repository in good time. 
 
-The Rosetta Code Generators repository allows the community to contribute code generators in other languages: e.g. Go, Python etc. It works by allowing API hooks to get access to the `Ecore <https://wiki.eclipse.org/Ecore>`_ model, which represents the model elements in the Rosetta DSL and allows to perform a model transformation.
+It works by allowing API hooks to get access to the `Ecore <https://wiki.eclipse.org/Ecore>`_ model, which represents the model elements in the Rosetta DSL and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed and an *Ecore* model instance is produced. This Ecore model is then accessible via an API hook in this repo.
 
-The API expects a set *Rosetta* files (with extension *.rosetta*) as input. A comprehensive guide on how to write Rosetta files will be available soon. The files are parsed and an *Ecore* model instance is produced. This Ecore model is then accessible via an API hook in this repo.
+A comprehensive guide on how to write Rosetta files will be available soon.
 
 Here is an illustration of how code generation works:
 
