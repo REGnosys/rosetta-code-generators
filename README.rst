@@ -19,8 +19,8 @@ What are the Rosetta Code Generators
 
 Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The open source `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 2 built-in code generators:
 
-- `Java <https://www.oracle.com/java/>`_. See `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
-- `DAML <https://daml.com/>`_. See `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
+- `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
+- `DAML <https://daml.com/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
 
 The Rosetta Code Generators repository allows the community to contribute code generators in other languages: e.g. Go, Python etc.
 
