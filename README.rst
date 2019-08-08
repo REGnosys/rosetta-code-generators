@@ -33,7 +33,7 @@ A comprehensive guide on how to write Rosetta files will be available soon.
 Here is an illustration of how code generation works:
 
 .. figure:: images/rosetta-language-code-generation.png
-   :target: https://github.com/REGnosys/rosetta-code-generators/raw/master/images/rosetta-language-code-generation.png
+   :target: https://raw.githubusercontent.com/REGnosys/rosetta-code-generators/master/images/rosetta-language-code-generation.png
 
 Quick start guide
 -----------------
