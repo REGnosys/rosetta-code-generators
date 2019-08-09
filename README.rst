@@ -93,7 +93,7 @@ These types are used to bootstrap the Rosetta-enabled application.
 How to contribute
 -----------------
 
-Please read the `detailed guide </CONTRIBUTING.md>`_.
+Please read the `detailed guide <https://github.com/REGnosys/rosetta-code-generators/blob/master/CONTRIBUTING.md>`_.
 
 .. |Codefresh build status| image:: https://g.codefresh.io/api/badges/pipeline/regnosysops/REGnosys%2Frosetta-code-generators%2Frosetta-code-generators?branch=master&key=eyJhbGciOiJIUzI1NiJ9.NWE1N2EyYTlmM2JiOTMwMDAxNDRiODMz.ZDeqVUhB-oMlbZGj4tfEiOg0cy6azXaBvoxoeidyL0g&type=cf-1
    :target: https://g.codefresh.io/pipelines/rosetta-code-generators/builds?repoOwner=REGnosys&repoName=rosetta-code-generators&serviceName=REGnosys%2Frosetta-code-generators&filter=trigger:build~Build;branch:master;pipeline:5d0a15a6a52a3deca9db7236~rosetta-code-generators
