@@ -33,12 +33,11 @@ A comprehensive guide on how to write Rosetta files will be available soon.
 Here is an illustration of how code generation works:
 
 .. figure:: images/rosetta-language-code-generation.png
-   :target: images/rosetta-language-code-generation.png?raw=true
 
 Quick start guide
 -----------------
 
-You will need `Maven <http://maven.apache.org/>`_ and `Git <https://git-scm.com/>`_ installed and configured in your envirornment.
+You will need `Maven <http://maven.apache.org/>`_ and `Git <https://git-scm.com/>`_ installed and configured in your environment.
 
 `Fork and clone <https://help.github.com/articles/fork-a-repo>`_ the project in your own workspace. Then run the first build:
 
