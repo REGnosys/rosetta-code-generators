@@ -1,13 +1,11 @@
 package com.regnosys.rosetta.generator.daml.enums
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.generator.RosettaOutputConfigurationProvider
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import java.util.ArrayList
 import java.util.List
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 import java.util.Map
