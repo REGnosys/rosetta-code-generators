@@ -3,7 +3,6 @@ package com.regnosys.rosetta.generator.daml;
 import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
@@ -16,7 +15,6 @@ import com.google.common.io.Resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.regnosys.rosetta.RosettaExtensions;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.generators.test.TestHelper;
 import com.regnosys.rosetta.rosetta.RosettaHeader;
@@ -24,15 +22,14 @@ import com.regnosys.rosetta.rosetta.RosettaModel;
 
 public class DamlCodeGeneratorTest {
 
-	
 	private DamlCodeGenerator codeGenerator;
 
-	@BeforeEach 
-	public void setup(){
+	@BeforeEach
+	public void setup() {
 		Injector injector = Guice.createInjector(new CodeGenModule());
 		codeGenerator = injector.getInstance(DamlCodeGenerator.class);
 	}
-	
+
 	@Test
 	void simpleClass() throws Exception {
 		TestHelper<DamlCodeGenerator> helper = new TestHelper<>(codeGenerator);
@@ -51,12 +48,12 @@ public class DamlCodeGeneratorTest {
 		assertThat(map, hasKey("Org/Isda/Cdm/Classes.daml"));
 		assertEquals(toStringContents(source), map.get("Org/Isda/Cdm/Classes.daml"));
 	}
-	
+
 	class CodeGenModule extends AbstractModule {
 
 		@Override
 		protected void configure() {
 		}
-		
+
 	}
 }
