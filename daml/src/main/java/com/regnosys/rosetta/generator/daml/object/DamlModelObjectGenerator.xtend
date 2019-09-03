@@ -2,11 +2,9 @@ package com.regnosys.rosetta.generator.daml.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.RosettaOutputConfigurationProvider
 import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import java.util.List
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
@@ -41,11 +39,6 @@ class DamlModelObjectGenerator {
 	 * - nullable fields must be declared with the keyword "Optional"
 	 */
 	private def generateClasses(List<RosettaClass> rosettaClasses, String version) {
-	
-	val classz = rosettaClasses.get(0)
-	val p = classz.allSuperTypes
-	println(p)
-	
 	'''
 		daml 1.2
 		

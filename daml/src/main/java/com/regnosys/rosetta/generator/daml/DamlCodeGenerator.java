@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.daml;
 
 import com.google.inject.Inject;
-import com.regnosys.rosetta.common.util.StreamUtils;
 import com.regnosys.rosetta.generator.daml.enums.DamlEnumGenerator;
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectGenerator;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
@@ -32,7 +31,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
 			String version) {
 		Map<String, CharSequence> result = new HashMap<>();
-		
+
 		List<RosettaClass> rosettaClasses = elements.stream()
 				.filter(RosettaClass.class::isInstance)
 				.map(RosettaClass.class::cast)
@@ -41,12 +40,12 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 				.filter(RosettaMetaType.class::isInstance)
 				.map(RosettaMetaType.class::cast)
 				.collect(Collectors.toList());
-		
+
 		List<RosettaEnumeration> rosettaEnums = elements.stream()
 				.filter(RosettaEnumeration.class::isInstance)
 				.map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
-		
+
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
 		return result;

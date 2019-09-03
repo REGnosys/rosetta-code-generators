@@ -51,6 +51,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.tests</artifactId>
+			<version>${regnosys.rosetta.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>test-helper</artifactId>
 			<version>${project.version}</version>

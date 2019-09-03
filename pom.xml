@@ -51,6 +51,7 @@ See the Apache License Version 2.0 for the specific language governing permissio
 		<module>test-helper</module>
 		<module>sample</module>
 		<module>daml</module>
+		<module>default-cdm-generators</module>
 	</modules>
 
 	<dependencyManagement>
