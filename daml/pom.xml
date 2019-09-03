@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>com.regnosys</groupId>
 			<artifactId>rosetta-common</artifactId>
-			<version>${regnosys.rosetta.version}</version>
+			<version>${regnosys.common.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
