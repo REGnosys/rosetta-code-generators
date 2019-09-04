@@ -9,7 +9,6 @@ import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
 import com.regnosys.rosetta.tests.util.ModelHelper
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages
 import com.regnosys.rosetta.rosetta.RosettaModel
 
 @ExtendWith(InjectionExtension)
@@ -252,8 +251,7 @@ class DamlModelObjectGeneratorTest {
 	
 	def generateDaml(CharSequence model) {
 		val eResource = model.parseRosettaWithNoErrors.eResource
-		val packages = new RosettaJavaPackages("stupidVal")
 		
-		generator.generate(packages, eResource.contents.filter(RosettaModel).flatMap[elements].toList, "test")
+		generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
 	}
 }

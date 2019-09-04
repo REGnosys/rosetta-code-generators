@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,9 +16,7 @@ import com.google.common.io.Resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.generators.test.TestHelper;
-import com.regnosys.rosetta.rosetta.RosettaHeader;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 
 public class DamlCodeGeneratorTest {
@@ -35,11 +34,8 @@ public class DamlCodeGeneratorTest {
 		TestHelper<DamlCodeGenerator> helper = new TestHelper<>(codeGenerator);
 		URL textModel = Resources.getResource("rosetta/sample.rosetta");
 		RosettaModel model = helper.parse(textModel);
-		RosettaHeader header = model.getHeader();
-		RosettaJavaPackages packages = new RosettaJavaPackages(header.getNamespace());
 		DamlCodeGenerator generator = helper.getExternalGenerator();
-		Map<String, ? extends CharSequence> files = generator.generate(packages, model.getElements(),
-				header.getVersion());
+		Map<String, ? extends CharSequence> files = generator.afterGenerate(Collections.singletonList(model));
 		assertGenerated(Resources.getResource("sample/Classes.daml"), files);
 	}
 

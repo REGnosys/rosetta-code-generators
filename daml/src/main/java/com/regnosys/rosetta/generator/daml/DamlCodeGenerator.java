@@ -8,8 +8,10 @@ import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.rosetta.RosettaClass;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
+import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +32,22 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 	@Override
 	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
 			String version) {
+		return Collections.emptyMap();
+	}
+	
+	
+	@Override	
+	public Map<String, ? extends CharSequence> afterGenerate(List<RosettaModel> models) {
+		String version = models.stream().map(m->m.getHeader().getVersion()).findFirst().orElse("No version");
+		
 		Map<String, CharSequence> result = new HashMap<>();
 
-		List<RosettaClass> rosettaClasses = elements.stream().filter(RosettaClass.class::isInstance)
+		List<RosettaClass> rosettaClasses = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaClass.class::isInstance)
 				.map(RosettaClass.class::cast).collect(Collectors.toList());
-		List<RosettaMetaType> metaTypes = elements.stream().filter(RosettaMetaType.class::isInstance)
+		List<RosettaMetaType> metaTypes = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
 				.map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
-		List<RosettaEnumeration> rosettaEnums = elements.stream().filter(RosettaEnumeration.class::isInstance)
+		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
 				.map(RosettaEnumeration.class::cast).collect(Collectors.toList());
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
