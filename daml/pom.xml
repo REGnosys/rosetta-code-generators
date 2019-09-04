@@ -8,9 +8,50 @@
 		<artifactId>parent</artifactId>
 		<version>1.0</version>
 	</parent>
+	
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<xtend.maven.plugin.version>2.15.0</xtend.maven.plugin.version>
+	</properties>
 
 	<artifactId>daml</artifactId>
 	<description>Generators to create daml for rosetta</description>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+				<version>${xtend.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>Generate xtend sources</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/target/main/generated/xtend</outputDirectory>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>Generate xtend test sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<testOutputDirectory>${project.basedir}/target/test/generated/xtend</testOutputDirectory>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<dependency>

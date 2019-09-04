@@ -6,6 +6,7 @@ import com.regnosys.rosetta.generator.daml.DamlCodeGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerators;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class DefaultExternalGeneratorsProvider implements Provider<ExternalGener
 	
 	private final class DefaultGenerators implements ExternalGenerators {
 
-		List<ExternalGenerator> gens = List.of(generator);
+		List<ExternalGenerator> gens = Collections.singletonList(generator);
 		
 		@Override
 		public Iterator<ExternalGenerator> iterator() {
