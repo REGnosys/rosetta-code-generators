@@ -23,7 +23,7 @@ steps:
   Build:
     title: Maven build
     fail_fast: true
-    image: r.cfcr.io/regnosysops/regnosys/mvn-docker-build:java-8
+    image: r.cfcr.io/regnosysops/regnosys/mvn-docker-build:java-8 
     working_directory: ./
     commands:
       - rm -rf /codefresh/volume/.m2/com/regnosys
