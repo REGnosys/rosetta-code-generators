@@ -5,5 +5,11 @@ class Foo<"A sample class">
 {
     stringAttribute string (1..1);
     intAttribute int (1..1);
+    dataAttribute DataFoo (1..1);
     multipleAttribute string (1..*);
 }
+
+data DataFoo: <"A sample data">
+	stringAttribute string (1..1)
+    intAttribute int (1..1)
+    multipleAttribute Foo (1..*)
