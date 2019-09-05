@@ -10,6 +10,8 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
+import com.regnosys.rosetta.rosetta.RosettaType;
+import com.regnosys.rosetta.rosetta.simple.Data;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,8 +44,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 		
 		Map<String, CharSequence> result = new HashMap<>();
 
-		List<RosettaClass> rosettaClasses = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaClass.class::isInstance)
-				.map(RosettaClass.class::cast).collect(Collectors.toList());
+		List<? extends RosettaType> rosettaClasses = models.stream().flatMap(m->m.getElements().stream()).filter((e)-> e instanceof RosettaClass || e instanceof Data).map(RosettaType.class::cast).collect(Collectors.toList());
 		List<RosettaMetaType> metaTypes = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
 				.map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
