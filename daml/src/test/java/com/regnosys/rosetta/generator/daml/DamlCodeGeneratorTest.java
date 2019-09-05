@@ -1,8 +1,8 @@
 package com.regnosys.rosetta.generator.daml;
 
 import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+//import static org.hamcrest.MatcherAssert.assertThat;
+//import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
@@ -40,8 +40,8 @@ public class DamlCodeGeneratorTest {
 	}
 
 	private void assertGenerated(URL source, Map<String, ? extends CharSequence> map) {
-		assertThat(map.entrySet(), hasSize(3));
-		assertThat(map, hasKey("Org/Isda/Cdm/Classes.daml"));
+		assertEquals(4, map.entrySet().size());
+		assertTrue(map.containsKey("Org/Isda/Cdm/Classes.daml"));
 		assertEquals(toStringContents(source), map.get("Org/Isda/Cdm/Classes.daml"));
 	}
 

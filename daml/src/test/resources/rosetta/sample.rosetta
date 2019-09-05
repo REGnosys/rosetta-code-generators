@@ -7,3 +7,11 @@ class Foo<"A sample class">
     intAttribute int (1..1);
     multipleAttribute string (1..*);
 }
+
+enum bar <"Specifies delivery methods for securities transactions. This coding-scheme defines the possible delivery methods for securities.">
+{
+	AA ,
+	BB ,
+	CC 
+
+}
