@@ -12,20 +12,24 @@ import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
 import com.regnosys.rosetta.rosetta.RosettaCardinality
+import com.regnosys.rosetta.rosetta.RosettaNamed
+import com.regnosys.rosetta.rosetta.simple.Function
+import com.regnosys.rosetta.rosetta.simple.Attribute
+import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
 
 class DamlFunctionGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
 	
-	static final String FILENAME = 'Org/Isda/Cdm/EFunctions.daml'
+	static final String FILENAME = 'Org/Isda/Cdm/Functions.daml'
 		
-	def Map<String, ? extends CharSequence> generate(Iterable<RosettaFunction> rosettaFunctions, String version) {
+	def Map<String, ? extends CharSequence> generate(Iterable<RosettaNamed> rosettaFunctions, String version) {
 		val result = new HashMap
 		val functions = rosettaFunctions.sortBy[name].generateFunctions(version).replaceTabsWithSpaces
 		result.put(FILENAME,functions)
 		return result;
 	}
 	
-	private def generateFunctions(List<RosettaFunction> functions, String version)  '''
+	private def generateFunctions(List<RosettaNamed> functions, String version)  '''
 		daml 1.2
 		
 		«fileComment(version)»
@@ -40,17 +44,43 @@ class DamlFunctionGenerator {
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR f : functions»
-			«classComment("Function argument object definition for "+f.name)»
-			data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
-			    «FOR input : f.inputs»
-			        «input.name» : «input.toType»
-			    «ENDFOR»
-			    deriving (Eq, Ord, Show)
+			«writeFunction(f)»
 			
-			fun«f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
-			    fun«f.name»Spec impl spec = impl spec
 		«ENDFOR»
 	'''
+	
+	private def dispatch writeFunction(RosettaNamed f)''''''
+	
+	private def dispatch writeFunction(RosettaFunction f)
+	'''
+		«classComment("Function argument object definition for "+f.name)»
+		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
+		    «FOR input : f.inputs»
+		        «input.name» : «input.toType»
+		    «ENDFOR»
+		    deriving (Eq, Ord, Show)
+		
+		«classComment("Function definition for "+f.name)»
+		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
+		    fun«f.name»Spec impl spec = impl spec
+	'''
+	
+	private def dispatch writeFunction(Function f)
+	'''
+		«classComment("Function argument object definition for "+f.name)»
+		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
+		    «FOR input : f.inputs»
+		        «input.name» : «input.toType»
+		    «ENDFOR»
+		    deriving (Eq, Ord, Show)
+		
+		«classComment("Function definition for "+f.name)»
+		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
+		    fun«f.name»Spec impl spec = impl spec
+	'''
+	
+	private def dispatch writeFunction(FunctionDispatch f)
+	''''''
 	
 	private def toType(RosettaFunctionInput input) {
 		if (input.card.sup>1)
@@ -59,12 +89,23 @@ class DamlFunctionGenerator {
 			input.toRawType.prefixSingleOptional(input.card)
 	}
 	
+	private def toType(Attribute att) {
+		if (att.card!==null && att.card.sup>1)
+			'''[«att.toRawType»]'''
+		else
+			att.toRawType.prefixSingleOptional(att.card)
+	}
+	
 	private def toRawType(RosettaFunctionInput input) {
 		input.type.name.toDamlType	
 	}
 	
+	private def toRawType(Attribute input) {
+		input.type.name.toDamlType	
+	}
+	
 	private def prefixSingleOptional(CharSequence type, RosettaCardinality card) {
-		if (card.inf<1)
+		if (card!==null && card.inf<1)
 			'''Optional «type»'''
 		else
 			type

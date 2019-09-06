@@ -14,10 +14,14 @@ data DataFoo: <"A sample data">
     intAttribute int (1..1)
     multipleAttribute Foo (1..*)
     
-enum bar <"Specifies delivery methods for securities transactions. This coding-scheme defines the possible delivery methods for securities.">
+enum Bar <"Specifies delivery methods for securities transactions. This coding-scheme defines the possible delivery methods for securities.">
 {
 	AA ,
 	BB ,
 	CC 
 
 }
+
+func DoStuff: 
+	inputs: foo Foo(1..1)
+	output: bar Bar (1..1)

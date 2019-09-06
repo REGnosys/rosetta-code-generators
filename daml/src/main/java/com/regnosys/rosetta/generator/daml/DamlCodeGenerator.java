@@ -11,9 +11,11 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaFunction;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
+import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.RosettaType;
 import com.regnosys.rosetta.rosetta.simple.Data;
+import com.regnosys.rosetta.rosetta.simple.Function;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,8 +57,8 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
 				.map(RosettaEnumeration.class::cast).collect(Collectors.toList());
 		
-		List<RosettaFunction> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaFunction.class::isInstance)
-				.map(RosettaFunction.class::cast).collect(Collectors.toList());
+		List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(t -> RosettaFunction.class.isInstance(t) || Function.class.isInstance(t))
+				.map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
