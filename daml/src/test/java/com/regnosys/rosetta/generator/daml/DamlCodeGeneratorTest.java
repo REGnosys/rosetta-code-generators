@@ -1,8 +1,6 @@
 package com.regnosys.rosetta.generator.daml;
 
 import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
-//import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
