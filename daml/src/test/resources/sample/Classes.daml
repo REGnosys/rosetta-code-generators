@@ -12,8 +12,16 @@ import Org.Isda.Cdm.MetaClasses
 import Org.Isda.Cdm.MetaFields
 import Prelude hiding (Party, exercise, id, product, agreement)
 
+-- | A sample data
+data DataFoo = DataFoo with 
+  intAttribute : Int
+  multipleAttribute : [Foo]
+  stringAttribute : Text
+    deriving (Eq, Ord, Show)
+
 -- | A sample class
 data Foo = Foo with 
+  dataAttribute : DataFoo
   intAttribute : Int
   multipleAttribute : [Text]
   stringAttribute : Text
