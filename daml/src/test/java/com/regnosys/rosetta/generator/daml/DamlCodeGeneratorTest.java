@@ -38,7 +38,7 @@ public class DamlCodeGeneratorTest {
 	}
 
 	private void assertGenerated(URL source, Map<String, ? extends CharSequence> map) {
-		assertEquals(4, map.entrySet().size());
+		assertEquals(6, map.entrySet().size());
 		assertTrue(map.containsKey("Org/Isda/Cdm/Classes.daml"));
 		assertEquals(toStringContents(source), map.get("Org/Isda/Cdm/Classes.daml"));
 	}

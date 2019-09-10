@@ -143,6 +143,8 @@ class DamlModelObjectGeneratorTest {
 		
 		data MetaFields = MetaFields with
 		  scheme : Optional Text
+		  globalKey : Optional Text
+		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -208,6 +210,8 @@ class DamlModelObjectGeneratorTest {
 		
 		data MetaFields = MetaFields with
 		  reference : Optional Text
+		  globalKey : Optional Text
+		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -244,6 +248,8 @@ class DamlModelObjectGeneratorTest {
 		
 		data MetaFields = MetaFields with
 		  reference : Optional Text
+		  globalKey : Optional Text
+		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
