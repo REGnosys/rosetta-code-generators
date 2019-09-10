@@ -24,6 +24,8 @@ class DamlMetaFieldGenerator {
 		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.type.name.toDamlType»
 		  «ENDFOR»
+		  globalKey : Optional Text
+		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)
 		
 	'''
