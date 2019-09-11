@@ -10,7 +10,7 @@ Rosetta Code Generators
 
 **JavaDoc:** *Coming soon*
 
-Did you want to leverage the power of the *Rosetta DSL* for your project but in a language other than the default (Java) implementation?
+Did you want to leverage the power of the *Rosetta DSL* for your project but in a language other than the default (Java) implementation? 
 
 You can use this guide and write your own code generator in the language of your choosing.
 
