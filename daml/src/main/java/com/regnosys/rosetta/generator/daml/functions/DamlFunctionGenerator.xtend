@@ -55,28 +55,28 @@ class DamlFunctionGenerator {
 	'''
 		«classComment("Function argument object definition for "+f.name)»
 		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
-		    «FOR input : f.inputs»
-		        «input.name» : «input.toType»
-		    «ENDFOR»
+		«FOR input : f.inputs»
+		  «input.name» : «input.toType»
+		«ENDFOR»
 		    deriving (Eq, Ord, Show)
 		
 		«classComment("Function definition for "+f.name)»
 		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
-		    fun«f.name»Spec impl spec = impl spec
+		  fun«f.name»Spec impl spec = impl spec
 	'''
 	
 	private def dispatch writeFunction(Function f)
 	'''
 		«classComment("Function argument object definition for "+f.name)»
 		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
-		    «FOR input : f.inputs»
-		        «input.name» : «input.toType»
-		    «ENDFOR»
+		  «FOR input : f.inputs»
+		  «input.name» : «input.toType»
+		  «ENDFOR»
 		    deriving (Eq, Ord, Show)
 		
 		«classComment("Function definition for "+f.name)»
 		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
-		    fun«f.name»Spec impl spec = impl spec
+		  fun«f.name»Spec impl spec = impl spec
 	'''
 	
 	private def dispatch writeFunction(FunctionDispatch f)
