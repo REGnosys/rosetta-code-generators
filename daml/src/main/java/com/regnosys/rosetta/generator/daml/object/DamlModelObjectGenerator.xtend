@@ -116,7 +116,7 @@ class DamlModelObjectGenerator {
 		  value : a
 		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)
-			
+		
 	'''
 	
 	private def zonedDateTime() '''
