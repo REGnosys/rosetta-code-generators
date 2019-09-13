@@ -61,8 +61,8 @@ class DamlFunctionGenerator {
 		    deriving (Eq, Ord, Show)
 		
 		«classComment("Function definition for "+f.name)»
-		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
-		  fun«f.name»Spec impl spec = impl spec
+		«f.name.toFirstLower»Func : («f.name»Spec -> «f.output.toType») -> «f.name»Spec -> «f.output.toType»
+		«f.name.toFirstLower»Func impl spec = impl spec
 	'''
 	
 	private def dispatch writeFunction(Function f)
@@ -75,8 +75,8 @@ class DamlFunctionGenerator {
 		    deriving (Eq, Ord, Show)
 		
 		«classComment("Function definition for "+f.name)»
-		fun «f.name»Spec : («f.name» -> «f.output.toType») «f.name» -> «f.output.toType»
-		  fun«f.name»Spec impl spec = impl spec
+		«f.name.toFirstLower»Func : («f.name»Spec -> «f.output.toType») -> «f.name»Spec -> «f.output.toType»
+		«f.name.toFirstLower»Func impl spec = impl spec
 	'''
 	
 	private def dispatch writeFunction(FunctionDispatch f)
