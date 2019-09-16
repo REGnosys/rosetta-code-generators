@@ -55,9 +55,9 @@ class DamlFunctionGenerator {
 	'''
 		«classComment("Function argument object definition for "+f.name)»
 		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
-		«FOR input : f.inputs»
-		  «input.name» : «input.toType»
-		«ENDFOR»
+		  «FOR input : f.inputs»
+		    «input.name» : «input.toType»
+		«  ENDFOR»
 		    deriving (Eq, Ord, Show)
 		
 		«classComment("Function definition for "+f.name)»
