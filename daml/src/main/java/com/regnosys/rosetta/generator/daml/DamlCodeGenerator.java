@@ -17,6 +17,7 @@ import com.regnosys.rosetta.rosetta.RosettaType;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 	
 	
 	@Override	
-	public Map<String, ? extends CharSequence> afterGenerate(List<RosettaModel> models) {
+	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
 		String version = models.stream().map(m->m.getHeader().getVersion()).findFirst().orElse("No version");
 		
 		Map<String, CharSequence> result = new HashMap<>();
