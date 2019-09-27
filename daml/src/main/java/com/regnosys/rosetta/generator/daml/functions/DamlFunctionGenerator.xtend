@@ -1,8 +1,11 @@
 package com.regnosys.rosetta.generator.daml.functions
 
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectBoilerPlate
-import com.regnosys.rosetta.rosetta.RosettaFunction
-import com.regnosys.rosetta.rosetta.RosettaFunctionInput
+import com.regnosys.rosetta.rosetta.RosettaCardinality
+import com.regnosys.rosetta.rosetta.RosettaNamed
+import com.regnosys.rosetta.rosetta.simple.Attribute
+import com.regnosys.rosetta.rosetta.simple.Function
+import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -11,11 +14,6 @@ import javax.inject.Inject
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
-import com.regnosys.rosetta.rosetta.RosettaCardinality
-import com.regnosys.rosetta.rosetta.RosettaNamed
-import com.regnosys.rosetta.rosetta.simple.Function
-import com.regnosys.rosetta.rosetta.simple.Attribute
-import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
 
 class DamlFunctionGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
@@ -51,20 +49,6 @@ class DamlFunctionGenerator {
 	
 	private def dispatch writeFunction(RosettaNamed f)''''''
 	
-	private def dispatch writeFunction(RosettaFunction f)
-	'''
-		«classComment("Function argument object definition for "+f.name)»
-		data «f.name.toFirstUpper»Spec = «f.name.toFirstUpper»Spec with
-		  «FOR input : f.inputs»
-		    «input.name» : «input.toType»
-		«  ENDFOR»
-		    deriving (Eq, Ord, Show)
-		
-		«classComment("Function definition for "+f.name)»
-		«f.name.toFirstLower»Func : («f.name»Spec -> «f.output.toType») -> «f.name»Spec -> «f.output.toType»
-		«f.name.toFirstLower»Func impl spec = impl spec
-	'''
-	
 	private def dispatch writeFunction(Function f)
 	'''
 		«classComment("Function argument object definition for "+f.name)»
@@ -82,22 +66,11 @@ class DamlFunctionGenerator {
 	private def dispatch writeFunction(FunctionDispatch f)
 	''''''
 	
-	private def toType(RosettaFunctionInput input) {
-		if (input.card.sup>1)
-			'''[«input.toRawType»]'''
-		else
-			input.toRawType.prefixSingleOptional(input.card)
-	}
-	
 	private def toType(Attribute att) {
 		if (att.card!==null && att.card.sup>1)
 			'''[«att.toRawType»]'''
 		else
 			att.toRawType.prefixSingleOptional(att.card)
-	}
-	
-	private def toRawType(RosettaFunctionInput input) {
-		input.type.name.toDamlType	
 	}
 	
 	private def toRawType(Attribute input) {
