@@ -4,6 +4,7 @@ import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaClass
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
+import com.regnosys.rosetta.rosetta.simple.Data
 
 class DamlModelObjectBoilerPlate {
 		
@@ -31,7 +32,7 @@ class DamlModelObjectBoilerPlate {
 		if (!attribute.hasMetas) 
 			attribute.typeName.toDamlType
 		else if (attribute.refIndex>=0) {
-			if (attribute.type instanceof RosettaClass)
+			if (attribute.type instanceof RosettaClass || attribute.type instanceof Data)
 				attribute.typeName.toReferenceWithMetaTypeName
 			else 
 				attribute.typeName.toBasicReferenceWithMetaTypeName

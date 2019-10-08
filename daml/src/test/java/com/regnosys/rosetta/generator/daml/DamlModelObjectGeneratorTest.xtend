@@ -22,10 +22,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithImports() {
 		val daml = '''
-			class Foo
-			{
-			    stringAttr string (0..1);
-			}
+			data Foo:
+			    stringAttr string (0..1)
 		'''.generateDaml
 		
 		val classes = daml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -39,16 +37,14 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypes() {
 		val classes = '''
-			class Foo
-			{
-			    stringAttr string (1..1);
-			    intAttr int (1..1);
-			    numberAttr number (1..1);
-			    booleanAttr boolean (1..1);
-			    dateAttr date (1..1);
-			    timeAttr time (1..1);
-				zonedDateTimeAttr zonedDateTime (1..1);
-			}
+			data Foo:
+			    stringAttr string (1..1)
+			    intAttr int (1..1)
+			    numberAttr number (1..1)
+			    booleanAttr boolean (1..1)
+			    dateAttr date (1..1)
+			    timeAttr time (1..1)
+				zonedDateTimeAttr zonedDateTime (1..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 
 		assertTrue(classes.contains('''
@@ -66,10 +62,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalBasicType() {
 		val classes = '''
-			class Foo
-			{
-			    stringAttr string (0..1);
-			}
+			data Foo:
+			    stringAttr string (0..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
@@ -81,10 +75,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithComments() {
 		val classes = '''
-			class Foo <"This is the class comment which should wrap if the line is long enough.">
-			{
-			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">;
-			}
+			data Foo: <"This is the class comment which should wrap if the line is long enough.">
+			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
@@ -100,10 +92,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeList() {
 		val classes = '''
-			class Foo
-			{
-			    stringAttrs string (0..*);
-			}
+			data Foo:
+			    stringAttrs string (0..*)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
@@ -117,10 +107,9 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType scheme string
 			
-			class Foo
-			{
-			    stringAttr string (1..1) scheme;
-			}
+			data Foo:
+			    stringAttr string (1..1)
+			    [metadata scheme]
 		'''.generateDaml
 		
 		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
@@ -151,15 +140,11 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalRosettaType() {
 		val classes = '''
-			class Foo
-			{
-			    barAttr Bar (0..1);
-			}
+			data Foo:
+			    barAttr Bar (0..1)
 			
-			class Bar
-			{
-			    stringAttr string (1..1);
-			}
+			data Bar:
+			    stringAttr string (1..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
@@ -173,15 +158,13 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			
-			class Foo
-			{
-			    barReference Bar (0..1) reference;
-			}
+			data Foo:
+			    barReference Bar (0..1)
+			    [metadata reference]
 			
-			class Bar key
-			{
-			    stringAttr string (1..1);
-			}
+			data Bar:
+			    [metadata key]
+			    stringAttr string (1..1)
 		'''.generateDaml
 		
 		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
@@ -220,10 +203,9 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			
-			class Foo
-			{
-			    stringReference string (0..1) reference;
-			}
+			data Foo:
+			    stringReference string (0..1)
+			    [metadata reference]
 		'''.generateDaml
 		
 		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
