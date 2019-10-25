@@ -22,7 +22,7 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithImports() {
 		val daml = '''
-			data Foo:
+			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml
 		
@@ -37,7 +37,7 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypes() {
 		val classes = '''
-			data Foo:
+			type Foo:
 			    stringAttr string (1..1)
 			    intAttr int (1..1)
 			    numberAttr number (1..1)
@@ -62,7 +62,7 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalBasicType() {
 		val classes = '''
-			data Foo:
+			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
@@ -75,7 +75,7 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithComments() {
 		val classes = '''
-			data Foo: <"This is the class comment which should wrap if the line is long enough.">
+			type Foo: <"This is the class comment which should wrap if the line is long enough.">
 			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
@@ -92,7 +92,7 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeList() {
 		val classes = '''
-			data Foo:
+			type Foo:
 			    stringAttrs string (0..*)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
@@ -107,7 +107,7 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType scheme string
 			
-			data Foo:
+			type Foo:
 			    stringAttr string (1..1)
 			    [metadata scheme]
 		'''.generateDaml
@@ -140,10 +140,10 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalRosettaType() {
 		val classes = '''
-			data Foo:
+			type Foo:
 			    barAttr Bar (0..1)
 			
-			data Bar:
+			type Bar:
 			    stringAttr string (1..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
@@ -158,11 +158,11 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			
-			data Foo:
+			type Foo:
 			    barReference Bar (0..1)
 			    [metadata reference]
 			
-			data Bar:
+			type Bar:
 			    [metadata key]
 			    stringAttr string (1..1)
 		'''.generateDaml
@@ -203,7 +203,7 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			
-			data Foo:
+			type Foo:
 			    stringReference string (0..1)
 			    [metadata reference]
 		'''.generateDaml
