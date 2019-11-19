@@ -1,10 +1,8 @@
 package com.regnosys.rosetta.generator.daml.object
 
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.rosetta.RosettaClass
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
-import com.regnosys.rosetta.rosetta.simple.Data
 
 class DamlModelObjectBoilerPlate {
 		
@@ -30,15 +28,15 @@ class DamlModelObjectBoilerPlate {
 	
 	private def toRawType(ExpandedAttribute attribute) {
 		if (!attribute.hasMetas) 
-			attribute.typeName.toDamlType
+			attribute.type.name.toDamlType
 		else if (attribute.refIndex>=0) {
-			if (attribute.type instanceof RosettaClass || attribute.type instanceof Data)
-				attribute.typeName.toReferenceWithMetaTypeName
+			if (attribute.type.isType)
+				attribute.type.name.toReferenceWithMetaTypeName
 			else 
-				attribute.typeName.toBasicReferenceWithMetaTypeName
+				attribute.type.name.toBasicReferenceWithMetaTypeName
 		}
 		else 
-			attribute.typeName.toFieldWithMetaTypeName
+			attribute.type.name.toFieldWithMetaTypeName
 	}
 	
 	private def toReferenceWithMetaTypeName(String type) {

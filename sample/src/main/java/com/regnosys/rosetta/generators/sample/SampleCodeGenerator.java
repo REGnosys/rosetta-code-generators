@@ -41,7 +41,7 @@ public class SampleCodeGenerator extends AbstractExternalGenerator {
 
 	private String generateClass(RosettaJavaPackages packages, RosettaClass clazz, String version) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("package ").append(packages.model().packageName());
+		sb.append("package ").append(packages.model().name());
 		sb.append(GeneratorUtils.LINE_SEPARATOR).append(GeneratorUtils.LINE_SEPARATOR);
 		sb.append(GeneratorUtils.groovyDocWithVersion(clazz.getDefinition(), version));
 		sb.append("class ").append(clazz.getName()).append(" {");
