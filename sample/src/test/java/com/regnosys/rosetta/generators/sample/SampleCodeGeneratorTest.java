@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import com.google.common.io.Resources;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.generators.test.TestHelper;
-import com.regnosys.rosetta.rosetta.RosettaHeader;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 
 class SampleCodeGeneratorTest {
@@ -23,11 +22,10 @@ class SampleCodeGeneratorTest {
 		TestHelper<SampleCodeGenerator> helper = new TestHelper<>(new SampleCodeGenerator());
 		URL textModel = Resources.getResource("rosetta/sample.rosetta");
 		RosettaModel model = helper.parse(textModel);
-		RosettaHeader header = model.getHeader();
-		RosettaJavaPackages packages = new RosettaJavaPackages(header.getNamespace());
+		RosettaJavaPackages packages = new RosettaJavaPackages(model);
 		SampleCodeGenerator generator = helper.getExternalGenerator();
 		Map<String, ? extends CharSequence> files = generator.generate(packages, model.getElements(),
-				header.getVersion());
+				model.getVersion());
 		assertGenerated(Resources.getResource("sample/Foo.groovy.sample"), files);
 	}
 

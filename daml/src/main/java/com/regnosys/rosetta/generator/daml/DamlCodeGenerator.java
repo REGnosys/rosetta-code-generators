@@ -46,7 +46,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 	
 	@Override	
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-		String version = models.stream().map(m->m.getHeader().getVersion()).findFirst().orElse("No version");
+		String version = models.stream().map(m->m.getVersion()).findFirst().orElse("No version");
 		
 		Map<String, CharSequence> result = new HashMap<>();
 
