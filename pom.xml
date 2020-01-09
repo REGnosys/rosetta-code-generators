@@ -71,6 +71,7 @@
 		<module>sample</module>
 		<module>daml</module>
 		<module>default-cdm-generators</module>
+		<module>typescript</module>
 	</modules>
 
 	<dependencyManagement>
