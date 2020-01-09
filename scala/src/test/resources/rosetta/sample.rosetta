@@ -1,0 +1,22 @@
+namespace "com.rosetta.model"
+version "test"
+
+type Foo:<"A sample class">
+    stringAttribute string (1..1)
+    intAttribute int (1..1)
+    dataAttribute DataFoo (1..1)
+    multipleAttribute string (1..*)
+
+type DataFoo: <"A sample data">
+	stringAttribute string (1..1)
+    intAttribute int (1..1)
+    multipleAttribute Foo (1..*)
+    
+enum Bar: <"Specifies delivery methods for securities transactions. This coding-scheme defines the possible delivery methods for securities.">
+	AA 
+	BB 
+	CC 
+
+func DoStuff: 
+	inputs: foo Foo(1..1)
+	output: bar Bar (1..1)
