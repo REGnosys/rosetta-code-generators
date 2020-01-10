@@ -1,22 +1,22 @@
 package com.regnosys.rosetta.generator.scala
 
 import com.google.inject.Inject
+import com.google.inject.Provider
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
+import org.eclipse.xtext.testing.util.ParseHelper
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.io.File
-import org.eclipse.xtext.testing.util.ParseHelper
-import org.eclipse.xtext.resource.XtextResourceSet
-import com.google.inject.Provider
-import org.junit.jupiter.api.Disabled
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -29,11 +29,11 @@ class ScalaModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	@Disabled("Test to generate the scala for CDM")
+	//@Disabled("Test to generate the scala for CDM")
 	def void generateCdm() {
 		val dirs = newArrayList(
-			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-cdm/src/main/rosetta'),
+			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
 		);
 
 		val resourceSet = resourceSetProvider.get
@@ -60,22 +60,27 @@ class ScalaModelObjectGeneratorTest {
 				TestEnumValue2 <"Test enum value 2">
 		'''.generateScala
 
-		val enums = scala.get('enums.ts').toString
+		val enums = scala.get('Enums.scala').toString
+		//println(enums)
 		assertTrue(enums.contains('''
+		/**
+		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+		 * Version: test
+		 */
+		package org.isda.cdm
+		
 		/**
 		 * Test enum description.
 		 */
-		export enum TestEnum {
-		
+		object TestEnum extends Enumeration {
 		  /**
 		   * Test enum value 1
 		   */
-		  TEST_ENUM_VALUE_1,
-		
+		  val TEST_ENUM_VALUE_1 = Value
 		  /**
 		   * Test enum value 2
 		   */
-		  TEST_ENUM_VALUE_2
+		  val TEST_ENUM_VALUE_2 = Value
 		}
 		'''))
 	}
@@ -90,55 +95,34 @@ class ScalaModelObjectGeneratorTest {
 				TestTypeValue4 TestType2(1..1) <"Test TestType2">
 				
 			type TestType2:
-				TestType2Value1 number(1..1) <"Test number">
-				TestType2Value2 date(1..1) <"Test date">
+				TestType2Value1 number(1..*) <"Test number list">
+				TestType2Value2 date(0..1) <"Test date">
 				
 			
 		'''.generateScala
 
-		val types = scala.get('types.ts').toString
-		println(types)
+		val types = scala.get('Types.scala').toString
+		//println(types)
 		assertTrue(types.contains('''
 			/**
 			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
 			 * Version: test
 			 */
+			package org.isda.cdm
 			
-			import { ReferenceWithMeta, FieldWithMeta, MetaFields } from './metatypes';
-			import {
-			    } from './enums';
+			import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
 			
 			/**
 			 * Test type description.
 			 */
-			export interface TestType {
-			  /**
-			   * Test string
-			   */
-			  testTypeValue1?: string;
-			  /**
-			   * Test optional string
-			   */
-			  testTypeValue2?: string;
-			  /**
-			   * Test string list
-			   */
-			  testTypeValue3?: string[];
-			  /**
-			   * Test TestType2
-			   */
-			  testTypeValue4?: TestType2;
+			case class TestType(testTypeValue1: String,
+			    testTypeValue2: Option[String],
+			    testTypeValue3: List[String],
+			    testTypeValue4: TestType2) {
 			}
-			  
-			export interface TestType2 {
-			  /**
-			   * Test number
-			   */
-			  testType2Value1?: number;
-			  /**
-			   * Test date
-			   */
-			  testType2Value2?: Date;
+			
+			case class TestType2(testType2Value1: List[scala.math.BigDecimal],
+			    testType2Value2: Option[java.time.LocalDate]) {
 			}
 			'''))
 
@@ -148,16 +132,32 @@ class ScalaModelObjectGeneratorTest {
 	def void shouldGenerateTypesExtends() {
 		val scala = '''
 			type TestType extends TestType2:
-				TestTypeValue1 string(1..1) <"Test string">
+				TestTypeValue1 string (1..1) <"Test string">
+				TestTypeValue2 int (0..1) <"Test int">
 				
 			type TestType2:
-				TestType2Value1 number(1..1) <"Test number">
+				TestType2Value1 number (0..1) <"Test number">
+				TestType2Value2 date (0..*) <"Test date">
 				
 			
 		'''.generateScala
 
-		val types = scala.get('types.ts').toString
-		assertTrue(types.contains('''export interface TestType extends TestType2'''))
+		val types = scala.get('Types.scala').toString
+		//println(types)
+		assertTrue(types.contains('''
+		case class TestType(testTypeValue1: String,
+		    testTypeValue2: Option[Int],
+		    override val testType2Value1: Option[scala.math.BigDecimal],
+		    override val testType2Value2: List[java.time.LocalDate])
+		  extends TestType2(testType2Value1: Option[scala.math.BigDecimal],
+		      testType2Value2: List[java.time.LocalDate]) {
+		}
+		'''))
+		assertTrue(types.contains('''
+		case class TestType2(testType2Value1: Option[scala.math.BigDecimal],
+		    testType2Value2: List[java.time.LocalDate]) {
+		}
+		'''))
 	}
 
 	@Test
@@ -190,28 +190,34 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
-
+		//println(types)
 		assertTrue(types.contains('''
-		export interface MetaFields {
-		  reference?: string;
-		  scheme?: string;
-		  id?: string;
-		  globalKey?: String;
-		  externalKey?: String;
+		case class MetaFields(scheme: Option[String],
+		    globalKey: Option[String],
+		    externalKey: Option[String]) {
+		}'''))
+		
+		assertTrue(types.contains('''
+		case class ReferenceWithMeta[T](value: Option[T],
+		    globalReference: Option[String],
+		    externalReference: Option[String]) {
+		}'''))
+		
+		assertTrue(types.contains('''
+		case class FieldWithMeta[T](value: Option[T],
+		    meta: Option[MetaFields]) {
 		}'''))
 
 		assertTrue(types.contains('''
-		export interface TestType {
-		  testTypeValue1?: ReferenceWithMeta<TestType2>;
-		  meta?: MetaFields;
+		case class TestType(testTypeValue1: ReferenceWithMeta[TestType2],
+		    meta: Option[MetaFields]) {
 		}'''))
 
 		assertTrue(types.contains('''
-		  export interface TestType2 {
-		    testType2Value1?: ReferenceWithMeta<Number>;
-		    testType2Value2?: FieldWithMeta<String>;
-		    testEnum?: FieldWithMeta<TestEnum>;
-		  }'''))
+		case class TestType2(testType2Value1: ReferenceWithMeta[scala.math.BigDecimal],
+		    testType2Value2: FieldWithMeta[String],
+		    testEnum: FieldWithMeta[TestEnum.Value]) {
+		}'''))
 
 	}
 

@@ -2,7 +2,8 @@ package com.regnosys.rosetta.generator.scala.object
 
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 
-import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.toTSType
+import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.toScalaType
+import com.regnosys.rosetta.generator.object.ExpandedType
 
 class ScalaModelObjectBoilerPlate {
 		
@@ -17,31 +18,37 @@ class ScalaModelObjectBoilerPlate {
 		code.toString.replace('\t', '  ')
 	}
 	
-	def toType(ExpandedAttribute attribute) 
-		'''«attribute.toRawType»«IF attribute.isMultiple»[]«ENDIF»'''
+	def toType(ExpandedAttribute attribute) {
+		if (attribute.multiple)
+			'''List[«attribute.toRawType»]'''
+		else if (attribute.singleOptional)
+			'''Option[«attribute.toRawType»]'''
+		else
+			'''«attribute.toRawType»'''
+	}
 	
 	private def toRawType(ExpandedAttribute attribute) {
 		if (!attribute.hasMetas) 
-			attribute.type.name.toTSType
+			attribute.type.toScalaType
 		else if (attribute.refIndex >= 0) {
 			if (attribute.type.isType)
-				attribute.type.name.toReferenceWithMetaTypeName
+				attribute.type.toReferenceWithMetaTypeName
 			else 
-				attribute.type.name.toBasicReferenceWithMetaTypeName
+				attribute.type.toBasicReferenceWithMetaTypeName
 		}
 		else 
-			attribute.type.name.toFieldWithMetaTypeName
+			attribute.type.toFieldWithMetaTypeName
 	}
 	
-	private def toReferenceWithMetaTypeName(String type) {
-		'''ReferenceWithMeta<«type.toTSType.toFirstUpper»>'''
+	private def toReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta[«type.toScalaType»]'''
 	}
 	
-	private def toBasicReferenceWithMetaTypeName(String type) {
-		'''ReferenceWithMeta<«type.toTSType.toFirstUpper»>'''
+	private def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta[«type.toScalaType»]'''
 	}
 	
-	private def toFieldWithMetaTypeName(String type) {
-		'''FieldWithMeta<«type.toTSType.toFirstUpper»>'''
+	private def toFieldWithMetaTypeName(ExpandedType type) {
+		'''FieldWithMeta[«type.toScalaType»]'''
 	}
 }

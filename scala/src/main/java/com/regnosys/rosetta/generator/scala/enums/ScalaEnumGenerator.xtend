@@ -1,6 +1,8 @@
 package com.regnosys.rosetta.generator.scala.enums
 
 import com.google.inject.Inject
+import com.regnosys.rosetta.generator.java.enums.EnumHelper
+import com.regnosys.rosetta.generator.scala.object.ScalaModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import java.util.ArrayList
@@ -8,15 +10,13 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 
-import com.regnosys.rosetta.generator.java.enums.EnumHelper
-import com.regnosys.rosetta.generator.scala.object.ScalaModelObjectBoilerPlate
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
 class ScalaEnumGenerator {
 	
 	@Inject extension ScalaModelObjectBoilerPlate
 	
-	static final String FILENAME = 'enums.ts'
+	static final String FILENAME = 'Enums.scala'
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
@@ -42,16 +42,16 @@ class ScalaEnumGenerator {
 
 	private def generateEnums(List<RosettaEnumeration> enums, String version)  '''		
 		«fileComment(version)»
+		package org.isda.cdm
 		
 		«FOR e : enums»
 			«val allEnumValues = allEnumsValues(e)»
 			«classComment(e.definition)»
-			export enum «e.name» {
-			«FOR value: allEnumValues SEPARATOR ","»
-			
-				«methodComment(value.definition)»
-				«EnumHelper.convertValues(value)»
-			«ENDFOR»
+			object «e.name» extends Enumeration {
+				«FOR value: allEnumValues»
+					«methodComment(value.definition)»
+					val «EnumHelper.convertValues(value)» = Value
+				«ENDFOR»
 			}
 		«ENDFOR»
 	'''

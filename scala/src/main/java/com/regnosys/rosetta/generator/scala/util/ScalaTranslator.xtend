@@ -2,43 +2,44 @@ package com.regnosys.rosetta.generator.scala.util
 
 import com.regnosys.rosetta.types.RCalculationType
 import com.regnosys.rosetta.types.RQualifiedType
+import com.regnosys.rosetta.generator.object.ExpandedType
 
 class ScalaTranslator {
 				
-	static def toTSBasicType(String typename) {
+	static def toScalaBasicType(String typename) {
 		switch typename {
-			case 'String':
-				'string'
 			case 'string':
-				'string'
+				'String'
 			case 'int':
-				'number'
+				'Int'
 			case 'time':
-				'string'
+				'java.time.LocalTime'
 			case 'date':
-				'Date'
-			case 'Date':
-				'Date'
+				'java.time.LocalDate'
+			case 'dateTime':
+				'java.time.LocalDateTime'
 			case 'zonedDateTime':
-				'Date'
+				'java.time.ZonedDateTime'
 			case 'number':
-				'number'
+				'scala.math.BigDecimal'
 			case 'boolean':
-				'boolean'
+				'Boolean'
 			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'string'
+				'String'
 			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'string'
+				'String'
 			case RCalculationType.CALCULATION.calculationType:
-				'string'
+				'String'
 		}
 	}
 
-	static def toTSType(String typename) {
-		val basicType = com.regnosys.rosetta.generator.scala.util.ScalaTranslator.toTSBasicType(typename);
+	static def toScalaType(ExpandedType type) {
+		val basicType = ScalaTranslator.toScalaBasicType(type.name);
 		if (basicType !== null)
 			return basicType
+		else if (type.enumeration)
+			return '''«type.name.toFirstUpper».Value'''
 		else
-			return typename
+			return type.name.toFirstUpper
 	}
 }
