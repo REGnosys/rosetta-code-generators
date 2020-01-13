@@ -39,8 +39,6 @@ class ScalaModelObjectGenerator {
 		result.put(META_FILENAME, metaFields)
 		result;
 	}
-
-//«methodComment(attribute.definition)»
 	
 	private def generateClasses(List<Data> rosettaClasses, Set<String> importedEnums,  String version) {
 	'''
@@ -50,21 +48,21 @@ class ScalaModelObjectGenerator {
 	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
 	
 	«FOR c : rosettaClasses»
-		«classComment(c.definition)»
-		case class «c.name»(«generateAttributes(c)»«IF c.superType === null» {«ENDIF»
-			«IF c.superType !== null»extends «c.superType.name»(«generateAttributes(c.superType)» {«ENDIF»
+		«classComment(c.definition, c.allExpandedAttributes)»
+		case class «c.name»(«generateAttributes(c, false)»)«IF c.superType === null» {«ENDIF»
+			«IF c.superType !== null»extends «c.superType.name»(«generateAttributes(c.superType, true)») {«ENDIF»
 		}
 
 	«ENDFOR»
 	'''
 	}
 	
-	private def generateAttributes(Data c) {
-		'''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n		' AFTER ')'»«generateAttribute(c, attribute)»«ENDFOR»'''
+	private def generateAttributes(Data c, boolean extendsContructor) {
+		'''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n		'»«generateAttribute(c, attribute, extendsContructor)»«ENDFOR»'''
 	}
 	
-	private def generateAttribute(Data c, ExpandedAttribute attribute) {
-		'''«IF c.superType !== null && attribute.enclosingType === c.superType.name»override val «ENDIF»«attribute.toAttributeName»: «attribute.toType»'''
+	private def generateAttribute(Data c, ExpandedAttribute attribute, boolean extendsContructor) {
+		'''«IF !extendsContructor && !c.expandedAttributes.contains(attribute)»override val «ENDIF»«attribute.toAttributeName»: «attribute.toType»'''
 	}
 	
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {

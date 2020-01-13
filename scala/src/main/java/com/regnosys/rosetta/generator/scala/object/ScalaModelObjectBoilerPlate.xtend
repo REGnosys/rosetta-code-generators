@@ -8,8 +8,8 @@ import com.regnosys.rosetta.generator.object.ExpandedType
 class ScalaModelObjectBoilerPlate {
 		
 	def toAttributeName(ExpandedAttribute attribute) {
-		if (attribute.name == "type")
-			'''_type'''
+		if (attribute.name == "val")
+			'''_val'''
 		else
 			attribute.name.toFirstLower
 	}

@@ -1,5 +1,8 @@
 package com.regnosys.rosetta.generator.scala.util
 
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.rosetta.RosettaEnumValue
+
 class ScalaModelGeneratorUtil {
 	
 	static def fileComment(String version) '''
@@ -8,16 +11,8 @@ class ScalaModelGeneratorUtil {
 			 * Version: «version»
 			 */
 	'''
-		
-	static def classComment(String definition) {
-		comment(definition)
-	}
 	
-	static def methodComment(String definition) {
-		comment(definition)
-	}
-	
-	private static def comment(String definition) '''
+	static def comment(String definition) '''
 		«IF definition !==null && !definition.isEmpty »
 			/**
 			 * «definition»
@@ -25,4 +20,15 @@ class ScalaModelGeneratorUtil {
 		«ENDIF»
 	'''
 	
+	static def classComment(String definition, Iterable<ExpandedAttribute> attributes) '''
+		«IF definition !==null && !definition.isEmpty »
+			/**
+			 * «definition»
+			 * 
+			 «FOR attribute : attributes»
+			  * @param «attribute.name» «attribute.definition»
+			 «ENDFOR»
+			 */
+		«ENDIF»
+	'''
 }

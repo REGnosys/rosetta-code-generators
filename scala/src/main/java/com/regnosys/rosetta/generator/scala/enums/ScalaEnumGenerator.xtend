@@ -46,13 +46,14 @@ class ScalaEnumGenerator {
 		
 		«FOR e : enums»
 			«val allEnumValues = allEnumsValues(e)»
-			«classComment(e.definition)»
+			«comment(e.definition)»
 			object «e.name» extends Enumeration {
 				«FOR value: allEnumValues»
-					«methodComment(value.definition)»
+					«comment(value.definition)»
 					val «EnumHelper.convertValues(value)» = Value
 				«ENDFOR»
 			}
+			
 		«ENDFOR»
 	'''
 	

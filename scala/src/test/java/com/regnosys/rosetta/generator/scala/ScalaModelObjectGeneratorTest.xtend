@@ -12,11 +12,11 @@ import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -61,7 +61,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val enums = scala.get('Enums.scala').toString
-		//println(enums)
+		println(enums)
 		assertTrue(enums.contains('''
 		/**
 		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -102,7 +102,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.get('Types.scala').toString
-		//println(types)
+		println(types)
 		assertTrue(types.contains('''
 			/**
 			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -114,6 +114,11 @@ class ScalaModelObjectGeneratorTest {
 			
 			/**
 			 * Test type description.
+			 * 
+			 * @param TestTypeValue1 Test string
+			 * @param TestTypeValue2 Test optional string
+			 * @param TestTypeValue3 Test string list
+			 * @param TestTypeValue4 Test TestType2
 			 */
 			case class TestType(testTypeValue1: String,
 			    testTypeValue2: Option[String],
@@ -134,28 +139,45 @@ class ScalaModelObjectGeneratorTest {
 			type TestType extends TestType2:
 				TestTypeValue1 string (1..1) <"Test string">
 				TestTypeValue2 int (0..1) <"Test int">
-				
-			type TestType2:
+			
+			type TestType2 extends TestType3:
 				TestType2Value1 number (0..1) <"Test number">
 				TestType2Value2 date (0..*) <"Test date">
-				
+			
+			type TestType3:
+				TestType3Value1 string (0..1) <"Test string">
+				TestType4Value2 int (1..*) <"Test int">
+			
 			
 		'''.generateScala
 
 		val types = scala.get('Types.scala').toString
-		//println(types)
+		println(types)
 		assertTrue(types.contains('''
 		case class TestType(testTypeValue1: String,
 		    testTypeValue2: Option[Int],
 		    override val testType2Value1: Option[scala.math.BigDecimal],
-		    override val testType2Value2: List[java.time.LocalDate])
+		    override val testType2Value2: List[java.time.LocalDate],
+		    override val testType3Value1: Option[String],
+		    override val testType4Value2: List[Int])
 		  extends TestType2(testType2Value1: Option[scala.math.BigDecimal],
-		      testType2Value2: List[java.time.LocalDate]) {
+		      testType2Value2: List[java.time.LocalDate],
+		      testType3Value1: Option[String],
+		      testType4Value2: List[Int]) {
 		}
 		'''))
 		assertTrue(types.contains('''
 		case class TestType2(testType2Value1: Option[scala.math.BigDecimal],
-		    testType2Value2: List[java.time.LocalDate]) {
+		    testType2Value2: List[java.time.LocalDate],
+		    override val testType3Value1: Option[String],
+		    override val testType4Value2: List[Int])
+		  extends TestType3(testType3Value1: Option[String],
+		      testType4Value2: List[Int]) {
+		}
+		'''))
+		assertTrue(types.contains('''
+		case class TestType3(testType3Value1: Option[String],
+		    testType4Value2: List[Int]) {
 		}
 		'''))
 	}
@@ -190,7 +212,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
-		//println(types)
+		println(types)
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
