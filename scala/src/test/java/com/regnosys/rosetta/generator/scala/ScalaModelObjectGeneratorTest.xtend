@@ -29,11 +29,13 @@ class ScalaModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	//@Disabled("Test to generate the scala for CDM")
+	@Disabled("Test to generate the scala for CDM")
 	def void generateCdm() {
 		val dirs = newArrayList(
 			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-cdm/src/main/rosetta'),
 			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			//('rosetta-cdm/src/main/rosetta'),
+			//('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
 		);
 
 		val resourceSet = resourceSetProvider.get
