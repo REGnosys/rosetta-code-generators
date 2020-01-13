@@ -32,10 +32,10 @@ class ScalaModelObjectGeneratorTest {
 	@Disabled("Test to generate the scala for CDM")
 	def void generateCdm() {
 		val dirs = newArrayList(
-			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-cdm/src/main/rosetta'),
-			('/Users/hugohills/code/src/github.com/REGnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-			//('rosetta-cdm/src/main/rosetta'),
-			//('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			//('/Users/hugohills/code/src/github.com/REGnosys/rosetta-cdm/src/main/rosetta'),
+			//('/Users/hugohills/code/src/github.com/REGnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			('rosetta-cdm/src/main/rosetta'),
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
 		);
 
 		val resourceSet = resourceSetProvider.get
@@ -63,7 +63,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val enums = scala.get('Enums.scala').toString
-		println(enums)
+		//println(enums)
 		assertTrue(enums.contains('''
 		/**
 		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -104,7 +104,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.get('Types.scala').toString
-		println(types)
+		//println(types)
 		assertTrue(types.contains('''
 			/**
 			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -154,7 +154,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.get('Types.scala').toString
-		println(types)
+		//println(types)
 		assertTrue(types.contains('''
 		case class TestType(testTypeValue1: String,
 		    testTypeValue2: Option[Int],
@@ -162,10 +162,10 @@ class ScalaModelObjectGeneratorTest {
 		    override val testType2Value2: List[java.time.LocalDate],
 		    override val testType3Value1: Option[String],
 		    override val testType4Value2: List[Int])
-		  extends TestType2(testType2Value1: Option[scala.math.BigDecimal],
-		      testType2Value2: List[java.time.LocalDate],
-		      testType3Value1: Option[String],
-		      testType4Value2: List[Int]) {
+		  extends TestType2(testType2Value1,
+		      testType2Value2,
+		      testType3Value1,
+		      testType4Value2) {
 		}
 		'''))
 		assertTrue(types.contains('''
@@ -173,8 +173,8 @@ class ScalaModelObjectGeneratorTest {
 		    testType2Value2: List[java.time.LocalDate],
 		    override val testType3Value1: Option[String],
 		    override val testType4Value2: List[Int])
-		  extends TestType3(testType3Value1: Option[String],
-		      testType4Value2: List[Int]) {
+		  extends TestType3(testType3Value1,
+		      testType4Value2) {
 		}
 		'''))
 		assertTrue(types.contains('''
@@ -214,7 +214,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
-		println(types)
+		//println(types)
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],

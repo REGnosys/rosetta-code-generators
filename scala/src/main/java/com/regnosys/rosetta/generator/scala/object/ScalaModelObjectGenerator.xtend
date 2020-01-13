@@ -62,7 +62,7 @@ class ScalaModelObjectGenerator {
 	}
 	
 	private def generateAttribute(Data c, ExpandedAttribute attribute, boolean extendsContructor) {
-		'''«IF !extendsContructor && !c.expandedAttributes.contains(attribute)»override val «ENDIF»«attribute.toAttributeName»: «attribute.toType»'''
+		'''«IF !extendsContructor && !c.expandedAttributes.contains(attribute)»override val «ENDIF»«attribute.toAttributeName»«IF !extendsContructor»: «attribute.toType»«ENDIF»'''
 	}
 	
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
