@@ -1,14 +1,14 @@
 package org.isda.cdm.generators;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.regnosys.rosetta.generator.daml.DamlCodeGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerators;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 public class DefaultExternalGeneratorsProvider implements Provider<ExternalGenerators>{
 

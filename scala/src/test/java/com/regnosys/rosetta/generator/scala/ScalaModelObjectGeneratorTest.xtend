@@ -153,33 +153,45 @@ class ScalaModelObjectGeneratorTest {
 			
 		'''.generateScala
 
+		val traits = scala.get('Traits.scala').toString
+		//println(traits)
+		assertTrue(traits.contains('''
+		trait TestType2Trait extends TestType3Trait {
+		    val testType2Value1: Option[scala.math.BigDecimal]
+		    val testType2Value2: List[java.time.LocalDate]
+		}
+		'''))
+		assertTrue(traits.contains('''
+		trait TestType3Trait {
+		    val testType3Value1: Option[String]
+		    val testType4Value2: List[Int]
+		}
+		'''))
+
 		val types = scala.get('Types.scala').toString
-		//println(types)
+		println(types)
 		assertTrue(types.contains('''
 		case class TestType(testTypeValue1: String,
 		    testTypeValue2: Option[Int],
-		    override val testType2Value1: Option[scala.math.BigDecimal],
-		    override val testType2Value2: List[java.time.LocalDate],
-		    override val testType3Value1: Option[String],
-		    override val testType4Value2: List[Int])
-		  extends TestType2(testType2Value1,
-		      testType2Value2,
-		      testType3Value1,
-		      testType4Value2) {
+		    testType2Value1: Option[scala.math.BigDecimal],
+		    testType2Value2: List[java.time.LocalDate],
+		    testType3Value1: Option[String],
+		    testType4Value2: List[Int])
+		  extends TestType2Trait {
 		}
 		'''))
 		assertTrue(types.contains('''
 		case class TestType2(testType2Value1: Option[scala.math.BigDecimal],
 		    testType2Value2: List[java.time.LocalDate],
-		    override val testType3Value1: Option[String],
-		    override val testType4Value2: List[Int])
-		  extends TestType3(testType3Value1,
-		      testType4Value2) {
+		    testType3Value1: Option[String],
+		    testType4Value2: List[Int])
+		  extends TestType2Trait with TestType3Trait {
 		}
 		'''))
 		assertTrue(types.contains('''
 		case class TestType3(testType3Value1: Option[String],
-		    testType4Value2: List[Int]) {
+		    testType4Value2: List[Int])
+		  extends TestType3Trait {
 		}
 		'''))
 	}

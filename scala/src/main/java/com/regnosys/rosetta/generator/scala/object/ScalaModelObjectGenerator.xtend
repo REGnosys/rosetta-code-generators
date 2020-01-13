@@ -22,25 +22,29 @@ class ScalaModelObjectGenerator {
 	@Inject extension ScalaMetaFieldGenerator
 	
 	static final String CLASSES_FILENAME = 'Types.scala'
+	static final String TRAITS_FILENAME = 'Traits.scala'
 	static final String META_FILENAME = 'MetaTypes.scala'
 	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap		
-		val enumImports = rosettaClasses
-				.map[allExpandedAttributes].flatten
-				.map[type]
-				.filter[isEnumeration]
-				.map[name]
+		
+		val superTypes = rosettaClasses
+				.map[superType]
+				.map[allSuperTypes].flatten
 				.toSet
 		
-		val classes = rosettaClasses.sortBy[name].generateClasses(enumImports, version).replaceTabsWithSpaces
+		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
 		result.put(CLASSES_FILENAME, classes)
+		
+		val traits = superTypes.sortBy[name].generateTraits(version).replaceTabsWithSpaces
+		result.put(TRAITS_FILENAME, traits)
+				
 		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
 		result.put(META_FILENAME, metaFields)
 		result;
 	}
 	
-	private def generateClasses(List<Data> rosettaClasses, Set<String> importedEnums,  String version) {
+	private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version) {
 	'''
 	«fileComment(version)»
 	package org.isda.cdm
@@ -49,20 +53,51 @@ class ScalaModelObjectGenerator {
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
-		case class «c.name»(«generateAttributes(c, false)»)«IF c.superType === null» {«ENDIF»
-			«IF c.superType !== null»extends «c.superType.name»(«generateAttributes(c.superType, true)») {«ENDIF»
+		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
+			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
+			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
+			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
 		}
 
 	«ENDFOR»
 	'''
 	}
 	
-	private def generateAttributes(Data c, boolean extendsContructor) {
-		'''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n		'»«generateAttribute(c, attribute, extendsContructor)»«ENDFOR»'''
+	private def generateTraits(List<Data> rosettaClasses, String version) {
+	'''
+	«fileComment(version)»
+	package org.isda.cdm
+	
+	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+	
+	«FOR c : rosettaClasses»
+		«classComment(c.definition, c.expandedAttributes)»
+		trait «c.name»Trait «IF c.superType !== null»extends «c.superType.name»Trait «ENDIF»{
+			«generateTraitAttributes(c)»
+		}
+
+	«ENDFOR»
+	'''
 	}
 	
-	private def generateAttribute(Data c, ExpandedAttribute attribute, boolean extendsContructor) {
-		'''«IF !extendsContructor && !c.expandedAttributes.contains(attribute)»override val «ENDIF»«attribute.toAttributeName»«IF !extendsContructor»: «attribute.toType»«ENDIF»'''
+	private def generateAttributes(Data c) {
+		'''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n		'»«generateAttribute(c, attribute)»«ENDFOR»'''
+	}
+	
+	private def generateAttribute(Data c, ExpandedAttribute attribute) {
+		'''«attribute.toAttributeName»: «attribute.toType»'''
+	}
+	
+	private def generateTraitAttributes(Data c) {
+		'''
+		«FOR attribute : c.expandedAttributes»
+			«generateTraitAttribute(c, attribute)»
+		«ENDFOR»
+		'''
+	}
+	
+	private def generateTraitAttribute(Data c, ExpandedAttribute attribute) {
+		'''	val «attribute.toAttributeName»: «attribute.toType»'''
 	}
 	
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
