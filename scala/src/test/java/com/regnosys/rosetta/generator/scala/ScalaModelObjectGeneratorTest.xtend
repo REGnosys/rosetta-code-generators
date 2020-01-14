@@ -269,31 +269,31 @@ class ScalaModelObjectGeneratorTest {
                 '''.generateScala
 
                 val types = scala.get('Types.scala').toString
-                println(types)
                 assertTrue(types.contains('''
-                        /**
-                         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-                         * Version: test
-                         */
-                        package org.isda.cdm
-
-                        import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
-
-                        /**
-                         * Test type with one-of condition.
-                         *
-                         * @param Field1 Test string field 1
-                         * @param Field2 Test string field 2
-                         * @param Field3 Test string field 3
-                         * @param Field4 Test number field 4
-                         */
-                        case class TestType(field1: Option[String],
-                            field2: Option[String],
-                            field3: Option[String],
-                            field4: Option[scala.math.BigDecimal]) {
-                        }
-                    '''))
-
+				/**
+				 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+				 * Version: test
+				 */
+				package org.isda.cdm
+				
+				import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+				
+				/**
+				 * Test type with one-of condition.
+				 * 
+				 * @param Field1 Test string field 1
+				 * @param Field2 Test string field 2
+				 * @param Field3 Test string field 3
+				 * @param Field4 Test number field 4
+				 */
+				case class TestType(field1: Option[String],
+				    field2: Option[String],
+				    field3: Option[String],
+				    field4: Option[scala.math.BigDecimal]) {
+				  val numberOfPopulatedFields = List(field1, field2, field3, field4).flatten.length
+				  require(numberOfPopulatedFields == 1)
+				}
+				'''))
         }
 
 
