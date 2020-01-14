@@ -257,6 +257,46 @@ class ScalaModelObjectGeneratorTest {
 
 	}
 
+        @Test
+        def void shouldGenerateOneOfCondition() {
+                val scala = '''
+                        type TestType: <"Test type with one-of condition.">
+                                Field1 string(0..1) <"Test string field 1">
+                                Field2 string(0..1) <"Test string field 2">
+                                Field3 string(0..1) <"Test string field 3">
+                                Field4 number(0..1) <"Test number field 4">
+                                condition: one-of
+                '''.generateScala
+
+                val types = scala.get('Types.scala').toString
+                println(types)
+                assertTrue(types.contains('''
+                        /**
+                         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+                         * Version: test
+                         */
+                        package org.isda.cdm
+
+                        import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+
+                        /**
+                         * Test type with one-of condition.
+                         *
+                         * @param Field1 Test string field 1
+                         * @param Field2 Test string field 2
+                         * @param Field3 Test string field 3
+                         * @param Field4 Test number field 4
+                         */
+                        case class TestType(field1: Option[String],
+                            field2: Option[String],
+                            field3: Option[String],
+                            field4: Option[scala.math.BigDecimal]) {
+                        }
+                    '''))
+
+        }
+
+
 	def generateScala(CharSequence model) {
 		val eResource = model.parseRosettaWithNoErrors.eResource
 
