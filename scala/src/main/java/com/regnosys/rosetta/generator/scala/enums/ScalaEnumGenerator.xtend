@@ -44,11 +44,16 @@ class ScalaEnumGenerator {
 		«fileComment(version)»
 		package org.isda.cdm
 		
+		import com.fasterxml.jackson.core.`type`.TypeReference
+		
 		«FOR e : enums»
 			«val allEnumValues = allEnumsValues(e)»
 			«comment(e.definition)»
 			object «e.name» extends Enumeration {
-				«FOR value: allEnumValues»
+				
+				class Class extends TypeReference[this.type]
+				
+				«FOR value: allEnumValues SEPARATOR '\n'»
 					«comment(value.definition)»
 					val «EnumHelper.convertValues(value)» = Value
 				«ENDFOR»

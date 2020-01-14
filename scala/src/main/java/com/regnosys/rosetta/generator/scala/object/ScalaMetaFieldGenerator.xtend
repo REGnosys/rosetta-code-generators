@@ -16,22 +16,22 @@ class ScalaMetaFieldGenerator {
 	private def metaClasses() '''
 		package org.isda.cdm.metafields
 
-		case class FieldWithMeta[T](value: Option[T],
-				meta: Option[MetaFields]) {
-		}
+		import scala.reflect.ClassTag
+		import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+
+		case class FieldWithMeta[T: ClassTag](value: Option[T],
+				meta: Option[MetaFields]) {}
 
 		case class ReferenceWithMeta[T](value: Option[T],
 				globalReference: Option[String],
-				externalReference: Option[String]) {
-		}
+				externalReference: Option[String]) {}
 		
 	'''
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
 		case class MetaFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
-				externalKey: Option[String]) {
-		}
+				externalKey: Option[String]) {}
 		
 	'''
 }

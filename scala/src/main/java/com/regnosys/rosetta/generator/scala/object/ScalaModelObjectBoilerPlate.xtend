@@ -18,6 +18,10 @@ class ScalaModelObjectBoilerPlate {
 		code.toString.replace('\t', '  ')
 	}
 	
+	def toEnumAnnotationType(ExpandedAttribute attribute) {
+		'''«attribute.type.name»'''
+	}
+	
 	def toType(ExpandedAttribute attribute) {
 		if (attribute.multiple)
 			'''List[«attribute.toRawType»]'''

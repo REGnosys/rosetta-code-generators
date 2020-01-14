@@ -49,16 +49,19 @@ class ScalaModelObjectGenerator {
 	«fileComment(version)»
 	package org.isda.cdm
 	
+	import com.fasterxml.jackson.core.`type`.TypeReference
+	import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+	import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+	
 	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
-		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
-			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
-			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
-			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
-		}
-
+		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {}«ENDIF»
+			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {}
+			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {}
+			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {}«ENDIF»
+		
 	«ENDFOR»
 	'''
 	}
@@ -71,7 +74,7 @@ class ScalaModelObjectGenerator {
 	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
 	
 	«FOR c : rosettaClasses»
-		«classComment(c.definition, c.expandedAttributes)»
+		«comment(c.definition)»
 		trait «c.name»Trait «IF c.superType !== null»extends «c.superType.name»Trait «ENDIF»{
 			«generateTraitAttributes(c)»
 		}
@@ -85,7 +88,19 @@ class ScalaModelObjectGenerator {
 	}
 	
 	private def generateAttribute(Data c, ExpandedAttribute attribute) {
-		'''«attribute.toAttributeName»: «attribute.toType»'''
+		if (attribute.enum) {
+			if (attribute.singleOptional) {
+			'''@JsonDeserialize(contentAs = classOf[«attribute.toEnumAnnotationType».Value])
+		@JsonScalaEnumeration(classOf[«attribute.toEnumAnnotationType».Class])
+		«attribute.toAttributeName»: «attribute.toType»'''
+			} else {
+				'''@JsonScalaEnumeration(classOf[«attribute.toEnumAnnotationType».Class])
+		«attribute.toAttributeName»: «attribute.toType»'''
+			}
+			
+		} else {
+			'''«attribute.toAttributeName»: «attribute.toType»'''
+		}
 	}
 	
 	private def generateTraitAttributes(Data c) {
@@ -97,7 +112,10 @@ class ScalaModelObjectGenerator {
 	}
 	
 	private def generateTraitAttribute(Data c, ExpandedAttribute attribute) {
-		'''	val «attribute.toAttributeName»: «attribute.toType»'''
+		'''
+		«comment(attribute.definition)»
+		val «attribute.toAttributeName»: «attribute.toType»
+		'''
 	}
 	
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
