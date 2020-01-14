@@ -18,8 +18,8 @@ class ScalaModelObjectBoilerPlate {
 		code.toString.replace('\t', '  ')
 	}
 	
-	def toEnumAnnotationType(ExpandedAttribute attribute) {
-		'''«attribute.type.name»'''
+	def toEnumAnnotationType(ExpandedType type) {
+		'''«type.name»'''
 	}
 	
 	def toType(ExpandedAttribute attribute) {
@@ -45,21 +45,23 @@ class ScalaModelObjectBoilerPlate {
 	}
 	
 	def toReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta«type.toMetaType»'''
+		'''ReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
 	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''BasicReferenceWithMeta«type.toMetaType»'''
+		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
 	def toFieldWithMetaTypeName(ExpandedType type) {
-		'''FieldWithMeta[«type.toScalaType»]'''
+		'''FieldWithMeta«type.toMetaTypeName»'''
 	}
 	
-	static def toMetaType(ExpandedType type) {
+	static def toMetaTypeName(ExpandedType type) {
 		val name = type.toScalaType
 		
-		if (name.contains(".")) {
+		if (type.enumeration) {
+			return name.substring(0, name.lastIndexOf(".")).toFirstUpper
+		} else if (name.contains(".")) {
 			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
 		}
 		

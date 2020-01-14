@@ -89,16 +89,15 @@ class ScalaModelObjectGenerator {
 	}
 	
 	private def generateAttribute(Data c, ExpandedAttribute attribute) {
-		if (attribute.enum) {
+		if (attribute.enum && !attribute.hasMetas) {
 			if (attribute.singleOptional) {
-			'''@JsonDeserialize(contentAs = classOf[«attribute.toEnumAnnotationType».Value])
-		@JsonScalaEnumeration(classOf[«attribute.toEnumAnnotationType».Class])
+			'''@JsonDeserialize(contentAs = classOf[«attribute.type.toEnumAnnotationType».Value])
+		@JsonScalaEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
 		«attribute.toAttributeName»: «attribute.toType»'''
 			} else {
-				'''@JsonScalaEnumeration(classOf[«attribute.toEnumAnnotationType».Class])
+				'''@JsonScalaEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
 		«attribute.toAttributeName»: «attribute.toType»'''
 			}
-			
 		} else {
 			'''«attribute.toAttributeName»: «attribute.toType»'''
 		}

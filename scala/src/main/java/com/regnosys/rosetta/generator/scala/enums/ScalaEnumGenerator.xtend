@@ -55,7 +55,7 @@ class ScalaEnumGenerator {
 				
 				«FOR value: allEnumValues SEPARATOR '\n'»
 					«comment(value.definition)»
-					val «EnumHelper.convertValues(value)» = Value
+					val «EnumHelper.convertValues(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
 				«ENDFOR»
 			}
 			
