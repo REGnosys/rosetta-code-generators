@@ -126,7 +126,7 @@ class ScalaModelObjectGeneratorTest {
 			import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
 			import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 			
-			import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+			import org.isda.cdm.metafields._
 			
 			/**
 			  * Test type description.
@@ -247,7 +247,7 @@ class ScalaModelObjectGeneratorTest {
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
-		//println(types)
+		println(types)
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
@@ -255,23 +255,29 @@ class ScalaModelObjectGeneratorTest {
 	    '''))
 		
 		assertTrue(types.contains('''
-		case class ReferenceWithMeta[T](value: Option[T],
+		case class FieldWithMeta[T: ClassTag](value: Option[T],
+		    meta: Option[MetaFields]) {}
+	    '''))
+		
+		assertTrue(types.contains('''
+		case class ReferenceWithMetaTestType2(value: Option[TestType2],
 		    globalReference: Option[String],
 		    externalReference: Option[String]) {}
 	    '''))
 		
 		assertTrue(types.contains('''
-		case class FieldWithMeta[T: ClassTag](value: Option[T],
+		case class BasicReferenceWithMetaBigDecimal(value: Option[scala.math.BigDecimal],
+		    globalReference: Option[String],
+		    externalReference: Option[String]) {}
+	    '''))
+
+		assertTrue(types.contains('''
+		case class TestType(testTypeValue1: ReferenceWithMetaTestType2,
 		    meta: Option[MetaFields]) {}
 	    '''))
 
 		assertTrue(types.contains('''
-		case class TestType(testTypeValue1: ReferenceWithMeta[TestType2],
-		    meta: Option[MetaFields]) {}
-	    '''))
-
-		assertTrue(types.contains('''
-		case class TestType2(testType2Value1: ReferenceWithMeta[scala.math.BigDecimal],
+		case class TestType2(testType2Value1: BasicReferenceWithMetaBigDecimal,
 		    testType2Value2: FieldWithMeta[String]) {}
 	    '''))
 

@@ -39,8 +39,9 @@ class ScalaModelObjectGenerator {
 		val traits = superTypes.sortBy[name].generateTraits(version).replaceTabsWithSpaces
 		result.put(TRAITS_FILENAME, traits)
 				
-		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
+		val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
 		result.put(META_FILENAME, metaFields)
+		
 		result;
 	}
 	
@@ -53,7 +54,7 @@ class ScalaModelObjectGenerator {
 	import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
 	import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 	
-	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+	import org.isda.cdm.metafields._
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
@@ -71,7 +72,7 @@ class ScalaModelObjectGenerator {
 	«fileComment(version)»
 	package org.isda.cdm
 	
-	import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+	import org.isda.cdm.metafields._
 	
 	«FOR c : rosettaClasses»
 		«comment(c.definition)»

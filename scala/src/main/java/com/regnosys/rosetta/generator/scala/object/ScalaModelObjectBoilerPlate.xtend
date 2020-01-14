@@ -44,15 +44,25 @@ class ScalaModelObjectBoilerPlate {
 			attribute.type.toFieldWithMetaTypeName
 	}
 	
-	private def toReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta[«type.toScalaType»]'''
+	def toReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta«type.toMetaType»'''
 	}
 	
-	private def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta[«type.toScalaType»]'''
+	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+		'''BasicReferenceWithMeta«type.toMetaType»'''
 	}
 	
-	private def toFieldWithMetaTypeName(ExpandedType type) {
+	def toFieldWithMetaTypeName(ExpandedType type) {
 		'''FieldWithMeta[«type.toScalaType»]'''
+	}
+	
+	static def toMetaType(ExpandedType type) {
+		val name = type.toScalaType
+		
+		if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
+		}
+		
+		return name.toFirstUpper
 	}
 }
