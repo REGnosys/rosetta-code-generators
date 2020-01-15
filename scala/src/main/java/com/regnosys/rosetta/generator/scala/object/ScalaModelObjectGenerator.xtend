@@ -59,10 +59,15 @@ class ScalaModelObjectGenerator {
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
-		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {}«ENDIF»
-			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {}
-			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {}
-			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {}«ENDIF»
+		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
+			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
+			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
+			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
+			«FOR condition : c.conditions»
+				«generateConditionLogic(c, condition)»
+			«ENDFOR»
+		}
+		
 	«ENDFOR»
 	'''
 	}
@@ -120,14 +125,14 @@ class ScalaModelObjectGenerator {
 	
 	private def generateConditionLogic(Data c, Condition condition) {
 		'''
-		«IF condition.getConstraint.isOneOf»«generateOneOfLogic(c)»«ENDIF»
+		«IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
 		'''
 	}
 
 	private def generateOneOfLogic(Data c) {
 		'''
-		val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
-		require(numberOfPopulatedFields == 1)
+		//val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
+		//require(numberOfPopulatedFields == 1)
 		'''
 	}
 
