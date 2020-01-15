@@ -12,11 +12,11 @@ import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Disabled
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -66,22 +66,28 @@ class ScalaModelObjectGeneratorTest {
 		//println(enums)
 		assertTrue(enums.contains('''
 		/**
-		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-		 * Version: test
-		 */
+		  * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+		  * Version: test
+		  */
 		package org.isda.cdm
 		
+		import com.fasterxml.jackson.core.`type`.TypeReference
+		
 		/**
-		 * Test enum description.
-		 */
+		  * Test enum description.
+		  */
 		object TestEnum extends Enumeration {
+		  
+		  class Class extends TypeReference[this.type]
+		  
 		  /**
-		   * Test enum value 1
-		   */
+		    * Test enum value 1
+		    */
 		  val TEST_ENUM_VALUE_1 = Value
+		  
 		  /**
-		   * Test enum value 2
-		   */
+		    * Test enum value 2
+		    */
 		  val TEST_ENUM_VALUE_2 = Value
 		}
 		'''))
@@ -91,15 +97,20 @@ class ScalaModelObjectGeneratorTest {
 	def void shouldGenerateTypes() {
 		val scala = '''
 			type TestType: <"Test type description.">
-				TestTypeValue1 string(1..1) <"Test string">
-				TestTypeValue2 string(0..1) <"Test optional string">
-				TestTypeValue3 string(0..*) <"Test string list">
-				TestTypeValue4 TestType2(1..1) <"Test TestType2">
-				
+				testTypeValue1 string (1..1) <"Test string">
+				testTypeValue2 string (0..1) <"Test optional string">
+				testTypeValue3 string (0..*) <"Test string list">
+				testTypeValue4 TestType2 (1..1) <"Test TestType2">
+				testEnum TestEnum (0..1) <"Optional test enum">
+			
 			type TestType2:
-				TestType2Value1 number(1..*) <"Test number list">
-				TestType2Value2 date(0..1) <"Test date">
-				
+				testType2Value1 number(1..*) <"Test number list">
+				testType2Value2 date(0..1) <"Test date">
+				testEnum TestEnum (1..1) <"Optional test enum">
+			
+			enum TestEnum: <"Test enum description.">
+				TestEnumValue1 <"Test enum value 1">
+				TestEnumValue2 <"Test enum value 2">
 			
 		'''.generateScala
 
@@ -107,30 +118,38 @@ class ScalaModelObjectGeneratorTest {
 		//println(types)
 		assertTrue(types.contains('''
 			/**
-			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-			 * Version: test
-			 */
+			  * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+			  * Version: test
+			  */
 			package org.isda.cdm
 			
-			import org.isda.cdm.metafields.{ ReferenceWithMeta, FieldWithMeta, MetaFields }
+			import com.fasterxml.jackson.core.`type`.TypeReference
+			import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+			import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+			
+			import org.isda.cdm.metafields._
 			
 			/**
-			 * Test type description.
-			 * 
-			 * @param TestTypeValue1 Test string
-			 * @param TestTypeValue2 Test optional string
-			 * @param TestTypeValue3 Test string list
-			 * @param TestTypeValue4 Test TestType2
-			 */
-			case class TestType(testTypeValue1: String,
+			  * Test type description.
+			  *
+			  * @param testEnum Optional test enum
+			  * @param testTypeValue1 Test string
+			  * @param testTypeValue2 Test optional string
+			  * @param testTypeValue3 Test string list
+			  * @param testTypeValue4 Test TestType2
+			  */
+			case class TestType(@JsonDeserialize(contentAs = classOf[TestEnum.Value])
+			    @JsonScalaEnumeration(classOf[TestEnum.Class])
+			    testEnum: Option[TestEnum.Value],
+			    testTypeValue1: String,
 			    testTypeValue2: Option[String],
 			    testTypeValue3: List[String],
-			    testTypeValue4: TestType2) {
-			}
+			    testTypeValue4: TestType2) {}
 			
-			case class TestType2(testType2Value1: List[scala.math.BigDecimal],
-			    testType2Value2: Option[java.time.LocalDate]) {
-			}
+			case class TestType2(@JsonScalaEnumeration(classOf[TestEnum.Class])
+			    testEnum: TestEnum.Value,
+			    testType2Value1: List[scala.math.BigDecimal],
+			    testType2Value2: Option[java.time.LocalDate]) {}
 			'''))
 
 	}
@@ -149,27 +168,37 @@ class ScalaModelObjectGeneratorTest {
 			type TestType3:
 				TestType3Value1 string (0..1) <"Test string">
 				TestType4Value2 int (1..*) <"Test int">
-			
-			
 		'''.generateScala
 
 		val traits = scala.get('Traits.scala').toString
 		//println(traits)
 		assertTrue(traits.contains('''
 		trait TestType2Trait extends TestType3Trait {
-		    val testType2Value1: Option[scala.math.BigDecimal]
-		    val testType2Value2: List[java.time.LocalDate]
+		  /**
+		    * Test number
+		    */
+		  val testType2Value1: Option[scala.math.BigDecimal]
+		  /**
+		    * Test date
+		    */
+		  val testType2Value2: List[java.time.LocalDate]
 		}
 		'''))
 		assertTrue(traits.contains('''
 		trait TestType3Trait {
-		    val testType3Value1: Option[String]
-		    val testType4Value2: List[Int]
+		  /**
+		    * Test string
+		    */
+		  val testType3Value1: Option[String]
+		  /**
+		    * Test int
+		    */
+		  val testType4Value2: List[Int]
 		}
 		'''))
 
 		val types = scala.get('Types.scala').toString
-		println(types)
+		//println(types)
 		assertTrue(types.contains('''
 		case class TestType(testTypeValue1: String,
 		    testTypeValue2: Option[Int],
@@ -177,22 +206,19 @@ class ScalaModelObjectGeneratorTest {
 		    testType2Value2: List[java.time.LocalDate],
 		    testType3Value1: Option[String],
 		    testType4Value2: List[Int])
-		  extends TestType2Trait {
-		}
+		  extends TestType2Trait {}
 		'''))
 		assertTrue(types.contains('''
 		case class TestType2(testType2Value1: Option[scala.math.BigDecimal],
 		    testType2Value2: List[java.time.LocalDate],
 		    testType3Value1: Option[String],
 		    testType4Value2: List[Int])
-		  extends TestType2Trait with TestType3Trait {
-		}
+		  extends TestType2Trait with TestType3Trait {}
 		'''))
 		assertTrue(types.contains('''
 		case class TestType3(testType3Value1: Option[String],
 		    testType4Value2: List[Int])
-		  extends TestType3Trait {
-		}
+		  extends TestType3Trait {}
 		'''))
 	}
 
@@ -205,7 +231,7 @@ class ScalaModelObjectGeneratorTest {
 			
 			type TestType:
 				[metadata key]
-				TestTypeValue1 TestType2(1..1)
+				testTypeValue1 TestType2(1..1)
 					[metadata reference]
 					
 			enum TestEnum: <"Test enum description.">
@@ -213,16 +239,15 @@ class ScalaModelObjectGeneratorTest {
 				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
-				TestType2Value1 number(1..1)
+				testType2Value1 number (1..1)
 					[metadata reference]
 					
-				TestType2Value2 string(1..1)
+				testType2Value2 string (1..1)
 					[metadata id]
 					[metadata scheme]
 				
-				testEnum TestEnum(1..1)
+				testType2Value3 TestEnum (1..1)
 					[metadata scheme]
-					
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
@@ -230,30 +255,48 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
-		    externalKey: Option[String]) {
-		}'''))
+		    externalKey: Option[String]) {}
+	    '''))
 		
 		assertTrue(types.contains('''
-		case class ReferenceWithMeta[T](value: Option[T],
+		case class FieldWithMetaString(value: Option[String],
+		    meta: Option[MetaFields]) {}
+	    '''))
+
+		assertTrue(types.contains('''
+		case class FieldWithMetaTestEnum(@JsonDeserialize(contentAs = classOf[TestEnum.Value])
+		    @JsonScalaEnumeration(classOf[TestEnum.Class])
+		    value: Option[TestEnum.Value],
+		    meta: Option[MetaFields]) {}
+	    '''))
+	    
+	    assertTrue(types.contains('''
+		case class FieldWithMetaString(value: Option[String],
+		    meta: Option[MetaFields]) {}
+	    '''))
+		
+		assertTrue(types.contains('''
+		case class ReferenceWithMetaTestType2(value: Option[TestType2],
 		    globalReference: Option[String],
-		    externalReference: Option[String]) {
-		}'''))
+		    externalReference: Option[String]) {}
+	    '''))
 		
 		assertTrue(types.contains('''
-		case class FieldWithMeta[T](value: Option[T],
-		    meta: Option[MetaFields]) {
-		}'''))
+		case class BasicReferenceWithMetaBigDecimal(value: Option[scala.math.BigDecimal],
+		    globalReference: Option[String],
+		    externalReference: Option[String]) {}
+	    '''))
 
 		assertTrue(types.contains('''
-		case class TestType(testTypeValue1: ReferenceWithMeta[TestType2],
-		    meta: Option[MetaFields]) {
-		}'''))
+		case class TestType(meta: Option[MetaFields],
+		    testTypeValue1: ReferenceWithMetaTestType2) {}
+	    '''))
 
 		assertTrue(types.contains('''
-		case class TestType2(testType2Value1: ReferenceWithMeta[scala.math.BigDecimal],
-		    testType2Value2: FieldWithMeta[String],
-		    testEnum: FieldWithMeta[TestEnum.Value]) {
-		}'''))
+		case class TestType2(testType2Value1: BasicReferenceWithMetaBigDecimal,
+		    testType2Value2: FieldWithMetaString,
+		    testType2Value3: FieldWithMetaTestEnum) {}
+	    '''))
 
 	}
 

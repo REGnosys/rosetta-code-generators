@@ -1,37 +1,97 @@
 package com.regnosys.rosetta.generator.scala.object
 
+import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.rosetta.RosettaMetaType
+import com.regnosys.rosetta.rosetta.simple.Data
+import java.util.List
 
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.toScalaBasicType
+import static extension com.regnosys.rosetta.generator.scala.object.ScalaModelObjectBoilerPlate.*
+import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.*
+import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.Util.*
 
 class ScalaMetaFieldGenerator {
 	
-	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		fileComment(version) + metaClasses.toString + metaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference"], version)
+	def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+		val metaFieldsImports = generateMetaFieldsImports.toString
+		
+		val refs = rosettaClasses
+			.flatMap[expandedAttributes]
+			.filter[hasMetas && metas.exists[name=="reference"]]
+			.map[type]
+			.toSet
+		
+		var referenceWithMeta = '';
+		
+		for (ref:refs) {
+			if (ref.isType)
+				referenceWithMeta += generateReferenceWithMeta(ref).toString
+			else
+				referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
+		}
+		
+		val metas =  rosettaClasses
+			.flatMap[expandedAttributes]
+			.filter[hasMetas && !metas.exists[name=="reference"]]
+			.map[type]
+			.toSet
+
+		for (meta:metas) {
+			referenceWithMeta += generateFieldWithMeta(meta).toString
+		}
+		
+		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference"], version)
+		
+		return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
 	}
 	
-	private def metaClasses() '''
+	private def generateMetaFieldsImports() '''
 		package org.isda.cdm.metafields
 
-		case class FieldWithMeta[T](value: Option[T],
-				meta: Option[MetaFields]) {
-		}
+		import com.fasterxml.jackson.core.`type`.TypeReference
+		import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+		import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
-		case class ReferenceWithMeta[T](value: Option[T],
-				globalReference: Option[String],
-				externalReference: Option[String]) {
-		}
+		import org.isda.cdm._
 		
 	'''
 	
-	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
+	private def generateFieldWithMeta(ExpandedType type) '''
+		case class FieldWithMeta«type.toMetaTypeName»(«generateAttribute(type)»,
+				meta: Option[MetaFields]) {}
+		
+	'''
+	
+	private def generateAttribute(ExpandedType type) {
+		if (type.enumeration) {
+			'''@JsonDeserialize(contentAs = classOf[«type.name».Value])
+		@JsonScalaEnumeration(classOf[«type.name».Class])
+		value: Option[«type.toScalaType»]'''
+		} else {
+			'''value: Option[«type.toScalaType»]'''
+		}
+	}
+	
+	private def generateReferenceWithMeta(ExpandedType type) '''
+		case class ReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
+				globalReference: Option[String],
+				externalReference: Option[String]) {}
+		
+	'''
+
+	private def generateBasicReferenceWithMeta(ExpandedType type) '''
+		case class BasicReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
+				globalReference: Option[String],
+				externalReference: Option[String]) {}
+		
+	'''
+	
+	private def genMetaFields(Iterable<RosettaMetaType> types, String version) '''				
 		case class MetaFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
-				externalKey: Option[String]) {
-		}
+				externalKey: Option[String]) {}
 		
 	'''
 }
