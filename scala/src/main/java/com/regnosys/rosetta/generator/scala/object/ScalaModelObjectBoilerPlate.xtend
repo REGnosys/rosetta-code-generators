@@ -60,8 +60,11 @@ class ScalaModelObjectBoilerPlate {
 		val name = type.toScalaType
 		
 		if (type.enumeration) {
+			// Enums have scala types in the form "FooEnum.Value".  
+			// For the meta type name we just need "FooEnum"
 			return name.substring(0, name.lastIndexOf(".")).toFirstUpper
 		} else if (name.contains(".")) {
+			// Remove any packages from basic types e.g. scala.math.BigDecimal
 			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
 		}
 		
