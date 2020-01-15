@@ -5,6 +5,7 @@ import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
+import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.HashMap
 import java.util.List
@@ -62,7 +63,6 @@ class ScalaModelObjectGenerator {
 			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {}
 			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {}
 			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {}«ENDIF»
-		
 	«ENDFOR»
 	'''
 	}
@@ -118,6 +118,19 @@ class ScalaModelObjectGenerator {
 		'''
 	}
 	
+	private def generateConditionLogic(Data c, Condition condition) {
+		'''
+		«IF condition.getConstraint.isOneOf»«generateOneOfLogic(c)»«ENDIF»
+		'''
+	}
+
+	private def generateOneOfLogic(Data c) {
+		'''
+		val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
+		require(numberOfPopulatedFields == 1)
+		'''
+	}
+
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
 		type.allSuperTypes.expandedAttributes
 	}
