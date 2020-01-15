@@ -18,6 +18,10 @@ class ScalaModelObjectBoilerPlate {
 		code.toString.replace('\t', '  ')
 	}
 	
+	def toEnumAnnotationType(ExpandedType type) {
+		'''«type.name»'''
+	}
+	
 	def toType(ExpandedAttribute attribute) {
 		if (attribute.multiple)
 			'''List[«attribute.toRawType»]'''
@@ -40,15 +44,30 @@ class ScalaModelObjectBoilerPlate {
 			attribute.type.toFieldWithMetaTypeName
 	}
 	
-	private def toReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta[«type.toScalaType»]'''
+	def toReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
-	private def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta[«type.toScalaType»]'''
+	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
-	private def toFieldWithMetaTypeName(ExpandedType type) {
-		'''FieldWithMeta[«type.toScalaType»]'''
+	def toFieldWithMetaTypeName(ExpandedType type) {
+		'''FieldWithMeta«type.toMetaTypeName»'''
+	}
+	
+	static def toMetaTypeName(ExpandedType type) {
+		val name = type.toScalaType
+		
+		if (type.enumeration) {
+			// Enums have scala types in the form "FooEnum.Value".  
+			// For the meta type name we just need "FooEnum"
+			return name.substring(0, name.lastIndexOf(".")).toFirstUpper
+		} else if (name.contains(".")) {
+			// Remove any packages from basic types e.g. scala.math.BigDecimal
+			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
+		}
+		
+		return name.toFirstUpper
 	}
 }
