@@ -3,6 +3,7 @@ package com.regnosys.rosetta.generator.scala.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
@@ -21,10 +22,12 @@ class ScalaModelObjectGenerator {
 	@Inject extension RosettaExtensions
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
+	@Inject extension ScalaObjectMapperGenerator
 	
 	static final String CLASSES_FILENAME = 'Types.scala'
 	static final String TRAITS_FILENAME = 'Traits.scala'
 	static final String META_FILENAME = 'MetaTypes.scala'
+	static final String SERIALIZATION_FILENAME = 'Serialization.scala'
 	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap		
@@ -42,6 +45,9 @@ class ScalaModelObjectGenerator {
 				
 		val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
 		result.put(META_FILENAME, metaFields)
+		
+		val objectMapper = generateObjectMapper(version)
+		result.put(SERIALIZATION_FILENAME, objectMapper)
 		
 		result;
 	}
