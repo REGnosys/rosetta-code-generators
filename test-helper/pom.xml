@@ -12,7 +12,7 @@
 
     <artifactId>test-helper</artifactId>
     <packaging>jar</packaging>
-    <name>Test infrastructure for Rosetta code generators</name>
+    <description>Test infrastructure for Rosetta code generators</description>
 
     <dependencies>
         <dependency>

@@ -12,7 +12,7 @@
 	<artifactId>default-cdm-generators</artifactId>
 
 	<packaging>jar</packaging>
-	<name>Setup for the generators that are run as part of the CDM distribution build</name>
+	<description>Setup for the generators that are run as part of the CDM distribution build</description>
 
 	<dependencies>
 		<dependency>

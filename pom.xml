@@ -20,11 +20,7 @@
 	<packaging>pom</packaging>
 	<version>0.0.0.master</version>
 
-	<name>Rosetta Code Generators</name>
-
-	<description>
-        A place to write code generators for the rosetta DSL
-    </description>
+	<description>A place to write code generators for the rosetta DSL</description>
 
 	<url>https://github.com/REGnosys/rosetta-code-generators</url>
 	<organization>

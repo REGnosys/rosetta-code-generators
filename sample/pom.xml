@@ -13,7 +13,7 @@
 
 	<artifactId>sample</artifactId>
 	<packaging>jar</packaging>
-	<name>A sample Rosetta code generator</name>
+	<description>A sample Rosetta code generator</description>
 
 	<dependencies>
 		<dependency>
