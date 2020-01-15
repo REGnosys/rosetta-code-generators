@@ -3,6 +3,7 @@ package com.regnosys.rosetta.generator.scala.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
@@ -21,10 +22,12 @@ class ScalaModelObjectGenerator {
 	@Inject extension RosettaExtensions
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
+	@Inject extension ScalaObjectMapperGenerator
 	
 	static final String CLASSES_FILENAME = 'Types.scala'
 	static final String TRAITS_FILENAME = 'Traits.scala'
 	static final String META_FILENAME = 'MetaTypes.scala'
+	static final String SERIALIZATION_FILENAME = 'Serialization.scala'
 	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap		
@@ -43,6 +46,9 @@ class ScalaModelObjectGenerator {
 		val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
 		result.put(META_FILENAME, metaFields)
 		
+		val objectMapper = generateObjectMapper(version)
+		result.put(SERIALIZATION_FILENAME, objectMapper)
+		
 		result;
 	}
 	
@@ -59,10 +65,15 @@ class ScalaModelObjectGenerator {
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
-		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {}«ENDIF»
-			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {}
-			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {}
-			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {}«ENDIF»
+		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
+			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
+			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
+			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
+			«FOR condition : c.conditions»
+				«generateConditionLogic(c, condition)»
+			«ENDFOR»
+		}
+		
 	«ENDFOR»
 	'''
 	}
@@ -120,14 +131,14 @@ class ScalaModelObjectGenerator {
 	
 	private def generateConditionLogic(Data c, Condition condition) {
 		'''
-		«IF condition.getConstraint.isOneOf»«generateOneOfLogic(c)»«ENDIF»
+		«IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
 		'''
 	}
 
 	private def generateOneOfLogic(Data c) {
 		'''
-		val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
-		require(numberOfPopulatedFields == 1)
+		//val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
+		//require(numberOfPopulatedFields == 1)
 		'''
 	}
 
