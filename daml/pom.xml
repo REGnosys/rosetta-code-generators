@@ -14,6 +14,7 @@
 	</properties>
 
 	<artifactId>daml</artifactId>
+	<name>code-gen-daml</name>
 	<description>Generators to create daml for rosetta</description>
 	
 	<build>
