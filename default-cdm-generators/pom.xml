@@ -12,6 +12,7 @@
 	<artifactId>default-cdm-generators</artifactId>
 
 	<packaging>jar</packaging>
+	<name>code-gen-default-cdm-generators</name>
 	<description>Setup for the generators that are run as part of the CDM distribution build</description>
 
 	<dependencies>

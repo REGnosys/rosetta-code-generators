@@ -14,7 +14,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>scala</artifactId>
-
+	
+	<name>code-gen-scala</name>
+	
     <build>
         <plugins>
             <plugin>
