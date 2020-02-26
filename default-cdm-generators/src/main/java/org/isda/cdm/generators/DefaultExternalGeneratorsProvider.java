@@ -10,6 +10,7 @@ import com.regnosys.rosetta.generator.daml.DamlCodeGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerator;
 import com.regnosys.rosetta.generator.external.ExternalGenerators;
 import com.regnosys.rosetta.generator.scala.ScalaCodeGenerator;
+import com.regnosys.rosetta.generator.typescript.TypescriptCodeGenerator;
 
 public class DefaultExternalGeneratorsProvider implements Provider<ExternalGenerators>{
 
@@ -19,6 +20,9 @@ public class DefaultExternalGeneratorsProvider implements Provider<ExternalGener
 	@Inject
 	ScalaCodeGenerator scalaGenerator;
 	
+	@Inject
+	TypescriptCodeGenerator typescriptGenerator;
+	
 	@Override
 	public ExternalGenerators get() {
 		return new DefaultGenerators();
@@ -26,7 +30,7 @@ public class DefaultExternalGeneratorsProvider implements Provider<ExternalGener
 	
 	private final class DefaultGenerators implements ExternalGenerators {
 
-		List<ExternalGenerator> gens = Arrays.asList(damlGenerator, scalaGenerator);
+		List<ExternalGenerator> gens = Arrays.asList(damlGenerator, scalaGenerator, typescriptGenerator);
 		
 		@Override
 		public Iterator<ExternalGenerator> iterator() {
