@@ -17,15 +17,17 @@ You can use this guide and write your own code generator in the language of your
 What are the Rosetta Code Generators
 ------------------------------------
 
-Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The open source `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 1 built-in code generator:
+Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 1 built-in code generator:
 
 - `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
 
-The Rosetta Code Generators repository allows the community to contribute code generators in other languages: e.g. Go, Python etc. This repository currently provides 1 additional code generator:
+The Rosetta Code Generators repository currently provides 3 additional code generators and allows the community to contribute code generators in any other languages (e.g. Go, Python etc.):
 
 - `DAML <https://daml.com/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/daml/src/main/java/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
+- `Scala <https://www.scala-lang.org/>`_: see `code genrator <https://github.com/REGnosys/rosetta-code-generators/blob/master/scala/src/main/java/com/regnosys/rosetta/generator/scala/object/ScalaModelObjectGenerator.xtend>`_
+- `TypeScript <https://www.typescriptlang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/typescript/src/main/java/com/regnosys/rosetta/generator/typescript/object/TypescriptModelObjectGenerator.xtend>`_
 
-Code generation works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of a model. *Ecore* is a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ which contains the entire information about a given model (as originally expressed in the Rosetta DSL) and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repo.
+Code generation works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of a model. *Ecore* is a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ which contains the entire information about a given model (as originally expressed in the Rosetta DSL) and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
 
 Here is an illustration of how code generation works:
 
