@@ -1,4 +1,4 @@
-version: '1.0'
+version: "1.0"
 steps:
   TagReleaseName:
     title: Setup RELEASE_NAME variable with tag
@@ -19,11 +19,11 @@ steps:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
       - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}
-  
+
   Build:
     title: Maven build
     fail_fast: true
-    image: r.cfcr.io/regnosysops/regnosys/mvn-docker-build:java-8 
+    image: regnosys-docker-registry.jfrog.io/regnosys/mvn-docker-build:java-8
     working_directory: ./
     commands:
       - rm -rf /codefresh/volume/.m2/com/regnosys
@@ -31,7 +31,7 @@ steps:
       - mvn -s /settings.xml versions:update-property -Dproperty=regnosys.rosetta.version -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true
       - mvn -s /settings.xml versions:update-property -Dproperty=regnosys.common.version -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true
       - mvn -U -s /settings.xml -Pregnosys clean deploy
-      
+
   TagRepo:
     title: Tag git repo with release name
     image: alpine/git
