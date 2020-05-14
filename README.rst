@@ -10,12 +10,29 @@ Rosetta Code Generators
 
 **JavaDoc:** *Coming soon*
 
-Did you want to leverage the power of the *Rosetta DSL* for your project but in a language other than the default (Java) implementation?
 
-You can use this guide and write your own code generator in the language of your choosing.
+Do you want to adopt a technical standard expressed as a domain model in the *Rosetta DSL*, but in a language other than the default (Java) distribution? You can use this guide to write your own *code generator* in the language of your choosing.
 
-What are the Rosetta Code Generators
-------------------------------------
+Why Code Generation?
+--------------------
+
+The power of distributing a technical standard as a domain model is that you do not have to re-implement that technical standard in your particular language.
+
+By contrast, traditional implentation of a technical standard that may be distributed in prose looks as follows:
+
+#. Domain experts need to understand the intent of the entire standard content
+#. Business analysts need to translate the above into a set of technical requirements
+#. Software engineers need to turn those technical requirements into code
+
+Each step comes with the risk of misinterpretation and implementation error, and the process is duplicated across each firm looking to adopt the standard, ultimately adding up to high implementation costs across the industry.
+
+Systematically providing the domain model as executable code virtually eliminates this effort and replaces it with only having to develop code generation into another programming language.
+
+The mechanism is also future-proof to future version updates of the model. Distribution in the chosen programming language will be automatically released with the model and version-controlled, providing firms with more robust control over the adoption of model updates in their own systems.
+
+
+What Code Generators Are Available?
+-----------------------------------
 
 Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 1 built-in code generator:
 
@@ -27,7 +44,12 @@ The Rosetta Code Generators repository currently provides 3 additional code gene
 - `Scala <https://www.scala-lang.org/>`_: see `code genrator <https://github.com/REGnosys/rosetta-code-generators/blob/master/scala/src/main/java/com/regnosys/rosetta/generator/scala/object/ScalaModelObjectGenerator.xtend>`_
 - `TypeScript <https://www.typescriptlang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/typescript/src/main/java/com/regnosys/rosetta/generator/typescript/object/TypescriptModelObjectGenerator.xtend>`_
 
-Code generation works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of a model. *Ecore* is a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ which contains the entire information about a given model (as originally expressed in the Rosetta DSL) and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
+How Does It Work?
+-----------------
+
+Code generation is akin to *translation* from the Rosetta DSL syntax into the syntax of the chosen programming language.
+
+It works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of a model. *Ecore* is a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ which contains the entire information about a given model (as originally expressed in the Rosetta DSL) and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
 
 Here is an illustration of how code generation works:
 
