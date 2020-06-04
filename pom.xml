@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- Copyright (c) REGnosys 2019 (www.regnosys.com) All rights reserved.
 	This program is licensed to you under the Apache License Version 2.0, and
 	you may not use this file except in compliance with the Apache License Version
@@ -9,7 +8,6 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the Apache License Version 2.0 for the specific language governing permissions
 	and limitations there under. -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -61,6 +59,8 @@
 		<commons-io.version>2.6</commons-io.version>
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
+		<xtend.version>2.15.0</xtend.version>
+		<apache.commons.lang.version>3.9</apache.commons.lang.version>
 	</properties>
 
 	<modules>

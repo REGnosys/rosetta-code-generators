@@ -23,17 +23,17 @@
 		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>daml</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>scala</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>typescript</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
