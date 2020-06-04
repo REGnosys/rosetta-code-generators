@@ -60,7 +60,7 @@
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 		<xtend.version>2.22.0</xtend.version>
-		<apache.commons.lang.version>3.9</apache.commons.lang.version>
+		<apache.commons.lang.version>3.10</apache.commons.lang.version>
 	</properties>
 
 	<modules>
