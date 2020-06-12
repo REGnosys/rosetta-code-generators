@@ -40,4 +40,8 @@ class CSharpTranslator {
 		else
 			return type.name.toFirstUpper
 	}
+
+    static def toOptionalCSharpType(ExpandedType type) {
+        return toCSharpType(type) + '?';
+    }
 }

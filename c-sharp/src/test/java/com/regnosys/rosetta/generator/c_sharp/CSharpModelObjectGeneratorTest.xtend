@@ -24,56 +24,60 @@ class CSharpModelObjectGeneratorTest {
 
     @Inject
     extension ModelHelper
+
     @Inject
     CSharpCodeGenerator generator;
 
-    @Inject
-    extension ParseHelper<RosettaModel>
-    @Inject
-    Provider<XtextResourceSet> resourceSetProvider;
+    protected def boolean containsFileComment(String c_sharp) {
+        c_sharp.startsWith('''
+            // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+            //
+            // Version: test
+            //
+        ''')
+    }
 
-    @Test
-    @Disabled("Test to generate the c_sharp for CDM")
-    def void generateCdm() {
-        val dirs = newArrayList(
-            // ('/Users/hugohills/code/src/github.com/REGnosys/rosetta-cdm/src/main/rosetta'),
-            // ('/Users/hugohills/code/src/github.com/REGnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-            ('rosetta-cdm/src/main/rosetta'),
-            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-        );
+    protected def boolean containsNamespace(String c_sharp, String namespace) {
+        c_sharp.contains('''
+            namespace «namespace»
+            {
+        ''')
+    }
 
-        val resourceSet = resourceSetProvider.get
+    protected def boolean containsNullable(String c_sharp) {
+        c_sharp.contains('''#nullable enable''')
+    }
 
-        dirs.map[new File(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
-            map[Files.readAllBytes(toPath)].map[new String(it)]
-        ].forEach[parse(resourceSet)]
+    protected def boolean containsUsings(String c_sharp) {
+        containsUsings(c_sharp, true)
+    }
 
-        val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
-        val generatedFiles = generator.afterGenerate(rosettaModels)
-
-        val cdmDir = Files.createDirectories(Paths.get("cdm"))
-        generatedFiles.forEach [ fileName, contents |
-            Files.write(cdmDir.resolve(fileName), contents.toString.bytes)
-        ]
+    protected def boolean containsUsings(String c_sharp, boolean includeMetaFields) {
+        c_sharp.contains('''
+            «""»
+                using System.Collections.Generic;
+                using System.Linq;
+            
+                using Newtonsoft.Json;
+                using NodaTime;
+                «IF includeMetaFields»using Org.Isda.Cdm.MetaFields;«ENDIF»
+        ''')
     }
 
     @Test
     def void shouldGenerateEnums() {
         val c_sharp = '''
             enum TestEnum: <"Test enum description.">
-                 TestEnumValue1 <"Test enum value 1">
+                 TestEnumValue1 displayName "Enum Value 1" <"Test enum value 1">
                  TestEnumValue2 <"Test enum value 2">
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
+        assertTrue(containsFileComment(enums))
+        assertTrue(containsNamespace(enums, "Org.Isda.Cdm"))
+
         assertTrue(enums.contains('''
-            // This file is auto-generated from the ISDA Common Domain Model, do not edit.
-            //
-            // Version: test
-            //
-            namespace Org.Isda.Cdm
-            {
+            «""»
                 /// <summary>
                 /// Test enum description.
                 /// </summary>
@@ -82,14 +86,25 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test enum value 1
                     /// </summary>
-                    TEST_ENUM_VALUE_1,
+                    TestEnumValue1,
                     
                     /// <summary>
                     /// Test enum value 2
                     /// </summary>
-                    TEST_ENUM_VALUE_2
+                    TestEnumValue2
                 }
-            }
+                
+                public static partial class Extension
+                {
+                    public static string ToString(this TestEnum value)
+                    {
+                        return value switch
+                        {
+                            TestEnum.TestEnumValue1 => "Enum Value 1",
+                            _ => nameof(value)
+                        };
+                    }
+                }
         '''))
     }
 
@@ -116,69 +131,81 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.get('Types.cs').toString
 
-        assertTrue(types.contains('''
-        // This file is auto-generated from the ISDA Common Domain Model, do not edit.
-        //
-        // Version: test
-        //'''))
-
-        assertTrue(types.contains('''
-            namespace Org.Isda.Cdm
-            {
-        '''));
+        assertTrue(containsFileComment(types))
+        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsNullable(types))
+        assertTrue(containsUsings(types))
 
         assertTrue(types.contains('''
             «""»
                 /// <summary>
                 /// Test type description.
                 /// </summary>
-                class GtTestType
+                public class GtTestType
                 {
+                    [JsonConstructor]
+                    public GtTestType(GtTestEnum? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
+                    {
+                        GtTestEnum = gtTestEnum;
+                        GtTestTypeValue1 = gtTestTypeValue1;
+                        GtTestTypeValue2 = gtTestTypeValue2;
+                        GtTestTypeValue3 = gtTestTypeValue3;
+                        GtTestTypeValue4 = gtTestTypeValue4;
+                    }
+                    
                     /// <summary>
                     /// Optional test enum
                     /// </summary>
-                    GtTestEnum? GtTestEnum { get; }
+                    public GtTestEnum? GtTestEnum { get; }
                     
                     /// <summary>
                     /// Test string
                     /// </summary>
-                    string GtTestTypeValue1 { get; }
+                    public string GtTestTypeValue1 { get; }
                     
                     /// <summary>
                     /// Test optional string
                     /// </summary>
-                    string? GtTestTypeValue2 { get; }
+                    public string? GtTestTypeValue2 { get; }
                     
                     /// <summary>
                     /// Test string list
                     /// </summary>
-                    IEnumerable<string> GtTestTypeValue3 { get; }
+                    public IEnumerable<string> GtTestTypeValue3 { get; }
                     
                     /// <summary>
                     /// Test TestType2
                     /// </summary>
-                    GtTestType2 GtTestTypeValue4 { get; }
+                    public GtTestType2 GtTestTypeValue4 { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class GtTestType2
+                public class GtTestType2
                 {
+                    [JsonConstructor]
+                    public GtTestType2(GtTestEnum gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
+                    {
+                        GtTestEnum = gtTestEnum;
+                        GtTestType2Value1 = gtTestType2Value1;
+                        GtTestType2Value2 = gtTestType2Value2;
+                    }
+                    
                     /// <summary>
                     /// Test enum
                     /// </summary>
-                    GtTestEnum GtTestEnum { get; }
+                    public GtTestEnum GtTestEnum { get; }
                     
                     /// <summary>
                     /// Test number list
                     /// </summary>
-                    IEnumerable<decimal> GtTestType2Value1 { get; }
+                    public IEnumerable<decimal> GtTestType2Value1 { get; }
                     
                     /// <summary>
                     /// Test optional date
                     /// </summary>
-                    NodaTime.LocalDate? GtTestType2Value2 { get; }
+                    public LocalDate? GtTestType2Value2 { get; }
                 }
         '''))
     }
@@ -202,6 +229,11 @@ class CSharpModelObjectGeneratorTest {
 
         val traits = c_sharp.get('Traits.cs').toString
 
+        assertTrue(containsFileComment(traits))
+        assertTrue(containsNamespace(traits, "Org.Isda.Cdm"))
+        assertTrue(containsNullable(traits))
+        assertTrue(containsUsings(traits))
+
         /*assertTrue(traits.contains('''
          *        interface ITestTypeTrait : ITestType2Trait
          *        {
@@ -215,7 +247,6 @@ class CSharpModelObjectGeneratorTest {
          *          /// </summary>
          *          int? testTypeValue2 { get; }
          }'''))*/
-
         assertTrue(traits.contains('''
             «""»
                 interface IGteTestType2Trait : IGteTestType3Trait
@@ -228,7 +259,7 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test date
                     /// </summary>
-                    IEnumerable<NodaTime.LocalDate> GteTestType2Value2 { get; }
+                    IEnumerable<LocalDate> GteTestType2Value2 { get; }
                 }
         '''))
 
@@ -249,62 +280,92 @@ class CSharpModelObjectGeneratorTest {
         '''))
 
         val types = c_sharp.get('Types.cs').toString
+        assertTrue(containsFileComment(types))
+        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsNullable(types))
 
         assertTrue(types.contains('''
             «""»
-                class GteTestType : IGteTestType2Trait
+                public class GteTestType : IGteTestType2Trait
                 {
+                    [JsonConstructor]
+                    public GteTestType(string gteTestTypeValue1, int? gteTestTypeValue2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
+                    {
+                        GteTestTypeValue1 = gteTestTypeValue1;
+                        GteTestTypeValue2 = gteTestTypeValue2;
+                        GteTestType2Value1 = gteTestType2Value1;
+                        GteTestType2Value2 = gteTestType2Value2;
+                        GteTestType3Value1 = gteTestType3Value1;
+                        GteTestType3Value2 = gteTestType3Value2;
+                    }
+                    
                     /// <summary>
                     /// Test string
                     /// </summary>
-                    string GteTestTypeValue1 { get; }
+                    public string GteTestTypeValue1 { get; }
                     
                     /// <summary>
                     /// Test int
                     /// </summary>
-                    int? GteTestTypeValue2 { get; }
+                    public int? GteTestTypeValue2 { get; }
                     
                     /// <inheritdoc/>
-                    decimal? GteTestType2Value1 { get; }
+                    public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
-                    IEnumerable<NodaTime.LocalDate> GteTestType2Value2 { get; }
+                    public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
-                    string? GteTestType3Value1 { get; }
+                    public string? GteTestType3Value1 { get; }
                     
                     /// <inheritdoc/>
-                    IEnumerable<int> GteTestType3Value2 { get; }
+                    public IEnumerable<int> GteTestType3Value2 { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class GteTestType2 : IGteTestType2Trait, IGteTestType3Trait
+                public class GteTestType2 : IGteTestType2Trait, IGteTestType3Trait
                 {
-                    /// <inheritdoc/>
-                    decimal? GteTestType2Value1 { get; }
+                    [JsonConstructor]
+                    public GteTestType2(decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
+                    {
+                        GteTestType2Value1 = gteTestType2Value1;
+                        GteTestType2Value2 = gteTestType2Value2;
+                        GteTestType3Value1 = gteTestType3Value1;
+                        GteTestType3Value2 = gteTestType3Value2;
+                    }
                     
                     /// <inheritdoc/>
-                    IEnumerable<NodaTime.LocalDate> GteTestType2Value2 { get; }
+                    public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
-                    string? GteTestType3Value1 { get; }
+                    public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
-                    IEnumerable<int> GteTestType3Value2 { get; }
+                    public string? GteTestType3Value1 { get; }
+                    
+                    /// <inheritdoc/>
+                    public IEnumerable<int> GteTestType3Value2 { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class GteTestType3 : IGteTestType3Trait
+                public class GteTestType3 : IGteTestType3Trait
                 {
-                    /// <inheritdoc/>
-                    string? GteTestType3Value1 { get; }
+                    [JsonConstructor]
+                    public GteTestType3(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
+                    {
+                        GteTestType3Value1 = gteTestType3Value1;
+                        GteTestType3Value2 = gteTestType3Value2;
+                    }
                     
                     /// <inheritdoc/>
-                    IEnumerable<int> GteTestType3Value2 { get; }
+                    public string? GteTestType3Value1 { get; }
+                    
+                    /// <inheritdoc/>
+                    public IEnumerable<int> GteTestType3Value2 { get; }
                 }
         '''))
     }
@@ -340,91 +401,139 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.values.join('\n').toString
 
+        assertTrue(containsFileComment(types))
+        assertTrue(containsNamespace(types, "Org.Isda.Cdm.MetaFields"))
+        assertTrue(containsNullable(types))
+        assertTrue(containsUsings(types, false))
+
         assertTrue(types.contains('''
             «""»
-                class MetaFields
+                public class MetaFields
                 {
-                    string? Scheme { get; }
+                    [JsonConstructor]
+                    public MetaFields(string? scheme, string? globalKey, string? externalKey)
+                    {
+                        Scheme = scheme;
+                        GlobalKey = globalKey;
+                        ExternalKey = externalKey;
+                    }
                     
-                    string? GlobalKey { get; }
+                    public string? Scheme { get; }
                     
-                    string? ExternalKey { get; }
+                    public string? GlobalKey { get; }
+                    
+                    public string? ExternalKey { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class FieldWithMetaString
+                public class FieldWithMetaString
                 {
-                    string? Value { get; }
+                    [JsonConstructor]
+                    public FieldWithMetaString(string? value, MetaFields? meta)
+                    {
+                        Value = value;
+                        Meta = meta;
+                    }
                     
-                    MetaFields? Meta { get; }
+                    public string? Value { get; }
+                    
+                    public MetaFields? Meta { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class FieldWithMetaGmtTestEnum
+                public class FieldWithMetaGmtTestEnum
                 {
-                    GmtTestEnum? Value { get; }
+                    [JsonConstructor]
+                    public FieldWithMetaGmtTestEnum(GmtTestEnum? value, MetaFields? meta)
+                    {
+                        Value = value;
+                        Meta = meta;
+                    }
                     
-                    MetaFields? Meta { get; }
+                    public GmtTestEnum? Value { get; }
+                    
+                    public MetaFields? Meta { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class FieldWithMetaString
+                public class ReferenceWithMetaGmtTestType2
                 {
-                    string? Value { get; }
+                    [JsonConstructor]
+                    public ReferenceWithMetaGmtTestType2(GmtTestType2? value, string? globalReference, string? externalReference)
+                    {
+                        Value = value;
+                        GlobalReference = globalReference;
+                        ExternalReference = externalReference;
+                    }
                     
-                    MetaFields? Meta { get; }
+                    public GmtTestType2? Value { get; }
+                    
+                    public string? GlobalReference { get; }
+                    
+                    public string? ExternalReference { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class ReferenceWithMetaGmtTestType2
+                public class BasicReferenceWithMetaDecimal
                 {
-                    GmtTestType2? Value { get; }
+                    [JsonConstructor]
+                    public BasicReferenceWithMetaDecimal(decimal? value, string? globalReference, string? externalReference)
+                    {
+                        Value = value;
+                        GlobalReference = globalReference;
+                        ExternalReference = externalReference;
+                    }
                     
-                    string? GlobalReference { get; }
+                    public decimal? Value { get; }
                     
-                    string? ExternalReference { get; }
+                    public string? GlobalReference { get; }
+                    
+                    public string? ExternalReference { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class BasicReferenceWithMetaDecimal
+                public class GmtTestType
                 {
-                    decimal? Value { get; }
+                    [JsonConstructor]
+                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, MetaFields? meta)
+                    {
+                        GmtTestTypeValue1 = gmtTestTypeValue1;
+                        Meta = meta;
+                    }
                     
-                    string? GlobalReference { get; }
+                    public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
                     
-                    string? ExternalReference { get; }
+                    public MetaFields? Meta { get; }
                 }
         '''))
 
         assertTrue(types.contains('''
             «""»
-                class GmtTestType
+                public class GmtTestType2
                 {
-                    ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
+                    [JsonConstructor]
+                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3)
+                    {
+                        GmtTestType2Value1 = gmtTestType2Value1;
+                        GmtTestType2Value2 = gmtTestType2Value2;
+                        GmtTestType2Value3 = gmtTestType2Value3;
+                    }
                     
-                    MetaFields? Meta { get; }
-                }
-        '''))
-
-        assertTrue(types.contains('''
-            «""»
-                class GmtTestType2
-                {
-                    BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
+                    public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
                     
-                    FieldWithMetaString GmtTestType2Value2 { get; }
+                    public FieldWithMetaString GmtTestType2Value2 { get; }
                     
-                    FieldWithMetaGmtTestEnum GmtTestType2Value3 { get; }
+                    public FieldWithMetaGmtTestEnum GmtTestType2Value3 { get; }
                 }
         '''))
     }
@@ -444,43 +553,41 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.get('Types.cs').toString
 
+        assertTrue(containsFileComment(types))
+        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsNullable(types))
+        assertTrue(containsUsings(types))
+
         assertTrue(types.contains('''
-            // This file is auto-generated from the ISDA Common Domain Model, do not edit.
-            //
-            // Version: test
-            //
-            namespace Org.Isda.Cdm
-            {
-                Using Org.Isda.Cdm.Metafields;
-                
+            «""»
                 /// <summary>
                 /// Test type with one-of condition.
                 /// </summary>
-                class TestType
+                [OneOf]
+                public sealed class TestType
                 {
-                    /// <summary>
-                    /// Test string field 1
-                    /// </summary>
-                    string? Field1 { get; }
-                    
-                    /// <summary>
-                    /// Test string field 2
-                    /// </summary>
-                    string? Field2 { get; }
-                    
-                    /// <summary>
-                    /// Test number field 3
-                    /// </summary>
-                    decimal? Field3 { get; }
-                    
-                    /// <summary>
-                    /// Test number field 4
-                    /// </summary>
-                    IEnumerable<decimal> Field4 { get; }
-                    //val numberOfPopulatedFields = List(field1, field2, field3, field4).flatten.length
-                    //require(numberOfPopulatedFields == 1)
+                /// <summary>
+                /// Test string field 1
+                /// </summary>
+                public string? Field1 { get; }
+                
+                /// <summary>
+                /// Test string field 2
+                /// </summary>
+                public string? Field2 { get; }
+                
+                /// <summary>
+                /// Test number field 3
+                /// </summary>
+                public decimal? Field3 { get; }
+                
+                /// <summary>
+                /// Test number field 4
+                /// </summary>
+                public IEnumerable<decimal> Field4 { get; }
+                //val numberOfPopulatedFields = List(field1, field2, field3, field4).flatten.length
+                //require(numberOfPopulatedFields == 1)
                 }
-            }
         '''))
     }
 

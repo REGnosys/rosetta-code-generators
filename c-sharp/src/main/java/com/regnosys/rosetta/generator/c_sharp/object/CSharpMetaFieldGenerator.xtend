@@ -13,105 +13,147 @@ import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExte
 import static extension com.regnosys.rosetta.generator.util.Util.*
 
 class CSharpMetaFieldGenerator {
-     
-     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
-          val metaFieldsImports = generateMetaFieldsImports.toString
-          
-          val refs = rosettaClasses
-               .flatMap[expandedAttributes]
-               .filter[hasMetas && metas.exists[name=="reference"]]
-               .map[type]
-               .toSet
-          
-          var referenceWithMeta = '';
-          
-          for (ref:refs) {
-               if (ref.isType)
-                    referenceWithMeta += generateReferenceWithMeta(ref).toString
-               else
-                    referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
-          }
-          
-          val metas =  rosettaClasses
-               .flatMap[expandedAttributes]
-               .filter[hasMetas && !metas.exists[name=="reference"]]
-               .map[type]
-               .toSet
 
-          for (meta:metas) {
-               referenceWithMeta += generateFieldWithMeta(meta).toString
-          }
-          
-          val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference"], version)
-          
-          return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields + "\n}"
-     }
-     
-     private def generateAttribute(ExpandedType type) {
-          /*if (type.enumeration) {
-               // TODO: Work out indentation!!! affects shouldGenerateMetaTypes??
-'''@JsonDeserialize(contentAs = classOf[«type.name».Value])
-    @JsonCSharpEnumeration(classOf[«type.name».Class])
-    «type.toCSharpType»? value'''
-          } else */{
-               '''«type.toCSharpType»? Value { get; }'''
-          }
-     }
-     
-     private def generateBasicReferenceWithMeta(ExpandedType type) '''
+    def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+        val metaFieldsImports = generateMetaFieldsImports.toString
+
+        val refs = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && metas.exists[name == "reference"]].map [
+            type
+        ].toSet
+
+        var referenceWithMeta = '';
+
+        for (ref : refs) {
+            if (ref.isType)
+                referenceWithMeta += generateReferenceWithMeta(ref).toString
+            else
+                referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
+        }
+
+        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"]].
+            map[type].toSet
+
+        for (meta : metas) {
+            referenceWithMeta += generateFieldWithMeta(meta).toString
+        }
+
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "id" && t.name != "reference"], version)
+
+        return '''
+        «fileComment(version)»
+        
+        #nullable enable // Allow nullable reference types
+        
+        «metaFieldsImports»
+        «referenceWithMeta»
+        «metaFields»
+        }'''
+    }
+
+    private def generateAttribute(ExpandedType type) {
+        /*if (type.enumeration) {
+         *      // TODO: Work out indentation!!! affects shouldGenerateMetaTypes??
+         * '''@JsonDeserialize(contentAs = classOf[«type.name».Value])
+         *     @JsonCSharpEnumeration(classOf[«type.name».Class])
+         *     «type.toCSharpType»? value'''
+         } else */
+        {
+            '''public «type.toOptionalCSharpType» Value { get; }'''
+        }
+    }
+
+    private def generateBasicReferenceWithMeta(ExpandedType type) '''
         «""»
-            class BasicReferenceWithMeta«type.toMetaTypeName»
+            public class BasicReferenceWithMeta«type.toMetaTypeName»
             {
-                «type.toCSharpType»? Value { get; }
+                [JsonConstructor]
+                public BasicReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
+                {
+                    Value = value;
+                    GlobalReference = globalReference;
+                    ExternalReference = externalReference;
+                }
                 
-                string? GlobalReference { get; }
-                
-                string? ExternalReference { get; }
-            }
-            
-        '''
-     
-    private def generateFieldWithMeta(ExpandedType type) '''
-        «""»
-            class FieldWithMeta«type.toMetaTypeName»
-            {
                 «generateAttribute(type)»
                 
-                MetaFields? Meta { get; }
+                public string? GlobalReference { get; }
+                
+                public string? ExternalReference { get; }
             }
             
-        '''
+    '''
 
-     private def genMetaFields(Iterable<RosettaMetaType> types, String version) '''                    
+    private def generateFieldWithMeta(ExpandedType type) '''
         «""»
-            class MetaFields
+            public class FieldWithMeta«type.toMetaTypeName»
             {
-                «FOR type : types.distinct() SEPARATOR '\n\n        '»«type.type.name.toCSharpBasicType»? «type.name.toFirstUpper» { get; }«ENDFOR»
+                [JsonConstructor]
+                public FieldWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
+                {
+                    Value = value;
+                    Meta = meta;
+                }
                 
-                string? GlobalKey { get; }
+                «generateAttribute(type)»
                 
-                string? ExternalKey { get; }
+                public MetaFields? Meta { get; }
             }
             
+    '''
+
+    private def genMetaFields(Iterable<RosettaMetaType> types, String version) {
+        val typesDistinct = types.distinct()
         '''
+            «""»
+                public class MetaFields
+                {
+                    [JsonConstructor]
+                    public MetaFields(«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», string? globalKey, string? externalKey)
+                    {
+                        «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
+                        GlobalKey = globalKey;
+                        ExternalKey = externalKey;
+                    }
+                    
+                    «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
+                    
+                    public string? GlobalKey { get; }
+                    
+                    public string? ExternalKey { get; }
+                }
+                
+        '''
+    }
 
     private def generateMetaFieldsImports() '''
-        namespace Org.Isda.Cdm.Metafields
+        namespace Org.Isda.Cdm.MetaFields
         {
-            using Org.Isda.Cdm;
+            using System.Collections.Generic;
+            using System.Linq;
         
-        '''
+            using Newtonsoft.Json;
+            using NodaTime;
+        
+    '''
 
     private def generateReferenceWithMeta(ExpandedType type) '''
         «""»
-            class ReferenceWithMeta«type.toMetaTypeName»
+            public class ReferenceWithMeta«type.toMetaTypeName»
             {
-                «type.toCSharpType»? Value { get; }
+                [JsonConstructor]
+                public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
+                {
+                    Value = value;
+                    GlobalReference = globalReference;
+                    ExternalReference = externalReference;
+                }
                 
-                string? GlobalReference { get; }
+                «generateAttribute(type)»
                 
-                string? ExternalReference { get; }
+                public string? GlobalReference { get; }
+                
+                public string? ExternalReference { get; }
             }
             
-        '''
+    '''
 }

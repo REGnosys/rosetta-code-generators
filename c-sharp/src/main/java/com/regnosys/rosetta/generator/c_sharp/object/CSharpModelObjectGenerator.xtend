@@ -64,8 +64,8 @@ class CSharpModelObjectGenerator {
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FILENAME, metaFields)
 
-        val objectMapper = generateObjectMapper(version)
-        result.put(SERIALIZATION_FILENAME, objectMapper)
+        //val objectMapper = generateObjectMapper(version)
+        //result.put(SERIALIZATION_FILENAME, objectMapper)
 
         result;
     }
@@ -109,17 +109,35 @@ class CSharpModelObjectGenerator {
     private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version) {
         '''
             «fileComment(version)»
+            
+            #nullable enable // Allow nullable reference types
+            
             namespace Org.Isda.Cdm
             {
-                using Org.Isda.Cdm.Metafields;
+                using System.Collections.Generic;
+                using System.Linq;
+
+                using Newtonsoft.Json;
+                using NodaTime;
+                using Org.Isda.Cdm.MetaFields;
+
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «classComment(c.definition)»
-                    class «c.name»«generateParents(c, superTypes)»
+«««                    «IF isOneOf(c)»[OneOf]«ENDIF»
+                    public «IF isOneOf(c)»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
                     {
+                        [JsonConstructor]
+                        public «c.name»(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
+                        {
+                            «FOR attribute : c.allExpandedAttributes»
+                                «attribute.toPropertyName» = «attribute.toParamName»;
+                            «ENDFOR»
+                        }
+                        
                         «FOR attribute : c.allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
-                            «attribute.toType» «attribute.toPropertyName» { get; }
+                            public «attribute.toType» «attribute.toPropertyName» { get; }
                         «ENDFOR»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
@@ -128,6 +146,10 @@ class CSharpModelObjectGenerator {
                 «ENDFOR»
             }
         '''
+    }
+    
+    private def isOneOf(Data rosettaClass) {
+        !rosettaClass.conditions.filter[constraint.oneOf].isEmpty()
     }
 
     private def generateConditionLogic(Data c, Condition condition) {
@@ -155,9 +177,17 @@ class CSharpModelObjectGenerator {
     private def generateTraits(List<Data> rosettaClasses, String version) {
         '''
             «fileComment(version)»
+            
+            #nullable enable // Allow nullable reference types
+            
             namespace Org.Isda.Cdm
             {
-                using Org.Isda.Cdm.Metafields;
+                using System.Collections.Generic;
+                using System.Linq;
+            
+                using Newtonsoft.Json;
+                using NodaTime;
+                using Org.Isda.Cdm.MetaFields;
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «comment(c.definition)»

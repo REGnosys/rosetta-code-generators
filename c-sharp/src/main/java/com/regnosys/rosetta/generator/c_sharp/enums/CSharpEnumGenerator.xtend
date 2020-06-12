@@ -1,7 +1,7 @@
 package com.regnosys.rosetta.generator.c_sharp.enums
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.generator.java.enums.EnumHelper
+//import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
@@ -40,12 +40,17 @@ class CSharpEnumGenerator {
         return result;
     }
 
-    def static toJavaEnumName(RosettaEnumeration enumeration, RosettaEnumValue rosettaEnumValue) {
-        return enumeration.name + '.' + EnumHelper.convertValues(rosettaEnumValue)
+    def static toCSharpEnumName(RosettaEnumValue rosettaEnumValue) {
+        return rosettaEnumValue.name.prefixWithUnderscoreIfStartsWithNumber()
     }
 
-    // TODO: What is value.display????
-    private def generateEnums(List<RosettaEnumeration> enums, String version)  '''        
+    def static toCSharpEnumName(RosettaEnumeration enumeration, RosettaEnumValue rosettaEnumValue) {
+        return enumeration.name + '.' + toCSharpEnumName(rosettaEnumValue)
+    }
+
+    private def generateEnums(List<RosettaEnumeration> enums, String version)
+        // TODO: Handle synonyms  
+        '''        
         «fileComment(version)»
         namespace Org.Isda.Cdm
         {
@@ -54,12 +59,34 @@ class CSharpEnumGenerator {
                 «comment(e.definition)»
                 public enum «e.name»
                 {
-                    «FOR value: allEnumValues SEPARATOR ",\n"»
-                        «comment(value.definition)»
-                        «EnumHelper.convertValues(value)»«IF value.display !== null»("«value.display»")«ENDIF»
+                    «FOR enumValue: allEnumValues SEPARATOR ",\n"»
+                        «comment(enumValue.definition)»
+                        «toCSharpEnumName(enumValue)»
                     «ENDFOR»
+                }
+                
+                public static partial class Extension
+                {
+                    public static string ToString(this «e.name» value)
+                    {
+                        return value switch
+                        {
+                        «FOR enumValue: allEnumValues»
+                            «IF enumValue.display !== null»    «toCSharpEnumName(e, enumValue)» => "«enumValue.display»",«ENDIF»
+                        «ENDFOR»
+                            _ => nameof(value)
+                        };
+                    }
                 }
             «ENDFOR»
         }
     '''
+    
+    private def static String prefixWithUnderscoreIfStartsWithNumber(String name) {
+        if (Character.isDigit(name.charAt(0)))
+            return "_" + name
+        else
+            return name
+    }
+    
 }

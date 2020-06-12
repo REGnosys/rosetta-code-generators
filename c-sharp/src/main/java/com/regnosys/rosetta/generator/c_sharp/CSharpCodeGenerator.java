@@ -22,42 +22,45 @@ import com.regnosys.rosetta.rosetta.simple.Function;
 
 public class CSharpCodeGenerator extends AbstractExternalGenerator {
 
-    @Inject
-    CSharpModelObjectGenerator pojoGenerator;
-    @Inject
-    private CSharpEnumGenerator enumGenerator;
+	@Inject
+	private CSharpModelObjectGenerator pocoGenerator;
 
-    public CSharpCodeGenerator() {
-        super("CSharp");
-        enumGenerator = new CSharpEnumGenerator();
-    }
+	@Inject
+	private CSharpEnumGenerator enumGenerator;
 
-    @Override    
-    public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-        String version = models.stream().map(m->m.getVersion()).findFirst().orElse("No version");
-        
-        Map<String, CharSequence> result = new HashMap<>();
-
-        List<Data> rosettaClasses = models.stream().flatMap(m->m.getElements().stream())
-                .filter((e)-> e instanceof Data)
-                .map(Data.class::cast).collect(Collectors.toList());
-        List<RosettaMetaType> metaTypes = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
-                .map(RosettaMetaType.class::cast).collect(Collectors.toList());
-
-        List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
-                .map(RosettaEnumeration.class::cast).collect(Collectors.toList());
-        
-        List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(t -> Function.class.isInstance(t))
-                .map(RosettaNamed.class::cast).collect(Collectors.toList());
-
-        result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
-        result.putAll(enumGenerator.generate(rosettaEnums, version));
-        return result;
-    }
-    
-    @Override
-    public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
-        return Collections.emptyMap();
+	public CSharpCodeGenerator() {
+		super("c-sharp");
+		enumGenerator = new CSharpEnumGenerator();
 	}
 
+	@Override
+	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
+		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+
+		Map<String, CharSequence> result = new HashMap<>();
+
+		List<Data> rosettaClasses = models.stream().flatMap(m -> m.getElements().stream())
+				.filter((e) -> e instanceof Data).map(Data.class::cast).collect(Collectors.toList());
+		List<RosettaMetaType> metaTypes = models.stream().flatMap(m -> m.getElements().stream())
+				.filter(RosettaMetaType.class::isInstance).map(RosettaMetaType.class::cast)
+				.collect(Collectors.toList());
+
+		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m -> m.getElements().stream())
+				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
+				.collect(Collectors.toList());
+
+		// TODO: Generate functions like DAML???
+		List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m -> m.getElements().stream())
+				.filter(t -> Function.class.isInstance(t)).map(RosettaNamed.class::cast).collect(Collectors.toList());
+
+		result.putAll(enumGenerator.generate(rosettaEnums, version));
+		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version));
+		return result;
+	}
+
+	@Override
+	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
+			String version) {
+		return Collections.emptyMap();
+	}
 }
