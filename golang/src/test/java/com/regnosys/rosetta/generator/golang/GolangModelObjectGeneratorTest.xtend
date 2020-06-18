@@ -44,7 +44,9 @@ class GolangModelObjectGeneratorTest {
 
 		val dirs = newArrayList(			
 			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			//('/home/denis/Downloads/cdm-2.51.0/cdm-distribution-2.51.0/common-domain-model'),
+			//('/home/denis/Downloads/Regnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
 		);
 
 		val resourceSet = resourceSetProvider.get	
