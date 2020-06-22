@@ -59,6 +59,7 @@ class CSharpModelObjectGeneratorTest {
                 using System.Linq;
             
                 using Newtonsoft.Json;
+                using Newtonsoft.Json.Converters;
                 using NodaTime;
                 «IF includeMetaFields»using Org.Isda.Cdm.MetaFields;«ENDIF»
         ''')
@@ -73,6 +74,8 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
+        println("enums ===\n" + enums)
+
         assertTrue(containsFileComment(enums))
         assertTrue(containsNamespace(enums, "Org.Isda.Cdm"))
 
@@ -96,7 +99,7 @@ class CSharpModelObjectGeneratorTest {
                 
                 public static partial class Extension
                 {
-                    public static string ToString(this TestEnum value)
+                    public static string GetDisplayName(this TestEnum value)
                     {
                         return value switch
                         {
@@ -107,6 +110,93 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
     }
+
+    @Test
+    def void shouldGenerateEnumWithSynonyms() {
+        val c_sharp = '''
+        synonym source A
+        synonym source B
+        synonym source C
+        synonym source D
+        
+        enum SynonymEnum:
+            [synonym A, B, C value "SynonymTestEnum"]
+            EnumValue1
+                [synonym A, B, C value "Value1"]
+                [synonym D value "Enum Value 1"]
+            EnumValue2
+                [synonym A, B, C value "Value2"]
+            EnumValue3
+                [synonym A, B, C value "Value3"]
+                [synonym D value "Enum Value 3"]
+        '''.generateCSharp
+
+        val enums = c_sharp.get('Enums.cs').toString
+        println("enums ===\n" + enums)
+
+        assertTrue(containsFileComment(enums))
+        assertTrue(enums.contains("using Rosetta.Lib.Attributes;"))
+        assertTrue(containsNamespace(enums, "Org.Isda.Cdm"))
+
+        assertTrue(enums.contains('''
+            «""»
+«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "A")]
+«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "B")]
+«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "C")]
+                public enum SynonymEnum
+                {
+                    [RosettaSynonym(Value = "Value1", Source = "A")]
+                    [RosettaSynonym(Value = "Value1", Source = "B")]
+                    [RosettaSynonym(Value = "Value1", Source = "C")]
+                    [RosettaSynonym(Value = "Enum Value 1", Source = "D")]
+                    EnumValue1,
+                    
+                    [RosettaSynonym(Value = "Value2", Source = "A")]
+                    [RosettaSynonym(Value = "Value2", Source = "B")]
+                    [RosettaSynonym(Value = "Value2", Source = "C")]
+                    EnumValue2,
+                    
+                    [RosettaSynonym(Value = "Value3", Source = "A")]
+                    [RosettaSynonym(Value = "Value3", Source = "B")]
+                    [RosettaSynonym(Value = "Value3", Source = "C")]
+                    [RosettaSynonym(Value = "Enum Value 3", Source = "D")]
+                    EnumValue3
+                }
+        '''))
+    }
+
+    @Test
+    @Disabled
+    def void shouldGenerateUppercaseUnderscoreFormattedEnumNames() {
+        val c_sharp = '''
+            enum TestEnum:
+                 ISDA1993Commodity
+                 ISDA1998FX
+«««                 iTraxxEuropeDealer
+«««                 StandardLCDS
+«««                 _1_1
+«««                 _30E_360_ISDA
+«««                 AED-EBOR-Reuters
+«««                 DJ.iTraxx.Europe
+«««                 novation
+«««                 Currency1PerCurrency2
+        '''.generateCSharp
+
+        val enums = c_sharp.get('Enums.cs').toString
+        println("enums ===\n" + enums)
+                
+        assertTrue(enums.contains("Isda1993Commodity"))
+        /*assertTrue(enums.contains("ITraxxEuropeDealer"))
+        assertTrue(enums.contains("StandardLCDS"))
+        assertTrue(enums.contains("_1_1"))
+        assertTrue(enums.contains("_30E_360_ISDA"))
+        assertTrue(enums.contains('ACT_365L'))
+        assertTrue(enums.contains("AedEborReuters"))
+        assertTrue(enums.contains("DJ.CDX.NA"))
+        assertTrue(enums.contains("Novation"))
+        assertTrue(enums.contains("Currency1PerCurrency2")) */
+    }
+
 
     @Test
     def void shouldGenerateTypes() {
@@ -130,7 +220,7 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
-
+        
         assertTrue(containsFileComment(types))
         assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
         assertTrue(containsNullable(types))
@@ -156,6 +246,7 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Optional test enum
                     /// </summary>
+                    [JsonConverter(typeof(StringEnumConverter))]
                     public GtTestEnum? GtTestEnum { get; }
                     
                     /// <summary>
@@ -195,6 +286,7 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test enum
                     /// </summary>
+                    [JsonConverter(typeof(StringEnumConverter))]
                     public GtTestEnum GtTestEnum { get; }
                     
                     /// <summary>
@@ -213,7 +305,7 @@ class CSharpModelObjectGeneratorTest {
     @Test
     def void shouldGenerateTypesExtends() {
 
-        val c_sharp = '''
+         val c_sharp = '''
             type GteTestType extends GteTestType2:
                  GteTestTypeValue1 string (1..1) <"Test string">
                  GteTestTypeValue2 int (0..1) <"Test int">
@@ -227,15 +319,15 @@ class CSharpModelObjectGeneratorTest {
                  GteTestType3Value2 int (1..*) <"Test int">
         '''.generateCSharp
 
-        val traits = c_sharp.get('Traits.cs').toString
+        val interfaces = c_sharp.get('Interfaces.cs').toString
 
-        assertTrue(containsFileComment(traits))
-        assertTrue(containsNamespace(traits, "Org.Isda.Cdm"))
-        assertTrue(containsNullable(traits))
-        assertTrue(containsUsings(traits))
+        assertTrue(containsFileComment(interfaces))
+        assertTrue(containsNamespace(interfaces, "Org.Isda.Cdm"))
+        assertTrue(containsNullable(interfaces))
+        assertTrue(containsUsings(interfaces))
 
-        /*assertTrue(traits.contains('''
-         *        interface ITestTypeTrait : ITestType2Trait
+        /*assertTrue(interfaces.contains('''
+         *        interface ITestType : ITestType2
          *        {
          *          /// <summary>
          *          /// Test number
@@ -247,9 +339,9 @@ class CSharpModelObjectGeneratorTest {
          *          /// </summary>
          *          int? testTypeValue2 { get; }
          }'''))*/
-        assertTrue(traits.contains('''
+        assertTrue(interfaces.contains('''
             «""»
-                interface IGteTestType2Trait : IGteTestType3Trait
+                interface IGteTestType2 : IGteTestType3
                 {
                     /// <summary>
                     /// Test number
@@ -263,9 +355,9 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(traits.contains('''
+        assertTrue(interfaces.contains('''
             «""»
-                interface IGteTestType3Trait
+                interface IGteTestType3
                 {
                     /// <summary>
                     /// Test string
@@ -286,7 +378,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType : IGteTestType2Trait
+                public class GteTestType : IGteTestType2
                 {
                     [JsonConstructor]
                     public GteTestType(string gteTestTypeValue1, int? gteTestTypeValue2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
@@ -325,7 +417,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType2 : IGteTestType2Trait, IGteTestType3Trait
+                public class GteTestType2 : IGteTestType2, IGteTestType3
                 {
                     [JsonConstructor]
                     public GteTestType2(decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
@@ -352,7 +444,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType3 : IGteTestType3Trait
+                public class GteTestType3 : IGteTestType3
                 {
                     [JsonConstructor]
                     public GteTestType3(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
@@ -454,6 +546,7 @@ class CSharpModelObjectGeneratorTest {
                         Meta = meta;
                     }
                     
+                    [JsonConverter(typeof(StringEnumConverter))]
                     public GmtTestEnum? Value { get; }
                     
                     public MetaFields? Meta { get; }

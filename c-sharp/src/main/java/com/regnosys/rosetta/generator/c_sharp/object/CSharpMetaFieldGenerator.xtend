@@ -58,7 +58,9 @@ class CSharpMetaFieldGenerator {
          *     «type.toCSharpType»? value'''
          } else */
         {
-            '''public «type.toOptionalCSharpType» Value { get; }'''
+            '''
+            «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+            public «type.toOptionalCSharpType» Value { get; }'''
         }
     }
 
@@ -132,6 +134,7 @@ class CSharpMetaFieldGenerator {
             using System.Linq;
         
             using Newtonsoft.Json;
+            using Newtonsoft.Json.Converters;
             using NodaTime;
         
     '''

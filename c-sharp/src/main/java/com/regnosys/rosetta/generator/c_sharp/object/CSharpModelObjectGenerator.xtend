@@ -3,7 +3,6 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.generator.c_sharp.serialization.CSharpObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
@@ -25,13 +24,10 @@ class CSharpModelObjectGenerator {
     extension CSharpModelObjectBoilerPlate
     @Inject
     extension CSharpMetaFieldGenerator
-    @Inject
-    extension CSharpObjectMapperGenerator
-
+    
     static final String CLASSES_FILENAME = 'Types.cs'
-    static final String TRAITS_FILENAME = 'Traits.cs'
+    static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
-    static final String SERIALIZATION_FILENAME = 'Serialization.cs'
 
     def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
         type.allSuperTypes.expandedAttributes
@@ -55,8 +51,8 @@ class CSharpModelObjectGenerator {
 
         val superTypes = rosettaClasses.map[superType].map[allSuperTypes].flatten.toSet
 
-        val traits = superTypes.sortBy[name].generateTraits(version).replaceTabsWithSpaces
-        result.put(TRAITS_FILENAME, traits)
+        val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
+        result.put(com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator.INTERFACES_FILENAME, interfaces)
 
         val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
         result.put(CLASSES_FILENAME, classes)
@@ -118,13 +114,16 @@ class CSharpModelObjectGenerator {
                 using System.Linq;
 
                 using Newtonsoft.Json;
+                using Newtonsoft.Json.Converters;
                 using NodaTime;
                 using Org.Isda.Cdm.MetaFields;
 
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «classComment(c.definition)»
-«««                    «IF isOneOf(c)»[OneOf]«ENDIF»
+«««                 «IF isOneOf(c)»[OneOf]«ENDIF»
+«««                 NB: C# 9: nNormal declaration should change to "public data class" to make immutable
+«««                 and also remove the need to declare properties explicitly
                     public «IF isOneOf(c)»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
                     {
                         [JsonConstructor]
@@ -137,6 +136,8 @@ class CSharpModelObjectGenerator {
                         
                         «FOR attribute : c.allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
+                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+«««                         NB: This could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor. 
                             public «attribute.toType» «attribute.toPropertyName» { get; }
                         «ENDFOR»
                         «FOR condition : c.conditions»
@@ -167,14 +168,14 @@ class CSharpModelObjectGenerator {
 
     private def generateParents(Data c, Set<Data> superTypes) {
         '''
-«««         Implement traits associated with:
+«««         Implement interfaces associated with:
 «««             super type, if it is defined.
 «««             this class, if it is a super type.
-            «IF c.superType !== null && superTypes.contains(c)» : «getTraitName(c)», «getTraitName(c.superType)»«ELSEIF c.superType !== null» : «getTraitName(c.superType)»«ELSEIF superTypes.contains(c)» : «getTraitName(c)»«ENDIF»
+            «IF c.superType !== null && superTypes.contains(c)» : «getInterfaceName(c)», «getInterfaceName(c.superType)»«ELSEIF c.superType !== null» : «getInterfaceName(c.superType)»«ELSEIF superTypes.contains(c)» : «getInterfaceName(c)»«ENDIF»
         '''
     }
 
-    private def generateTraits(List<Data> rosettaClasses, String version) {
+    private def generateInterfaces(List<Data> rosettaClasses, String version) {
         '''
             «fileComment(version)»
             
@@ -186,12 +187,13 @@ class CSharpModelObjectGenerator {
                 using System.Linq;
             
                 using Newtonsoft.Json;
+                using Newtonsoft.Json.Converters;
                 using NodaTime;
                 using Org.Isda.Cdm.MetaFields;
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «comment(c.definition)»
-                    interface «getTraitName(c)»«IF c.superType !== null» : «getTraitName(c.superType)»«ENDIF»
+                    interface «getInterfaceName(c)»«IF c.superType !== null» : «getInterfaceName(c.superType)»«ENDIF»
                     {
                         «FOR attribute : c.expandedAttributes SEPARATOR '\n'»
                             «comment(attribute.definition)»
@@ -203,7 +205,7 @@ class CSharpModelObjectGenerator {
         '''
     }
 
-    private def getTraitName(Data c) {
-        '''I«c.name»Trait'''
+    private def getInterfaceName(Data c) {
+        '''I«c.name»'''
     }
 }
