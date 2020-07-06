@@ -30,7 +30,13 @@ class CSharpMetaFieldGenerator {
                 referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
         }
 
-        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"]].
+        // Any enumerations with comments currently fails to parse correctly.
+        val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name === null].toSet
+        for (m : missing) {
+            println("Missing: " + m.name)
+        }
+
+        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name !== null].
             map[type].toSet
 
         for (meta : metas) {
@@ -50,19 +56,9 @@ class CSharpMetaFieldGenerator {
         }'''
     }
 
-    private def generateAttribute(ExpandedType type) {
-        /*if (type.enumeration) {
-         *      // TODO: Work out indentation!!! affects shouldGenerateMetaTypes??
-         * '''@JsonDeserialize(contentAs = classOf[«type.name».Value])
-         *     @JsonCSharpEnumeration(classOf[«type.name».Class])
-         *     «type.toCSharpType»? value'''
-         } else */
-        {
-            '''
-            «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
-            public «type.toOptionalCSharpType» Value { get; }'''
-        }
-    }
+    private def generateAttribute(ExpandedType type) '''
+        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+        public «type.toOptionalCSharpType» Value { get; }'''
 
     private def generateBasicReferenceWithMeta(ExpandedType type) '''
         «""»
@@ -85,23 +81,31 @@ class CSharpMetaFieldGenerator {
             
     '''
 
-    private def generateFieldWithMeta(ExpandedType type) '''
-        «""»
-            public class FieldWithMeta«type.toMetaTypeName»
-            {
-                [JsonConstructor]
-                public FieldWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
+    private def generateFieldWithMeta(ExpandedType type) {
+        val metaTypeName = type.toMetaTypeName
+    '''
+        «IF type === null || metaTypeName?.length == 0»
+«««        Handle types which aren't converted correctly.
+            // MISSING: FieldWithMeta for «type.name»
+        «ELSE»
+            «""»
+                public class FieldWithMeta«metaTypeName»
                 {
-                    Value = value;
-                    Meta = meta;
+                    [JsonConstructor]
+                    public FieldWithMeta«metaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
+                    {
+                        Value = value;
+                        Meta = meta;
+                    }
+                    
+                    «generateAttribute(type)»
+                    
+                    public MetaFields? Meta { get; }
                 }
-                
-                «generateAttribute(type)»
-                
-                public MetaFields? Meta { get; }
-            }
+        «ENDIF»
             
     '''
+    }
 
     private def genMetaFields(Iterable<RosettaMetaType> types, String version) {
         val typesDistinct = types.distinct()
@@ -110,7 +114,7 @@ class CSharpMetaFieldGenerator {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», string? globalKey, string? externalKey)
+                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
@@ -131,7 +135,6 @@ class CSharpMetaFieldGenerator {
         namespace Org.Isda.Cdm.MetaFields
         {
             using System.Collections.Generic;
-            using System.Linq;
         
             using Newtonsoft.Json;
             using Newtonsoft.Json.Converters;
@@ -141,7 +144,7 @@ class CSharpMetaFieldGenerator {
 
     private def generateReferenceWithMeta(ExpandedType type) '''
         «""»
-            public class ReferenceWithMeta«type.toMetaTypeName»
+            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF»
             {
                 [JsonConstructor]
                 public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
