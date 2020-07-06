@@ -49,7 +49,10 @@ class CSharpModelObjectGenerator {
         String version) {
         val result = new HashMap
 
-        val superTypes = rosettaClasses.map[superType].map[allSuperTypes].flatten.toSet
+        val superTypes = rosettaClasses
+                    .map[superType]
+                    .map[allSuperTypes].flatten
+                    .toSet
 
         val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
         result.put(com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator.INTERFACES_FILENAME, interfaces)
@@ -60,33 +63,9 @@ class CSharpModelObjectGenerator {
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FILENAME, metaFields)
 
-        //val objectMapper = generateObjectMapper(version)
-        //result.put(SERIALIZATION_FILENAME, objectMapper)
-
         result;
     }
 
-    /* 
-     * 	private def generateAttribute(Data c, ExpandedAttribute attribute) {
-     * 		if (attribute.enum && !attribute.hasMetas) {
-     * 			// TODO: Sort out indentation!!!
-     * 			if (attribute.singleOptional) {
-     * '''@JsonDeserialize(contentAs = classOf[«attribute.type.toEnumAnnotationType».Value])
-     *     @JsonCSharpEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
-     *     «attribute.toType» «attribute.toAttributeName»'''
-     *             } else {
-     * '''@JsonCSharpEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
-     *     «attribute.toType» «attribute.toAttributeName»'''
-     *             }
-     *         } else {
-     *             '''«attribute.toType» «attribute.toAttributeName»'''
-     *         }
-     *     }
-
-     * 	private def generateAttributes(Data c) {
-     *         '''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n    '»«generateAttribute(c, attribute)»«ENDFOR»'''
-     * 	}
-     */
     private def generateAttributeComment(ExpandedAttribute attribute, Data c, Set<Data> superTypes) {
         '''
             «IF attribute.definition !== null && !attribute.definition.isEmpty»
@@ -111,15 +90,18 @@ class CSharpModelObjectGenerator {
             namespace Org.Isda.Cdm
             {
                 using System.Collections.Generic;
-                using System.Linq;
 
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
                 using NodaTime;
                 using Org.Isda.Cdm.MetaFields;
+                using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
 
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
+                    «val allExpandedAttributes = c.allExpandedAttributes»
+«««                     Filter out invalid types to prevent compilation errors
+                    «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
                     «classComment(c.definition)»
 «««                 «IF isOneOf(c)»[OneOf]«ENDIF»
 «««                 NB: C# 9: nNormal declaration should change to "public data class" to make immutable
@@ -127,18 +109,19 @@ class CSharpModelObjectGenerator {
                     public «IF isOneOf(c)»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
                     {
                         [JsonConstructor]
-                        public «c.name»(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
+                        public «c.name»(«FOR attribute : expandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
                         {
-                            «FOR attribute : c.allExpandedAttributes»
+                            «FOR attribute : expandedAttributes»
                                 «attribute.toPropertyName» = «attribute.toParamName»;
                             «ENDFOR»
                         }
                         
-                        «FOR attribute : c.allExpandedAttributes SEPARATOR '\n'»
+                        «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
-                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
-«««                         NB: This could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor. 
-                            public «attribute.toType» «attribute.toPropertyName» { get; }
+                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
+«««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
+«««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
+                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType» «attribute.toPropertyName» { get; }
                         «ENDFOR»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
@@ -150,7 +133,7 @@ class CSharpModelObjectGenerator {
     }
     
     private def isOneOf(Data rosettaClass) {
-        !rosettaClass.conditions.filter[constraint.oneOf].isEmpty()
+        rosettaClass.conditions !== null && !rosettaClass.conditions.filter[constraint?.oneOf].isEmpty()
     }
 
     private def generateConditionLogic(Data c, Condition condition) {
@@ -184,12 +167,12 @@ class CSharpModelObjectGenerator {
             namespace Org.Isda.Cdm
             {
                 using System.Collections.Generic;
-                using System.Linq;
             
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
                 using NodaTime;
                 using Org.Isda.Cdm.MetaFields;
+                using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «comment(c.definition)»
@@ -197,7 +180,8 @@ class CSharpModelObjectGenerator {
                     {
                         «FOR attribute : c.expandedAttributes SEPARATOR '\n'»
                             «comment(attribute.definition)»
-                            «attribute.toType» «attribute.toPropertyName» { get; }
+«««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
+                            «IF attribute.isMissingType»// MISSING «ENDIF»«attribute.toType» «attribute.toPropertyName» { get; }
                         «ENDFOR»
                     }
                 «ENDFOR»
