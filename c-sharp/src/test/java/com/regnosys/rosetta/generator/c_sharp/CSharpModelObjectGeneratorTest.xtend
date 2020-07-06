@@ -28,6 +28,12 @@ class CSharpModelObjectGeneratorTest {
     @Inject
     CSharpCodeGenerator generator;
 
+    @Inject
+    extension ParseHelper<RosettaModel>
+
+    @Inject
+    Provider<XtextResourceSet> resourceSetProvider;
+
     protected def boolean containsFileComment(String c_sharp) {
         c_sharp.startsWith('''
             // This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -35,6 +41,14 @@ class CSharpModelObjectGeneratorTest {
             // Version: test
             //
         ''')
+    }
+
+    protected def boolean containsCoreNamespace(String c_sharp) {
+        containsNamespace(c_sharp, "Org.Isda.Cdm")
+    }
+
+    protected def boolean containsEnumNamespace(String c_sharp) {
+        containsNamespace(c_sharp, "Org.Isda.Cdm.Enums")
     }
 
     protected def boolean containsNamespace(String c_sharp, String namespace) {
@@ -56,13 +70,46 @@ class CSharpModelObjectGeneratorTest {
         c_sharp.contains('''
             «""»
                 using System.Collections.Generic;
-                using System.Linq;
             
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
                 using NodaTime;
-                «IF includeMetaFields»using Org.Isda.Cdm.MetaFields;«ENDIF»
+                «IF includeMetaFields»
+                    using Org.Isda.Cdm.MetaFields;
+                    using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
+                «ENDIF»
         ''')
+    }
+
+    @Test
+    //@Disabled("Test to generate the C# for CDM")
+    def void generateCdm() {
+
+        val dirs = newArrayList(            
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.57.2/common-domain-model'),
+            ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+            //('rosetta-cdm/src/main/rosetta'),
+            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
+        );
+
+        val resourceSet = resourceSetProvider.get   
+
+        dirs.map[new File(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
+            map[Files.readAllBytes(toPath)].map[new String(it)]
+        ].forEach[parse(resourceSet)]
+
+        val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+        
+        /*for (rosettaModel : rosettaModels) {
+            println(rosettaModel.name + " : " + rosettaModel)
+        }*/
+
+        val generatedFiles = generator.afterGenerate(rosettaModels)
+        
+        val path =  Paths.get("cdm")
+        val dir = Files.createDirectories(path)
+        
+        generatedFiles.forEach [ fileName, contents | { Files.write(dir.resolve(fileName), contents.toString.bytes) }]
     }
 
     @Test
@@ -74,21 +121,22 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
-        println("enums ===\n" + enums)
+        //println("enums ==>\n" + enums)
 
         assertTrue(containsFileComment(enums))
-        assertTrue(containsNamespace(enums, "Org.Isda.Cdm"))
+        assertTrue(containsEnumNamespace(enums))
 
         assertTrue(enums.contains('''
             «""»
                 /// <summary>
                 /// Test enum description.
                 /// </summary>
-                public enum TestEnum
+                public enum Test
                 {
                     /// <summary>
                     /// Test enum value 1
                     /// </summary>
+                    [EnumMember(Value = "Enum Value 1")]
                     TestEnumValue1,
                     
                     /// <summary>
@@ -99,11 +147,11 @@ class CSharpModelObjectGeneratorTest {
                 
                 public static partial class Extension
                 {
-                    public static string GetDisplayName(this TestEnum value)
+                    public static string GetDisplayName(this Test value)
                     {
                         return value switch
                         {
-                            TestEnum.TestEnumValue1 => "Enum Value 1",
+                            Test.TestEnumValue1 => "Enum Value 1",
                             _ => nameof(value)
                         };
                     }
@@ -132,18 +180,18 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
-        println("enums ===\n" + enums)
 
         assertTrue(containsFileComment(enums))
+        assertTrue(enums.contains("using System.Runtime.Serialization"))
         assertTrue(enums.contains("using Rosetta.Lib.Attributes;"))
-        assertTrue(containsNamespace(enums, "Org.Isda.Cdm"))
+        assertTrue(containsEnumNamespace(enums))
 
         assertTrue(enums.contains('''
             «""»
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "A")]
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "B")]
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "C")]
-                public enum SynonymEnum
+                public enum Synonym
                 {
                     [RosettaSynonym(Value = "Value1", Source = "A")]
                     [RosettaSynonym(Value = "Value1", Source = "B")]
@@ -166,38 +214,127 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
-    @Disabled
-    def void shouldGenerateUppercaseUnderscoreFormattedEnumNames() {
+    def void shouldGenerateEnumMemberDisplayName() {
         val c_sharp = '''
             enum TestEnum:
                  ISDA1993Commodity
                  ISDA1998FX
-«««                 iTraxxEuropeDealer
-«««                 StandardLCDS
-«««                 _1_1
-«««                 _30E_360_ISDA
-«««                 AED-EBOR-Reuters
-«««                 DJ.iTraxx.Europe
-«««                 novation
-«««                 Currency1PerCurrency2
+                 iTraxxEuropeDealer
+                 StandardLCDS
+                 _1_1
+                 _30E_360_ISDA
+                 ACT_365L
+                 AED_EBOR_Reuters displayName "AED-EBOR-Reuters"
+                 DJ_iTraxx_Europe displayName "DJ.iTraxx.Europe"
+                 novation
+                 Currency1PerCurrency2
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
-        println("enums ===\n" + enums)
+        //println("enums ===\n" + enums)
                 
-        assertTrue(enums.contains("Isda1993Commodity"))
-        /*assertTrue(enums.contains("ITraxxEuropeDealer"))
-        assertTrue(enums.contains("StandardLCDS"))
-        assertTrue(enums.contains("_1_1"))
-        assertTrue(enums.contains("_30E_360_ISDA"))
-        assertTrue(enums.contains('ACT_365L'))
-        assertTrue(enums.contains("AedEborReuters"))
-        assertTrue(enums.contains("DJ.CDX.NA"))
-        assertTrue(enums.contains("Novation"))
-        assertTrue(enums.contains("Currency1PerCurrency2")) */
+        assertTrue(containsEnumNamespace(enums))
+        assertTrue(enums.contains("public enum Test"))
+        assertTrue(enums.contains(" ISDA1993Commodity"))
+        assertTrue(enums.contains(" ISDA1998FX"))
+        assertTrue(enums.contains('''
+        «""»
+                [EnumMember(Value = "iTraxxEuropeDealer")]
+                ITraxxEuropeDealer'''))
+        assertTrue(enums.contains(" StandardLCDS"))
+        assertTrue(enums.contains(" _1_1"))
+        assertTrue(enums.contains(" _30E_360_ISDA"))
+        assertTrue(enums.contains(' ACT_365L'))
+        assertTrue(enums.contains('''
+        «""»
+                [EnumMember(Value = "AED-EBOR-Reuters")]
+                AED_EBOR_Reuters'''));
+        assertTrue(enums.contains('''
+        «""»
+                [EnumMember(Value = "DJ.iTraxx.Europe")]
+                DJ_iTraxx_Europe'''));
+        assertTrue(enums.contains(''' 
+        «""»
+                [EnumMember(Value = "novation")]
+                Novation'''))
+        assertTrue(enums.contains(" Currency1PerCurrency2"))
+        
+        assertTrue(enums.contains(" public static string GetDisplayName(this Test value)"))
+        assertTrue(enums.contains(" Test.AED_EBOR_Reuters => \"AED-EBOR-Reuters\""))
+        assertTrue(enums.contains(" Test.DJ_iTraxx_Europe => \"DJ.iTraxx.Europe\""))
     }
 
+    @Test
+    def void shouldRenameKeywords() {
+        val c_sharp = '''
+        type KeyWordType:
+            string string(0..1)
+            event string(1..1)
+            int   int(0..*)
+            decimal number(0..1)
+        '''.generateCSharp
 
+        val types = c_sharp.get('Types.cs').toString
+
+        assertTrue(containsFileComment(types))
+        assertTrue(containsCoreNamespace(types))
+        assertTrue(containsNullable(types))
+        assertTrue(containsUsings(types))
+
+        assertTrue(types.contains('''
+            «""»
+                public class KeyWordType
+                {
+                    [JsonConstructor]
+                    public KeyWordType(decimal? decimalValue, string eventValue, IEnumerable<int> intValue, string? stringValue)
+                    {
+                        Decimal = decimalValue;
+                        Event = eventValue;
+                        Int = intValue;
+                        String = stringValue;
+                    }
+                    
+                    public decimal? Decimal { get; }
+                    
+                    public string Event { get; }
+                    
+                    public IEnumerable<int> Int { get; }
+                    
+                    public string? String { get; }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldRenameEnclosedType() {
+        val c_sharp = '''
+        type EnclosingType:
+            EnclosingType string(0..1)
+        '''.generateCSharp
+
+        val types = c_sharp.get('Types.cs').toString
+
+        assertTrue(containsFileComment(types))
+        assertTrue(containsCoreNamespace(types))
+        assertTrue(containsNullable(types))
+        assertTrue(containsUsings(types))
+
+        assertTrue(types.contains('''
+            «""»
+                public class EnclosingType
+                {
+                    [JsonConstructor]
+                    public EnclosingType(string? enclosingType)
+                    {
+                        EnclosingTypeValue = enclosingType;
+                    }
+                    
+                    [JsonProperty(PropertyName = "enclosingType")]
+                    public string? EnclosingTypeValue { get; }
+                }
+        '''))
+    }
+    
     @Test
     def void shouldGenerateTypes() {
         val c_sharp = '''
@@ -222,7 +359,7 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
         
         assertTrue(containsFileComment(types))
-        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
 
@@ -234,7 +371,7 @@ class CSharpModelObjectGeneratorTest {
                 public class GtTestType
                 {
                     [JsonConstructor]
-                    public GtTestType(GtTestEnum? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
+                    public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
                     {
                         GtTestEnum = gtTestEnum;
                         GtTestTypeValue1 = gtTestTypeValue1;
@@ -247,7 +384,7 @@ class CSharpModelObjectGeneratorTest {
                     /// Optional test enum
                     /// </summary>
                     [JsonConverter(typeof(StringEnumConverter))]
-                    public GtTestEnum? GtTestEnum { get; }
+                    public Enums.GtTest? GtTestEnum { get; }
                     
                     /// <summary>
                     /// Test string
@@ -276,7 +413,7 @@ class CSharpModelObjectGeneratorTest {
                 public class GtTestType2
                 {
                     [JsonConstructor]
-                    public GtTestType2(GtTestEnum gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
+                    public GtTestType2(Enums.GtTest gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
                     {
                         GtTestEnum = gtTestEnum;
                         GtTestType2Value1 = gtTestType2Value1;
@@ -287,7 +424,7 @@ class CSharpModelObjectGeneratorTest {
                     /// Test enum
                     /// </summary>
                     [JsonConverter(typeof(StringEnumConverter))]
-                    public GtTestEnum GtTestEnum { get; }
+                    public Enums.GtTest GtTestEnum { get; }
                     
                     /// <summary>
                     /// Test number list
@@ -322,7 +459,7 @@ class CSharpModelObjectGeneratorTest {
         val interfaces = c_sharp.get('Interfaces.cs').toString
 
         assertTrue(containsFileComment(interfaces))
-        assertTrue(containsNamespace(interfaces, "Org.Isda.Cdm"))
+        assertTrue(containsCoreNamespace(interfaces))
         assertTrue(containsNullable(interfaces))
         assertTrue(containsUsings(interfaces))
 
@@ -373,7 +510,7 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.get('Types.cs').toString
         assertTrue(containsFileComment(types))
-        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
 
         assertTrue(types.contains('''
@@ -493,6 +630,8 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.values.join('\n').toString
 
+        // println("types => " + types);
+
         assertTrue(containsFileComment(types))
         assertTrue(containsNamespace(types, "Org.Isda.Cdm.MetaFields"))
         assertTrue(containsNullable(types))
@@ -540,14 +679,14 @@ class CSharpModelObjectGeneratorTest {
                 public class FieldWithMetaGmtTestEnum
                 {
                     [JsonConstructor]
-                    public FieldWithMetaGmtTestEnum(GmtTestEnum? value, MetaFields? meta)
+                    public FieldWithMetaGmtTestEnum(Enums.GmtTest? value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
                     [JsonConverter(typeof(StringEnumConverter))]
-                    public GmtTestEnum? Value { get; }
+                    public Enums.GmtTest? Value { get; }
                     
                     public MetaFields? Meta { get; }
                 }
@@ -598,7 +737,7 @@ class CSharpModelObjectGeneratorTest {
                 public class GmtTestType
                 {
                     [JsonConstructor]
-                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, MetaFields? meta)
+                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, Meta? meta)
                     {
                         GmtTestTypeValue1 = gmtTestTypeValue1;
                         Meta = meta;
@@ -606,7 +745,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
                     
-                    public MetaFields? Meta { get; }
+                    public Meta? Meta { get; }
                 }
         '''))
 
@@ -647,7 +786,7 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
 
         assertTrue(containsFileComment(types))
-        assertTrue(containsNamespace(types, "Org.Isda.Cdm"))
+        assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
 
