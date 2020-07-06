@@ -2,10 +2,34 @@ package com.regnosys.rosetta.generator.c_sharp.object
 
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.toCSharpType
+import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 import com.regnosys.rosetta.generator.object.ExpandedType
+import java.util.HashSet
+import java.util.Arrays
 
 class CSharpModelObjectBoilerPlate {
+    static val keywords = new HashSet<String>(Arrays.asList("string", "int", "decimal", "bool", "event"));
+
+    def isKeyWord(String name) {
+        keywords.contains(name)        
+    }
+
+    def isMissingType(ExpandedAttribute attribute) {
+        // TODO: Check for FieldWithMeta??
+        attribute.toRawType === null || (attribute.hasMetas && attribute.refIndex < 0 && attribute.type.name === null)
+    }
+
+    def matchesEnclosingType(ExpandedAttribute attribute) {
+        attribute.name.toFirstUpper == attribute.enclosingType
+    }
+
+    static def removePackage(String name) {
+        if (name !== null && name.contains(".")) {
+            // Remove any packages from basic types e.g. NodaTime.LocalTime
+            return name.substring(name.lastIndexOf(".") + 1)
+        }
+        return name
+    }
 
     def replaceTabsWithSpaces(CharSequence code) {
         // Visual Studio default is 4-spaces
@@ -28,31 +52,43 @@ class CSharpModelObjectBoilerPlate {
         '''FieldWithMeta«type.toMetaTypeName»'''
     }
 
-    static def toMetaTypeName(ExpandedType type) {
-        val name = type.toCSharpType
-
-        removePackage(name).toFirstUpper
+    def toJsonName(ExpandedAttribute attribute) {
+        return attribute.name.toFirstLower
     }
 
-    static def removePackage(String name) {
-        if (name.contains(".")) {
-            // Remove any packages from basic types e.g. NodaTime.LocalTime
-            return name.substring(name.lastIndexOf(".") + 1)
+    static def toMetaTypeName(ExpandedType type) {
+        removePackage(type.toCSharpType).toFirstUpper
+    }
+    
+
+    def toParamName(ExpandedAttribute attribute) {
+        var name = attribute.name.toFirstLower
+        // Ensure parameter name does not match C# keyWords
+        if (isKeyWord(name)) {
+            name += "Value"
         }
         return name
     }
 
-    def toParamName(ExpandedAttribute attribute) {
-        attribute.name.toFirstLower
-    }
-
     def toPropertyName(ExpandedAttribute attribute) {
-        attribute.name.toFirstUpper
+        var name = attribute.name.toFirstUpper
+        // Ensure property name does not match enclosing type
+        if (name == attribute.enclosingType) {
+            name += "Value"
+        }
+        return name
     }
 
-    private def toRawType(ExpandedAttribute attribute) {
-        if (!attribute.hasMetas)
-            removePackage(attribute.type.toCSharpType)
+    def toRawType(ExpandedAttribute attribute) {
+        if (!attribute.hasMetas) {
+            if (attribute.enum) {
+                val type = attribute.type
+                type.toQualifiedCSharpType
+                
+            }
+            else
+                removePackage(attribute.type.toCSharpType)
+        }
         else if (attribute.refIndex >= 0) {
             if (attribute.type.isType)
                 attribute.type.toReferenceWithMetaTypeName
