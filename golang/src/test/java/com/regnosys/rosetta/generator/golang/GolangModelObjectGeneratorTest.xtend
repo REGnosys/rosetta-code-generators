@@ -84,32 +84,26 @@ class GolangModelObjectGeneratorTest {
 				TestEnumValue1 <"Test enum value 1">
 				TestEnumValue2 <"Test enum value 2">
 		'''.generateGolang
-
-		val enums = golang.get('enums.go').toString
-		println(enums)
-		assertTrue(enums.contains('''
-		package enums
-		
+		val fileName = "cdm/TestEnum/TestEnum.go"  
+    	val enumString = new String(Files.readAllBytes(Paths.get(fileName))); 
+     	
+		assertTrue(enumString.contains('''
 		/**
 		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
 		 * Version: test
 		 */
-		
-		/**
-		 * Test enum description.
-		 */
-		type TestEnum int
-		const (
-		/**
-		 * Test enum value 1
-		 */
+		  package TestEnum
+		  import . "cdm/enums"
+		  /**
+		   * Test enum description.
+		   */
+		''') && enumString.contains('''
 		TEST_ENUM_VALUE_1 TestEnum = iota + 1
-		/**
-		 * Test enum value 2
-		 */
-		TEST_ENUM_VALUE_2 TestEnum = iota + 1
-		)
-		'''))
+		  /**
+		   * Test enum value 2
+		   */
+		  TEST_ENUM_VALUE_2 TestEnum = iota + 1
+		''') )
 	}
 
 	@Test
@@ -129,48 +123,49 @@ class GolangModelObjectGeneratorTest {
 		val types = golang.get('types.go').toString
 		println(types)
 		assertTrue(types.contains('''
-			package types
-			
-			/**
-			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-			 * Version: test
-			 */
-			
-			import . "cdm/metatypes";
-			import . "cdm/enums";
-			
-			/**
-			 * Test type description.
-			 */
-			type TestType struct {
-			  /**
-			   * Test string
-			   */
-			  TestTypeValue1 string;
-			  /**
-			   * Test optional string
-			   */
-			  TestTypeValue2 string;
-			  /**
-			   * Test string list
-			   */
-			  TestTypeValue3 []string;
-			  /**
-			   * Test TestType2
-			   */
-			  TestTypeValue4 TestType2;
-			}
-			  
-			type TestType2 struct {
-			  /**
-			   * Test number
-			   */
-			  TestType2Value1 cdmbase.Decimal;
-			  /**
-			   * Test date
-			   */
-			  TestType2Value2 basemodel.Date;
-			}
+		package types
+		
+		/**
+		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+		 * Version: test
+		 */
+		
+		import . "cdm/metatypes";
+		import . "cdm/enums";
+		
+		
+		/**
+		 * Test type description.
+		 */
+		type TestType struct {
+		  /**
+		   * Test string
+		   */
+		  TestTypeValue1 string;
+		  /**
+		   * Test optional string
+		   */
+		  TestTypeValue2 string;
+		  /**
+		   * Test string list
+		   */
+		  TestTypeValue3 []string;
+		  /**
+		   * Test TestType2
+		   */
+		  TestTypeValue4 TestType2;
+		}
+		  
+		type TestType2 struct {
+		  /**
+		   * Test number
+		   */
+		  TestType2Value1 cdmbase.Decimal;
+		  /**
+		   * Test date
+		   */
+		  TestType2Value2 basemodel.Date;
+		}
 			'''))
 
 	}	
