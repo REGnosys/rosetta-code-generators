@@ -97,13 +97,18 @@ class GolangModelObjectGeneratorTest {
 		  /**
 		   * Test enum description.
 		   */
-		''') && enumString.contains('''
-		TEST_ENUM_VALUE_1 TestEnum = iota + 1
+		  
+		  const (
+		  /**
+		   * Test enum value 1
+		   */
+		  TEST_ENUM_VALUE_1 TestEnum = iota + 1
 		  /**
 		   * Test enum value 2
 		   */
 		  TEST_ENUM_VALUE_2 TestEnum = iota + 1
-		''') )
+		  )    ''')
+		  )
 	}
 
 	@Test
