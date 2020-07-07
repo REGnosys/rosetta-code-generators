@@ -63,17 +63,23 @@ class CSharpModelObjectGeneratorTest {
     }
 
     protected def boolean containsUsings(String c_sharp) {
-        containsUsings(c_sharp, true)
+        containsUsings(c_sharp, true, true)
     }
 
-    protected def boolean containsUsings(String c_sharp, boolean includeMetaFields) {
+    protected def boolean containsUsings(String c_sharp, boolean includeAttributes, boolean includeMetaFields) {
         c_sharp.contains('''
             «""»
                 using System.Collections.Generic;
             
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
+            
                 using NodaTime;
+            
+                «IF includeAttributes»
+                    using Rosetta.Lib.Attributes;
+
+                «ENDIF»
                 «IF includeMetaFields»
                     using Org.Isda.Cdm.MetaFields;
                     using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
@@ -99,10 +105,6 @@ class CSharpModelObjectGeneratorTest {
         ].forEach[parse(resourceSet)]
 
         val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-        
-        /*for (rosettaModel : rosettaModels) {
-            println(rosettaModel.name + " : " + rosettaModel)
-        }*/
 
         val generatedFiles = generator.afterGenerate(rosettaModels)
         
@@ -457,11 +459,13 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val interfaces = c_sharp.get('Interfaces.cs').toString
+        
+        //println("interfaces =>" + interfaces)
 
         assertTrue(containsFileComment(interfaces))
         assertTrue(containsCoreNamespace(interfaces))
         assertTrue(containsNullable(interfaces))
-        assertTrue(containsUsings(interfaces))
+        assertTrue(containsUsings(interfaces, false, true))
 
         /*assertTrue(interfaces.contains('''
          *        interface ITestType : ITestType2
@@ -635,7 +639,7 @@ class CSharpModelObjectGeneratorTest {
         assertTrue(containsFileComment(types))
         assertTrue(containsNamespace(types, "Org.Isda.Cdm.MetaFields"))
         assertTrue(containsNullable(types))
-        assertTrue(containsUsings(types, false))
+        assertTrue(containsUsings(types, false, false))
 
         assertTrue(types.contains('''
             «""»
@@ -771,7 +775,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
-    @Disabled("TODO fix oneOf code generation for attributes that are Lists")
+    //@Disabled("TODO fix oneOf code generation for attributes that are Lists")
     def void shouldGenerateOneOfCondition() {
 
         val c_sharp = '''
@@ -784,6 +788,7 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
+        //println("oneOf ==>" + types)
 
         assertTrue(containsFileComment(types))
         assertTrue(containsCoreNamespace(types))
@@ -798,27 +803,25 @@ class CSharpModelObjectGeneratorTest {
                 [OneOf]
                 public sealed class TestType
                 {
-                /// <summary>
-                /// Test string field 1
-                /// </summary>
-                public string? Field1 { get; }
-                
-                /// <summary>
-                /// Test string field 2
-                /// </summary>
-                public string? Field2 { get; }
-                
-                /// <summary>
-                /// Test number field 3
-                /// </summary>
-                public decimal? Field3 { get; }
-                
-                /// <summary>
-                /// Test number field 4
-                /// </summary>
-                public IEnumerable<decimal> Field4 { get; }
-                //val numberOfPopulatedFields = List(field1, field2, field3, field4).flatten.length
-                //require(numberOfPopulatedFields == 1)
+                    /// <summary>
+                    /// Test string field 1
+                    /// </summary>
+                    public string? Field1 { get; set; }
+                    
+                    /// <summary>
+                    /// Test string field 2
+                    /// </summary>
+                    public string? Field2 { get; set; }
+                    
+                    /// <summary>
+                    /// Test number field 3
+                    /// </summary>
+                    public decimal? Field3 { get; set; }
+                    
+                    /// <summary>
+                    /// Test number field 4
+                    /// </summary>
+                    public IEnumerable<decimal>? Field4 { get; set; }
                 }
         '''))
     }

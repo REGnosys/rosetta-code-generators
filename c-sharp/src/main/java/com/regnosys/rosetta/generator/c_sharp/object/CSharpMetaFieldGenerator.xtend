@@ -138,6 +138,7 @@ class CSharpMetaFieldGenerator {
         
             using Newtonsoft.Json;
             using Newtonsoft.Json.Converters;
+        
             using NodaTime;
         
     '''

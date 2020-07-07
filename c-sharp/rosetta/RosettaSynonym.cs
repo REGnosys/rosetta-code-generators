@@ -21,7 +21,7 @@
         }
     }
 
-#if 0
+/*
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
     public class RosettaSynonyms : Attribute
     {
@@ -31,5 +31,5 @@
             Values = values;
         }
     }
-#endif
+*/
 }

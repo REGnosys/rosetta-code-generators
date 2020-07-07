@@ -93,21 +93,28 @@ class CSharpModelObjectGenerator {
 
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
+            
                 using NodaTime;
+            
+                using Rosetta.Lib.Attributes;
+            
                 using Org.Isda.Cdm.MetaFields;
                 using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
-
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «val allExpandedAttributes = c.allExpandedAttributes»
 «««                     Filter out invalid types to prevent compilation errors
                     «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
+«««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment. 
+                    «val isOneOf = isOneOf(c)»
+                    «var properties = if (isOneOf) "{ get; set; }" else "{ get; }"»
                     «classComment(c.definition)»
-«««                 «IF isOneOf(c)»[OneOf]«ENDIF»
+                    «IF isOneOf»[OneOf]«ENDIF»
 «««                 NB: C# 9: nNormal declaration should change to "public data class" to make immutable
 «««                 and also remove the need to declare properties explicitly
-                    public «IF isOneOf(c)»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
+                    public «IF isOneOf»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
                     {
+                        «IF !isOneOf»
                         [JsonConstructor]
                         public «c.name»(«FOR attribute : expandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
                         {
@@ -116,12 +123,13 @@ class CSharpModelObjectGenerator {
                             «ENDFOR»
                         }
                         
+                        «ENDIF»
                         «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
                             «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
-                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType» «attribute.toPropertyName» { get; }
+                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType(isOneOf)» «attribute.toPropertyName» «properties»
                         «ENDFOR»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
@@ -137,16 +145,10 @@ class CSharpModelObjectGenerator {
     }
 
     private def generateConditionLogic(Data c, Condition condition) {
+        /*
         '''
             «IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
-        '''
-    }
-
-    private def generateOneOfLogic(Data c) {
-        '''
-            //val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
-            //require(numberOfPopulatedFields == 1)
-        '''
+        ''' */
     }
 
     private def generateParents(Data c, Set<Data> superTypes) {
@@ -170,7 +172,9 @@ class CSharpModelObjectGenerator {
             
                 using Newtonsoft.Json;
                 using Newtonsoft.Json.Converters;
+            
                 using NodaTime;
+            
                 using Org.Isda.Cdm.MetaFields;
                 using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
             

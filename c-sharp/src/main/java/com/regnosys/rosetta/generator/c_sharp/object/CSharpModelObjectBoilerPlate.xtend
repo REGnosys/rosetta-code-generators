@@ -103,9 +103,15 @@ class CSharpModelObjectBoilerPlate {
     }
 
     def toType(ExpandedAttribute attribute) {
+        toType(attribute, false)
+    }
+
+    def toType(ExpandedAttribute attribute, boolean isOneOf) {
         val typeName = attribute.toRawType
-        if (attribute.multiple)
-            '''IEnumerable<«typeName»>'''
+        if (attribute.multiple) {
+            // All fields of one-of have to be nullable.
+            '''IEnumerable<«typeName»>«IF isOneOf»?«ENDIF»'''
+        }
         else if (attribute.singleOptional)
             '''«typeName»?'''
         else
