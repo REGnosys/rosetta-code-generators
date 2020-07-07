@@ -192,8 +192,7 @@ class GolangModelObjectGeneratorTest {
 		assertTrue(types.contains('''export interface TestType extends TestType2'''))
 	}
 
-	@Test
-	@Disabled("Needs some checks")
+	@Test	
 	def void shouldGenerateMetaTypes() {
 		val golang = '''
 			metaType reference string
@@ -204,10 +203,6 @@ class GolangModelObjectGeneratorTest {
 				[metadata key]
 				TestTypeValue1 TestType2(1..1)
 					[metadata reference]
-					
-			enum TestEnum: <"Test enum description.">
-				TestEnumValue1 <"Test enum value 1">
-				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
 				TestType2Value1 number(1..1)
@@ -216,34 +211,28 @@ class GolangModelObjectGeneratorTest {
 				TestType2Value2 string(1..1)
 					[metadata id]
 					[metadata scheme]
-				
-				testEnum TestEnum(1..1)
-					[metadata scheme]
-					
-		'''.generateGolang
+							'''.generateGolang
 
 		val types = golang.values.join('\n').toString
 		println(types)
 		
 		assertTrue(types.contains('''
 		type FieldWithMeta struct {
-		  Value string;
+		  Value interface{};
 		  Meta MetaFields;
-		}
-		'''))
-
-		assertTrue(types.contains('''
-		export interface TestType {
-		  testTypeValue1?: ReferenceWithMeta<TestType2>;
-		  meta?: MetaFields;
 		}'''))
 
 		assertTrue(types.contains('''
-		  export interface TestType2 {
-		    testType2Value1?: ReferenceWithMeta<Number>;
-		    testType2Value2?: FieldWithMeta<String>;
-		    testEnum?: FieldWithMeta<TestEnum>;
-		  }'''))
+		type TestType struct {
+		  TestTypeValue1 ReferenceWithMeta;
+		  Meta MetaFields;
+		}'''))
+
+		assertTrue(types.contains('''
+		type TestType2 struct {
+		  TestType2Value1 ReferenceWithMeta;
+		  TestType2Value2 FieldWithMeta;
+		}'''))
 
 	}
 
