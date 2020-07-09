@@ -58,6 +58,8 @@ Here is an illustration of how code generation works:
 Quick start guide
 -----------------
 
+Note that you will need Java 8 SDK installed and referenced by the JAVA_HOME environment variable.
+
 You will need `Maven <http://maven.apache.org/>`_ and `Git <https://git-scm.com/>`_ installed and configured in your environment.
 
 `Fork and clone <https://help.github.com/articles/fork-a-repo>`_ the project in your own workspace. Then run the first build:
