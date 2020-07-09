@@ -33,8 +33,8 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<regnosys.rosetta.version>2.57.7</regnosys.rosetta.version>
-				<regnosys.common.version>2.57.7</regnosys.common.version>
+				<regnosys.dsl.version>2.57.7</regnosys.dsl.version>
+				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
 		<profile>
@@ -43,7 +43,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<regnosys.rosetta.version>2.21.1</regnosys.rosetta.version>
+				<regnosys.dsl.version>2.21.1</regnosys.dsl.version>
 				<regnosys.common.version>2.21.1</regnosys.common.version>
 			</properties>
 		</profile>
@@ -77,12 +77,12 @@
 			<dependency>
 				<groupId>com.regnosys.rosetta</groupId>
 				<artifactId>com.regnosys.rosetta</artifactId>
-				<version>${regnosys.rosetta.version}</version>
+				<version>${regnosys.dsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.regnosys.rosetta</groupId>
 				<artifactId>com.regnosys.rosetta.lib</artifactId>
-				<version>${regnosys.rosetta.version}</version>
+				<version>${regnosys.dsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.regnosys</groupId>
