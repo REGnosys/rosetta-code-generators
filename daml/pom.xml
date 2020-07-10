@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>
 			<artifactId>com.regnosys.rosetta.tests</artifactId>
-			<version>${regnosys.dsl.version}</version>
+			<version>${rosetta.dsl.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
