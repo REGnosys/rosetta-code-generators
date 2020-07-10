@@ -84,6 +84,7 @@ class CSharpModelObjectGenerator {
     private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version) {
         '''
             «fileComment(version)»
+            [assembly: Rosetta.Lib.Attributes.CdmVersion("«version»")]
             
             #nullable enable // Allow nullable reference types
             
@@ -100,16 +101,18 @@ class CSharpModelObjectGenerator {
             
                 using Org.Isda.Cdm.MetaFields;
                 using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
-            
+                
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «val allExpandedAttributes = c.allExpandedAttributes»
 «««                     Filter out invalid types to prevent compilation errors
                     «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
-«««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment. 
-                    «val isOneOf = isOneOf(c)»
+«««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment.
+«««                 Use of one-of condtion on a derived class is not properly defined, so market it as an error and ignore. 
+                    «val isChild = c.superType !== null»
+                    «val isOneOf = isOneOf(c) && !isChild»
                     «var properties = if (isOneOf) "{ get; set; }" else "{ get; }"»
                     «classComment(c.definition)»
-                    «IF isOneOf»[OneOf]«ENDIF»
+                    «IF isOneOf»[OneOf]«ELSEIF isOneOf(c)»// ERROR: [OneOf] cannot be used on a derived class«ENDIF»
 «««                 NB: C# 9: nNormal declaration should change to "public data class" to make immutable
 «««                 and also remove the need to declare properties explicitly
                     public «IF isOneOf»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»

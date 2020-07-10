@@ -1,7 +1,6 @@
 ﻿namespace Rosetta.Lib.Attributes
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Specify a synonyn for a given valuefor a specific source.
@@ -20,16 +19,4 @@
             Maps = 1;
         }
     }
-
-/*
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
-    public class RosettaSynonyms : Attribute
-    {
-        public IEnumerable<RosettaSynonym> Values { get; }
-        public RosettaSynonyms(IEnumerable<RosettaSynonym> values)
-        {
-            Values = values;
-        }
-    }
-*/
 }

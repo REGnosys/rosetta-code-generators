@@ -34,13 +34,8 @@ class CSharpModelObjectGeneratorTest {
     @Inject
     Provider<XtextResourceSet> resourceSetProvider;
 
-    protected def boolean containsFileComment(String c_sharp) {
-        c_sharp.startsWith('''
-            // This file is auto-generated from the ISDA Common Domain Model, do not edit.
-            //
-            // Version: test
-            //
-        ''')
+    protected def boolean containsCdmVersion(String c_sharp) {
+        c_sharp.contains('[assembly: Rosetta.Lib.Attributes.CdmVersion("test")]')
     }
 
     protected def boolean containsCoreNamespace(String c_sharp) {
@@ -49,6 +44,15 @@ class CSharpModelObjectGeneratorTest {
 
     protected def boolean containsEnumNamespace(String c_sharp) {
         containsNamespace(c_sharp, "Org.Isda.Cdm.Enums")
+    }
+
+    protected def boolean containsFileComment(String c_sharp) {
+        c_sharp.startsWith('''
+            // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+            //
+            // Version: test
+            //
+        ''')
     }
 
     protected def boolean containsNamespace(String c_sharp, String namespace) {
@@ -92,7 +96,7 @@ class CSharpModelObjectGeneratorTest {
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.57.2/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.58.3/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
@@ -144,6 +148,7 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test enum value 2
                     /// </summary>
+                    [EnumMember(Value = "TEST_ENUM_VALUE_2")]
                     TestEnumValue2
                 }
                 
@@ -182,6 +187,7 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
+        //println(enums)
 
         assertTrue(containsFileComment(enums))
         assertTrue(enums.contains("using System.Runtime.Serialization"))
@@ -199,17 +205,20 @@ class CSharpModelObjectGeneratorTest {
                     [RosettaSynonym(Value = "Value1", Source = "B")]
                     [RosettaSynonym(Value = "Value1", Source = "C")]
                     [RosettaSynonym(Value = "Enum Value 1", Source = "D")]
+                    [EnumMember(Value = "ENUM_VALUE_1")]
                     EnumValue1,
                     
                     [RosettaSynonym(Value = "Value2", Source = "A")]
                     [RosettaSynonym(Value = "Value2", Source = "B")]
                     [RosettaSynonym(Value = "Value2", Source = "C")]
+                    [EnumMember(Value = "ENUM_VALUE_2")]
                     EnumValue2,
                     
                     [RosettaSynonym(Value = "Value3", Source = "A")]
                     [RosettaSynonym(Value = "Value3", Source = "B")]
                     [RosettaSynonym(Value = "Value3", Source = "C")]
                     [RosettaSynonym(Value = "Enum Value 3", Source = "D")]
+                    [EnumMember(Value = "ENUM_VALUE_3")]
                     EnumValue3
                 }
         '''))
@@ -223,8 +232,8 @@ class CSharpModelObjectGeneratorTest {
                  ISDA1998FX
                  iTraxxEuropeDealer
                  StandardLCDS
-                 _1_1
-                 _30E_360_ISDA
+                 _1_1 displayName "1/1"
+                 _30E_360_ISDA displayName "30E/360.ISDA"
                  ACT_365L
                  AED_EBOR_Reuters displayName "AED-EBOR-Reuters"
                  DJ_iTraxx_Europe displayName "DJ.iTraxx.Europe"
@@ -241,11 +250,17 @@ class CSharpModelObjectGeneratorTest {
         assertTrue(enums.contains(" ISDA1998FX"))
         assertTrue(enums.contains('''
         «""»
-                [EnumMember(Value = "iTraxxEuropeDealer")]
+                [EnumMember(Value = "I_TRAXX_EUROPE_DEALER")]
                 ITraxxEuropeDealer'''))
         assertTrue(enums.contains(" StandardLCDS"))
-        assertTrue(enums.contains(" _1_1"))
-        assertTrue(enums.contains(" _30E_360_ISDA"))
+        assertTrue(enums.contains('''
+        «""»
+                [EnumMember(Value = "1/1")]
+                _1_1'''));
+        assertTrue(enums.contains('''
+        «""»
+                [EnumMember(Value = "30E/360.ISDA")]
+                _30E_360_ISDA'''))
         assertTrue(enums.contains(' ACT_365L'))
         assertTrue(enums.contains('''
         «""»
@@ -257,9 +272,12 @@ class CSharpModelObjectGeneratorTest {
                 DJ_iTraxx_Europe'''));
         assertTrue(enums.contains(''' 
         «""»
-                [EnumMember(Value = "novation")]
+                [EnumMember(Value = "NOVATION")]
                 Novation'''))
-        assertTrue(enums.contains(" Currency1PerCurrency2"))
+        assertTrue(enums.contains(''' 
+        «""»
+                [EnumMember(Value = "CURRENCY_1_PER_CURRENCY_2")]
+                Currency1PerCurrency2'''))
         
         assertTrue(enums.contains(" public static string GetDisplayName(this Test value)"))
         assertTrue(enums.contains(" Test.AED_EBOR_Reuters => \"AED-EBOR-Reuters\""))
@@ -279,6 +297,7 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
 
         assertTrue(containsFileComment(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
@@ -317,6 +336,7 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
 
         assertTrue(containsFileComment(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
@@ -361,6 +381,7 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
         
         assertTrue(containsFileComment(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
@@ -514,6 +535,7 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.get('Types.cs').toString
         assertTrue(containsFileComment(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
 
@@ -791,6 +813,7 @@ class CSharpModelObjectGeneratorTest {
         //println("oneOf ==>" + types)
 
         assertTrue(containsFileComment(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))

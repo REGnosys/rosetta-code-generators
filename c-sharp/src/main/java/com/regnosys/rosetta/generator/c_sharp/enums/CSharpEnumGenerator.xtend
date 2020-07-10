@@ -10,6 +10,7 @@ import java.util.List
 import java.util.Map
 
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
+import com.regnosys.rosetta.generator.java.enums.EnumHelper
 
 class CSharpEnumGenerator {
 
@@ -19,21 +20,24 @@ class CSharpEnumGenerator {
     static final String FILENAME = 'Enums.cs'
     public static final String ENUM_SUFFIX = "Enum"
 
-    /*    private def addAttributes(RosettaEnumeration e) '''
+    /*  NB: Synonyms at enumeration level are not supported by Rosetta  
+     *  private def addAttributes(RosettaEnumeration e) '''
      *     «FOR synonym : e.synonyms»
      *         «FOR source : synonym.sources»
      *             [RosettaSynonym(Value = "«synonym.getBody.getValues»", Source = "«source.getName»")]
      *         «ENDFOR»
      *     «ENDFOR»
      '''*/
+
     private def addAttributes(RosettaEnumValue e) '''
         «FOR synonym : e.enumSynonyms»
             «FOR source : synonym.sources»
                 [RosettaSynonym(Value = "«synonym.synonymValue»", Source = "«source.getName»")]
             «ENDFOR»
         «ENDFOR»
-«««     Output JSON and description which matches display name
-        «IF e.display !== null»[EnumMember(Value = "«e.display»")]«ELSEIF e.name != toCSharpEnumName(e)»[EnumMember(Value = "«e.name»")]«ENDIF»
+«««     Output JSON and description which matches display name if specified, else Java format
+        «val javaName = EnumHelper.formatEnumName(e.name)»
+        «IF e.display !== null»[EnumMember(Value = "«e.display»")]«ELSEIF javaName != toCSharpEnumName(e)»[EnumMember(Value = "«javaName»")]«ENDIF»
     '''
 
     private def allEnumsValues(RosettaEnumeration enumeration) {
