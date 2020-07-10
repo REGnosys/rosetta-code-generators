@@ -136,6 +136,7 @@ class CSharpModelObjectGeneratorTest {
                 /// <summary>
                 /// Test enum description.
                 /// </summary>
+                [CdmName("TestEnum")]
                 public enum Test
                 {
                     /// <summary>
@@ -198,6 +199,7 @@ class CSharpModelObjectGeneratorTest {
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "A")]
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "B")]
 «««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "C")]
+                [CdmName("SynonymEnum")]
                 public enum Synonym
                 {
                     [RosettaSynonym(Value = "Value1", Source = "A")]

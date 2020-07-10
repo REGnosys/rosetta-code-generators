@@ -98,6 +98,7 @@ class CSharpEnumGenerator {
             «FOR e : enums SEPARATOR '\n'»
             «val allEnumValues = allEnumsValues(e)»
             «comment(e.definition)»
+            [CdmName("«e.name»")]
 «««             TODO: These seem to be ignored in Java version «e.addAttributes»
             public enum «e.toCSharpName»
             {
