@@ -20,24 +20,10 @@ class GolangEnumGenerator {
 	
 	static final String FILENAME = 'enums.go'
 		
-	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
-		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums(version).replaceTabsWithSpaces
-		result.put(FILENAME,enums)
-		return result;
-	}
 	
-	//generates struct representations of enums
-	def Map<String, ? extends CharSequence> generate2(Iterable<RosettaEnumeration> rosettaEnums, String version) {
+	def Map<String, ? extends CharSequence>generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums2(version)
-		result.put(FILENAME,enums)
-		return result;
-	}
-	
-	def Map<String, ? extends CharSequence>generate3(Iterable<RosettaEnumeration> rosettaEnums, String version) {
-		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums3(version)
+		val enums = rosettaEnums.sortBy[name].generateEnums(version)
 		result.put(FILENAME,enums)
 		return result;
 		
@@ -58,70 +44,8 @@ class GolangEnumGenerator {
 		return enumValues.sortBy[name];
 	}
 
-	private def generateEnums(List<RosettaEnumeration> enums, String version)  '''		
-		package enums
-		
-		«fileComment(version)»			
-		
-		«FOR e : enums»
-			«val allEnumValues = allEnumsValues(e)»
-			«classComment(e.definition)»
-			type «e.name» int
-			const (
-			«FOR value: allEnumValues»
-				«methodComment(value.definition)»
-				«e.name»_«EnumHelper.convertValues(value)» «e.name» = iota + 1
-			«ENDFOR»
-			)
-		«ENDFOR»
-	'''
-	//generates struct representations of enums
-	private def generateEnums2(List<RosettaEnumeration> enums, String version){
-		val eString='''
-		package preenums
-		«FOR e : enums»					
-			type «e.name» int							
-		«ENDFOR»
-		'''
-		val enumDir = Files.createDirectories(Paths.get('''cdm/preenums'''))
-		Files.write(enumDir.resolve('''preenums.go'''), eString.toString.bytes)
-		
-		return	'''
-		package enums
-		import . "cdm/preenums"
-		«FOR e : enums»					
-		«fileComment(version)»			
-					
-			«val allEnumValues = allEnumsValues(e)»
-			«classComment(e.definition)»			
-			type «e.name.toLowerCase» struct {
-			«FOR value: allEnumValues»
-				«methodComment(value.definition)»
-				«EnumHelper.convertValues(value)» «e.name»
-			«ENDFOR»
-			}
-		«ENDFOR»
-		
-		«FOR e : enums»					
-			var «e.name.toUpperCase» = «e.name.toLowerCase»{}							
-		«ENDFOR»
-		
-		func init(){
-			«FOR e : enums»
-				«val allEnumValues = allEnumsValues(e)»
-				«var counter=1»				
-				«FOR value: allEnumValues»								
-					«e.name.toUpperCase».«EnumHelper.convertValues(value)» = «e.name»(«counter.toString»)
-					«{counter++; null}»
-				«ENDFOR»				
-			«ENDFOR»
-		}	
-		'''.replaceTabsWithSpaces
-		
-		
-	}
 	
-	private def generateEnums3(List<RosettaEnumeration> enums, String version){
+	private def generateEnums(List<RosettaEnumeration> enums, String version){
 		for (e: enums){
 			val eString = '''		
 		«fileComment(version)»			

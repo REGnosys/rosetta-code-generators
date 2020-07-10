@@ -60,7 +60,7 @@ public class GolangCodeGenerator extends AbstractExternalGenerator {
 				.map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
-		result.putAll(enumGenerator.generate3(rosettaEnums, version));
+		result.putAll(enumGenerator.generate(rosettaEnums, version));
 		result.putAll(functionGenerator.generate(rosettaFunctions, version));
 		return result;
 	}
