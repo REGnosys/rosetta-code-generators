@@ -112,8 +112,7 @@ class CSharpModelObjectGeneratorTest {
 
         val generatedFiles = generator.afterGenerate(rosettaModels)
         
-        val path =  Paths.get("cdm")
-        val dir = Files.createDirectories(path)
+        val dir =  Paths.get("Cdm")
         
         generatedFiles.forEach [ fileName, contents | { Files.write(dir.resolve(fileName), contents.toString.bytes) }]
     }
