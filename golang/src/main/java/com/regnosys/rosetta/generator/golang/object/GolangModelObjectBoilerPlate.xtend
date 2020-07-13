@@ -33,20 +33,7 @@ class GolangModelObjectBoilerPlate {
 			attribute.type.name.toFieldWithMetaTypeName
 	}
 	
-	//DB: since there are no generics in Go, for now, just ignore those 
-	
-//	private def toReferenceWithMetaTypeName(String type) {
-//		'''ReferenceWithMeta<«type.toGOType.toFirstUpper»>'''
-//	}
-//	
-//	private def toBasicReferenceWithMetaTypeName(String type) {
-//		'''ReferenceWithMeta<«type.toGOType.toFirstUpper»>'''
-//	}
-//	
-//	private def toFieldWithMetaTypeName(String type) {
-//		'''FieldWithMeta<«type.toGOType.toFirstUpper»>'''
-//	}
-	
+		
 	private def toReferenceWithMetaTypeName(String type) {
 		'''ReferenceWithMeta'''
 	}

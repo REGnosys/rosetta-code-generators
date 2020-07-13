@@ -44,9 +44,7 @@ class GolangModelObjectGeneratorTest {
 
 		val dirs = newArrayList(			
 			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-			//('/home/denis/Downloads/cdm-2.51.0/cdm-distribution-2.51.0/common-domain-model'),
-			//('/home/denis/Downloads/Regnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
 		);
 
 		val resourceSet = resourceSetProvider.get	
@@ -126,7 +124,7 @@ class GolangModelObjectGeneratorTest {
 		'''.generateGolang
 
 		val types = golang.get('types.go').toString
-		println(types)
+		
 		assertTrue(types.contains('''
 		package types
 		
@@ -175,23 +173,7 @@ class GolangModelObjectGeneratorTest {
 
 	}	
 	
-	@Test
-	@Disabled("Not applicable to Go")
-	def void shouldGenerateTypesExtends() {
-		val golang = '''
-			type TestType extends TestType2:
-				TestTypeValue1 string(1..1) <"Test string">
-				
-			type TestType2:
-				TestType2Value1 number(1..1) <"Test number">
-				
-			
-		'''.generateGolang
-
-		val types = golang.get('types.go').toString
-		assertTrue(types.contains('''export interface TestType extends TestType2'''))
-	}
-
+	
 	@Test	
 	def void shouldGenerateMetaTypes() {
 		val golang = '''
@@ -214,8 +196,7 @@ class GolangModelObjectGeneratorTest {
 							'''.generateGolang
 
 		val types = golang.values.join('\n').toString
-		println(types)
-		
+				
 		assertTrue(types.contains('''
 		type FieldWithMeta struct {
 		  Value interface{};
