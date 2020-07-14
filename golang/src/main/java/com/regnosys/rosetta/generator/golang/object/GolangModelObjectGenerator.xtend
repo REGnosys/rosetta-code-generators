@@ -41,31 +41,15 @@ class GolangModelObjectGenerator {
 		result;
 	}
 	
-	def Map<String, ? extends CharSequence> generate2(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
-		val result = new HashMap		
-		val enumImports = rosettaClasses
-				.map[allExpandedAttributes].flatten
-				.map[type]
-				.filter[isEnumeration]
-				.map[name]
-				.toSet
-		
-		val classes = rosettaClasses.sortBy[name].generateClasses2(enumImports, version).replaceTabsWithSpaces
-		result.put(CLASSES_FILENAME, classes)
-		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-		result.put(META_FILENAME, metaFields)
-		result;
-	}
-
+	
 	private def generateClasses(List<Data> rosettaClasses, Set<String> importedEnums,  String version) {
 	'''	
-	package types
+	package org_isda_cdm
 	
 	«fileComment(version)»	
 	
-	import . "cdm/metatypes";
-	import . "cdm/enums";
-	
+	import . "cdm/org_isda_cdm_metafields";
+		
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition)»
@@ -83,33 +67,6 @@ class GolangModelObjectGenerator {
 	«ENDFOR»
 	'''}
 	
-	private def generateClasses2(List<Data> rosettaClasses, Set<String> importedEnums,  String version) {
-	'''	
-	package types
-	
-	«fileComment(version)»	
-	
-	import . "cdm/metatypes";
-	import . "cdm/preenums";
-	import . "cdm/enums";
-	
-	
-«««	«FOR importLine : Lists.partition(importedEnums.toList, 10) SEPARATOR "\n"»
-«««		«FOR imported : importLine SEPARATOR "\n "»import "cdm/«imported»"«ENDFOR»
-«««	«ENDFOR»
-				
-	
-	«FOR c : rosettaClasses»
-		«classComment(c.definition)»
-		type «c.name» struct {
-			«FOR attribute : c.allExpandedAttributes»				
-				«methodComment(attribute.definition)»
-				«attribute.toAttributeName» «attribute.toType»;
-			«ENDFOR»
-		}
-			
-	«ENDFOR»
-	'''}
 	
 	
 	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {

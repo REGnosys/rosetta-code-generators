@@ -30,10 +30,9 @@ class GolangFunctionGenerator {
 	private def generateFunctions(List<RosettaNamed> functions, String version)  '''
 		
 		«fileComment(version)»
-		package functions	
+		package org_isda_cdm_functions	
 		
-		import . "cdm/enums"
-		import . "cdm/types"
+		import . "cdm/org_isda_cdm"		
 		
 		//Pointer type args used when the latter are optional
 		«FOR f : functions»

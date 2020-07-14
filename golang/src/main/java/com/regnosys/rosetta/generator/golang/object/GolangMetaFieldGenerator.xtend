@@ -14,7 +14,7 @@ class GolangMetaFieldGenerator {
 	}
 	
 		private def metaClasses() '''
-		package metatypes
+		package org_isda_cdm_metafields
 		
 		type FieldWithMeta struct {
 		  Value interface{};

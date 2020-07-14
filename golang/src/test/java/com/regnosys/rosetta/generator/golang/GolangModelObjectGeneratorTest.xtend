@@ -39,12 +39,14 @@ class GolangModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	@Disabled("Test to generate the golang for CDM")
+	//@Disabled("Test to generate the golang for CDM")
 	def void generateCdm() {
 
 		val dirs = newArrayList(			
-			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
+			//('rosetta-cdm/src/main/rosetta'),
+			//('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+			('/home/denis/Downloads/cdm-2.51.0/cdm-distribution-2.51.0/common-domain-model'),
+			('/home/denis/Downloads/Regnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
 		);
 
 		val resourceSet = resourceSetProvider.get	
@@ -57,16 +59,16 @@ class GolangModelObjectGeneratorTest {
 
 		val generatedFiles = generator.afterGenerate(rosettaModels)
 		
-		val enumsDir = Files.createDirectories(Paths.get("cdm/enums"))
-		val metaTypesDir = Files.createDirectories(Paths.get("cdm/metatypes"))
-		val typesDir = Files.createDirectories(Paths.get("cdm/types"))
-		val funcDir = Files.createDirectories(Paths.get("cdm/functions"))
+		val dir = Files.createDirectories(Paths.get("cdm/org_isda_cdm"))
+		val metaTypesDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm_metafields"))
+		
+		val funcDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm_functions"))
 		
 		generatedFiles.forEach [ fileName, contents |{
 			switch fileName{
-				case "enums.go": Files.write(enumsDir.resolve(fileName), contents.toString.bytes)
+				case "enums.go": Files.write(dir.resolve(fileName), contents.toString.bytes)
 				case "metatypes.go" : Files.write(metaTypesDir.resolve(fileName), contents.toString.bytes)
-				case "types.go" : Files.write(typesDir.resolve(fileName), contents.toString.bytes)
+				case "types.go" : Files.write(dir.resolve(fileName), contents.toString.bytes)
 				case "functions.go" : Files.write(funcDir.resolve(fileName), contents.toString.bytes)
 				default : throw new IOException("...")
 			}
@@ -91,7 +93,7 @@ class GolangModelObjectGeneratorTest {
 		 * Version: test
 		 */
 		  package TestEnum
-		  import . "cdm/enums"
+		  import . "cdm/org_isda_cdm"
 		  /**
 		   * Test enum description.
 		   */
@@ -126,16 +128,15 @@ class GolangModelObjectGeneratorTest {
 		val types = golang.get('types.go').toString
 		
 		assertTrue(types.contains('''
-		package types
+		package org_isda_cdm
 		
 		/**
 		 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
 		 * Version: test
 		 */
 		
-		import . "cdm/metatypes";
-		import . "cdm/enums";
-		
+		import . "cdm/org_isda_cdm_metafields";
+		  
 		
 		/**
 		 * Test type description.
@@ -168,8 +169,7 @@ class GolangModelObjectGeneratorTest {
 		   * Test date
 		   */
 		  TestType2Value2 basemodel.Date;
-		}
-			'''))
+		}'''))
 
 	}	
 	
