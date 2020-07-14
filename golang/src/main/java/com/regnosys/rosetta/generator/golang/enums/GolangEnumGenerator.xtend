@@ -23,8 +23,9 @@ class GolangEnumGenerator {
 	
 	def Map<String, ? extends CharSequence>generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums(version)
-		result.put(FILENAME,enums)
+		val enumTypes = rosettaEnums.sortBy[name].generateEnumTypes(version)
+		result.put(FILENAME,enumTypes)
+		result.putAll(generateEnumVals(rosettaEnums.sortBy[name], version))
 		return result;
 		
 	}
@@ -45,7 +46,22 @@ class GolangEnumGenerator {
 	}
 
 	
-	private def generateEnums(List<RosettaEnumeration> enums, String version){
+	private def generateEnumTypes(List<RosettaEnumeration> enums, String version){
+		return '''		
+		package org_isda_cdm
+		
+		«fileComment(version)»			
+		
+		«FOR e : enums»			
+			«classComment(e.definition)»
+			type «e.name» int			
+		«ENDFOR»
+	'''
+		
+	}
+	
+	private def generateEnumVals(List<RosettaEnumeration> enums, String version){
+		val dictionary = new HashMap<String, String>
 		for (e: enums){
 			val eString = '''		
 		«fileComment(version)»			
@@ -61,22 +77,12 @@ class GolangEnumGenerator {
 			«ENDFOR»
 			)		
 		'''.replaceTabsWithSpaces
-		val enumDir = Files.createDirectories(Paths.get('''cdm/«e.name»'''))
-		Files.write(enumDir.resolve('''«e.name».go'''), eString.toString.bytes)
-		}
-		
-		return '''		
-		package org_isda_cdm
-		
-		«fileComment(version)»			
-		
-		«FOR e : enums»			
-			«classComment(e.definition)»
-			type «e.name» int			
-		«ENDFOR»
-	'''
-		
+		val enumName = e.name		
+		dictionary.put(enumName, eString)
+		}		
+		return dictionary		
 	}
+	
 	
 	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
 		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0

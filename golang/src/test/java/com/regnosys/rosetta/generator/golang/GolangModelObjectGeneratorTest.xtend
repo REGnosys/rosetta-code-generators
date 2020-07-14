@@ -39,14 +39,12 @@ class GolangModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	//@Disabled("Test to generate the golang for CDM")
+	@Disabled("Test to generate the golang for CDM")
 	def void generateCdm() {
 
 		val dirs = newArrayList(			
-			//('rosetta-cdm/src/main/rosetta'),
-			//('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-			('/home/denis/Downloads/cdm-2.51.0/cdm-distribution-2.51.0/common-domain-model'),
-			('/home/denis/Downloads/Regnosys/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
+			('rosetta-cdm/src/main/rosetta'),
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
 		);
 
 		val resourceSet = resourceSetProvider.get	
@@ -65,12 +63,16 @@ class GolangModelObjectGeneratorTest {
 		val funcDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm_functions"))
 		
 		generatedFiles.forEach [ fileName, contents |{
+			
 			switch fileName{
 				case "enums.go": Files.write(dir.resolve(fileName), contents.toString.bytes)
 				case "metatypes.go" : Files.write(metaTypesDir.resolve(fileName), contents.toString.bytes)
 				case "types.go" : Files.write(dir.resolve(fileName), contents.toString.bytes)
 				case "functions.go" : Files.write(funcDir.resolve(fileName), contents.toString.bytes)
-				default : throw new IOException("...")
+				default : {
+					val currDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm/"+fileName));
+					Files.write(currDir.resolve(fileName+".go"), contents.toString.bytes)					
+				}
 			}
 		}
 			
@@ -84,8 +86,8 @@ class GolangModelObjectGeneratorTest {
 				TestEnumValue1 <"Test enum value 1">
 				TestEnumValue2 <"Test enum value 2">
 		'''.generateGolang
-		val fileName = "cdm/TestEnum/TestEnum.go"  
-    	val enumString = new String(Files.readAllBytes(Paths.get(fileName))); 
+		 
+    	val enumString = golang.get('TestEnum').toString; 
      	
 		assertTrue(enumString.contains('''
 		/**
