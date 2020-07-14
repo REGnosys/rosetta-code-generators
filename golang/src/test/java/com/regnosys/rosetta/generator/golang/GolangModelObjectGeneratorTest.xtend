@@ -39,7 +39,7 @@ class GolangModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	//@Disabled("Test to generate the golang for CDM")
+	@Disabled("Test to generate the golang for CDM")
 	def void generateCdm() {
 
 		val dirs = newArrayList(			
