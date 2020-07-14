@@ -32,7 +32,7 @@ class GolangFunctionGenerator {
 		«fileComment(version)»
 		package org_isda_cdm_functions	
 		
-		import . "cdm/org_isda_cdm"		
+		import . "org_isda_cdm"		
 		
 		//Pointer type args used when the latter are optional
 		«FOR f : functions»

@@ -48,7 +48,7 @@ class GolangModelObjectGenerator {
 	
 	«fileComment(version)»	
 	
-	import . "cdm/org_isda_cdm_metafields";
+	import . "org_isda_cdm_metafields";
 		
 	
 	«FOR c : rosettaClasses»

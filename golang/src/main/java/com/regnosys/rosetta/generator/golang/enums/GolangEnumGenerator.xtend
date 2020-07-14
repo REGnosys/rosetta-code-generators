@@ -66,7 +66,7 @@ class GolangEnumGenerator {
 			val eString = '''		
 		«fileComment(version)»			
 			package «e.name»
-			import . "cdm/org_isda_cdm"
+			import . "org_isda_cdm"
 			«val allEnumValues = allEnumsValues(e)»
 			«classComment(e.definition)»
 			

@@ -39,7 +39,7 @@ class GolangModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
-	@Disabled("Test to generate the golang for CDM")
+	//@Disabled("Test to generate the golang for CDM")
 	def void generateCdm() {
 
 		val dirs = newArrayList(			
@@ -57,10 +57,10 @@ class GolangModelObjectGeneratorTest {
 
 		val generatedFiles = generator.afterGenerate(rosettaModels)
 		
-		val dir = Files.createDirectories(Paths.get("cdm/org_isda_cdm"))
-		val metaTypesDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm_metafields"))
+		val dir = Files.createDirectories(Paths.get("org_isda_cdm"))
+		val metaTypesDir = Files.createDirectories(Paths.get("org_isda_cdm_metafields"))
 		
-		val funcDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm_functions"))
+		val funcDir = Files.createDirectories(Paths.get("org_isda_cdm_functions"))
 		
 		generatedFiles.forEach [ fileName, contents |{
 			
@@ -70,7 +70,7 @@ class GolangModelObjectGeneratorTest {
 				case "types.go" : Files.write(dir.resolve(fileName), contents.toString.bytes)
 				case "functions.go" : Files.write(funcDir.resolve(fileName), contents.toString.bytes)
 				default : {
-					val currDir = Files.createDirectories(Paths.get("cdm/org_isda_cdm/"+fileName));
+					val currDir = Files.createDirectories(Paths.get("org_isda_cdm/"+fileName));
 					Files.write(currDir.resolve(fileName+".go"), contents.toString.bytes)					
 				}
 			}
@@ -95,7 +95,7 @@ class GolangModelObjectGeneratorTest {
 		 * Version: test
 		 */
 		  package TestEnum
-		  import . "cdm/org_isda_cdm"
+		  import . "org_isda_cdm"
 		  /**
 		   * Test enum description.
 		   */
@@ -137,7 +137,7 @@ class GolangModelObjectGeneratorTest {
 		 * Version: test
 		 */
 		
-		import . "cdm/org_isda_cdm_metafields";
+		import . "org_isda_cdm_metafields";
 		  
 		
 		/**
