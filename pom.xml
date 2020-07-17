@@ -33,7 +33,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>2.58.3</rosetta.dsl.version>
+				<rosetta.dsl.version>0.0.0.master</rosetta.dsl.version>
 				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
