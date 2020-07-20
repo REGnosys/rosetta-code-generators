@@ -43,7 +43,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>2.58.3</rosetta.dsl.version>
+				<rosetta.dsl.version>2.60.0</rosetta.dsl.version>
 				<regnosys.common.version>2.21.1</regnosys.common.version>
 			</properties>
 		</profile>
