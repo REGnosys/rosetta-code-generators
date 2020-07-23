@@ -24,6 +24,8 @@ class GolangModelObjectGenerator {
 	
 	static final String CLASSES_FILENAME = 'types.go'
 	static final String META_FILENAME = 'metatypes.go'
+	static final String CLASSES_FOLDERNAME = 'org_isda_cdm'
+	static final String META_FOLDERNAME = 'org_isda_cdm_metafields'
 	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap		
@@ -35,9 +37,9 @@ class GolangModelObjectGenerator {
 				.toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(enumImports, version).replaceTabsWithSpaces
-		result.put(CLASSES_FILENAME, classes)
+		result.put(CLASSES_FOLDERNAME+"/"+ CLASSES_FILENAME, classes)
 		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-		result.put(META_FILENAME, metaFields)
+		result.put(META_FOLDERNAME +"/"+ META_FILENAME, metaFields)
 		result;
 	}
 	

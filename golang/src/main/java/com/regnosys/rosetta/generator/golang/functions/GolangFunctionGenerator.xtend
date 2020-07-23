@@ -19,11 +19,12 @@ class GolangFunctionGenerator {
 	@Inject extension GolangModelObjectBoilerPlate
 	
 	static final String FILENAME = 'functions.go'
+	static final String FOLDERNAME = 'org_isda_cdm_functions'
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaNamed> rosettaFunctions, String version) {
 		val result = new HashMap
 		val functions = rosettaFunctions.sortBy[name].generateFunctions(version).replaceTabsWithSpaces
-		result.put(FILENAME,functions)
+		result.put(FOLDERNAME+"/"+ FILENAME,functions)
 		return result;
 	}
 	
@@ -48,6 +49,7 @@ class GolangFunctionGenerator {
 		«classComment("Function definition for "+f.name)»			
 		return «f.output.toZeroValOfGoType»
 		}
+		
 	'''
 	
 	private def dispatch writeFunction(FunctionDispatch f)

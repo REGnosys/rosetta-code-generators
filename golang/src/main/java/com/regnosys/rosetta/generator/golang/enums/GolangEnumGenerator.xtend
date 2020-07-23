@@ -19,12 +19,13 @@ class GolangEnumGenerator {
 	@Inject extension GolangModelObjectBoilerPlate
 	
 	static final String FILENAME = 'enums.go'
+	static final String FOLDERNAME = 'org_isda_cdm'
 		
 	
 	def Map<String, ? extends CharSequence>generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
 		val enumTypes = rosettaEnums.sortBy[name].generateEnumTypes(version)
-		result.put(FILENAME,enumTypes)
+		result.put(FOLDERNAME+"/"+FILENAME,enumTypes)
 		result.putAll(generateEnumVals(rosettaEnums.sortBy[name], version))
 		return result;
 		
@@ -77,7 +78,7 @@ class GolangEnumGenerator {
 			«ENDFOR»
 			)		
 		'''.replaceTabsWithSpaces
-		val enumName = e.name		
+		val enumName = FOLDERNAME+"/"+ e.name+"/"+e.name+".go"		
 		dictionary.put(enumName, eString)
 		}		
 		return dictionary		

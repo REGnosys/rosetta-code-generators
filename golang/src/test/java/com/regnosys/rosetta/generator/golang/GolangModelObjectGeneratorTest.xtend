@@ -44,7 +44,7 @@ class GolangModelObjectGeneratorTest {
 
 		val dirs = newArrayList(			
 			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')			
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')							
 		);
 
 		val resourceSet = resourceSetProvider.get	
@@ -55,25 +55,16 @@ class GolangModelObjectGeneratorTest {
 
 		val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
 
-		val generatedFiles = generator.afterGenerate(rosettaModels)
-		
-		val dir = Files.createDirectories(Paths.get("org_isda_cdm"))
-		val metaTypesDir = Files.createDirectories(Paths.get("org_isda_cdm_metafields"))
-		
-		val funcDir = Files.createDirectories(Paths.get("org_isda_cdm_functions"))
+		val generatedFiles = generator.afterGenerate(rosettaModels)		
+
+		val rootDir = System.getProperty("user.dir")
 		
 		generatedFiles.forEach [ fileName, contents |{
-			
-			switch fileName{
-				case "enums.go": Files.write(dir.resolve(fileName), contents.toString.bytes)
-				case "metatypes.go" : Files.write(metaTypesDir.resolve(fileName), contents.toString.bytes)
-				case "types.go" : Files.write(dir.resolve(fileName), contents.toString.bytes)
-				case "functions.go" : Files.write(funcDir.resolve(fileName), contents.toString.bytes)
-				default : {
-					val currDir = Files.createDirectories(Paths.get("org_isda_cdm/"+fileName));
-					Files.write(currDir.resolve(fileName+".go"), contents.toString.bytes)					
-				}
-			}
+			val pathString = rootDir+"/"+fileName
+			val path = Paths.get(pathString)
+			val file = new File(pathString);
+			file.getParentFile().mkdirs();					
+			Files.write(path, contents.toString.bytes)			
 		}
 			
 		]
@@ -87,7 +78,7 @@ class GolangModelObjectGeneratorTest {
 				TestEnumValue2 <"Test enum value 2">
 		'''.generateGolang
 		 
-    	val enumString = golang.get('TestEnum').toString; 
+    	val enumString = golang.get('org_isda_cdm/TestEnum/TestEnum.go').toString; 
      	
 		assertTrue(enumString.contains('''
 		/**
@@ -127,7 +118,7 @@ class GolangModelObjectGeneratorTest {
 				TestType2Value2 date(1..1) <"Test date">
 		'''.generateGolang
 
-		val types = golang.get('types.go').toString
+		val types = golang.get('org_isda_cdm/types.go').toString
 		
 		assertTrue(types.contains('''
 		package org_isda_cdm
