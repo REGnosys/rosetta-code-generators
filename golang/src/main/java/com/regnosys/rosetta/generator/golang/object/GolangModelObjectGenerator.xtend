@@ -50,6 +50,7 @@ class GolangModelObjectGenerator {
 	
 	«fileComment(version)»	
 	
+	import "time"
 	import . "org_isda_cdm_metafields";
 		
 	

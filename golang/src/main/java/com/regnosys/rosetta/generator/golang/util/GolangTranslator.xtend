@@ -15,13 +15,13 @@ class GolangTranslator {
 			case 'time':
 				'time.Time'
 			case 'date':
-				'basemodel.Date'
+				'time.Time'
 			case 'Date':
-				'basemodel.Date'
+				'time.Time'
 			case 'zonedDateTime':
-				'basemodel.Date'
+				'time.Time'
 			case 'number':
-				'cdmbase.Decimal'
+				'float64'
 			case 'boolean':
 				'bool'
 			case RQualifiedType.PRODUCT_TYPE.qualifiedType:

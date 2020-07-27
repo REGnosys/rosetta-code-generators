@@ -44,8 +44,7 @@ class GolangModelObjectGeneratorTest {
 
 		val dirs = newArrayList(			
 			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')		
-									
+			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
 		);
 
 		val resourceSet = resourceSetProvider.get	
@@ -129,6 +128,7 @@ class GolangModelObjectGeneratorTest {
 		 * Version: test
 		 */
 		
+		import "time"
 		import . "org_isda_cdm_metafields";
 		  
 		
@@ -158,11 +158,11 @@ class GolangModelObjectGeneratorTest {
 		  /**
 		   * Test number
 		   */
-		  TestType2Value1 cdmbase.Decimal;
+		  TestType2Value1 float64;
 		  /**
 		   * Test date
 		   */
-		  TestType2Value2 basemodel.Date;
+		  TestType2Value2 time.Time;
 		}'''))
 
 	}	

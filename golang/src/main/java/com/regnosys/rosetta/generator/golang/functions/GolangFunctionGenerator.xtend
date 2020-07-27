@@ -33,6 +33,7 @@ class GolangFunctionGenerator {
 		«fileComment(version)»
 		package org_isda_cdm_functions	
 		
+		import "time"
 		import . "org_isda_cdm"		
 		
 		//Pointer type args used when the latter are optional
@@ -59,8 +60,8 @@ class GolangFunctionGenerator {
 		switch att.toRawType.toString{
 			case "bool": '''false'''
 			case "int": '''0'''
-			default : '''«att.toType»{}'''
-			
+			case "float64": '''0'''			
+			default : '''«att.toReturnType»{}'''			
 		}
 			
 		
@@ -68,19 +69,35 @@ class GolangFunctionGenerator {
 	
 	private def toType(Attribute att) {
 		if (att.card!==null && att.card.sup>1)
-			'''[«att.toRawType»]'''
+			'''[]«att.toRawType»'''
 		else
 			att.toRawType.prefixSingleOptional(att.card)
+	}
+	
+	private def toReturnType(Attribute att) {
+		if (att.card!==null && att.card.sup>1)
+			'''[]«att.toRawType»'''
+		else
+			att.toRawType.prefixSingleOptionalReturn(att.card)
 	}
 	
 	private def toRawType(Attribute input) {
 		input.type.name.toGOType	
 	}
+	
+	
 	//optional parameters are made into pointer types so that nil can be passed when the option is absent
 	//perhaps a better approach is to pass lists as is done in Java CDM
 	private def prefixSingleOptional(CharSequence type, RosettaCardinality card) {
 		if (card!==null && card.inf<1)
 			'''*«type»'''
+		else
+			type
+	}
+	
+	private def prefixSingleOptionalReturn(CharSequence type, RosettaCardinality card) {
+		if (card!==null && card.inf<1)
+			'''&«type»'''
 		else
 			type
 	}
