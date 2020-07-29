@@ -33,7 +33,7 @@ class CSharpMetaFieldGenerator {
         // Any enumerations with comments currently fails to parse correctly.
         val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name === null].toSet
         for (m : missing) {
-            println("Missing: " + m.name)
+            println("Missing: " + m.name + " enclosed by: " + m.enclosingType + " : " +  m.type)
         }
 
         val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name !== null].
