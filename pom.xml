@@ -70,6 +70,7 @@
 		<module>default-cdm-generators</module>
 		<module>typescript</module>
 		<module>scala</module>
+		<module>golang</module>
 		<module>c-sharp</module>
 	</modules>
 
