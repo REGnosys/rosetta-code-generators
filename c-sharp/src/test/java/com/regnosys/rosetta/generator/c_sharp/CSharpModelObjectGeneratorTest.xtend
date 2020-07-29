@@ -96,7 +96,7 @@ class CSharpModelObjectGeneratorTest {
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.58.3/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.64.0/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
