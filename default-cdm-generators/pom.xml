@@ -36,6 +36,11 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.regnosys.rosetta.code-generators</groupId>
+			<artifactId>golang</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.emf</groupId>
 			<artifactId>org.eclipse.emf.ecore</artifactId>
 		</dependency>

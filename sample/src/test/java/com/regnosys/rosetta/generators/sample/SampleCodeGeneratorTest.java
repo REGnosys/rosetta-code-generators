@@ -4,10 +4,10 @@ import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 
 import java.net.URL;
 import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 import com.google.common.io.Resources;
@@ -33,6 +33,6 @@ class SampleCodeGeneratorTest {
 		assertThat(map.entrySet(), hasSize(1));
 		Map.Entry<String, ? extends CharSequence> entry = map.entrySet().iterator().next();
 		assertThat(entry.getKey(), is("com/rosetta/model/Foo.sample"));
-		assertThat(entry.getValue(), is(toStringContents(source)));
+		assertThat(entry.getValue().toString(), equalToIgnoringWhiteSpace(toStringContents(source)));
 	}
 }
