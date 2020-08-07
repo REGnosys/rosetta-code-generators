@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cdm", "Cdm\Cdm.csproj", "{EB22191D-9BB1-40D9-ADC6-A9ECFD67EBBA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rosetta", "Rosetta\Rosetta.csproj", "{370AD8B4-A762-4ECB-B158-5B534F94C751}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB22191D-9BB1-40D9-ADC6-A9ECFD67EBBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB22191D-9BB1-40D9-ADC6-A9ECFD67EBBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB22191D-9BB1-40D9-ADC6-A9ECFD67EBBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB22191D-9BB1-40D9-ADC6-A9ECFD67EBBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{370AD8B4-A762-4ECB-B158-5B534F94C751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{370AD8B4-A762-4ECB-B158-5B534F94C751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{370AD8B4-A762-4ECB-B158-5B534F94C751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{370AD8B4-A762-4ECB-B158-5B534F94C751}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

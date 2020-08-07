@@ -13,34 +13,33 @@ import com.regnosys.rosetta.generator.golang.GolangCodeGenerator;
 import com.regnosys.rosetta.generator.scala.ScalaCodeGenerator;
 import com.regnosys.rosetta.generator.typescript.TypescriptCodeGenerator;
 
-public class DefaultExternalGeneratorsProvider implements Provider<ExternalGenerators>{
+public final class DefaultExternalGeneratorsProvider implements Provider<ExternalGenerators> {
 
 	@Inject
-	DamlCodeGenerator damlGenerator;
-	
+	private DamlCodeGenerator damlGenerator;
+
 	@Inject
-	ScalaCodeGenerator scalaGenerator;
-	
+	private ScalaCodeGenerator scalaGenerator;
+
 	@Inject
-	TypescriptCodeGenerator typescriptGenerator;
-	
+	private TypescriptCodeGenerator typescriptGenerator;
+
 	@Inject
-	GolangCodeGenerator golangGenerator;
-	
+	private GolangCodeGenerator golangGenerator;
+
 	@Override
 	public ExternalGenerators get() {
 		return new DefaultGenerators();
 	}
-	
+
 	private final class DefaultGenerators implements ExternalGenerators {
 
-		List<ExternalGenerator> gens = Arrays.asList(damlGenerator, scalaGenerator, typescriptGenerator, golangGenerator);
-		
+		private List<ExternalGenerator> gens = Arrays.asList(damlGenerator, scalaGenerator, typescriptGenerator,
+				golangGenerator);
+
 		@Override
 		public Iterator<ExternalGenerator> iterator() {
 			return gens.iterator();
 		}
-		
 	}
-
 }
