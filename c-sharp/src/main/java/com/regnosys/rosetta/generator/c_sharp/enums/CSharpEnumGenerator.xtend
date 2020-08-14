@@ -10,6 +10,8 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 
+import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
+
 class CSharpEnumGenerator {
 
     @Inject
