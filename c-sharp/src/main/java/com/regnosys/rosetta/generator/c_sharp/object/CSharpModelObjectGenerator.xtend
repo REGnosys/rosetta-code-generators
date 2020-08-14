@@ -20,11 +20,13 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension RosettaExtensions
+
     @Inject
     extension CSharpModelObjectBoilerPlate
+
     @Inject
     extension CSharpMetaFieldGenerator
-    
+
     static final String CLASSES_FILENAME = 'Types.cs'
     static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
@@ -46,7 +48,7 @@ class CSharpModelObjectGenerator {
     }
 
     def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes,
-        String version) {
+        String version, int cSharpVersion) {
         val result = new HashMap
 
         val superTypes = rosettaClasses
@@ -57,7 +59,7 @@ class CSharpModelObjectGenerator {
         val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
         result.put(com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator.INTERFACES_FILENAME, interfaces)
 
-        val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
+        val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, cSharpVersion).replaceTabsWithSpaces
         result.put(CLASSES_FILENAME, classes)
 
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
@@ -81,7 +83,7 @@ class CSharpModelObjectGenerator {
         '''
     }
 
-    private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version) {
+    private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, int cSharpVersion) {
         '''
             «fileComment(version)»
             [assembly: Rosetta.Lib.Attributes.CdmVersion("«version»")]
@@ -110,12 +112,10 @@ class CSharpModelObjectGenerator {
 «««                 Use of one-of condtion on a derived class is not properly defined, so market it as an error and ignore. 
                     «val isChild = c.superType !== null»
                     «val isOneOf = isOneOf(c) && !isChild»
-                    «var properties = if (isOneOf) "{ get; set; }" else "{ get; }"»
+                    «var properties = if (isOneOf) getOneOfProperty(cSharpVersion) else " { get; }"»
                     «classComment(c.definition)»
                     «IF isOneOf»[OneOf]«ELSEIF isOneOf(c)»// ERROR: [OneOf] cannot be used on a derived class«ENDIF»
-«««                 NB: C# 9: nNormal declaration should change to "public data class" to make immutable
-«««                 and also remove the need to declare properties explicitly
-                    public «IF isOneOf»sealed «ENDIF»class «c.name»«generateParents(c, superTypes)»
+                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name»«generateParents(c, superTypes)»
                     {
                         «IF !isOneOf»
                         [JsonConstructor]
@@ -132,7 +132,7 @@ class CSharpModelObjectGenerator {
                             «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
-                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType(isOneOf)» «attribute.toPropertyName» «properties»
+                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType(isOneOf)» «attribute.toPropertyName»«properties»
                         «ENDFOR»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
@@ -142,7 +142,13 @@ class CSharpModelObjectGenerator {
             }
         '''
     }
-    
+
+    private def getOneOfProperty(int cSharpVersion) '''
+            «IF cSharpVersion >= 9» { get; init; }«ELSE» { get; set; }«ENDIF»'''
+
+    private def getOneOfType(int cSharpVersion) '''
+            «IF cSharpVersion >= 9»sealed record«ELSE»sealed class«ENDIF»'''
+
     private def isOneOf(Data rosettaClass) {
         rosettaClass.conditions !== null && !rosettaClass.conditions.filter[constraint?.oneOf].isEmpty()
     }

@@ -2,15 +2,13 @@ package com.regnosys.rosetta.generator.c_sharp.enums
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectBoilerPlate
+import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-
-import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
-import com.regnosys.rosetta.generator.java.enums.EnumHelper
 
 class CSharpEnumGenerator {
 
@@ -83,6 +81,7 @@ class CSharpEnumGenerator {
         result.put(FILENAME, enums)
         return result;
     }
+    
 
     private def generateEnums(List<RosettaEnumeration> enums, String version) // TODO: Handle synonyms via attribute??
     // TODO: Handle serialization to/from java style names via [EnumMember(Value = "<javaName>")]
@@ -127,14 +126,7 @@ class CSharpEnumGenerator {
             «ENDFOR»
         }
     '''
-/* 
-    private def static String prefixWithUnderscoreIfStartsWithNumber(String name) {
-        if (Character.isDigit(name.charAt(0)))
-            return "_" + name
-        else
-            return name
-    }
-*/
+
     def static toCSharpEnumName(RosettaEnumValue rosettaEnumValue) {
         return rosettaEnumValue.name.toFirstUpper
     }

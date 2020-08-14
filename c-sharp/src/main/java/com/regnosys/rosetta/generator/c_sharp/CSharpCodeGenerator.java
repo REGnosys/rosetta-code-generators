@@ -20,7 +20,9 @@ import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
 
-public class CSharpCodeGenerator extends AbstractExternalGenerator {
+public abstract class CSharpCodeGenerator extends AbstractExternalGenerator {
+	
+	private int cSharpVersion;
 
 	@Inject
 	private CSharpModelObjectGenerator pocoGenerator;
@@ -28,8 +30,9 @@ public class CSharpCodeGenerator extends AbstractExternalGenerator {
 	@Inject
 	private CSharpEnumGenerator enumGenerator;
 
-	public CSharpCodeGenerator() {
-		super("c-sharp");
+	protected CSharpCodeGenerator(int version) {
+		super("c-sharp " + version);
+		cSharpVersion = version;
 		enumGenerator = new CSharpEnumGenerator();
 	}
 
@@ -54,7 +57,7 @@ public class CSharpCodeGenerator extends AbstractExternalGenerator {
 				.filter(t -> Function.class.isInstance(t)).map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
-		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version));
+		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version, cSharpVersion));
 		return result;
 	}
 
