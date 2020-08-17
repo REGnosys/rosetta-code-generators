@@ -27,6 +27,7 @@ class CSharpModelObjectGenerator {
     @Inject
     extension CSharpMetaFieldGenerator
 
+    static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
     static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
@@ -48,7 +49,7 @@ class CSharpModelObjectGenerator {
     }
 
     def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes,
-        String version, int cSharpVersion) {
+        String version, CSharpCodeInfo cSharpCodeInfo) {
         val result = new HashMap
 
         val superTypes = rosettaClasses
@@ -59,13 +60,30 @@ class CSharpModelObjectGenerator {
         val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
         result.put(com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator.INTERFACES_FILENAME, interfaces)
 
-        val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, cSharpVersion).replaceTabsWithSpaces
+        val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
         result.put(CLASSES_FILENAME, classes)
 
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FILENAME, metaFields)
+        
+        result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(version, cSharpCodeInfo.getDotNetVersion))
 
         result;
+    }
+
+    private def generateAssemblyInfo(String version, String dotnetVersion) {
+        '''
+        using System.Reflection;
+
+        [assembly: AssemblyTitle("Org.Isda.Cdm")]
+        [assembly: AssemblyDescription("«dotnetVersion» Implementation of ISDA/CDM")]
+        [assembly: AssemblyCompany("ISDA.org")]
+        [assembly: AssemblyProduct("CDM")]
+        [assembly: AssemblyCopyright("Copyright © ISDA «getYear»")]
+        [assembly: AssemblyTrademark("CDM")]
+
+        [assembly: AssemblyVersion("«version»")]
+        '''
     }
 
     private def generateAttributeComment(ExpandedAttribute attribute, Data c, Set<Data> superTypes) {
@@ -75,9 +93,7 @@ class CSharpModelObjectGenerator {
                 «IF attribute.enclosingType != c.name || superTypes.contains(c)»
                     /// <inheritdoc/>
                 «ELSE»
-                    /// <summary>
-                    /// «attribute.definition»
-                    /// </summary>
+                    «comment(attribute.definition)»
                 «ENDIF»
             «ENDIF»
         '''
@@ -204,5 +220,9 @@ class CSharpModelObjectGenerator {
 
     private def getInterfaceName(Data c) {
         '''I«c.name»'''
+    }
+
+    private def getYear() {
+        java.time.Year.now().getValue()
     }
 }

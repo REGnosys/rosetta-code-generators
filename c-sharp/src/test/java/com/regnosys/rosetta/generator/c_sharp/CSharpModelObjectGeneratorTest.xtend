@@ -390,6 +390,8 @@ class CSharpModelObjectGeneratorTest {
 
         val types = c_sharp.get('Types.cs').toString
         
+        println("types: " + types);
+        
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
