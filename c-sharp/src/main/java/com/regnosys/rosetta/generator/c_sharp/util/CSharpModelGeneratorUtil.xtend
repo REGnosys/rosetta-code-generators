@@ -1,5 +1,7 @@
 package com.regnosys.rosetta.generator.c_sharp.util
 
+import org.apache.commons.text.StringEscapeUtils
+
 class CSharpModelGeneratorUtil {
 
      static def classComment(String definition) '''
@@ -27,7 +29,7 @@ class CSharpModelGeneratorUtil {
 
      private static def splitDefinition(String definition) '''
            «FOR line : definition.split("\n")»
-           /// «line»
+           /// «StringEscapeUtils.escapeXml11(line)»
            «ENDFOR»
      '''
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import java.util.List
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -26,7 +27,10 @@ class CSharpModelObjectGeneratorTest {
     extension ModelHelper
 
     @Inject
-    CSharpCodeGenerator generator;
+    CSharp8CodeGenerator generator8;
+
+    @Inject
+    CSharp9CodeGenerator generator9;
 
     @Inject
     extension ParseHelper<RosettaModel>
@@ -91,12 +95,20 @@ class CSharpModelObjectGeneratorTest {
         ''')
     }
 
+    def void generateCdm(CSharpCodeGenerator generator, String subDirectory, List<RosettaModel> rosettaModels) {
+        val generatedFiles = generator.afterGenerate(rosettaModels)
+
+        val dir =  Paths.get("Cdm/" + subDirectory)
+
+        generatedFiles.forEach [ fileName, contents | { Files.write(dir.resolve(fileName), contents.toString.bytes) }]
+    }
+
     @Test
     //@Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.64.0/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.65.10/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
@@ -109,12 +121,9 @@ class CSharpModelObjectGeneratorTest {
         ].forEach[parse(resourceSet)]
 
         val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
-        val generatedFiles = generator.afterGenerate(rosettaModels)
         
-        val dir =  Paths.get("Cdm")
-        
-        generatedFiles.forEach [ fileName, contents | { Files.write(dir.resolve(fileName), contents.toString.bytes) }]
+        generateCdm(generator8, "NetStandard.2.1", rosettaModels)
+        generateCdm(generator9, "Net.5.0", rosettaModels)
     }
 
     @Test
@@ -380,6 +389,8 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
+        
+        //println("types: " + types);
         
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
@@ -655,16 +666,16 @@ class CSharpModelObjectGeneratorTest {
                       [metadata scheme]
         '''.generateCSharp
 
-        val types = c_sharp.values.join('\n').toString
+        val metaTypes = c_sharp.values.join('\n').toString
 
-        // println("types => " + types);
+        //println("types => " + metaTypes);
 
-        assertTrue(containsFileComment(types))
-        assertTrue(containsNamespace(types, "Org.Isda.Cdm.MetaFields"))
-        assertTrue(containsNullable(types))
-        assertTrue(containsUsings(types, false, false))
+        assertTrue(containsFileComment(metaTypes))
+        assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
+        assertTrue(containsNullable(metaTypes))
+        assertTrue(containsUsings(metaTypes, false, false))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class MetaFields
                 {
@@ -684,7 +695,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class FieldWithMetaString
                 {
@@ -701,7 +712,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class FieldWithMetaGmtTestEnum
                 {
@@ -719,7 +730,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class ReferenceWithMetaGmtTestType2
                 {
@@ -739,7 +750,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class BasicReferenceWithMetaDecimal
                 {
@@ -759,7 +770,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class GmtTestType
                 {
@@ -776,7 +787,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
 
-        assertTrue(types.contains('''
+        assertTrue(metaTypes.contains('''
             «""»
                 public class GmtTestType2
                 {
@@ -853,6 +864,6 @@ class CSharpModelObjectGeneratorTest {
     def generateCSharp(CharSequence model) {
         val eResource = model.parseRosettaWithNoErrors.eResource
 
-        generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
+        generator8.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     }
 }

@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
+import com.regnosys.rosetta.generator.c_sharp.object.CSharpCodeInfo;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
@@ -20,7 +21,9 @@ import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
 
-public class CSharpCodeGenerator extends AbstractExternalGenerator {
+public abstract class CSharpCodeGenerator extends AbstractExternalGenerator implements CSharpCodeInfo {
+	
+	private int cSharpVersion;
 
 	@Inject
 	private CSharpModelObjectGenerator pocoGenerator;
@@ -28,8 +31,9 @@ public class CSharpCodeGenerator extends AbstractExternalGenerator {
 	@Inject
 	private CSharpEnumGenerator enumGenerator;
 
-	public CSharpCodeGenerator() {
-		super("c-sharp");
+	protected CSharpCodeGenerator(int version) {
+		super("C#" + version);
+		cSharpVersion = version;
 		enumGenerator = new CSharpEnumGenerator();
 	}
 
@@ -54,7 +58,7 @@ public class CSharpCodeGenerator extends AbstractExternalGenerator {
 				.filter(t -> Function.class.isInstance(t)).map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
-		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version));
+		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version, this));
 		return result;
 	}
 
