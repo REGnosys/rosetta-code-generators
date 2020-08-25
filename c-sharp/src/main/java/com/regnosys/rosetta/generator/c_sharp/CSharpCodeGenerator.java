@@ -16,15 +16,11 @@ import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.rosetta.simple.Function;
 
 public abstract class CSharpCodeGenerator extends AbstractExternalGenerator implements CSharpCodeInfo {
 	
-	private int cSharpVersion;
-
 	@Inject
 	private CSharpModelObjectGenerator pocoGenerator;
 
@@ -33,7 +29,6 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 
 	protected CSharpCodeGenerator(int version) {
 		super("C#" + version);
-		cSharpVersion = version;
 		enumGenerator = new CSharpEnumGenerator();
 	}
 
@@ -52,10 +47,6 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m -> m.getElements().stream())
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
-
-		// TODO: Generate functions like DAML???
-		List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m -> m.getElements().stream())
-				.filter(t -> Function.class.isInstance(t)).map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
 		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version, this));
