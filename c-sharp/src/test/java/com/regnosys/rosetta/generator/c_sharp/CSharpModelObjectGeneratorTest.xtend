@@ -100,7 +100,18 @@ class CSharpModelObjectGeneratorTest {
 
         val dir =  Paths.get("Cdm/" + subDirectory)
 
-        generatedFiles.forEach [ fileName, contents | { Files.write(dir.resolve(fileName), contents.toString.bytes) }]
+        generatedFiles.forEach [ fileName, contents | 
+            { 
+                val filePath = dir.resolve(fileName)
+                val parent = filePath.getParent()
+                if (!Files.exists(parent)) {
+                    val parentDir = new File(parent.toUri)
+                    parentDir.mkdirs()
+                }
+                Files.write(filePath, contents.toString.bytes) 
+                
+            }
+        ]
     }
 
     @Test
