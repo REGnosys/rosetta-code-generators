@@ -160,7 +160,7 @@ class CSharpModelObjectGenerator {
         '''
     }
 
-    private def getAssemblyVersion(String version) {
+    static def getAssemblyVersion(String version) {
         // Take the first three numbers from the version string, which could be "0.0.0.master".
         return String.join(".", Arrays.copyOfRange(version.split("\\."), 0, 3))
     }
