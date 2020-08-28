@@ -18,6 +18,7 @@ import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
 import java.util.List
+import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -115,11 +116,17 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    def void shouldGenerateAssemblyVersion() {
+        assertEquals(CSharpModelObjectGenerator.getAssemblyVersion("2.71.7"), "2.71.7");
+        assertEquals(CSharpModelObjectGenerator.getAssemblyVersion("0.0.0.master"), "0.0.0");
+    }
+
+    @Test
     //@Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.65.10/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.71.7/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
