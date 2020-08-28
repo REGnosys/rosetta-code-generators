@@ -7,6 +7,7 @@ import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
+import java.util.Arrays
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -66,7 +67,7 @@ class CSharpModelObjectGenerator {
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FILENAME, metaFields)
         
-        result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(version, cSharpCodeInfo.getDotNetVersion))
+        result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
         result;
     }
@@ -157,6 +158,11 @@ class CSharpModelObjectGenerator {
                 «ENDFOR»
             }
         '''
+    }
+
+    private def getAssemblyVersion(String version) {
+        // Take the first three numbers from the version string, which could be "0.0.0.master".
+        return String.join(".", Arrays.copyOfRange(version.split("\\."), 0, 3))
     }
 
     private def getOneOfProperty(int cSharpVersion) '''
