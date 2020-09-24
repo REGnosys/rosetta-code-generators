@@ -13,7 +13,6 @@ import com.regnosys.rosetta.generator.daml.functions.DamlFunctionGenerator;
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectGenerator;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
-import com.regnosys.rosetta.rosetta.RosettaClass;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -50,7 +49,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 		
 		Map<String, CharSequence> result = new HashMap<>();
 
-		List<? extends RosettaType> rosettaClasses = models.stream().flatMap(m->m.getElements().stream()).filter((e)-> e instanceof RosettaClass || e instanceof Data).map(RosettaType.class::cast).collect(Collectors.toList());
+		List<? extends RosettaType> rosettaClasses = models.stream().flatMap(m->m.getElements().stream()).filter((e)-> e instanceof Data).map(RosettaType.class::cast).collect(Collectors.toList());
 		List<RosettaMetaType> metaTypes = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
 				.map(RosettaMetaType.class::cast).collect(Collectors.toList());
 

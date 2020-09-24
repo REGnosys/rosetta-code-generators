@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.golang.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import java.util.List
 
@@ -72,18 +71,11 @@ class GolangModelObjectGenerator {
 	
 	
 	
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
-		type.allSuperTypes.expandedAttributes
-	}
-	
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
 		type.allSuperTypes.map[it.expandedAttributes].flatten
 	}
 	
-	def dispatch String definition(RosettaClass element) {
-		element.definition
-	}
-	def dispatch String definition(Data element){
+	def String definition(Data element){
 		element.definition
 	}
 

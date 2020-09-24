@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
-import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -142,18 +141,11 @@ class ScalaModelObjectGenerator {
 		'''
 	}
 
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
-		type.allSuperTypes.expandedAttributes
-	}
-	
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
 		type.allSuperTypes.map[it.expandedAttributes].flatten
 	}
 	
-	def dispatch String definition(RosettaClass element) {
-		element.definition
-	}
-	def dispatch String definition(Data element){
+	def String definition(Data element){
 		element.definition
 	}
 }
