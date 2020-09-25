@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
-import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.HashMap
 import java.util.List
@@ -25,9 +24,9 @@ class DamlModelObjectGenerator {
 	static final String META_CLASSES_FILENAME = 'Org/Isda/Cdm/MetaClasses.daml'
 	static final String ZONE_DATTTIME_FILENAME = 'Org/Isda/Cdm/ZonedDateTime.daml'
 	
-	def Map<String, ? extends CharSequence> generate(Iterable<? extends RosettaType> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap
-		val classes = rosettaClasses.filter(Data).sortBy[name].generateClasses(version).replaceTabsWithSpaces
+		val classes = rosettaClasses.sortBy[name].generateClasses(version).replaceTabsWithSpaces
 		result.put(CLASSES_FILENAME, classes)
 		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
 		result.put(META_FIELDS_FILENAME, metaFields)
