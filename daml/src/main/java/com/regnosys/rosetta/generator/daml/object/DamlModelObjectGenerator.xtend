@@ -2,18 +2,16 @@ package com.regnosys.rosetta.generator.daml.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.rosetta.RosettaClass
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
+import com.regnosys.rosetta.rosetta.simple.Data
+import java.util.HashMap
 import java.util.List
+import java.util.Map
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import java.util.Map
-import java.util.HashMap
-import com.regnosys.rosetta.rosetta.simple.Data
-import com.regnosys.rosetta.rosetta.RosettaType
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 
 class DamlModelObjectGenerator {
 
@@ -26,7 +24,7 @@ class DamlModelObjectGenerator {
 	static final String META_CLASSES_FILENAME = 'Org/Isda/Cdm/MetaClasses.daml'
 	static final String ZONE_DATTTIME_FILENAME = 'Org/Isda/Cdm/ZonedDateTime.daml'
 	
-	def Map<String, ? extends CharSequence> generate(Iterable<? extends RosettaType> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val result = new HashMap
 		val classes = rosettaClasses.sortBy[name].generateClasses(version).replaceTabsWithSpaces
 		result.put(CLASSES_FILENAME, classes)
@@ -45,7 +43,7 @@ class DamlModelObjectGenerator {
 	 * - must contain "import Prelude hiding (...)" line to avoid name clashes with DAML keywords
 	 * - nullable fields must be declared with the keyword "Optional"
 	 */
-	private def generateClasses(List<? extends RosettaType> rosettaClasses, String version) {
+	private def generateClasses(List<Data> rosettaClasses, String version) {
 	'''
 		daml 1.2
 		
@@ -72,19 +70,8 @@ class DamlModelObjectGenerator {
 	'''}
 	
 	
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
-		type.allSuperTypes.expandedAttributes
-	}
-	
-	def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
 		type.allSuperTypes.map[it.expandedAttributes].flatten
-	}
-	
-	def dispatch String definition(RosettaClass element) {
-		element.definition
-	}
-	def dispatch String definition(Data element){
-		element.definition
 	}
 	
 	private def metaClasses() '''
