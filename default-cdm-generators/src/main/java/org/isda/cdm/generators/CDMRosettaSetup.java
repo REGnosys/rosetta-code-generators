@@ -7,9 +7,9 @@ import com.regnosys.rosetta.RosettaRuntimeModule;
 import com.regnosys.rosetta.RosettaStandaloneSetup;
 import com.regnosys.rosetta.generator.external.ExternalGenerators;
 
-public class CDMRosettaSetup extends RosettaStandaloneSetup{
+public final class CDMRosettaSetup extends RosettaStandaloneSetup {
 
-	public class CDMRuntimeModule extends RosettaRuntimeModule {
+	public final class CDMRuntimeModule extends RosettaRuntimeModule {
 
 		@Override
 		public Class<? extends Provider<ExternalGenerators>> provideExternalGenerators() {
@@ -21,5 +21,5 @@ public class CDMRosettaSetup extends RosettaStandaloneSetup{
 	public Injector createInjector() {
 		return Guice.createInjector(new CDMRuntimeModule());
 	}
-	
+
 }
