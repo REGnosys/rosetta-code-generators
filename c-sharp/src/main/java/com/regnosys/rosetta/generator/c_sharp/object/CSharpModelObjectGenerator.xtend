@@ -3,7 +3,6 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.rosetta.RosettaClass
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -33,19 +32,11 @@ class CSharpModelObjectGenerator {
     static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
 
-    def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(RosettaClass type) {
-        type.allSuperTypes.expandedAttributes
-    }
-
-    def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
+    def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
         type.allSuperTypes.map[it.expandedAttributes].flatten
     }
 
-    def dispatch String definition(RosettaClass element) {
-        element.definition
-    }
-
-    def dispatch String definition(Data element) {
+    def String definition(Data element) {
         element.definition
     }
 
