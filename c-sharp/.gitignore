@@ -309,3 +309,7 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Generated code
+src/generated/**
+src/test/generated/**
