@@ -10,7 +10,7 @@ import static extension com.regnosys.rosetta.generator.util.Util.*
 class DamlMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		metaFields(metaTypes.filter[name !== "reference" && name !== "template"], version)
+		metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template"], version)
 	}
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''
@@ -26,6 +26,24 @@ class DamlMetaFieldGenerator {
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		    deriving (Eq, Ord, Show)
+		
+	'''
+	
+	def metaAndTemplateFields(Iterable<RosettaMetaType> types, String version) '''
+		daml 1.2
+		
+		«fileComment(version)»
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
+		
+		data MetaAndTemplateFields = MetaAndTemplateFields with
+		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
+		      «type.name.toFirstLower» : Optional «type.type.name.toDamlType»
+		  «ENDFOR»
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  templateGlobalReference : Optional Text
 		    deriving (Eq, Ord, Show)
 		
 	'''
