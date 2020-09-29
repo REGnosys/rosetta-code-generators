@@ -10,7 +10,7 @@ import static extension com.regnosys.rosetta.generator.util.Util.*
 class DamlMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		metaFields(metaTypes.filter[name!=="reference"], version)
+		metaFields(metaTypes.filter[name !== "reference" && name !== "template"], version)
 	}
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''
