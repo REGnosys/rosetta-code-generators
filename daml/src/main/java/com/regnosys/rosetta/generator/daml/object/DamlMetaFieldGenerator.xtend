@@ -28,15 +28,6 @@ class DamlMetaFieldGenerator {
 		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)
 		
-	'''
-	
-	def metaAndTemplateFields(Iterable<RosettaMetaType> types, String version) '''
-		daml 1.2
-		
-		«fileComment(version)»
-		module Org.Isda.Cdm.MetaFields
-		  ( module Org.Isda.Cdm.MetaFields ) where
-		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.type.name.toDamlType»
@@ -45,6 +36,5 @@ class DamlMetaFieldGenerator {
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
 		    deriving (Eq, Ord, Show)
-		
 	'''
 }
