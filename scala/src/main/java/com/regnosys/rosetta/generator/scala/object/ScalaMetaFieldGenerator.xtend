@@ -42,7 +42,7 @@ class ScalaMetaFieldGenerator {
 			referenceWithMeta += generateFieldWithMeta(meta).toString
 		}
 		
-		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference"], version)
+		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference"], version)
 		
 		return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
 	}
@@ -93,5 +93,9 @@ class ScalaMetaFieldGenerator {
 				globalKey: Option[String],
 				externalKey: Option[String]) {}
 		
+		case class MetaAndTemplateFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.type.name.toScalaBasicType»],«ENDFOR»
+				globalKey: Option[String],
+				externalKey: Option[String],
+				templateGlobalReference: Option[String]) {}
 	'''
 }
