@@ -28,7 +28,7 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 	private CSharpEnumGenerator enumGenerator;
 
 	protected CSharpCodeGenerator(int version) {
-		super("C#" + version);
+		super("CSharp" + version);
 		enumGenerator = new CSharpEnumGenerator();
 	}
 
