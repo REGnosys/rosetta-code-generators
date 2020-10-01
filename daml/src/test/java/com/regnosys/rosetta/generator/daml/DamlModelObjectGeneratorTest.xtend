@@ -192,7 +192,6 @@ class DamlModelObjectGeneratorTest {
 		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
-		  reference : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)'''))
@@ -229,7 +228,6 @@ class DamlModelObjectGeneratorTest {
 		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
-		  reference : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		    deriving (Eq, Ord, Show)'''))
