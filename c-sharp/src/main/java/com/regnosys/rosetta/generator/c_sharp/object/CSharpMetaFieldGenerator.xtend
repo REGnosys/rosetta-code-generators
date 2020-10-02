@@ -45,6 +45,8 @@ class CSharpMetaFieldGenerator {
 
         val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference"], version)
 
+		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference"], version)
+
         return '''
         «fileComment(version)»
         
@@ -53,6 +55,7 @@ class CSharpMetaFieldGenerator {
         «metaFieldsImports»
         «referenceWithMeta»
         «metaFields»
+        «metaAndTemplateFields»
         }'''
     }
 
@@ -130,6 +133,34 @@ class CSharpMetaFieldGenerator {
                 
         '''
     }
+    
+    private def genMetaAndTemplateFields(Iterable<RosettaMetaType> types, String version) {
+        val typesDistinct = types.distinct()
+        '''
+            «""»
+                public class MetaAndTemplateFields
+                {
+                    [JsonConstructor]
+                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference)
+                    {
+                        «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
+                        GlobalKey = globalKey;
+                        ExternalKey = externalKey;
+                        TemplateGlobalReference = templateGlobalReference;
+                    }
+                    
+                    «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
+                    
+                    public string? GlobalKey { get; }
+                    
+                    public string? ExternalKey { get; }
+                    
+                    public string? TemplateGlobalReference { get; }
+                }
+                
+        '''
+    }
+    
 
     private def generateMetaFieldsImports() '''
         namespace Org.Isda.Cdm.MetaFields
