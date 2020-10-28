@@ -63,9 +63,20 @@ class CSharpMetaFieldGenerator {
         «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
         public «type.toOptionalCSharpType» Value { get; }'''
 
+    private def generateInterface(ExpandedType type, boolean isReference) '''
+        I«IF type.enumeration»Enum«ELSEIF type.isStruct»Value«ENDIF»«IF isReference»Reference«ELSE»Field«ENDIF»WithMeta<«type.toQualifiedCSharpType»>'''
+
+    private def generateFieldInterface(ExpandedType type) {
+        generateInterface(type, false)
+    }
+
+    private def generateReferenceInterface(ExpandedType type) {
+        generateInterface(type, true)
+    }
+
     private def generateBasicReferenceWithMeta(ExpandedType type) '''
         «""»
-            public class BasicReferenceWithMeta«type.toMetaTypeName»
+            public class BasicReferenceWithMeta«type.toMetaTypeName» : «generateReferenceInterface(type)»
             {
                 [JsonConstructor]
                 public BasicReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
@@ -92,7 +103,7 @@ class CSharpMetaFieldGenerator {
             // MISSING: FieldWithMeta for «type.name»
         «ELSE»
             «""»
-                public class FieldWithMeta«metaTypeName»
+                public class FieldWithMeta«metaTypeName» «IF type.enumeration»// «ENDIF»: «generateFieldInterface(type)»
                 {
                     [JsonConstructor]
                     public FieldWithMeta«metaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
@@ -172,11 +183,13 @@ class CSharpMetaFieldGenerator {
         
             using NodaTime;
         
+            using Rosetta.Lib.Meta;
+        
     '''
 
     private def generateReferenceWithMeta(ExpandedType type) '''
         «""»
-            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF»
+            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF» : «generateReferenceInterface(type)»
             {
                 [JsonConstructor]
                 public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
