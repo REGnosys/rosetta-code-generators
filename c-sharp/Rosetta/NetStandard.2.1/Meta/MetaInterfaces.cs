@@ -84,9 +84,9 @@ namespace Rosetta.Lib.Meta
         IBasicReferenceWithMetaBuilder<I> SetValue(I value);
     }
 
-    public interface RosettaMetaData<T> //where T : S //TODO: where T: RosettaModelObject
+    public interface IRosettaMetaData<out T> where T : IRosettaModelObject<T>
     {
-
+        /*
         IEnumerable<IValidator<T>> DataRules { get; }
 
         IEnumerable<IValidator<T>> ChoiceRuleValidators { get; }
@@ -97,7 +97,7 @@ namespace Rosetta.Lib.Meta
         IValidator<T> Validator { get; }
 
         //TODO: ValidatorWithArg<T, string> OnlyExistsValidator { get; }
+        */
     }
-
 }
 

@@ -75,7 +75,7 @@ class CSharpModelObjectGeneratorTest {
         containsUsings(c_sharp, true, true)
     }
 
-    protected def boolean containsUsings(String c_sharp, boolean includeAttributes, boolean includeMetaFields) {
+    protected def boolean containsUsings(String c_sharp, boolean includeRosetta, boolean includeMetaFields) {
         c_sharp.contains('''
             «""»
                 using System.Collections.Generic;
@@ -85,13 +85,17 @@ class CSharpModelObjectGeneratorTest {
             
                 using NodaTime;
             
-                «IF includeAttributes»
+                «IF includeRosetta»
+                    using Rosetta.Lib;
                     using Rosetta.Lib.Attributes;
+                    using Rosetta.Lib.Meta;
+                    using Rosetta.Lib.Validation;
 
                 «ENDIF»
                 «IF includeMetaFields»
+                    using Org.Isda.Cdm.Meta;
                     using Org.Isda.Cdm.MetaFields;
-                    using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
+                    using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
                 «ENDIF»
         ''')
     }
@@ -122,12 +126,14 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
-    @Disabled("Test to generate the C# for CDM")
+    //@Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
         val dirs = newArrayList(            
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.81.0/common-domain-model'),
+            ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
-            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
         );
 
         val resourceSet = resourceSetProvider.get   
@@ -321,6 +327,7 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
+        println("keywords: " + types);
 
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
@@ -330,8 +337,10 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class KeyWordType
+                public class KeyWordType : IRosettaModelObject<KeyWordType>
                 {
+                    private static readonly IRosettaMetaData<KeyWordType> metaData = new KeyWordTypeMeta();
+                    
                     [JsonConstructor]
                     public KeyWordType(decimal? decimalValue, string eventValue, IEnumerable<int> intValue, string? stringValue)
                     {
@@ -340,6 +349,9 @@ class CSharpModelObjectGeneratorTest {
                         Int = intValue;
                         String = stringValue;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<KeyWordType> MetaData => metaData;
                     
                     public decimal? Decimal { get; }
                     
@@ -369,13 +381,18 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class EnclosingType
+                public class EnclosingType : IRosettaModelObject<EnclosingType>
                 {
+                    private static readonly IRosettaMetaData<EnclosingType> metaData = new EnclosingTypeMeta();
+                    
                     [JsonConstructor]
                     public EnclosingType(string? enclosingType)
                     {
                         EnclosingTypeValue = enclosingType;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<EnclosingType> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "enclosingType")]
                     public string? EnclosingTypeValue { get; }
@@ -419,8 +436,10 @@ class CSharpModelObjectGeneratorTest {
                 /// <summary>
                 /// Test type description.
                 /// </summary>
-                public class GtTestType
+                public class GtTestType : IRosettaModelObject<GtTestType>
                 {
+                    private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
+                    
                     [JsonConstructor]
                     public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
                     {
@@ -430,6 +449,9 @@ class CSharpModelObjectGeneratorTest {
                         GtTestTypeValue3 = gtTestTypeValue3;
                         GtTestTypeValue4 = gtTestTypeValue4;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GtTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Optional test enum
@@ -461,8 +483,10 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GtTestType2
+                public class GtTestType2 : IRosettaModelObject<GtTestType2>
                 {
+                    private static readonly IRosettaMetaData<GtTestType2> metaData = new GtTestType2Meta();
+                    
                     [JsonConstructor]
                     public GtTestType2(Enums.GtTest gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
                     {
@@ -470,6 +494,9 @@ class CSharpModelObjectGeneratorTest {
                         GtTestType2Value1 = gtTestType2Value1;
                         GtTestType2Value2 = gtTestType2Value2;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GtTestType2> MetaData => metaData;
                     
                     /// <summary>
                     /// Test enum
@@ -562,6 +589,7 @@ class CSharpModelObjectGeneratorTest {
         '''))
 
         val types = c_sharp.get('Types.cs').toString
+        println("typeExtends =" + types)
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
@@ -569,8 +597,10 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType : IGteTestType2
+                public class GteTestType : IRosettaModelObject<GteTestType>, IGteTestType2
                 {
+                    private static readonly IRosettaMetaData<GteTestType> metaData = new GteTestTypeMeta();
+                    
                     [JsonConstructor]
                     public GteTestType(string gteTestTypeValue1, int? gteTestTypeValue2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
@@ -581,6 +611,9 @@ class CSharpModelObjectGeneratorTest {
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GteTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Test string
@@ -608,8 +641,10 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType2 : IGteTestType2, IGteTestType3
+                public class GteTestType2 : IRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
                 {
+                    private static readonly IRosettaMetaData<GteTestType2> metaData = new GteTestType2Meta();
+                    
                     [JsonConstructor]
                     public GteTestType2(decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
@@ -618,6 +653,9 @@ class CSharpModelObjectGeneratorTest {
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GteTestType2> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public decimal? GteTestType2Value1 { get; }
@@ -635,14 +673,19 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType3 : IGteTestType3
+                public class GteTestType3 : IRosettaModelObject<GteTestType3>, IGteTestType3
                 {
+                    private static readonly IRosettaMetaData<GteTestType3> metaData = new GteTestType3Meta();
+                    
                     [JsonConstructor]
                     public GteTestType3(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GteTestType3> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public string? GteTestType3Value1 { get; }
@@ -680,14 +723,18 @@ class CSharpModelObjectGeneratorTest {
                  
                  gmtTestType2Value3 GmtTestEnum (1..1)
                       [metadata scheme]
+                      
+                 gmtTestType2Value4 date (1..1)
+                      [metadata reference]
         '''.generateCSharp
 
         val metaTypes = c_sharp.values.join('\n').toString
 
-        //println("types => " + metaTypes);
+        println("types => " + metaTypes);
 
         assertTrue(containsFileComment(metaTypes))
         assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
+       // assertTrue(containsNamespace(metaTypes, "Rosetta.Lib.Meta"))
         assertTrue(containsNullable(metaTypes))
         assertTrue(containsUsings(metaTypes, false, false))
 
@@ -713,7 +760,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class FieldWithMetaString
+                public class FieldWithMetaString : IFieldWithMeta<string>
                 {
                     [JsonConstructor]
                     public FieldWithMetaString(string? value, MetaFields? meta)
@@ -730,7 +777,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class FieldWithMetaGmtTestEnum
+                public class FieldWithMetaGmtTestEnum // : IEnumFieldWithMeta<Enums.GmtTest>
                 {
                     [JsonConstructor]
                     public FieldWithMetaGmtTestEnum(Enums.GmtTest? value, MetaFields? meta)
@@ -748,7 +795,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class ReferenceWithMetaGmtTestType2
+                public class ReferenceWithMetaGmtTestType2 : IReferenceWithMeta<GmtTestType2>
                 {
                     [JsonConstructor]
                     public ReferenceWithMetaGmtTestType2(GmtTestType2? value, string? globalReference, string? externalReference)
@@ -768,7 +815,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class BasicReferenceWithMetaDecimal
+                public class BasicReferenceWithMetaDecimal : IReferenceWithMeta<decimal>
                 {
                     [JsonConstructor]
                     public BasicReferenceWithMetaDecimal(decimal? value, string? globalReference, string? externalReference)
@@ -788,38 +835,71 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class GmtTestType
+                public class BasicReferenceWithMetaLocalDate : IValueReferenceWithMeta<NodaTime.LocalDate>
                 {
                     [JsonConstructor]
-                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, Meta? meta)
+                    public BasicReferenceWithMetaLocalDate(NodaTime.LocalDate? value, string? globalReference, string? externalReference)
                     {
-                        GmtTestTypeValue1 = gmtTestTypeValue1;
-                        Meta = meta;
+                        Value = value;
+                        GlobalReference = globalReference;
+                        ExternalReference = externalReference;
                     }
                     
-                    public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
+                    public NodaTime.LocalDate? Value { get; }
                     
-                    public Meta? Meta { get; }
+                    public string? GlobalReference { get; }
+                    
+                    public string? ExternalReference { get; }
                 }
         '''))
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class GmtTestType2
+                public class GmtTestType : IRosettaModelObject<GmtTestType>
                 {
+                    private static readonly IRosettaMetaData<GmtTestType> metaData = new GmtTestTypeMeta();
+                    
                     [JsonConstructor]
-                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3)
+                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, _MetaFields? meta)
+                    {
+                        GmtTestTypeValue1 = gmtTestTypeValue1;
+                        Meta = meta;
+                    }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GmtTestType> MetaData => metaData;
+                    
+                    public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
+                    
+                    public _MetaFields? Meta { get; }
+                }
+        '''))
+
+        assertTrue(metaTypes.contains('''
+            «""»
+                public class GmtTestType2 : IRosettaModelObject<GmtTestType2>
+                {
+                    private static readonly IRosettaMetaData<GmtTestType2> metaData = new GmtTestType2Meta();
+                    
+                    [JsonConstructor]
+                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, BasicReferenceWithMetaLocalDate gmtTestType2Value4)
                     {
                         GmtTestType2Value1 = gmtTestType2Value1;
                         GmtTestType2Value2 = gmtTestType2Value2;
                         GmtTestType2Value3 = gmtTestType2Value3;
+                        GmtTestType2Value4 = gmtTestType2Value4;
                     }
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<GmtTestType2> MetaData => metaData;
                     
                     public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
                     
                     public FieldWithMetaString GmtTestType2Value2 { get; }
                     
                     public FieldWithMetaGmtTestEnum GmtTestType2Value3 { get; }
+                    
+                    public BasicReferenceWithMetaLocalDate GmtTestType2Value4 { get; }
                 }
         '''))
     }
@@ -852,8 +932,13 @@ class CSharpModelObjectGeneratorTest {
                 /// Test type with one-of condition.
                 /// </summary>
                 [OneOf]
-                public sealed class TestType
+                public sealed class TestType : IRosettaModelObject<TestType>
                 {
+                    private static readonly IRosettaMetaData<TestType> metaData = new TestTypeMeta();
+                    
+                    /// <inheritdoc />
+                    public IRosettaMetaData<TestType> MetaData => metaData;
+                    
                     /// <summary>
                     /// Test string field 1
                     /// </summary>

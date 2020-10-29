@@ -34,7 +34,7 @@ class CSharpTranslator {
 
 //			Ensure we rename MetaFields data members to avoid name clashes with the enclosing namespace.
 			case 'MetaFields':
-			    'Meta'
+			    '_MetaFields'
 		}
 	}
 	

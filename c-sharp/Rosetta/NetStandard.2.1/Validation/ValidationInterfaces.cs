@@ -4,7 +4,7 @@ namespace Rosetta.Lib.Validation
 {
     using System;
 
-    public interface IValidator<T> // where T: RosettaModelObject
+	public interface IValidator<out T> where T : IRosettaModelObject<T>
     {
 //        ValidationResult<T> Validate(RosettaPath path, T objectToBeValidated);
 //        ValidationResult<T> Validate(RosettaPath path, RosettaModelObjectBuilder objectToBeValidated);

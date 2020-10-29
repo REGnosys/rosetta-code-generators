@@ -31,6 +31,7 @@ class CSharpModelObjectGenerator {
     static final String CLASSES_FILENAME = 'Types.cs'
     static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
+    static final String META_FIELD_FILENAME = 'MetaFieldTypes.cs'
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
         type.allSuperTypes.map[it.expandedAttributes].flatten
@@ -55,8 +56,11 @@ class CSharpModelObjectGenerator {
         val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
         result.put(CLASSES_FILENAME, classes)
 
+        val metaClasses = rosettaClasses.sortBy[name].generateMetaClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
+        result.put(META_FILENAME, metaClasses)
+
         val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-        result.put(META_FILENAME, metaFields)
+        result.put(META_FIELD_FILENAME, metaFields)
         
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
@@ -107,24 +111,31 @@ class CSharpModelObjectGenerator {
             
                 using NodaTime;
             
+                using Rosetta.Lib;
                 using Rosetta.Lib.Attributes;
+                using Rosetta.Lib.Meta;
+                using Rosetta.Lib.Validation;
             
+                using Org.Isda.Cdm.Meta;
                 using Org.Isda.Cdm.MetaFields;
-                using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
+                using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
                 
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «val allExpandedAttributes = c.allExpandedAttributes»
 «««                     Filter out invalid types to prevent compilation errors
                     «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
 «««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment.
-«««                 Use of one-of condtion on a derived class is not properly defined, so market it as an error and ignore. 
+«««                 Use of one-of condtion on a derived class is not properly defined, so mark it as an error and ignore. 
                     «val isChild = c.superType !== null»
                     «val isOneOf = isOneOf(c) && !isChild»
                     «var properties = if (isOneOf) getOneOfProperty(cSharpVersion) else " { get; }"»
                     «classComment(c.definition)»
                     «IF isOneOf»[OneOf]«ELSEIF isOneOf(c)»// ERROR: [OneOf] cannot be used on a derived class«ENDIF»
-                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name»«generateParents(c, superTypes)»
+                    «val metaType = 'IRosettaMetaData<' + c.name +'>'»
+                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name» : «generateParents(c, superTypes)»
                     {
+                        private static readonly «metaType» metaData = new «c.name»Meta();
+                        
                         «IF !isOneOf»
                         [JsonConstructor]
                         public «c.name»(«FOR attribute : expandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
@@ -135,6 +146,9 @@ class CSharpModelObjectGenerator {
                         }
                         
                         «ENDIF»
+                        /// <inheritdoc />
+                        public «metaType» MetaData => metaData;
+                        
                         «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
                             «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
@@ -145,6 +159,31 @@ class CSharpModelObjectGenerator {
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
                         «ENDFOR»
+                    }
+                «ENDFOR»
+            }
+        '''
+    }
+
+    private def generateMetaClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, int cSharpVersion) {
+        '''
+            «fileComment(version)»
+            namespace Org.Isda.Cdm.Meta
+            {
+                using System.Collections.Generic;
+
+                using Rosetta.Lib;
+                using Rosetta.Lib.Attributes;
+                using Rosetta.Lib.Meta;
+                using Rosetta.Lib.Validation;
+                
+                «FOR c : rosettaClasses SEPARATOR '\n'»
+                    /// <summary>
+                    /// MetaData definition for «c.name»
+                    /// </summary>
+                    [RosettaMeta(typeof(«c.name»))]
+                    public class «c.name»Meta : IRosettaMetaData<«c.name»>
+                    {
                     }
                 «ENDFOR»
             }
@@ -178,7 +217,7 @@ class CSharpModelObjectGenerator {
 «««         Implement interfaces associated with:
 «««             super type, if it is defined.
 «««             this class, if it is a super type.
-            «IF c.superType !== null && superTypes.contains(c)» : «getInterfaceName(c)», «getInterfaceName(c.superType)»«ELSEIF c.superType !== null» : «getInterfaceName(c.superType)»«ELSEIF superTypes.contains(c)» : «getInterfaceName(c)»«ENDIF»
+            IRosettaModelObject<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF c.superType !== null», «getInterfaceName(c.superType)»«ENDIF»
         '''
     }
 
@@ -197,8 +236,9 @@ class CSharpModelObjectGenerator {
             
                 using NodaTime;
             
+                using Org.Isda.Cdm.Meta;
                 using Org.Isda.Cdm.MetaFields;
-                using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
+                using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «comment(c.definition)»
