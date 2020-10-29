@@ -3,7 +3,10 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+//import com.regnosys.rosetta.generator.c_sharp.rule.ChoiceRuleGenerator
+import com.regnosys.rosetta.generator.c_sharp.rule.CSharpDataRuleGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
+import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.Arrays
@@ -26,15 +29,31 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension CSharpMetaFieldGenerator
+    
+    @Inject
+    extension CSharpDataRuleGenerator
+    
 
     static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
     static final String INTERFACES_FILENAME = 'Interfaces.cs'
     static final String META_FILENAME = 'MetaTypes.cs'
     static final String META_FIELD_FILENAME = 'MetaFieldTypes.cs'
+    static final String DATA_RULES_FILENAME = "DataRules.cs"
+    //static final String CHOICE_RULES_FILENAME = "ChoiceRules.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
         type.allSuperTypes.map[it.expandedAttributes].flatten
+    }
+
+    @org.eclipse.xtend.lib.annotations.Data
+    static class ClassRule {
+        String className;
+        String ruleName;
+    }
+
+    private def List<ClassRule> conditionRules(Data d, List<Condition> elements, (Condition)=>boolean filter) {
+        return elements.filter(filter).map[new ClassRule((it.eContainer as RosettaNamed).getName, it.conditionName(d))].toList
     }
 
     def String definition(Data element) {
@@ -53,14 +72,18 @@ class CSharpModelObjectGenerator {
         val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
         result.put(com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator.INTERFACES_FILENAME, interfaces)
 
-        val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
+        val sortedClasses = rosettaClasses.sortBy[name]
+        val classes = sortedClasses.generateClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
         result.put(CLASSES_FILENAME, classes)
 
-        val metaClasses = rosettaClasses.sortBy[name].generateMetaClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
+        val metaClasses = sortedClasses.generateMetaClasses(superTypes, version, cSharpCodeInfo.getCSharpVersion).replaceTabsWithSpaces
         result.put(META_FILENAME, metaClasses)
 
-        val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
+        val metaFields = sortedClasses.generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FIELD_FILENAME, metaFields)
+
+        val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
+        result.put(DATA_RULES_FILENAME, dataRules)
         
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
@@ -177,6 +200,8 @@ class CSharpModelObjectGenerator {
                 using Rosetta.Lib.Meta;
                 using Rosetta.Lib.Validation;
                 
+                using Org.Isda.Cdm.Validation.DataRule;
+                
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     /// <summary>
                     /// MetaData definition for «c.name»
@@ -184,6 +209,27 @@ class CSharpModelObjectGenerator {
                     [RosettaMeta(typeof(«c.name»))]
                     public class «c.name»Meta : IRosettaMetaData<«c.name»>
                     {
+                        public IEnumerable<IValidator<«c.name»>> DataRules {
+                            get {
+                                «FOR r : conditionRules(c, c.conditions)[!isChoiceRuleCondition]»
+                                    yield return new «CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
+«««                             TODO: Sort out package
+«««                             yield return new «javaNames.packages.model.dataRule.name».«CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
+                                «ENDFOR»
+                                yield break;
+                            }
+                        }
+                    
+                        public IEnumerable<IValidator<«c.name»>> ChoiceRuleValidators {
+                            get {
+«««                                «FOR r : conditionRules(c, c.conditions)[isChoiceRuleCondition]»
+«««                                    yield return new «javaNames.packages.model.choiceRule.name».«CSharpChoiceRuleGenerator.choiceRuleClassName(r.ruleName)»();
+«««                                «ENDFOR»
+                                yield break;
+                            }
+                        }
+                        
+                        public IValidator<«c.name»> Validator => null;
                     }
                 «ENDFOR»
             }

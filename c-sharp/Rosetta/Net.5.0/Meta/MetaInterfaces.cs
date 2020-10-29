@@ -90,7 +90,6 @@ namespace Rosetta.Lib.Meta
 
     public interface IRosettaMetaData<out T> where T: IRosettaModelObject<T>
     {
-        /*
         IEnumerable<IValidator<T>> DataRules { get; }
 
         IEnumerable<IValidator<T>> ChoiceRuleValidators { get; }
@@ -101,7 +100,6 @@ namespace Rosetta.Lib.Meta
         IValidator<T> Validator { get; }
 
         //TODO: ValidatorWithArg<T, string> OnlyExistsValidator { get; }
-        */
     }
 
 }

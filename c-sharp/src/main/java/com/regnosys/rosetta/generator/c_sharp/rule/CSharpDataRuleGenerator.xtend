@@ -1,0 +1,162 @@
+package com.regnosys.rosetta.generator.c_sharp.rule
+
+import com.google.common.base.CaseFormat
+import com.google.inject.Inject
+import com.regnosys.rosetta.RosettaExtensions
+import java.util.List
+
+import com.regnosys.rosetta.generator.java.expression.ExpressionGenerator
+import com.regnosys.rosetta.generator.java.expression.ExpressionGenerator.ParamMap
+import com.regnosys.rosetta.generator.java.function.RosettaFunctionDependencyProvider
+import com.regnosys.rosetta.generator.java.util.ImportManagerExtension
+//import com.regnosys.rosetta.generator.java.util.JavaNames
+import com.regnosys.rosetta.generator.java.util.RosettaGrammarUtil
+import com.regnosys.rosetta.rosetta.RosettaConditionalExpression
+import com.regnosys.rosetta.rosetta.RosettaType
+
+import com.regnosys.rosetta.rosetta.simple.Condition
+import com.regnosys.rosetta.rosetta.simple.Data
+import com.rosetta.model.lib.RosettaModelObjectBuilder
+import com.rosetta.model.lib.annotations.RosettaDataRule
+import com.rosetta.model.lib.path.RosettaPath
+import com.rosetta.model.lib.validation.ComparisonResult
+import com.rosetta.model.lib.validation.ModelObjectValidator
+import com.rosetta.model.lib.validation.ValidationResult
+import com.rosetta.model.lib.validation.ValidationResult.ValidationType
+import com.rosetta.model.lib.validation.Validator
+
+import org.eclipse.xtend2.lib.StringConcatenationClient
+/*
+import org.eclipse.xtext.generator.IFileSystemAccess2
+*/
+import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
+//import static com.regnosys.rosetta.generator.java.util.ModelGeneratorUtil.*
+import static com.regnosys.rosetta.rosetta.simple.SimplePackage.Literals.CONDITION__EXPRESSION
+
+class CSharpDataRuleGenerator {
+    //@Inject ExpressionGenerator expressionHandler
+    @Inject extension RosettaExtensions
+    //@Inject extension ImportManagerExtension
+    @Inject RosettaFunctionDependencyProvider funcDependencies
+    
+    /*
+    def generate(JavaNames names, IFileSystemAccess2 fsa, Data data, Condition ele, String version) {
+        val classBody = tracImports(ele.dataRuleClassBody(data, names, version))
+        val content = '''
+            package «names.packages.model.dataRule.name»;
+            
+            «FOR imp : classBody.imports»
+                import «imp»;
+            «ENDFOR»
+            «»
+            «FOR imp : classBody.staticImports»
+                import static «imp»;
+            «ENDFOR»
+            
+            «classBody.toString»
+        '''
+        fsa.generateFile('''«names.packages.model.dataRule.directoryName»/«dataRuleClassName(ele, data)».java''', content)
+    }
+    */
+
+    def generateDataRules(List<Data> rosettaClasses, String version) {
+        '''
+        «fileComment(version)»
+        namespace Org.Isda.Cdm.Validation.DataRule
+        {
+            using Org.Isda.Cdm;
+            using Rosetta.Lib.Attributes;
+            using Rosetta.Lib.Validation;
+            
+        «FOR rosettaClass : rosettaClasses»
+            «FOR c : rosettaClass.conditions»
+                «IF !c.isChoiceRuleCondition»«c.dataRuleClassBody(rosettaClass, version)»«ENDIF»
+            «ENDFOR»
+        «ENDFOR»
+        }
+        '''
+    }
+
+    def static String dataRuleClassName(String dataRuleName) {
+        val allUnderscore = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, dataRuleName)
+        val camel = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, allUnderscore)
+        return camel
+    }
+    
+    def  String dataRuleClassName(Condition cond, Data data) {
+        dataRuleClassName(cond.conditionName(data))
+    }
+    
+    private def StringConcatenationClient dataRuleClassBody(Condition rule, Data data /*, JavaNames javaName*/, String version)  {
+        val rosettaClass = rule.eContainer as RosettaType
+        val expression = rule.expression
+        
+        val ruleWhen = if(expression instanceof RosettaConditionalExpression ) expression.^if
+        val ruleThen = if(expression instanceof RosettaConditionalExpression ) expression.ifthen else expression
+        
+        val definition = RosettaGrammarUtil.quote(RosettaGrammarUtil.extractNodeText(rule, CONDITION__EXPRESSION))
+        val ruleName = rule.conditionName(data)
+        val funcDeps = funcDependencies.functionDependencies(#[ruleWhen , ruleThen])
+        '''
+        «""»
+            [RosettaDataRule("«ruleName»")]
+            public class «dataRuleClassName(ruleName)» : IValidator<«rosettaClass.name»>
+            {
+«««                
+«««                private static final String NAME = "«ruleName»";
+«««                private static final String DEFINITION = «definition»;
+«««                
+«««                «FOR dep : funcDeps»
+«««                    @«Inject» protected «javaName.toJavaType(dep)» «dep.name.toFirstLower»;
+«««                «ENDFOR»
+«««                
+«««                @Override
+«««                public «ValidationResult»<«rosettaClass.name»> validate(«RosettaPath» path, «rosettaClass.name» «rosettaClass.name.toFirstLower») {
+«««                    «ComparisonResult» result = executeDataRule(«rosettaClass.name.toFirstLower»);
+«««                    if (result.get()) {
+«««                        return «ValidationResult».success(NAME, ValidationResult.ValidationType.DATA_RULE,  "«rosettaClass.name»", path, DEFINITION);
+«««                    }
+«««                    
+«««                    return «ValidationResult».failure(NAME, ValidationResult.ValidationType.DATA_RULE, "«rosettaClass.name»", path, DEFINITION, result.getError());
+«««                }
+«««                
+«««                @Override
+«««                public «ValidationResult»<«rosettaClass.name»> validate(RosettaPath path, «RosettaModelObjectBuilder» «rosettaClass.name.toFirstLower») {
+«««                    «ComparisonResult» result = executeDataRule((«rosettaClass.name»)«rosettaClass.name.toFirstLower».build());
+«««                    if (result.get()) {
+«««                        return ValidationResult.success(NAME, «ValidationType».DATA_RULE, "«rosettaClass.name»", path, DEFINITION);
+«««                    }
+«««                    
+«««                    return ValidationResult.failure(NAME, «ValidationType».DATA_RULE,  "«rosettaClass.name»", path, DEFINITION, result.getError());
+«««                }
+«««                
+«««                private ComparisonResult executeDataRule(«rosettaClass.name» «rosettaClass.name.toFirstLower») {
+«««                    if (ruleIsApplicable(«rosettaClass.name.toFirstLower»).get()) {
+«««                        return evaluateThenExpression(«rosettaClass.name.toFirstLower»);
+«««                    }
+«««                    return ComparisonResult.success();
+«««                }
+«««                
+«««                private ComparisonResult ruleIsApplicable(«rosettaClass.name» «rosettaClass.name.toFirstLower») {
+«««                    try {
+«««                        return «IF ruleWhen !== null»«expressionHandler.javaCode(ruleWhen, new ParamMap(rosettaClass))»«ELSE»«ComparisonResult».success()«ENDIF»;
+«««                    }
+«««                    catch («ModelObjectValidator».ModelObjectValidationException ex) {
+«««                        return ComparisonResult.failure(ex.getErrors());
+«««                    }
+«««                }
+«««                
+«««                private ComparisonResult evaluateThenExpression(«rosettaClass.name» «rosettaClass.name.toFirstLower») {
+«««                    try {
+«««                        return «expressionHandler.javaCode(ruleThen, new ParamMap(rosettaClass))»;
+«««                    }
+«««                    catch («ModelObjectValidator».ModelObjectValidationException ex) {
+«««                        return ComparisonResult.failure(ex.getErrors());
+«««                    }
+«««                }
+            }
+            
+        '''
+    }
+}
+

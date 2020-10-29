@@ -327,7 +327,7 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
-        println("keywords: " + types);
+        //println("keywords: " + types);
 
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
@@ -589,7 +589,7 @@ class CSharpModelObjectGeneratorTest {
         '''))
 
         val types = c_sharp.get('Types.cs').toString
-        println("typeExtends =" + types)
+        //println("typeExtends =" + types)
         assertTrue(containsFileComment(types))
         assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
@@ -730,7 +730,7 @@ class CSharpModelObjectGeneratorTest {
 
         val metaTypes = c_sharp.values.join('\n').toString
 
-        println("types => " + metaTypes);
+        //println("types => " + metaTypes);
 
         assertTrue(containsFileComment(metaTypes))
         assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
