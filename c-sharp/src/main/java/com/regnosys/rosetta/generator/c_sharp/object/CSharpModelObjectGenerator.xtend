@@ -174,7 +174,8 @@ class CSharpModelObjectGenerator {
                         
                         «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
-                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
+                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+                            «IF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
                             «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType(isOneOf)» «attribute.toPropertyName»«properties»
