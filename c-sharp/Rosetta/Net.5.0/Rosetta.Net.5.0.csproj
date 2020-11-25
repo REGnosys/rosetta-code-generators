@@ -9,5 +9,9 @@
     <Folder Include="Validation\" />
     <Folder Include="Meta\" />
     <Folder Include="Attributes\" />
+    <Folder Include="Functions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.0.3" />
   </ItemGroup>
 </Project>

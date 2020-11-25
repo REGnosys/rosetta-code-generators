@@ -6,20 +6,20 @@ namespace Rosetta.Lib.Validation
 	using System.Collections.Generic;
 	using System.Linq;
 
+	/*
 	public class RosettaPath
 	{
 		public string BuildPath()
         {
 			return "<RosettaPath>";
         }
-	}
+	} */
 
 	public abstract class AbstractValidationResult : IValidationResult
 	{
-		public AbstractValidationResult(string name, string modelObjectName, RosettaPath path)
+		public AbstractValidationResult(string name, string modelObjectName)
 		{
 			this.Name = name;
-			this.Path = path;
 			this.ModelObjectName = modelObjectName;
 		}
 
@@ -37,27 +37,35 @@ namespace Rosetta.Lib.Validation
 
 		public string Name { get; }
 
-		public RosettaPath Path { get; }
-
 		public override string ToString()
 		{
 			var failureReason = FailureReason;
 			var reason = (failureReason != null ? $"because [{failureReason}]" : string.Empty);
-			return $"Validation {(IsSuccess ? "SUCCESS" : "FAILURE")} on [{Path.BuildPath()}] for [{ValidationDescriptor}] [{Name}] {reason}";
+			return $"Validation {(IsSuccess ? "SUCCESS" : "FAILURE")} for [{ValidationDescriptor}] [{Name}] {reason}";
 		}
 	}
 
 	public class ModelValidationResult : AbstractValidationResult
 	{
-		public ModelValidationResult(string name, ValidationType validationType, string modelObjectName, RosettaPath path, string definition, string? failureReason) :
-			base(name, modelObjectName, path)
+		public static IValidationResult Success(string name, ValidationType validationType, string modelObjectName, string definition)
+		{
+			return new ModelValidationResult(name, validationType, modelObjectName, definition);
+		}
+
+		public static IValidationResult Failure(string name, ValidationType validationType, string modelObjectName, string definition, string failureMessage)
+		{
+			return new ModelValidationResult(name, validationType, modelObjectName, definition, failureMessage);
+		}
+
+		public ModelValidationResult(string name, ValidationType validationType, string modelObjectName, string definition, string? failureReason = null) :
+			base(name, modelObjectName)
 		{
 			this.ValidationType = validationType;
 			this.Definition = definition;
 			this.FailureReason = failureReason;
 		}
 
-        public override bool IsSuccess => FailureReason == null;
+		public override bool IsSuccess => FailureReason == null;
 
 		public override string? FailureReason { get; }
 
@@ -68,9 +76,9 @@ namespace Rosetta.Lib.Validation
 
 	public class ChoiceRuleFailure : AbstractValidationResult
 	{
-        public ChoiceRuleFailure(string name, string modelObjectName, IEnumerable<string> choiceFieldNames, RosettaPath path, IEnumerable<string> populatedFields,
+		public ChoiceRuleFailure(string name, string modelObjectName, IEnumerable<string> choiceFieldNames, IEnumerable<string> populatedFields,
 								 IChoiceRuleValidationMethod validationMethod) :
-			base(name, modelObjectName, path)
+			base(name, modelObjectName)
 		{
 			this.PopulatedFields = populatedFields;
 			this.ChoiceFieldNames = choiceFieldNames;
@@ -79,13 +87,13 @@ namespace Rosetta.Lib.Validation
 
 		public override bool IsSuccess => false;
 
-        public IEnumerable<string> PopulatedFields { get; }
+		public IEnumerable<string> PopulatedFields { get; }
 
-        public IEnumerable<string> ChoiceFieldNames { get; }
+		public IEnumerable<string> ChoiceFieldNames { get; }
 
-        public IChoiceRuleValidationMethod ValidationMethod { get; }
+		public IChoiceRuleValidationMethod ValidationMethod { get; }
 
-        public override string Definition => string.Join(", ", ChoiceFieldNames.Select(n => $"{ValidationMethod.Description} of '{n}'. ").ToArray());
+		public override string Definition => string.Join(", ", ChoiceFieldNames.Select(n => $"{ValidationMethod.Description} of '{n}'. ").ToArray());
 
 		public override string? FailureReason => Definition + (PopulatedFields.Any() ? string.Join(", ", PopulatedFields.Select(f => $"Set fields are '{f}'.").ToArray()) : "No fields are set.");
 
@@ -101,7 +109,8 @@ namespace Rosetta.Lib.Validation
 		bool Check(int fieldCount);
 	}
 
-	public class OptionalChoiceRuleValidationMethod : IChoiceRuleValidationMethod {
+	public class OptionalChoiceRuleValidationMethod : IChoiceRuleValidationMethod
+	{
 		public string Description => "Zero or one field must be set";
 
 		public bool Check(int fieldCount)
@@ -122,8 +131,8 @@ namespace Rosetta.Lib.Validation
 
 	public class ProcessValidationResult : AbstractValidationResult
 	{
-		public ProcessValidationResult(string message, string modelObjectName, string processorName, RosettaPath path) :
-			base(processorName, modelObjectName, path)
+		public ProcessValidationResult(string message, string modelObjectName, string processorName) :
+			base(processorName, modelObjectName)
 		{
 			this.FailureReason = message;
 		}

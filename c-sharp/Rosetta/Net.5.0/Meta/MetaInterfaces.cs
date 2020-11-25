@@ -11,7 +11,7 @@ namespace Rosetta.Lib.Meta
         T? Value { get; }
     }
 
-    public interface IEnumFieldWithMeta<T> where T : System.Enum
+    public interface IEnumFieldWithMeta<T> where T : struct, System.Enum
     {
         T? Value { get; }
     }
