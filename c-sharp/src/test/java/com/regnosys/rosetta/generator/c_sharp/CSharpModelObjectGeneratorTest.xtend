@@ -1809,6 +1809,137 @@ class CSharpModelObjectGeneratorTest {
         '''))
     }
 
+    @Test
+    def void shouldGenerateChoiceRuleNone() {
+        val rosettaCode ='''
+        type A:
+            a int (0..1)
+            b number (0..1)
+            '''
+        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
+        //println("choiceRules: " + choiceRules)
+        assertTrue(containsFileComment(choiceRules))
+        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
+        assertFalse(choiceRules.contains('''AbstractChoiceRule<A>'''))
+    }
+
+    @Test
+    def void shouldGenerateChoiceRuleOneOf() {
+        val rosettaCode ='''
+        type A:
+            a int (0..1)
+            b number (0..1)
+            
+            condition: one-of
+            '''
+        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
+        //println("choiceRules: " + choiceRules)
+        assertTrue(containsFileComment(choiceRules))
+        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
+        assertTrue(choiceRules.contains('''
+            «""»
+                [RosettaChoiceRule("AOneOf0")]
+                public class AOneOf0 : AbstractChoiceRule<A>
+                {
+                    private static readonly string[] choiceFieldNames = { "a", "b" };
+            
+                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
+            
+                    protected override IChoiceRuleValidationMethod ValidationMethod => RequiredChoiceRuleValidationMethod.Instance;
+            
+                    protected override ICollection<string> GetPopulatedFieldNames(A a)
+                    {
+                        var populatedFieldNames = new List<string>();
+            
+                        if (a.AValue != null) populatedFieldNames.Add("a");
+                        if (a.B != null) populatedFieldNames.Add("b");
+                        return populatedFieldNames;
+                    }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldGenerateChoiceRuleOptional() {
+        val rosettaCode ='''
+        type A:
+            x int (0..1)
+            y number (0..1)
+            z date (0..1)
+
+            condition Choice: <"Optional choice rule construct.">
+                optional choice x, z
+            '''
+        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
+        //println("choiceRules: " + choiceRules)
+        assertTrue(containsFileComment(choiceRules))
+        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
+        assertTrue(choiceRules.contains('''
+            «""»
+                /// <summary>
+                /// Optional choice rule construct.
+                /// </summary>
+                [RosettaChoiceRule("AChoice")]
+                public class AChoice : AbstractChoiceRule<A>
+                {
+                    private static readonly string[] choiceFieldNames = { "x", "z" };
+            
+                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
+            
+                    protected override IChoiceRuleValidationMethod ValidationMethod => OptionalChoiceRuleValidationMethod.Instance;
+            
+                    protected override ICollection<string> GetPopulatedFieldNames(A a)
+                    {
+                        var populatedFieldNames = new List<string>();
+            
+                        if (a.X != null) populatedFieldNames.Add("x");
+                        if (a.Z != null) populatedFieldNames.Add("z");
+                        return populatedFieldNames;
+                    }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldGenerateChoiceRuleRequired() {
+        val rosettaCode ='''
+        type A:
+            x int (0..1)
+            y number (0..1)
+            z date (0..1)
+
+            condition Choice: <"Required choice rule construct.">
+                required choice y, z
+            '''
+        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
+        //println("choiceRules: " + choiceRules)
+        assertTrue(containsFileComment(choiceRules))
+        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
+        assertTrue(choiceRules.contains('''
+            «""»
+                /// <summary>
+                /// Required choice rule construct.
+                /// </summary>
+                [RosettaChoiceRule("AChoice")]
+                public class AChoice : AbstractChoiceRule<A>
+                {
+                    private static readonly string[] choiceFieldNames = { "y", "z" };
+            
+                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
+            
+                    protected override IChoiceRuleValidationMethod ValidationMethod => RequiredChoiceRuleValidationMethod.Instance;
+            
+                    protected override ICollection<string> GetPopulatedFieldNames(A a)
+                    {
+                        var populatedFieldNames = new List<string>();
+            
+                        if (a.Y != null) populatedFieldNames.Add("y");
+                        if (a.Z != null) populatedFieldNames.Add("z");
+                        return populatedFieldNames;
+                    }
+                }
+        '''))
+    }
     def generateCSharp(CharSequence model) {
         val eResource = model.parseRosettaWithNoErrors.eResource
 

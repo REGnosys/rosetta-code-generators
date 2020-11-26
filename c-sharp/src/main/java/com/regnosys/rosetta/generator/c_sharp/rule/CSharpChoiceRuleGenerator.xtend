@@ -45,7 +45,7 @@ class CSharpChoiceRuleGenerator {
         val ruleName = rule.conditionName(data)
         val className = choiceRuleClassName(rule.conditionName(data))
         val usedAttributes = if(rule.constraint.isOneOf) data.allAttributes else rule.constraint.attributes // TODO multi choice rules? 
-        val validationType = if(rule.constraint.isOneOf || rule.constraint.necessity === Necessity.REQUIRED) 'RequiredChoiceRuleValidationMethod' else 'OptionalChoiceRuleValidationMethod'
+        val validationType = if(rule.constraint.isOneOf || rule.constraint.necessity === Necessity.REQUIRED) 'Required' else 'Optional'
         '''
             «»
                 «comment(rule.definition)»
@@ -53,20 +53,19 @@ class CSharpChoiceRuleGenerator {
                 public class «choiceRuleClassName(className)» : AbstractChoiceRule<«rosettaClass.name»>
                 {
                     private static readonly string[] choiceFieldNames = { «usedAttributes.join(', ')['"'+name+'"']» };
+            
+                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
 
-                    public IValidationResult Validate(«clazz» «varName») {
-                        var validationMethod = «validationType».Instance;
+                    protected override IChoiceRuleValidationMethod ValidationMethod => «validationType»ChoiceRuleValidationMethod.Instance;
+
+                    protected override ICollection<string> GetPopulatedFieldNames(«rosettaClass.name» «varName»)
+                    {
                         var populatedFieldNames = new List<string>();
-
+            
                         «FOR a : usedAttributes»
                             if («varName».«expressionHandler.getPropertyName(a)» != null) populatedFieldNames.Add("«a.name»");
                         «ENDFOR»
-
-                        if (validationMethod.Check(populatedFieldNames.Count))
-                        {
-                            return ModelValidationResult.Success(Name, ValidationType.CHOICE_RULE, "«clazz»");
-                        }
-                        return new ChoiceRuleFailure(Name, "«clazz»", choiceFieldNames, populatedFieldNames, validationMethod);
+                        return populatedFieldNames;
                     }
                 }
     '''
