@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.c_sharp.expression;
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.java.function.CardinalityProvider
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpType
 import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
@@ -47,9 +46,6 @@ import com.regnosys.rosetta.utils.ExpressionHelper
 import com.rosetta.model.lib.functions.MapperC
 import com.rosetta.model.lib.functions.MapperMaths
 import com.rosetta.model.lib.functions.MapperS
-//import com.rosetta.model.lib.functions.MapperTree
-import com.rosetta.model.lib.meta.FieldWithMeta
-//import com.rosetta.model.lib.validation.ValidatorHelper
 import java.util.HashMap
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
@@ -58,7 +54,6 @@ import org.eclipse.xtext.util.Wrapper
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.toCSharpEnumName
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.toCSharpType
 import org.eclipse.emf.ecore.EObject
-import com.regnosys.rosetta.rosetta.RosettaNamed
 
 class ExpressionGenerator {
 
@@ -66,16 +61,14 @@ class ExpressionGenerator {
     protected RosettaTypeProvider typeProvider
     @Inject
     RosettaOperators operators
-    @Inject
-    CardinalityProvider cardinalityProvider
+    //@Inject
+    //CardinalityProvider cardinalityProvider // TODO: Decide if this should be used in place of isCollection
     @Inject
     CSharpNames.Factory factory
     @Inject
     RosettaFunctionExtensions funcExt
     @Inject
     extension RosettaExtensions
-    //@Inject
-    //extension ImportManagerExtension
     @Inject
     ExpressionHelper exprHelper
 
@@ -290,7 +283,7 @@ class ExpressionGenerator {
             return '''«receiver»«IF call.receiver.isOptional»?«ENDIF»«right»'''
         else if (feature instanceof Attribute) {
             // Use Select if receiver is a collection, but SelectMany if feature is also a collection
-            val variableName = (feature as Attribute).getVariableName
+            val variableName = feature.getVariableName
             return '''
                 «receiver»«IF call.receiver.isOptional»?«ENDIF»«IF call.receiver instanceof RosettaFeatureCall»
                     «ENDIF».Select«IF feature.isCollection»Many«ENDIF»(«variableName» => «variableName»«IF isMetaType(call.receiver)».Value«ENDIF»«right»)'''
@@ -368,10 +361,6 @@ class ExpressionGenerator {
             default:
                 false
         }
-    }
-
-    def private RosettaType containerType(RosettaFeature feature) {
-        EcoreUtil2.getContainerOfType(feature, RosettaType)
     }
 
     def StringConcatenationClient countExpr(RosettaCountOperation expr, RosettaExpression test, ParamMap params) {
@@ -592,23 +581,9 @@ class ExpressionGenerator {
      * Builds the expression of mapping functions to extract a path of attributes
      */
     def StringConcatenationClient buildMapFunc(Attribute attribute, boolean isLast, boolean autoValue) {
-        val mapFunc = attribute.buildMapFuncAttribute
-        
         if (attribute.card.isIsMany) {
             '''.«attribute.getPropertyName»'''
-            //'''«IF attribute.eContainer instanceof Data»«attribute.attributeTypeVariableName».«attribute.name.toFirstUpper»«ENDIF»'''
-//            if (attribute.metaAnnotations.nullOrEmpty || !autoValue) {
-//                '''
-//                «memberVariable»
-//                    .SelectMany1(«mapFunc»)'''
-//            } else { // FieldWithMeta
-//                '''
-//                «memberVariable».
-//                    SelectMany2(«mapFunc».Value)'''
-//            }
         } else {
-            // TODO: Need to determine if autoValue or not???
-            // TODO: val metaCall = '''«IF attribute.eContainer instanceof Data && !(attribute.eContainer as Data).metaAnnotations.nullOrEmpty».Value«ENDIF»'''
             val memberCall = '''«IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.getPropertyName»'''
             if (attribute.metaAnnotations.nullOrEmpty || !autoValue) {
                 '''«memberCall»'''
@@ -662,12 +637,6 @@ class ExpressionGenerator {
             exprs.add(expr.get)
         }
         '''.<«expr.get.attribute.type.name.toCSharpType»>GroupBy(g->new «MapperS»<>(g)«FOR ex : exprs»«buildMapFunc(ex.attribute as Attribute, isLast, true)»«ENDFOR»)'''
-    }
-
-    private def StringConcatenationClient buildMapFuncAttribute(Attribute attribute) {
-        if (attribute.eContainer instanceof Data)
-            '''x => «IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»x'''
-        //    '''«attribute.attributeTypeVariableName» => «IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«attribute.attributeTypeVariableName».«attribute.name.toFirstUpper»'''
     }
 
     private def attributeTypeVariableName(Attribute attribute)

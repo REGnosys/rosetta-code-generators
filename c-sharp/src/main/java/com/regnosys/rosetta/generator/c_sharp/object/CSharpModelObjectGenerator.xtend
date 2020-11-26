@@ -3,7 +3,7 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-//import com.regnosys.rosetta.generator.c_sharp.rule.ChoiceRuleGenerator
+import com.regnosys.rosetta.generator.c_sharp.rule.CSharpChoiceRuleGenerator
 import com.regnosys.rosetta.generator.c_sharp.rule.CSharpDataRuleGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaNamed
@@ -29,10 +29,12 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension CSharpMetaFieldGenerator
-    
+
+    @Inject
+    extension CSharpChoiceRuleGenerator
+
     @Inject
     extension CSharpDataRuleGenerator
-    
 
     static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
@@ -40,7 +42,7 @@ class CSharpModelObjectGenerator {
     static final String META_FILENAME = 'MetaTypes.cs'
     static final String META_FIELD_FILENAME = 'MetaFieldTypes.cs'
     static final String DATA_RULES_FILENAME = "DataRules.cs"
-    //static final String CHOICE_RULES_FILENAME = "ChoiceRules.cs"
+    static final String CHOICE_RULES_FILENAME = "ChoiceRules.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
         type.allSuperTypes.map[it.expandedAttributes].flatten
@@ -82,9 +84,12 @@ class CSharpModelObjectGenerator {
         val metaFields = sortedClasses.generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FIELD_FILENAME, metaFields)
 
+        val choiceRules = sortedClasses.generateChoiceRules(version).replaceTabsWithSpaces
+        result.put(CHOICE_RULES_FILENAME, choiceRules)
+        
         val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
         result.put(DATA_RULES_FILENAME, dataRules)
-        
+
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
         result;
@@ -201,6 +206,7 @@ class CSharpModelObjectGenerator {
                 using Rosetta.Lib.Meta;
                 using Rosetta.Lib.Validation;
                 
+                using Org.Isda.Cdm.Validation.ChoiceRule;
                 using Org.Isda.Cdm.Validation.DataRule;
                 
                 «FOR c : rosettaClasses SEPARATOR '\n'»
@@ -223,9 +229,11 @@ class CSharpModelObjectGenerator {
                     
                         public IEnumerable<IValidator<«c.name»>> ChoiceRuleValidators {
                             get {
-«««                                «FOR r : conditionRules(c, c.conditions)[isChoiceRuleCondition]»
+                                «FOR r : conditionRules(c, c.conditions)[isChoiceRuleCondition]»
+                                    yield return new «CSharpChoiceRuleGenerator.choiceRuleClassName(r.ruleName)»();
+«««                             TODO: Sort out package
 «««                                    yield return new «javaNames.packages.model.choiceRule.name».«CSharpChoiceRuleGenerator.choiceRuleClassName(r.ruleName)»();
-«««                                «ENDFOR»
+                                «ENDFOR»
                                 yield break;
                             }
                         }

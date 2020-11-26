@@ -7,9 +7,7 @@ import java.util.List
 
 import com.regnosys.rosetta.generator.c_sharp.expression.ExpressionGenerator
 import com.regnosys.rosetta.generator.c_sharp.expression.ExpressionGenerator.ParamMap
-import com.regnosys.rosetta.generator.java.function.RosettaFunctionDependencyProvider
-//import com.regnosys.rosetta.generator.java.util.ImportManagerExtension
-//import com.regnosys.rosetta.generator.java.util.JavaNames
+//import com.regnosys.rosetta.generator.java.function.RosettaFunctionDependencyProvider
 import com.regnosys.rosetta.generator.java.util.RosettaGrammarUtil
 import com.regnosys.rosetta.rosetta.RosettaConditionalExpression
 import com.regnosys.rosetta.rosetta.RosettaType
@@ -17,49 +15,17 @@ import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 
-//import com.rosetta.model.lib.RosettaModelObjectBuilder
-//import com.rosetta.model.lib.annotations.RosettaDataRule
-//import com.rosetta.model.lib.path.RosettaPath
-//import com.rosetta.model.lib.validation.ComparisonResult
-import com.rosetta.model.lib.validation.ModelObjectValidator
-//import com.rosetta.model.lib.validation.ValidationResult
-//import com.rosetta.model.lib.validation.ValidationResult.ValidationType
-//import com.rosetta.model.lib.validation.Validator
+//import com.rosetta.model.lib.validation.ModelObjectValidator
 
 import org.eclipse.xtend2.lib.StringConcatenationClient
-/*
-import org.eclipse.xtext.generator.IFileSystemAccess2
-*/
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
-//import static com.regnosys.rosetta.generator.java.util.ModelGeneratorUtil.*
 import static com.regnosys.rosetta.rosetta.simple.SimplePackage.Literals.CONDITION__EXPRESSION
 
 class CSharpDataRuleGenerator {
     @Inject ExpressionGenerator expressionHandler
     @Inject extension RosettaExtensions
-    //@Inject extension ImportManagerExtension
-    @Inject RosettaFunctionDependencyProvider funcDependencies
+    //@Inject RosettaFunctionDependencyProvider funcDependencies
     
-    /*
-    def generate(JavaNames names, IFileSystemAccess2 fsa, Data data, Condition ele, String version) {
-        val classBody = tracImports(ele.dataRuleClassBody(data, names, version))
-        val content = '''
-            package «names.packages.model.dataRule.name»;
-            
-            «FOR imp : classBody.imports»
-                import «imp»;
-            «ENDFOR»
-            «»
-            «FOR imp : classBody.staticImports»
-                import static «imp»;
-            «ENDFOR»
-            
-            «classBody.toString»
-        '''
-        fsa.generateFile('''«names.packages.model.dataRule.directoryName»/«dataRuleClassName(ele, data)».java''', content)
-    }
-    */
-
     def generateDataRules(List<Data> rosettaClasses, String version) {
         '''
         «fileComment(version)»
