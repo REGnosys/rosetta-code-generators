@@ -47,6 +47,11 @@ namespace Rosetta.Lib.Validation
 
 	public class ModelValidationResult : AbstractValidationResult
 	{
+		public static IValidationResult Success(string name, ValidationType validationType, string modelObjectName)
+		{
+			return new ModelValidationResult(name, validationType, modelObjectName, string.Empty);
+		}
+
 		public static IValidationResult Success(string name, ValidationType validationType, string modelObjectName, string definition)
 		{
 			return new ModelValidationResult(name, validationType, modelObjectName, definition);
@@ -109,7 +114,11 @@ namespace Rosetta.Lib.Validation
 		bool Check(int fieldCount);
 	}
 
-	public class OptionalChoiceRuleValidationMethod : IChoiceRuleValidationMethod {
+	public sealed class OptionalChoiceRuleValidationMethod : IChoiceRuleValidationMethod {
+        private static readonly IChoiceRuleValidationMethod singleton = new OptionalChoiceRuleValidationMethod();
+
+		public static IChoiceRuleValidationMethod Instance => singleton;
+
 		public string Description => "Zero or one field must be set";
 
 		public bool Check(int fieldCount)
@@ -120,6 +129,10 @@ namespace Rosetta.Lib.Validation
 
 	public class RequiredChoiceRuleValidationMethod : IChoiceRuleValidationMethod
 	{
+		private static readonly IChoiceRuleValidationMethod singleton = new RequiredChoiceRuleValidationMethod();
+
+		public static IChoiceRuleValidationMethod Instance => singleton;
+
 		public string Description => "One and only one field must be set";
 
 		public bool Check(int fieldCount)
