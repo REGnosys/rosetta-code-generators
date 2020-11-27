@@ -35,6 +35,7 @@ class CSharpDataRuleGenerator {
             using System.Linq;
             
             using Org.Isda.Cdm;
+            using Org.Isda.Cdm.Functions;
             
             using Rosetta.Lib.Attributes;
             using Rosetta.Lib.Functions;
