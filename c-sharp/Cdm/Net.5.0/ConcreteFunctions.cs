@@ -1,4 +1,6 @@
-﻿#nullable enable // Allow nullable reference types
+﻿// This file is included to implement functions which can not currently be generated.
+//
+#nullable enable // Allow nullable reference types
 
 namespace Org.Isda.Cdm.Functions
 {
@@ -52,9 +54,16 @@ namespace Org.Isda.Cdm.Functions
         {
             return values.Sum();
         }
-        static public decimal Evaluate(IEnumerable<decimal> values)
+
+        static public decimal Evaluate(IEnumerable<decimal?> values)
         {
-            return values.Sum();
+            var value = values.Aggregate((total, next) => total + next);
+            return value != null ? value.Value : default;
+        }
+
+        static public decimal Evaluate(IEnumerable<decimal>? values)
+        {
+            return values == null ? default : values.Sum();
         }
     }
 
@@ -66,5 +75,4 @@ namespace Org.Isda.Cdm.Functions
             return true;
         }
     }
-
 }
