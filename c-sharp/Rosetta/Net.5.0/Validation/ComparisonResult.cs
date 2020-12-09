@@ -22,9 +22,9 @@
 
     public class ComparisonResult : IComparisonResult
     {
-        public static ComparisonResult FromBoolean(bool? result)
+        public static ComparisonResult FromBoolean(bool? result, string error = null)
         {
-            return new ComparisonResult(result == true, false, null);
+            return new ComparisonResult(result == true, false, result != true ? error : null);
         }
 
         public static ComparisonResult Success()

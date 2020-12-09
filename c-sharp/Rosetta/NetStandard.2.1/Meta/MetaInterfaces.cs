@@ -11,6 +11,11 @@ namespace Rosetta.Lib.Meta
         T? Value { get; }
     }
 
+    public interface IEnumFieldWithMeta<T> where T : struct, System.Enum
+    {
+        T? Value { get; }
+    }
+
     public interface IValueFieldWithMeta<T> where T : struct
     {
         T? Value { get; }
@@ -68,8 +73,8 @@ namespace Rosetta.Lib.Meta
 
     public interface IReferenceWithMetaBuilder<I> : IReferenceWithMetaBuilderBase<I>
     {
-        IReferenceWithMetaBuilder<I> setGlobalReference(string globalKey);
-        IReferenceWithMetaBuilder<I> setExternalReference(string ExternalKey);
+        new IReferenceWithMetaBuilder<I> SetGlobalReference(string globalKey);
+        new IReferenceWithMetaBuilder<I> SetExternalReference(string ExternalKey);
 
         //TODO: RosettaModelObjectBuilder getValue();
         IReferenceWithMetaBuilder<I> SetValue(I value);
