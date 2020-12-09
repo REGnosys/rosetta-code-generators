@@ -134,7 +134,7 @@ class ExpressionGenerator {
                     «expr.elsethen.csharpCode(params)»«ENDIF»)'''
             }
             RosettaContainsExpression: {
-                '''«expr.container.csharpCode(params)».Contains(«expr.contained.csharpCode(params)»)'''
+                '''«expr.container.csharpCode(params)».Includes(«expr.contained.csharpCode(params)»)'''
             }
             RosettaParenthesisCalcExpression: {
                 expr.expression.csharpCode(params, isLast)
@@ -196,17 +196,17 @@ class ExpressionGenerator {
     }
 
     private def StringConcatenationClient doExistsExpr(RosettaExistsExpression exists, RosettaExpression arg, ParamMap params) {
-        if (arg.isOptional) {
+        if (arg.isOptional || arg.isMetaType) {
             '''«IF exists.single»Single«ELSEIF exists.multiple»Multiple«ENDIF»«IF exists.only»Only«ENDIF»Exists(«arg.csharpCode(params)»)'''
         }
-        else '''true'''
+        else '''ComparisonResult.Success()'''
     }
 
     private def StringConcatenationClient doAbsentExpr(RosettaAbsentExpression absent, RosettaExpression arg, ParamMap params) {
         if (arg.isOptional) {
             '''NotExists(«arg.csharpCode(params)»)'''
         }
-        else '''false'''
+        else '''ComparisonResult.Failure("Field is not optional and must exist")'''
     }
 
     def StringConcatenationClient absentExpr(RosettaAbsentExpression absent, RosettaExpression argument,
@@ -235,12 +235,9 @@ class ExpressionGenerator {
                 // The current container (Data) is stored in Params, but we need also look for superTypes
                 // so we could also do: (call.eContainer as Data).allSuperTypes.map[it|params.getClass(it)].filterNull.head
                 if (call.eContainer instanceof Data) {
-                    //'''«buildMapFunc(call, false, true)»'''
                     val variableName = EcoreUtil2.getContainerOfType(expr, Data).getName.toFirstLower
                     '''«variableName»«buildMapFunc(call, false, true)»'''
                 }
-                //else if (call.card.isIsMany)
-                //    '''«MapperC».of(«call.name»)'''
                 else
                     '''«call.name»'''
             }
@@ -278,15 +275,23 @@ class ExpressionGenerator {
             default:
                 throw new UnsupportedOperationException("Unsupported expression type of " + feature.eClass.name)
         }
+        
+        // NB: MetaTypes always have optional Value properties
+        val isMetaType = call.receiver.isMetaType
+        val isOptional = call.receiver.isOptional
         val receiver = '''«csharpCode(call.receiver, params, false)»'''
+        
         if (call.toOne || !call.receiver.isCollection)
-            return '''«receiver»«IF call.receiver.isOptional»?«ENDIF»«right»'''
+            return '''«receiver»«IF isOptional || isMetaType»?«ENDIF»«right»'''
         else if (feature instanceof Attribute) {
             // Use Select if receiver is a collection, but SelectMany if feature is also a collection
+            // Assume collections are never null, possibly empty and could contain optional values
+            val isElementOptional = isMetaType || call.receiver.isElementOptional
             val variableName = feature.getVariableName
+            val isCollection = feature.isCollection
             return '''
-                «receiver»«IF call.receiver.isOptional»?«ENDIF»«IF call.receiver instanceof RosettaFeatureCall»
-                    «ENDIF».Select«IF feature.isCollection»Many«ENDIF»(«variableName» => «variableName»«IF isMetaType(call.receiver)».Value«ENDIF»«right»)'''
+                «receiver»«IF call.receiver instanceof RosettaFeatureCall»
+                    «ENDIF».Select«IF isCollection»Many«ENDIF»(«variableName» => «IF isCollection»(«ENDIF»«variableName»«IF isMetaType».Value«ENDIF»«IF isElementOptional»?«ENDIF»«right»«IF isCollection»).EmptyIfNull()«ENDIF»)'''
         } else
             return '''«receiver».All(TODO => «right»'''
     }
@@ -332,8 +337,17 @@ class ExpressionGenerator {
                 false
         }
     }
-    
-        def private boolean isOptional(EObject expr) {
+
+    def private boolean isElementOptional(EObject expr) {
+        switch (expr) {
+            RosettaFeatureCall: {
+                expr.isOptional
+            }
+            default: false
+        } 
+    }
+
+    def private boolean isOptional(EObject expr) {
         switch (expr) {
             RosettaCallableCall: {
                 expr.callable.isOptional
@@ -348,12 +362,11 @@ class ExpressionGenerator {
                 expr.output.isOptional
             }
             Attribute: {
-                expr.card.isIsOptional
+                expr.card.isIsOptional && !expr.card.isIsMany
             }
             default: false
         } 
     }
-
     def private boolean isOptional(RosettaFeature feature) {
         switch (feature) {
             Attribute:
@@ -384,35 +397,35 @@ class ExpressionGenerator {
             case ("and"): {
                 if (evalulatesToMapper(left)) {
                     // Mappers
-                    if (isComparableTypes(expr))
+//                    if (isComparableTypes(expr))
                         '''
                         And(«left.booleanize(test, params)»,
-                        «right.booleanize(test, params)»)'''
-                    else
-                        '''
-                        «left.booleanize(test, params)» && «right.booleanize(test, params)»'''
+                            «right.booleanize(test, params)»)'''
+//                    else
+//                        '''
+//                        «left.booleanize(test, params)» && «right.booleanize(test, params)»'''
                 } else {
                     // ComparisonResults
                     '''
                     And(«left.csharpCode(params)»,
-                    «right.csharpCode(params)»)'''
+                        «right.csharpCode(params)»)'''
                 }
             }
             case ("or"): {
                 if (evalulatesToMapper(left)) {
                     // Mappers
-                    if (isComparableTypes(expr))
+//                    if (isComparableTypes(expr))
                         '''
                         Or(«left.booleanize(test, params)»,
-                        «right.booleanize(test, params)»)'''
-                    else
-                        '''
-                        «left.booleanize(test, params)» || «right.booleanize(test, params)»'''
+                            «right.booleanize(test, params)»)'''
+//                    else
+//                        '''
+//                        «left.booleanize(test, params)» || «right.booleanize(test, params)»'''
                 } else {
                     // ComparisonResult
                     '''
                     Or(«left.csharpCode(params)»,
-                    «right.csharpCode(params)»)'''
+                        «right.csharpCode(params)»)'''
                 }
             }
             case ("+"): {
@@ -440,7 +453,8 @@ class ExpressionGenerator {
                 } else if (expr.left.isCollection || expr.right.isCollection) {
                     '''«leftExpr».«toComparisonFuncName(expr.operator)»(«rightExpr»)'''
                 } else {
-                    '''«expr.left.csharpCode(params)» «toComparisonOp(expr.operator)» «expr.right.csharpCode(params)»'''
+                    // TODO: Produce error message?
+                    '''ComparisonResult.FromBoolean(«expr.left.csharpCode(params)» «toComparisonOp(expr.operator)» «expr.right.csharpCode(params)»)'''
                 }
             }
         }
@@ -516,7 +530,7 @@ class ExpressionGenerator {
 
     private def String toComparisonFuncName(String operator) {
         switch operator {
-            case ("="): "Equals"
+            case ("="): "IsEqual"
             case ("<>"): "NotEquals"
             case ("<"): "LessThan"
             case ("<="): "LessThanEquals"
@@ -585,10 +599,10 @@ class ExpressionGenerator {
             '''.«attribute.getPropertyName»'''
         } else {
             val memberCall = '''«IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.getPropertyName»'''
-            if (attribute.metaAnnotations.nullOrEmpty || !autoValue) {
+            if (!attribute.isMetaType || !autoValue) {
                 '''«memberCall»'''
             } else {// FieldWithMeta
-                '''«memberCall».Value'''
+                '''«memberCall»«IF attribute.isOptional»?«ENDIF».Value'''
             }
         }
     }
@@ -638,6 +652,10 @@ class ExpressionGenerator {
         }
         '''.<«expr.get.attribute.type.name.toCSharpType»>GroupBy(g->new «MapperS»<>(g)«FOR ex : exprs»«buildMapFunc(ex.attribute as Attribute, isLast, true)»«ENDFOR»)'''
     }
+
+    private def typeName(Attribute attribute)
+        // TODO: Handle Meta types
+        '''«attribute.type.toCSharpType»'''
 
     private def attributeTypeVariableName(Attribute attribute)
          '''«(attribute.eContainer as Data).toCSharpType.simpleName.toFirstLower»'''

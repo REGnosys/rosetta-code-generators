@@ -103,7 +103,7 @@ class CSharpMetaFieldGenerator {
             // MISSING: FieldWithMeta for «type.name»
         «ELSE»
             «""»
-                public class FieldWithMeta«metaTypeName» «IF type.enumeration»// «ENDIF»: «generateFieldInterface(type)»
+                public class FieldWithMeta«metaTypeName» : «generateFieldInterface(type)»
                 {
                     [JsonConstructor]
                     public FieldWithMeta«metaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)

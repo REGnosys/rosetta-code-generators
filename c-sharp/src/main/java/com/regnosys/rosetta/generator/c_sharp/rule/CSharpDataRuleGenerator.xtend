@@ -29,6 +29,9 @@ class CSharpDataRuleGenerator {
     def generateDataRules(List<Data> rosettaClasses, String version) {
         '''
         «fileComment(version)»
+        
+        #nullable enable // Allow nullable reference types
+        
         namespace Org.Isda.Cdm.Validation.DataRule
         {
             using System;
@@ -60,7 +63,7 @@ class CSharpDataRuleGenerator {
         dataRuleClassName(cond.conditionName(data))
     }
     
-    private def StringConcatenationClient dataRuleClassBody(Condition rule, Data data /*, JavaNames javaName*/, String version)  {
+    private def StringConcatenationClient dataRuleClassBody(Condition rule, Data data, String version)  {
         val rosettaClass = rule.eContainer as RosettaType
         val expression = rule.expression
         
@@ -82,14 +85,14 @@ class CSharpDataRuleGenerator {
 «««                    @«Inject» protected «javaName.toJavaType(dep)» «dep.name.toFirstLower»;
 «««                «ENDFOR»
                 
-                protected override IComparisonResult RuleIsApplicable(«rosettaClass.name» «rosettaClass.name.toFirstLower»)
+                protected override IComparisonResult? RuleIsApplicable(«rosettaClass.name» «rosettaClass.name.toFirstLower»)
                 {
                     «IF ruleWhen === null»
                         return ComparisonResult.Success();
                     «ELSE»
                     try
                     {
-                        return ComparisonResult.FromBoolean(«expressionHandler.csharpCode(ruleWhen, new ParamMap(rosettaClass))»);
+                        return «expressionHandler.csharpCode(ruleWhen, new ParamMap(rosettaClass))»;
                     }
                     catch (Exception ex)
                     {
@@ -98,11 +101,11 @@ class CSharpDataRuleGenerator {
                     «ENDIF»
                 }
                 
-                protected override IComparisonResult EvaluateThenExpression(«rosettaClass.name» «rosettaClass.name.toFirstLower»)
+                protected override IComparisonResult? EvaluateThenExpression(«rosettaClass.name» «rosettaClass.name.toFirstLower»)
                 {
                     try
                     {
-                        return ComparisonResult.FromBoolean(«expressionHandler.csharpCode(ruleThen, new ParamMap(rosettaClass))»);
+                        return «expressionHandler.csharpCode(ruleThen, new ParamMap(rosettaClass))»;
                     }
                     catch (Exception ex)
                     {
