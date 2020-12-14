@@ -3,6 +3,7 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.c_sharp.object.CSharpValidatorsGenerator
 import com.regnosys.rosetta.generator.c_sharp.rule.CSharpChoiceRuleGenerator
 import com.regnosys.rosetta.generator.c_sharp.rule.CSharpDataRuleGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
@@ -35,6 +36,9 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension CSharpDataRuleGenerator
+    
+    @Inject
+    extension CSharpValidatorsGenerator
 
     static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
@@ -43,6 +47,7 @@ class CSharpModelObjectGenerator {
     static final String META_FIELD_FILENAME = 'MetaFieldTypes.cs'
     static final String DATA_RULES_FILENAME = "DataRules.cs"
     static final String CHOICE_RULES_FILENAME = "ChoiceRules.cs"
+    static final String VALIDATORS_FILENAME = "Validators.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
         type.allSuperTypes.map[it.expandedAttributes].flatten
@@ -89,6 +94,9 @@ class CSharpModelObjectGenerator {
         
         val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
         result.put(DATA_RULES_FILENAME, dataRules)
+
+        val validators = sortedClasses.generateValidators(version).replaceTabsWithSpaces
+        result.put(VALIDATORS_FILENAME, validators)
 
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
@@ -238,7 +246,9 @@ class CSharpModelObjectGenerator {
                             }
                         }
                         
-                        public IValidator<«c.name»> Validator => null;
+                        public IValidatorWithArg<«c.name», string> OnlyExistsValidator => new «c.name»OnlyExistsValidator();
+
+                        public IValidator<«c.name»> Validator => new «c.name»Validator();
                     }
                 «ENDFOR»
             }

@@ -81,27 +81,20 @@ namespace Rosetta.Lib.Validation
             return ComparisonResult.Failure($"{nameof(T1)} exists");
         }
 
-        // TODO: What does OnlyExists really mean??!
-        protected IComparisonResult OnlyExists<T1>(IEnumerable<T1>? collection)
+        protected IComparisonResult OnlyExists<T1>(T1? parent, string field) where T1 : class, IRosettaModelObject<T1>
         {
-            if (collection == null)
+            if (parent == null)
             {
-                return ComparisonResult.FailureEmptyOperand("Collection does not exist");
+                return ComparisonResult.FailureEmptyOperand($"Object {nameof(T1)} does not exist");
             }
-            if (collection.Count() > 1)
-            {
-                return ComparisonResult.FailureEmptyOperand("Collection has more than one element");
-            }
-            return ComparisonResult.Success();
-        }
 
-        protected IComparisonResult OnlyExists<T1>(T1? obj) where T1 : class
-        {
-            if (obj == null)
+            var validationResult = parent.MetaData.OnlyExistsValidator.Validate(parent, field);
+
+            if (validationResult.IsSuccess)
             {
-                return ComparisonResult.FailureEmptyOperand("Object does not exist");
+                return ComparisonResult.Success();
             }
-            return ComparisonResult.Success();
+            return ComparisonResult.Failure(validationResult.FailureReason);
         }
 
         // TODO Can this be converted to use a Func<>?

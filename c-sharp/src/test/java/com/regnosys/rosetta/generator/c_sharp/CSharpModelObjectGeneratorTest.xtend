@@ -2,12 +2,14 @@ package com.regnosys.rosetta.generator.c_sharp
 
 import com.google.inject.Inject
 import com.google.inject.Provider
+import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.List
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
@@ -17,8 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
-import java.util.List
-import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -134,7 +134,7 @@ class CSharpModelObjectGeneratorTest {
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.81.0/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.89.0/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
@@ -796,12 +796,12 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "a <> AEnum->X";
                     
-                    protected override IComparisonResult RuleIsApplicable(B b)
+                    protected override IComparisonResult? RuleIsApplicable(B b)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(B b)
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
                     {
                         try
                         {
@@ -896,7 +896,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class FieldWithMetaGmtTestEnum // : IEnumFieldWithMeta<Enums.GmtTest>
+                public class FieldWithMetaGmtTestEnum : IEnumFieldWithMeta<Enums.GmtTest>
                 {
                     [JsonConstructor]
                     public FieldWithMetaGmtTestEnum(Enums.GmtTest? value, MetaFields? meta)
@@ -1111,11 +1111,11 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "if optionalInt exists then optionalInt > 10";
                     
-                    protected override IComparisonResult RuleIsApplicable(A a)
+                    protected override IComparisonResult? RuleIsApplicable(A a)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(a.OptionalInt));
+                            return Exists(a.OptionalInt);
                         }
                         catch (Exception ex)
                         {
@@ -1123,7 +1123,7 @@ class CSharpModelObjectGeneratorTest {
                         }
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(A a)
+                    protected override IComparisonResult? EvaluateThenExpression(A a)
                     {
                         try
                         {
@@ -1160,12 +1160,12 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "intValue < 100";
                     
-                    protected override IComparisonResult RuleIsApplicable(B b)
+                    protected override IComparisonResult? RuleIsApplicable(B b)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(B b)
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
                     {
                         try
                         {
@@ -1203,11 +1203,11 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "if optionalBoolean exists then optionalBoolean = False";
                     
-                    protected override IComparisonResult RuleIsApplicable(C c)
+                    protected override IComparisonResult? RuleIsApplicable(C c)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(c.OptionalBoolean));
+                            return Exists(c.OptionalBoolean);
                         }
                         catch (Exception ex)
                         {
@@ -1215,7 +1215,7 @@ class CSharpModelObjectGeneratorTest {
                         }
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(C c)
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
                     {
                         try
                         {
@@ -1251,8 +1251,11 @@ class CSharpModelObjectGeneratorTest {
                     then otherBooleanValue = False
             '''
         
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        val csharp = rosettaCode.generateCSharp
+        //println("types: " + csharp.get("Types.cs").toString)
+        val dataRules = csharp.get('DataRules.cs').toString
         //println("dataRules: " + dataRules)
+
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
@@ -1262,7 +1265,7 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "if booleanValue = True then collection->isApplicable = False";
                     
-                    protected override IComparisonResult RuleIsApplicable(F f)
+                    protected override IComparisonResult? RuleIsApplicable(F f)
                     {
                         try
                         {
@@ -1274,11 +1277,11 @@ class CSharpModelObjectGeneratorTest {
                         }
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(F f)
+                    protected override IComparisonResult? EvaluateThenExpression(F f)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(f.Collection?.Select(d => d.IsApplicable).Equals(false));
+                            return f.Collection.Select(d => d.IsApplicable).IsEqual(false);
                         }
                         catch (Exception ex)
                         {
@@ -1295,12 +1298,12 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "if booleanValue = False and collection->isApplicable = False then otherBooleanValue = False";
                     
-                    protected override IComparisonResult RuleIsApplicable(F f)
+                    protected override IComparisonResult? RuleIsApplicable(F f)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(And(f.BooleanValue == false,
-                            f.Collection?.Select(d => d.IsApplicable).Equals(false)));
+                            return And(ComparisonResult.FromBoolean(f.BooleanValue == false),
+                                f.Collection.Select(d => d.IsApplicable).IsEqual(false));
                         }
                         catch (Exception ex)
                         {
@@ -1308,7 +1311,7 @@ class CSharpModelObjectGeneratorTest {
                         }
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(F f)
+                    protected override IComparisonResult? EvaluateThenExpression(F f)
                     {
                         try
                         {
@@ -1327,11 +1330,8 @@ class CSharpModelObjectGeneratorTest {
     def void shouldGenerateDataRuleForSubCollection() {
         val rosettaCode ='''
         
-        type A:
-            x int (1..1)
-
         type B:
-            a A (0..1)
+            a int (0..1)
             
         type C:
             b B (1..*)
@@ -1342,7 +1342,9 @@ class CSharpModelObjectGeneratorTest {
             condition SubCollection:
                 c->b->a exists'''
     
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        val csharp = rosettaCode.generateCSharp
+        //println("types: " + csharp.get("Types.cs").toString)
+        val dataRules = csharp.get('DataRules.cs').toString
         //println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
@@ -1353,17 +1355,68 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "c->b->a exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(D d)
+                    protected override IComparisonResult? RuleIsApplicable(D d)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(D d)
+                    protected override IComparisonResult? EvaluateThenExpression(D d)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(d.C.B
-                                .Select(b => b.A)));
+                            return Exists(d.C.B
+                                .Select(b => b.A));
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldGenerateDataRuleForSubCollectionOfOptional() {
+        val rosettaCode ='''
+        
+        type A:
+            x int (1..1)
+
+        type B:
+            a A (0..1)
+            
+        type C:
+            b B (1..*)
+
+            
+            condition OptionalSubCollection:
+                b->a->x exists'''
+    
+        val csharp = rosettaCode.generateCSharp
+        //println("types: " + csharp.get("Types.cs").toString)
+        val dataRules = csharp.get('DataRules.cs').toString
+        //println("dataRules: " + dataRules)
+        assertTrue(containsFileComment(dataRules))
+        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("COptionalSubCollection")]
+                public class COptionalSubCollection : AbstractDataRule<C>
+                {
+                    protected override string Definition => "b->a->x exists";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(C c)
+                    {
+                        return ComparisonResult.Success();
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
+                    {
+                        try
+                        {
+                            return Exists(c.B.Select(b => b.A)
+                                .Select(a => a?.X));
                         }
                         catch (Exception ex)
                         {
@@ -1391,7 +1444,9 @@ class CSharpModelObjectGeneratorTest {
             condition MetaCollection:
                 b->a->x exists'''
     
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        val csharp = rosettaCode.generateCSharp
+        //println("types: " + csharp.get("Types.cs").toString)
+        val dataRules = csharp.get('DataRules.cs').toString
         //println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
@@ -1402,17 +1457,17 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "b->a->x exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(C c)
+                    protected override IComparisonResult? RuleIsApplicable(C c)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(C c)
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(c.B.A?
-                                .Select(a => a.Value.X)));
+                            return Exists(c.B.A
+                                .Select(a => a.Value?.X));
                         }
                         catch (Exception ex)
                         {
@@ -1441,12 +1496,12 @@ class CSharpModelObjectGeneratorTest {
                 b->a->x exists'''
     
         val cSharp = rosettaCode.generateCSharp
-//        println("types: " + cSharp.get('Types.cs').toString)
-//        println("meta: " + cSharp.get('MetaTypes.cs').toString)
-//        println("metaFields: " + cSharp.get('MetaFieldTypes.cs').toString)
+        //println("types: " + cSharp.get('Types.cs').toString)
+        //println("meta: " + cSharp.get('MetaTypes.cs').toString)
+        //println("metaFields: " + cSharp.get('MetaFieldTypes.cs').toString)
 
         val dataRules = cSharp.get('DataRules.cs').toString
-//        println("dataRules: " + dataRules)
+        //println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
@@ -1456,17 +1511,64 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "b->a->x exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(C c)
+                    protected override IComparisonResult? RuleIsApplicable(C c)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(C c)
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(c.B.SelectMany(b => b.A)
-                                .Select(a => a.Value.X)));
+                            return Exists(c.B.SelectMany(b => (b.A).EmptyIfNull())
+                                .Select(a => a.Value?.X));
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldGenerateDataRuleForMetaReferenceTypes() {
+        val rosettaCode ='''
+        metaType reference string
+
+        type A:
+        
+            inner A (0..1)
+                [metadata reference]
+
+            condition MetaCollection:
+                A->inner -> reference exists'''
+    
+        val cSharp = rosettaCode.generateCSharp
+        //println("types: " + cSharp.get('Types.cs').toString)
+        
+        val dataRules = cSharp.get('DataRules.cs').toString
+        //println("dataRules: " + dataRules)
+        assertTrue(containsFileComment(dataRules))
+        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("AMetaCollection")]
+                public class AMetaCollection : AbstractDataRule<A>
+                {
+                    protected override string Definition => "A->inner -> reference exists";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(A a)
+                    {
+                        return ComparisonResult.Success();
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(A a)
+                    {
+                        try
+                        {
+                            return Exists(a.Inner?.GlobalReference);
                         }
                         catch (Exception ex)
                         {
@@ -1483,41 +1585,47 @@ class CSharpModelObjectGeneratorTest {
         metaType reference string
 
         type A:
+            x int (0..1)
         
-            inner A (0..1)
-                [metadata reference]
+        type B:
+        
+            a A (1..1)
+                [metadata id]
 
             condition MetaCollection:
-                A->inner -> reference exists'''
+                a-> x exists'''
     
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        val cSharp = rosettaCode.generateCSharp
+        //println("types: " + cSharp.get('Types.cs').toString)
+        
+        val dataRules = cSharp.get('DataRules.cs').toString
         //println("dataRules: " + dataRules)
+        
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
             «""»
-                [RosettaDataRule("AMetaCollection")]
-                public class AMetaCollection : AbstractDataRule<A>
+                [RosettaDataRule("BMetaCollection")]
+                public class BMetaCollection : AbstractDataRule<B>
                 {
-                    protected override string Definition => "A->inner -> reference exists";
+                    protected override string Definition => "a-> x exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(A a)
+                    protected override IComparisonResult? RuleIsApplicable(B b)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(A a)
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(a.Inner?.GlobalReference));
+                            return Exists(b.A.Value?.X);
                         }
                         catch (Exception ex)
                         {
                             return ComparisonResult.Failure(ex.Message);
                         }
                     }
-                }
         '''))
     }
 
@@ -1545,12 +1653,12 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "a->b count >= 2";
                     
-                    protected override IComparisonResult RuleIsApplicable(B b)
+                    protected override IComparisonResult? RuleIsApplicable(B b)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(B b)
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
                     {
                         try
                         {
@@ -1596,11 +1704,11 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "if buyer exists then seller exists and if seller exists then buyer exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(BuyerSeller buyerSeller)
+                    protected override IComparisonResult? RuleIsApplicable(BuyerSeller buyerSeller)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(buyerSeller.Buyer));
+                            return Exists(buyerSeller.Buyer);
                         }
                         catch (Exception ex)
                         {
@@ -1608,13 +1716,13 @@ class CSharpModelObjectGeneratorTest {
                         }
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(BuyerSeller buyerSeller)
+                    protected override IComparisonResult? EvaluateThenExpression(BuyerSeller buyerSeller)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(And(Exists(buyerSeller.Seller),
-                            IfThen(Exists(buyerSeller.Seller),
-                                Exists(buyerSeller.Buyer))));
+                            return And(Exists(buyerSeller.Seller),
+                                IfThen(Exists(buyerSeller.Seller),
+                                    Exists(buyerSeller.Buyer)));
                         }
                         catch (Exception ex)
                         {
@@ -1623,6 +1731,38 @@ class CSharpModelObjectGeneratorTest {
                     }
                 }
             
+        '''))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("BuyerSellerCheckEnumValue")]
+                public class BuyerSellerCheckEnumValue : AbstractDataRule<BuyerSeller>
+                {
+                    protected override string Definition => "if buyer exists then buyer = CounterpartyEnum -> Party1";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(BuyerSeller buyerSeller)
+                    {
+                        try
+                        {
+                            return Exists(buyerSeller.Buyer);
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(BuyerSeller buyerSeller)
+                    {
+                        try
+                        {
+                            return ComparisonResult.FromBoolean(buyerSeller.Buyer == Enums.Counterparty.Party1);
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
         '''))
     }
 
@@ -1657,18 +1797,18 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "Sum(b1->a->amount) = b2->a->amount";
                     
-                    protected override IComparisonResult RuleIsApplicable(C c)
+                    protected override IComparisonResult? RuleIsApplicable(C c)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(C c)
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Sum.Evaluate(c.B1.A
-                                .Select(a => a.Amount)).Equals(c.B2.A
-                                .Select(a => a.Amount)));
+                            return Sum.Evaluate(c.B1.A
+                                .Select(a => a.Amount)).IsEqual(c.B2.A
+                                .Select(a => a.Amount));
                         }
                         catch (Exception ex)
                         {
@@ -1701,12 +1841,12 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "a->idea <> 9";
                     
-                    protected override IComparisonResult RuleIsApplicable(B b)
+                    protected override IComparisonResult? RuleIsApplicable(B b)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(B b)
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
                     {
                         try
                         {
@@ -1743,19 +1883,19 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "(b or c) exists or (d and f) is absent";
                     
-                    protected override IComparisonResult RuleIsApplicable(A a)
+                    protected override IComparisonResult? RuleIsApplicable(A a)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(A a)
+                    protected override IComparisonResult? EvaluateThenExpression(A a)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Or(Or(Exists(a.B),
-                            true),
-                            And(NotExists(a.D),
-                            false)));
+                            return Or(Or(Exists(a.B),
+                                ComparisonResult.Success()),
+                                And(NotExists(a.D),
+                                    ComparisonResult.Failure("Field is not optional and must exist")));
                         }
                         catch (Exception ex)
                         {
@@ -1789,16 +1929,61 @@ class CSharpModelObjectGeneratorTest {
                 {
                     protected override string Definition => "a exists";
                     
-                    protected override IComparisonResult RuleIsApplicable(A a)
+                    protected override IComparisonResult? RuleIsApplicable(A a)
                     {
                         return ComparisonResult.Success();
                     }
                     
-                    protected override IComparisonResult EvaluateThenExpression(A a)
+                    protected override IComparisonResult? EvaluateThenExpression(A a)
                     {
                         try
                         {
-                            return ComparisonResult.FromBoolean(Exists(a.AValue));
+                            return Exists(a.AValue);
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
+        '''))
+    }
+
+    @Test
+    def void shouldGenerateDataRuleForOnlyExists() {
+        val rosettaCode ='''
+        
+        type A:
+            a int (0..1)
+            [metadata scheme]
+            b string (0..1)
+
+        type B:
+            a A (0..1)
+            
+            condition OnlyExists:
+                a->a only exists'''
+        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        //println("dataRules: " + dataRules)
+        assertTrue(containsFileComment(dataRules))
+        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("BOnlyExists")]
+                public class BOnlyExists : AbstractDataRule<B>
+                {
+                    protected override string Definition => "a->a only exists";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(B b)
+                    {
+                        return ComparisonResult.Success();
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
+                    {
+                        try
+                        {
+                            return OnlyExists(b.A, "AValue");
                         }
                         catch (Exception ex)
                         {

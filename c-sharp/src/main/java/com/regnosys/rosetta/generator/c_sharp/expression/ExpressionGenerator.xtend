@@ -54,6 +54,7 @@ import org.eclipse.xtext.util.Wrapper
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.toCSharpEnumName
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.toCSharpType
 import org.eclipse.emf.ecore.EObject
+import java.util.regex.Pattern
 
 class ExpressionGenerator {
 
@@ -71,6 +72,11 @@ class ExpressionGenerator {
     extension RosettaExtensions
     @Inject
     ExpressionHelper exprHelper
+    
+    // Allow for meta fields .Value call
+    // group(0) is parent
+    // group(1) is parameter name
+    static val PARAM_PATTERN = Pattern.compile("(.*[^?])\\\\??\\\\.(.*[^?])")
 
     def StringConcatenationClient csharpCode(RosettaExpression expr, ParamMap params) {
         // TODO: Convert expression to C# code via extension!!!
@@ -194,10 +200,32 @@ class ExpressionGenerator {
             default: null
         }
     }
+    
+    private def removeOptionalChar(String str) {
+        var length = str.length
+        val char optional = '?'
+        if (length > 1 && str.charAt(length - 1) == optional) length -= 1
+        return str.substring(0, length)
+    }
 
     private def StringConcatenationClient doExistsExpr(RosettaExistsExpression exists, RosettaExpression arg, ParamMap params) {
         if (arg.isOptional || arg.isMetaType) {
-            '''«IF exists.single»Single«ELSEIF exists.multiple»Multiple«ENDIF»«IF exists.only»Only«ENDIF»Exists(«arg.csharpCode(params)»)'''
+            if (exists.only) {
+                var code = '''«arg.csharpCode(params)»'''
+                // Need to split 'parent.param' into: OnlyExists(parent, "param")
+                // Removing trailing .Value for meta fields
+                val suffix = ".Value"
+                if (code.endsWith(suffix)) {
+                    code = code.substring(0, code.length - suffix.length).removeOptionalChar
+                }
+                val ordinal = code.lastIndexOf(".")
+                val param = code.substring(ordinal + 1)
+                val parent = code.substring(0, ordinal).removeOptionalChar
+                '''OnlyExists(«parent», "«param»")'''
+            }
+            else {
+                '''«IF exists.single»Single«ELSEIF exists.multiple»Multiple«ENDIF»Exists(«arg.csharpCode(params)»)'''
+            }
         }
         else '''ComparisonResult.Success()'''
     }

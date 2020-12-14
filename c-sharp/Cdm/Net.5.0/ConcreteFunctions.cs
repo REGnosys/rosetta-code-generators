@@ -30,10 +30,10 @@ namespace Org.Isda.Cdm.Functions
     {
         static public bool Evaluate(TradableProduct tradableProduct, IEnumerable<Account> accounts)
         {
-            if (tradableProduct.Counterparties.Count() != 2)
+            if (tradableProduct.Counterparty.Count() != 2)
                 return false;
 
-            var parties = tradableProduct.Counterparties.ToArray();
+            var parties = tradableProduct.Counterparty.ToArray();
             ReferenceWithMetaParty? party1 = parties[0].PartyReference;
             ReferenceWithMetaParty? party2 = parties[1].PartyReference;
 

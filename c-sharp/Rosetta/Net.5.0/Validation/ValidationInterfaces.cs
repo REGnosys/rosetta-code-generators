@@ -4,43 +4,35 @@ namespace Rosetta.Lib.Validation
 {
     using System;
 
-    public interface IValidator<out T> where T : IRosettaModelObject<T>
+    public interface IValidator<T> where T : IRosettaModelObject<T>
     {
-//        ValidationResult<T> Validate(RosettaPath path, T objectToBeValidated);
-//        ValidationResult<T> Validate(RosettaPath path, RosettaModelObjectBuilder objectToBeValidated);
+        IValidationResult Validate(T obj);
     }
 
-	public enum ValidationType
-	{
-		DATA_RULE, CHOICE_RULE, MODEL_INSTANCE, ONLY_EXISTS, POST_PROCESS_EXCEPTION
-	}
+    public interface IValidatorWithArg<T1, T2> where T1 : IRosettaModelObject<T1>
+    {
+        IValidationResult Validate(T1 obj, T2 field);
+    }
 
-	public interface IValidationResult
-	{
-		bool IsSuccess { get; }
+    public enum ValidationType
+    {
+        DATA_RULE, CHOICE_RULE, MODEL_INSTANCE, ONLY_EXISTS, POST_PROCESS_EXCEPTION
+    }
 
-		string ModelObjectName { get; }
+    public interface IValidationResult
+    {
+        bool IsSuccess { get; }
 
-		string Name { get; }
+        string ModelObjectName { get; }
 
-		ValidationType ValidationType { get; }
+        string Name { get; }
 
-		string Definition { get; }
+        ValidationType ValidationType { get; }
 
-		string? FailureReason { get; }
+        string Definition { get; }
 
-		//RosettaPath Path { get; }
+        string? FailureReason { get; }
 
-		/*
-			static <T> ValidationResult<T> success(string name, ValidationType validationType, string modelObjectName, RosettaPath path, string definition)
-			{
-				return new ModelValidationResult<>(name, validationType, modelObjectName, path, definition, Optional.empty());
-			}
-
-			static <T> ValidationResult<T> failure(string name, ValidationType validationType, string modelObjectName, RosettaPath path, string definition, string failureMessage)
-			{
-				return new ModelValidationResult<>(name, validationType, modelObjectName, path, definition, Optional.of(failureMessage));
-			}
-		*/
-	}
+        //RosettaPath Path { get; }
+    }
 }
