@@ -85,6 +85,10 @@ class CSharpValidatorsGenerator {
     def StringConcatenationClient getPropertyName(ExpandedAttribute attr, String className) {
         return getPropertyName(attr.name, className)
     }
+    
+    private def boolean hasReferenceMetas(ExpandedAttribute attr) {
+        return attr.hasMetas && attr.refIndex >= 0
+    }
 
     private def StringConcatenationClient getPropertyName(String attrName, String className) 
         '''«val property = attrName?.toFirstUpper»«property»«IF property == className»Value«ENDIF»'''
@@ -95,7 +99,7 @@ class CSharpValidatorsGenerator {
             yield return CheckCardinality(Name, obj.«property».EmptyIfNull().Count(), «attr.inf», «attr.sup»);
         «ELSEIF attr.isSingleOptional»
             yield return CheckCardinality(Name, obj.«property»«IF attr.hasMetas»?.Value«ENDIF» != null ? 1 : 0, «attr.inf», «attr.sup»);
-        «ELSEIF attr.hasMetas»
+        «ELSEIF attr.hasReferenceMetas»
             yield return CheckCardinality(Name, obj.«property».Value != null ? 1 : 0, «attr.inf», «attr.sup»);
         «ENDIF»
     '''

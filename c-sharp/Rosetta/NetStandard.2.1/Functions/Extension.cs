@@ -102,13 +102,13 @@ namespace Rosetta.Lib.Functions
                 where T : struct, Enum
                 where T1 : Meta.IEnumFieldWithMeta<T> =>
             Test.Collection(collection) ??
-            ComparisonResult.FromBoolean(collection.All(c => c.Value?.Equals(obj) == true), "Not all collection values match the specified value");
+            ComparisonResult.FromBoolean(collection.All(c => c.Value.Equals(obj) == true), "Not all collection values match the specified value");
 
         public static IComparisonResult NotEquals<T, T1>(this IEnumerable<T1> collection, T obj)
                 where T : struct, Enum
                 where T1 : Meta.IEnumFieldWithMeta<T> =>
             Test.Collection(collection) ??
-            ComparisonResult.FromBoolean(collection.All(c => c.Value?.Equals(obj) == false), "Some collection values match the specified value");
+            ComparisonResult.FromBoolean(collection.All(c => c.Value.Equals(obj) == false), "Some collection values match the specified value");
 
         // decimal overloads.
         public static IComparisonResult IsEqual(this decimal value, IEnumerable<decimal>? values) =>

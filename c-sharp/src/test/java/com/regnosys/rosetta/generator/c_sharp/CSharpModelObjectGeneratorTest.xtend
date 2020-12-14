@@ -882,13 +882,13 @@ class CSharpModelObjectGeneratorTest {
                 public class FieldWithMetaString : IFieldWithMeta<string>
                 {
                     [JsonConstructor]
-                    public FieldWithMetaString(string? value, MetaFields? meta)
+                    public FieldWithMetaString(string value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
-                    public string? Value { get; }
+                    public string Value { get; }
                     
                     public MetaFields? Meta { get; }
                 }
@@ -899,14 +899,14 @@ class CSharpModelObjectGeneratorTest {
                 public class FieldWithMetaGmtTestEnum : IEnumFieldWithMeta<Enums.GmtTest>
                 {
                     [JsonConstructor]
-                    public FieldWithMetaGmtTestEnum(Enums.GmtTest? value, MetaFields? meta)
+                    public FieldWithMetaGmtTestEnum(Enums.GmtTest value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
                     [JsonConverter(typeof(StringEnumConverter))]
-                    public Enums.GmtTest? Value { get; }
+                    public Enums.GmtTest Value { get; }
                     
                     public MetaFields? Meta { get; }
                 }
@@ -1619,7 +1619,7 @@ class CSharpModelObjectGeneratorTest {
                     {
                         try
                         {
-                            return Exists(b.A.Value?.X);
+                            return Exists(b.A.Value.X);
                         }
                         catch (Exception ex)
                         {

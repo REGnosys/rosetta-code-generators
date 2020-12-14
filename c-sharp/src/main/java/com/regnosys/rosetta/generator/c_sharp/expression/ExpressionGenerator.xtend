@@ -54,7 +54,6 @@ import org.eclipse.xtext.util.Wrapper
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.toCSharpEnumName
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.toCSharpType
 import org.eclipse.emf.ecore.EObject
-import java.util.regex.Pattern
 
 class ExpressionGenerator {
 
@@ -73,11 +72,6 @@ class ExpressionGenerator {
     @Inject
     ExpressionHelper exprHelper
     
-    // Allow for meta fields .Value call
-    // group(0) is parent
-    // group(1) is parameter name
-    static val PARAM_PATTERN = Pattern.compile("(.*[^?])\\\\??\\\\.(.*[^?])")
-
     def StringConcatenationClient csharpCode(RosettaExpression expr, ParamMap params) {
         // TODO: Convert expression to C# code via extension!!!
         expr.csharpCode(params, true);
@@ -209,7 +203,7 @@ class ExpressionGenerator {
     }
 
     private def StringConcatenationClient doExistsExpr(RosettaExistsExpression exists, RosettaExpression arg, ParamMap params) {
-        if (arg.isOptional || arg.isMetaType) {
+        if (arg.isOptional || (arg.isMetaType && arg.isReference)) {
             if (exists.only) {
                 var code = '''«arg.csharpCode(params)»'''
                 // Need to split 'parent.param' into: OnlyExists(parent, "param")
@@ -304,22 +298,23 @@ class ExpressionGenerator {
                 throw new UnsupportedOperationException("Unsupported expression type of " + feature.eClass.name)
         }
         
-        // NB: MetaTypes always have optional Value properties
+        // NB: Reference MetaTypes always have optional Value properties
         val isMetaType = call.receiver.isMetaType
-        val isOptional = call.receiver.isOptional
+        val isReference = call.receiver.isReference
         val receiver = '''«csharpCode(call.receiver, params, false)»'''
         
-        if (call.toOne || !call.receiver.isCollection)
-            return '''«receiver»«IF isOptional || isMetaType»?«ENDIF»«right»'''
+        if (call.toOne || !call.receiver.isCollection) {
+            return '''«receiver»«IF call.receiver.isOptional || isReference»?«ENDIF»«right»'''
+        }
         else if (feature instanceof Attribute) {
             // Use Select if receiver is a collection, but SelectMany if feature is also a collection
             // Assume collections are never null, possibly empty and could contain optional values
-            val isElementOptional = isMetaType || call.receiver.isElementOptional
             val variableName = feature.getVariableName
             val isCollection = feature.isCollection
+            val qualifier = '''«IF isMetaType».Value«ENDIF»«IF isReference || call.receiver.isElementOptional»?«ENDIF»'''
             return '''
                 «receiver»«IF call.receiver instanceof RosettaFeatureCall»
-                    «ENDIF».Select«IF isCollection»Many«ENDIF»(«variableName» => «IF isCollection»(«ENDIF»«variableName»«IF isMetaType».Value«ENDIF»«IF isElementOptional»?«ENDIF»«right»«IF isCollection»).EmptyIfNull()«ENDIF»)'''
+                    «ENDIF».Select«IF isCollection»Many«ENDIF»(«variableName» => «IF isCollection»(«ENDIF»«variableName»«qualifier»«right»«IF isCollection»).EmptyIfNull()«ENDIF»)'''
         } else
             return '''«receiver».All(TODO => «right»'''
     }
@@ -339,6 +334,21 @@ class ExpressionGenerator {
         }    
     }
 
+    def private boolean isReference(EObject expr) {
+        switch (expr) {
+            RosettaCallableCall: {
+                isReference(expr.callable)
+            }
+            RosettaFeatureCall: {
+                return isReference(expr.feature)
+            }
+            Attribute: {
+                return !expr.metaAnnotations.nullOrEmpty && expr.metaAnnotations.exists[attribute.name == "reference"]
+            }
+            default: false
+        }    
+    }
+    
     def private boolean isCollection(EObject expr) {
         switch (expr) {
             RosettaCallableCall: {

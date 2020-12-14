@@ -59,9 +59,9 @@ class CSharpMetaFieldGenerator {
         }'''
     }
 
-    private def generateAttribute(ExpandedType type) '''
+    private def generateAttribute(ExpandedType type, boolean isOptional) '''
         «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
-        public «type.toOptionalCSharpType» Value { get; }'''
+        public «IF isOptional»«type.toOptionalCSharpType»«ELSE»«type.toQualifiedCSharpType»«ENDIF» Value { get; }'''
 
     private def generateInterface(ExpandedType type, boolean isReference) '''
         I«IF type.enumeration»Enum«ELSEIF type.isStruct»Value«ENDIF»«IF isReference»Reference«ELSE»Field«ENDIF»WithMeta<«type.toQualifiedCSharpType»>'''
@@ -86,7 +86,7 @@ class CSharpMetaFieldGenerator {
                     ExternalReference = externalReference;
                 }
                 
-                «generateAttribute(type)»
+                «generateAttribute(type, true)»
                 
                 public string? GlobalReference { get; }
                 
@@ -106,13 +106,13 @@ class CSharpMetaFieldGenerator {
                 public class FieldWithMeta«metaTypeName» : «generateFieldInterface(type)»
                 {
                     [JsonConstructor]
-                    public FieldWithMeta«metaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
+                    public FieldWithMeta«metaTypeName»(«type.toQualifiedCSharpType» value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
-                    «generateAttribute(type)»
+                    «generateAttribute(type, false)»
                     
                     public MetaFields? Meta { get; }
                 }
@@ -199,7 +199,7 @@ class CSharpMetaFieldGenerator {
                     ExternalReference = externalReference;
                 }
                 
-                «generateAttribute(type)»
+                «generateAttribute(type, true)»
                 
                 public string? GlobalReference { get; }
                 
