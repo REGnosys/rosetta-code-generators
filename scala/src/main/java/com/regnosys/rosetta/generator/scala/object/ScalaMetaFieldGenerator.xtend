@@ -34,7 +34,7 @@ class ScalaMetaFieldGenerator {
 		
 		val metas =  rosettaClasses
 			.flatMap[expandedAttributes]
-			.filter[hasMetas && !metas.exists[name=="reference"]]
+			.filter[hasMetas && !metas.exists[name=="reference" || name =="address"]]
 			.map[type]
 			.toSet
 
@@ -44,7 +44,7 @@ class ScalaMetaFieldGenerator {
 		
 		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference"], version)
 		
-		return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
+		return fileComment(version) +keyRef.toString + metaFieldsImports + referenceWithMeta + metaFields
 	}
 	
 	private def generateMetaFieldsImports() '''
@@ -55,6 +55,17 @@ class ScalaMetaFieldGenerator {
 		import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 
 		import org.isda.cdm._
+		
+	'''
+	
+	private def keyRef() '''
+		case class Key(
+			keyValue: String,
+			scope: Option[String]) {}
+			
+		case class Reference(
+			reference: string,
+			scope: Option[string]) {}
 		
 	'''
 	
@@ -77,25 +88,29 @@ class ScalaMetaFieldGenerator {
 	private def generateReferenceWithMeta(ExpandedType type) '''
 		case class ReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
 				globalReference: Option[String],
-				externalReference: Option[String]) {}
+				externalReference: Option[String],
+				address: Option[Reference]) {}
 		
 	'''
 
 	private def generateBasicReferenceWithMeta(ExpandedType type) '''
 		case class BasicReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
 				globalReference: Option[String],
-				externalReference: Option[String]) {}
+				externalReference: Option[String],
+				address: Option[Reference]) {}
 		
 	'''
 	
 	private def genMetaFields(Iterable<RosettaMetaType> types, String version) '''				
 		case class MetaFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
-				externalKey: Option[String]) {}
+				externalKey: Option[String]
+				location: List[Key]) {}
 		
 		case class MetaAndTemplateFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
 				externalKey: Option[String],
-				templateGlobalReference: Option[String]) {}
+				templateGlobalReference: Option[String].
+				location: List[Key]) {}
 	'''
 }
