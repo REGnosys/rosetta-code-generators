@@ -246,7 +246,7 @@ class ScalaModelObjectGeneratorTest {
 			
 			type TestType2:
 				testType2Value1 number (1..1)
-					[metadata reference]
+					[metadata address]
 					
 				testType2Value2 string (1..1)
 					[metadata id]
@@ -261,7 +261,8 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
-		    externalKey: Option[String]) {}
+		    externalKey: Option[String],
+		    location: List[Key]) {}
 	    '''))
 		
 		assertTrue(types.contains('''
@@ -284,13 +285,15 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class ReferenceWithMetaTestType2(value: Option[TestType2],
 		    globalReference: Option[String],
-		    externalReference: Option[String]) {}
+		    externalReference: Option[String],
+		    address: Option[Reference]) {}
 	    '''))
 		
 		assertTrue(types.contains('''
 		case class BasicReferenceWithMetaBigDecimal(value: Option[scala.math.BigDecimal],
 		    globalReference: Option[String],
-		    externalReference: Option[String]) {}
+		    externalReference: Option[String],
+		    address: Option[Reference]) {}
 	    '''))
 
 		assertTrue(types.contains('''
