@@ -132,7 +132,7 @@ class CSharpModelObjectGeneratorTest {
 
         val resourceSet = resourceSetProvider.get   
 
-        dirs.map[new File(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
+        dirs.map[toFile(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
             map[Files.readAllBytes(toPath)].map[new String(it)]
         ].forEach[parse(resourceSet)]
 
@@ -140,6 +140,10 @@ class CSharpModelObjectGeneratorTest {
         
         generateCdm(generator8, "NetStandard.2.1", rosettaModels)
         generateCdm(generator9, "Net.5.0", rosettaModels)
+    }
+    
+    def toFile(String s) {
+    	new File(s)
     }
 
     @Test
@@ -696,11 +700,12 @@ class CSharpModelObjectGeneratorTest {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(string? scheme, string? globalKey, string? externalKey)
+                    public MetaFields(string? scheme, string? globalKey, string? externalKey, Key? location)
                     {
                         Scheme = scheme;
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
+                        Location = location;
                     }
                     
                     public string? Scheme { get; }
@@ -708,6 +713,8 @@ class CSharpModelObjectGeneratorTest {
                     public string? GlobalKey { get; }
                     
                     public string? ExternalKey { get; }
+                    
+                    public Key? Location { get; }
                 }
         '''))
 
@@ -751,11 +758,12 @@ class CSharpModelObjectGeneratorTest {
                 public class ReferenceWithMetaGmtTestType2
                 {
                     [JsonConstructor]
-                    public ReferenceWithMetaGmtTestType2(GmtTestType2? value, string? globalReference, string? externalReference)
+                    public ReferenceWithMetaGmtTestType2(GmtTestType2? value, string? globalReference, string? externalReference, Reference? address)
                     {
                         Value = value;
                         GlobalReference = globalReference;
                         ExternalReference = externalReference;
+                        Address = address;
                     }
                     
                     public GmtTestType2? Value { get; }
@@ -763,6 +771,8 @@ class CSharpModelObjectGeneratorTest {
                     public string? GlobalReference { get; }
                     
                     public string? ExternalReference { get; }
+                    
+                    public Reference? Address { get; }
                 }
         '''))
 
@@ -771,11 +781,12 @@ class CSharpModelObjectGeneratorTest {
                 public class BasicReferenceWithMetaDecimal
                 {
                     [JsonConstructor]
-                    public BasicReferenceWithMetaDecimal(decimal? value, string? globalReference, string? externalReference)
+                    public BasicReferenceWithMetaDecimal(decimal? value, string? globalReference, string? externalReference, Reference? address)
                     {
                         Value = value;
                         GlobalReference = globalReference;
                         ExternalReference = externalReference;
+                        Address = address;
                     }
                     
                     public decimal? Value { get; }
@@ -783,6 +794,8 @@ class CSharpModelObjectGeneratorTest {
                     public string? GlobalReference { get; }
                     
                     public string? ExternalReference { get; }
+                    
+                    public Reference? Address { get; }
                 }
         '''))
 
