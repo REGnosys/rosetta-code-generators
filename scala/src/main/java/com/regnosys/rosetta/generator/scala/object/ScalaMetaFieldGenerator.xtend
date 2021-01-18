@@ -64,8 +64,8 @@ class ScalaMetaFieldGenerator {
 			scope: Option[String]) {}
 			
 		case class Reference(
-			reference: string,
-			scope: Option[string]) {}
+			reference: String,
+			scope: Option[String]) {}
 		
 	'''
 	
