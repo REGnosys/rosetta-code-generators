@@ -73,10 +73,10 @@ class CSharpMetaFieldGenerator {
         	public Reference(string? reference, string? scope)
         	{
         		Scope = scope;
-        		Reference = reference;
+        		ReferenceValue = reference;
         	}
-        	
-        	public string? Reference {get; }
+        	[JsonProperty("reference")]
+        	public string? ReferenceValue {get; }
         	public string? Scope {get; }
         }
         
