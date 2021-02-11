@@ -17,7 +17,7 @@ class CSharpMetaFieldGenerator {
     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
         val metaFieldsImports = generateMetaFieldsImports.toString
 
-        val refs = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && metas.exists[name == "reference"]].map [
+        val refs = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && metas.exists[name == "reference" || name =="address"]].map [
             type
         ].toSet
 
@@ -31,21 +31,21 @@ class CSharpMetaFieldGenerator {
         }
 
         // Any enumerations with comments currently fails to parse correctly.
-        val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name === null].toSet
+        val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name === null].toSet
         for (m : missing) {
             println("Missing: " + m.name + " enclosed by: " + m.enclosingType + " : " +  m.type)
         }
 
-        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference"] && type.name !== null].
+        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name !== null].
             map[type].toSet
 
         for (meta : metas) {
             referenceWithMeta += generateFieldWithMeta(meta).toString
         }
 
-        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference"], version)
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
 
-		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference"], version)
+		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
 
         return '''
         «fileComment(version)»
@@ -53,6 +53,33 @@ class CSharpMetaFieldGenerator {
         #nullable enable // Allow nullable reference types
         
         «metaFieldsImports»
+        
+        public class Key
+        {
+        	[JsonConstructor]
+        	public Key(string keyValue, string? scope)
+        	{
+        		Scope = scope;
+        		KeyValue = keyValue;
+        	}
+        	
+        	public string KeyValue {get; }
+        	public string? Scope {get; }
+        }
+        
+        public class Reference
+        {
+        	[JsonConstructor]
+        	public Reference(string? reference, string? scope)
+        	{
+        		Scope = scope;
+        		ReferenceValue = reference;
+        	}
+        	[JsonProperty("reference")]
+        	public string? ReferenceValue {get; }
+        	public string? Scope {get; }
+        }
+        
         «referenceWithMeta»
         «metaFields»
         «metaAndTemplateFields»
@@ -68,11 +95,12 @@ class CSharpMetaFieldGenerator {
             public class BasicReferenceWithMeta«type.toMetaTypeName»
             {
                 [JsonConstructor]
-                public BasicReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
+                public BasicReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
                 {
                     Value = value;
                     GlobalReference = globalReference;
                     ExternalReference = externalReference;
+                    Address = address;
                 }
                 
                 «generateAttribute(type)»
@@ -80,6 +108,8 @@ class CSharpMetaFieldGenerator {
                 public string? GlobalReference { get; }
                 
                 public string? ExternalReference { get; }
+                
+                public Reference? Address { get; }
             }
             
     '''
@@ -117,11 +147,12 @@ class CSharpMetaFieldGenerator {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey)
+                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, Key? location)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
+                        Location = location;
                     }
                     
                     «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
@@ -129,6 +160,8 @@ class CSharpMetaFieldGenerator {
                     public string? GlobalKey { get; }
                     
                     public string? ExternalKey { get; }
+                    
+                    public Key? Location { get; }
                 }
                 
         '''
@@ -141,12 +174,13 @@ class CSharpMetaFieldGenerator {
                 public class MetaAndTemplateFields
                 {
                     [JsonConstructor]
-                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference)
+                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference, Key? location)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
                         TemplateGlobalReference = templateGlobalReference;
+                        Location = location;
                     }
                     
                     «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
@@ -156,6 +190,8 @@ class CSharpMetaFieldGenerator {
                     public string? ExternalKey { get; }
                     
                     public string? TemplateGlobalReference { get; }
+                    
+                    public Key? Location { get; }
                 }
                 
         '''
@@ -179,11 +215,12 @@ class CSharpMetaFieldGenerator {
             public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF»
             {
                 [JsonConstructor]
-                public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference)
+                public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
                 {
                     Value = value;
                     GlobalReference = globalReference;
                     ExternalReference = externalReference;
+                    Address = address;
                 }
                 
                 «generateAttribute(type)»
@@ -191,6 +228,8 @@ class CSharpMetaFieldGenerator {
                 public string? GlobalReference { get; }
                 
                 public string? ExternalReference { get; }
+                
+                public Reference? Address { get; }
             }
             
     '''
