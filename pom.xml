@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>4.5.4</rosetta.dsl.version>
+				<rosetta.dsl.version>4.6.0</rosetta.dsl.version>
 				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
@@ -41,7 +41,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>4.5.4</rosetta.dsl.version>
+				<rosetta.dsl.version>4.6.0</rosetta.dsl.version>
 				<regnosys.common.version>2.88.1</regnosys.common.version>
 			</properties>
 		</profile>
@@ -49,17 +49,17 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<java.version>1.8</java.version>
-		<org.eclipse.emf.ecore.version>2.15.0</org.eclipse.emf.ecore.version>
-		<xtext.version>2.15.0</xtext.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<java.version>11</java.version>
+		<org.eclipse.emf.ecore.version>2.20.0</org.eclipse.emf.ecore.version>
+		<xtext.version>2.23.0</xtext.version>
 		<guava.version>21.0</guava.version>
 		<guice.version>3.0</guice.version>
 		<commons-io.version>2.6</commons-io.version>
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
-		<xtend.version>2.15.0</xtend.version>
+		<xtend.version>2.24.0</xtend.version>
 		<apache.commons.lang.version>3.9</apache.commons.lang.version>
 		<apache.commons.text.version>1.9</apache.commons.text.version>
 	</properties>
