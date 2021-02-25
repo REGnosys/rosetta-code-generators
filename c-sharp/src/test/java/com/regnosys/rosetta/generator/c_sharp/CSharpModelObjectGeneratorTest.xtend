@@ -355,6 +355,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<KeyWordType> MetaData => metaData;
                     
                     public decimal? Decimal { get; }
@@ -396,6 +397,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<EnclosingType> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "enclosingType")]
@@ -455,6 +457,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GtTestType> MetaData => metaData;
                     
                     /// <summary>
@@ -484,6 +487,55 @@ class CSharpModelObjectGeneratorTest {
                     public GtTestType2 GtTestTypeValue4 { get; }
                 }
         '''))
+        var x = '''
+            /// <summary>
+            /// Test type description.
+            /// </summary>
+            public class GtTestType : IRosettaModelObject<GtTestType>
+            {
+                private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
+                
+                [JsonConstructor]
+                public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
+                {
+                    GtTestEnum = gtTestEnum;
+                    GtTestTypeValue1 = gtTestTypeValue1;
+                    GtTestTypeValue2 = gtTestTypeValue2;
+                    GtTestTypeValue3 = gtTestTypeValue3;
+                    GtTestTypeValue4 = gtTestTypeValue4;
+                }
+                
+                /// <inheritdoc />
+                [JsonIgnore]
+                public IRosettaMetaData<GtTestType> MetaData => metaData;
+                
+                /// <summary>
+                /// Optional test enum
+                /// </summary>
+                [JsonConverter(typeof(StringEnumConverter))]]
+                public Enums.GtTest? GtTestEnum { get; }
+                
+                /// <summary>
+                /// Test string
+                /// </summary>
+                public string GtTestTypeValue1 { get; }
+                
+                /// <summary>
+                /// Test optional string
+                /// </summary>
+                public string? GtTestTypeValue2 { get; }
+                
+                /// <summary>
+                /// Test string list
+                /// </summary>
+                public IEnumerable<string> GtTestTypeValue3 { get; }
+                
+                /// <summary>
+                /// Test TestType2
+                /// </summary>
+                public GtTestType2 GtTestTypeValue4 { get; }
+            }
+        '''
 
         assertTrue(types.contains('''
             «""»
@@ -500,6 +552,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GtTestType2> MetaData => metaData;
                     
                     /// <summary>
@@ -516,6 +569,7 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test optional date
                     /// </summary>
+                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public LocalDate? GtTestType2Value2 { get; }
                 }
         '''))
@@ -617,6 +671,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GteTestType> MetaData => metaData;
                     
                     /// <summary>
@@ -633,6 +688,7 @@ class CSharpModelObjectGeneratorTest {
                     public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
+                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
@@ -659,12 +715,14 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GteTestType2> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
+                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
@@ -689,6 +747,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GteTestType3> MetaData => metaData;
                     
                     /// <inheritdoc/>
@@ -754,6 +813,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<A> MetaData => metaData;
                     
                     [JsonConverter(typeof(StringEnumConverter))]
@@ -776,6 +836,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<B> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "b")]
@@ -964,6 +1025,7 @@ class CSharpModelObjectGeneratorTest {
                         ExternalReference = externalReference;
                     }
                     
+                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public NodaTime.LocalDate? Value { get; }
                     
                     public string? GlobalReference { get; }
@@ -986,6 +1048,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GmtTestType> MetaData => metaData;
                     
                     public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
@@ -1010,6 +1073,7 @@ class CSharpModelObjectGeneratorTest {
                     }
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<GmtTestType2> MetaData => metaData;
                     
                     public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
@@ -1055,6 +1119,7 @@ class CSharpModelObjectGeneratorTest {
                     private static readonly IRosettaMetaData<TestType> metaData = new TestTypeMeta();
                     
                     /// <inheritdoc />
+                    [JsonIgnore]
                     public IRosettaMetaData<TestType> MetaData => metaData;
                     
                     /// <summary>
