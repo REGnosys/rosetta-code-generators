@@ -96,11 +96,11 @@ class CSharpValidatorsGenerator {
     private def StringConcatenationClient checkCardinality(String className, ExpandedAttribute attr) '''
         «val property = attr.getPropertyName(className)»
         «IF attr.isMultiple»
-            yield return CheckCardinality(Name, obj.«property».EmptyIfNull().Count(), «attr.inf», «attr.sup»);
+            yield return CheckCardinality(Name, "«property»", obj.«property».EmptyIfNull().Count(), «attr.inf», «attr.sup»);
         «ELSEIF attr.isSingleOptional»
-            yield return CheckCardinality(Name, obj.«property»«IF attr.hasMetas»?.Value«ENDIF» != null ? 1 : 0, «attr.inf», «attr.sup»);
+            yield return CheckCardinality(Name, "«property»", obj.«property»«IF attr.hasMetas»?.Value«ENDIF» != null ? 1 : 0, «attr.inf», «attr.sup»);
         «ELSEIF attr.hasReferenceMetas»
-            yield return CheckCardinality(Name, obj.«property».Value != null ? 1 : 0, «attr.inf», «attr.sup»);
+            yield return CheckCardinality(Name, "«property»", obj.«property».Value != null ? 1 : 0, «attr.inf», «attr.sup»);
         «ENDIF»
     '''
 }
