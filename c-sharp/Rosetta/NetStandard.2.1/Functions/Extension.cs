@@ -68,7 +68,7 @@ namespace Rosetta.Lib.Functions
     /// <summary>
     /// Extend <see cref="IEnumerable{T}"/> and <see cref="decimal"/> to perform equality and inequality tests.
     /// </summary>
-    public static class IsEqualExtension
+    public static class EqualsExtension
     {
         // IEnumerable<T> equality to a collection.
         public static IComparisonResult IsEqual<T>(this IEnumerable<T>? collection1, IEnumerable<T>? collection2) =>
@@ -110,7 +110,7 @@ namespace Rosetta.Lib.Functions
             Test.Collection(collection) ??
             ComparisonResult.FromBoolean(collection.All(c => c.Value.Equals(obj) == false), "Some collection values match the specified value");
 
-        // decimal overloads.
+        // decimal overloads
         public static IComparisonResult IsEqual(this decimal value, IEnumerable<decimal>? values) =>
             Test.Collection(values) ??
             ComparisonResult.FromBoolean(values!.All(v => v == value), "Not all collection values match the specified number");
@@ -141,6 +141,7 @@ namespace Rosetta.Lib.Functions
     /// </summary>
     public static class GreaterThanExtension
     {
+        // generic comparisons
         private static IComparisonResult Compare<T>(IEnumerable<T>? collection, T? obj, Func<int, bool> func, string op) where T : class, IComparable =>
             Test.Object(obj) ??
             Test.Collection(collection) ??
