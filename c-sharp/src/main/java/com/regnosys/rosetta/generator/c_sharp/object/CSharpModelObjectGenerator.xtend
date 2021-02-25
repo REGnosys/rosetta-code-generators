@@ -3,6 +3,7 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpValidatorsGenerator
 import com.regnosys.rosetta.generator.c_sharp.rule.CSharpChoiceRuleGenerator
 import com.regnosys.rosetta.generator.c_sharp.rule.CSharpDataRuleGenerator
@@ -17,6 +18,7 @@ import java.util.Map
 import java.util.Set
 
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
+import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 
@@ -183,11 +185,12 @@ class CSharpModelObjectGenerator {
                         
                         «ENDIF»
                         /// <inheritdoc />
+                        [JsonIgnore]
                         public «metaType» MetaData => metaData;
                         
                         «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
-                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.getType.isDate && !attribute.hasMetas»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
                             «IF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
@@ -201,7 +204,7 @@ class CSharpModelObjectGenerator {
             }
         '''
     }
-
+    
     private def generateMetaClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, int cSharpVersion) {
         '''
             «fileComment(version)»

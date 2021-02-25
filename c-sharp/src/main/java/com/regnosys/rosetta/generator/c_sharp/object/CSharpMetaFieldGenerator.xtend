@@ -60,7 +60,7 @@ class CSharpMetaFieldGenerator {
     }
 
     private def generateAttribute(ExpandedType type, boolean isOptional) '''
-        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
+        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF type.isDate»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
         public «IF isOptional»«type.toOptionalCSharpType»«ELSE»«type.toQualifiedCSharpType»«ENDIF» Value { get; }'''
 
     private def generateInterface(ExpandedType type, boolean isReference) '''

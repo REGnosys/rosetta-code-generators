@@ -57,6 +57,11 @@ class CSharpTranslator {
             default: false
         }
 	} 
+	
+	static def isDate(ExpandedType type) {
+	    // TODO: local date time??
+	    return type.name == 'date'
+	}
 
 	static def toCSharpType(ExpandedType type) {
 		val basicType = CSharpTranslator.toCSharpBasicType(type.name);
