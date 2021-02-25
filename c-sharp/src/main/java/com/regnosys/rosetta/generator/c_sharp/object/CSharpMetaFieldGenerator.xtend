@@ -86,13 +86,24 @@ class CSharpMetaFieldGenerator {
         }'''
     }
 
-    private def generateAttribute(ExpandedType type) '''
-        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ENDIF»
-        public «type.toOptionalCSharpType» Value { get; }'''
+    private def generateAttribute(ExpandedType type, boolean isOptional) '''
+        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF type.isDate»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
+        public «IF isOptional»«type.toOptionalCSharpType»«ELSE»«type.toQualifiedCSharpType»«ENDIF» Value { get; }'''
+
+    private def generateInterface(ExpandedType type, boolean isReference) '''
+        I«IF type.enumeration»Enum«ELSEIF type.isStruct»Value«ENDIF»«IF isReference»Reference«ELSE»Field«ENDIF»WithMeta<«type.toQualifiedCSharpType»>'''
+
+    private def generateFieldInterface(ExpandedType type) {
+        generateInterface(type, false)
+    }
+
+    private def generateReferenceInterface(ExpandedType type) {
+        generateInterface(type, true)
+    }
 
     private def generateBasicReferenceWithMeta(ExpandedType type) '''
         «""»
-            public class BasicReferenceWithMeta«type.toMetaTypeName»
+            public class BasicReferenceWithMeta«type.toMetaTypeName» : «generateReferenceInterface(type)»
             {
                 [JsonConstructor]
                 public BasicReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
@@ -103,7 +114,7 @@ class CSharpMetaFieldGenerator {
                     Address = address;
                 }
                 
-                «generateAttribute(type)»
+                «generateAttribute(type, true)»
                 
                 public string? GlobalReference { get; }
                 
@@ -122,16 +133,16 @@ class CSharpMetaFieldGenerator {
             // MISSING: FieldWithMeta for «type.name»
         «ELSE»
             «""»
-                public class FieldWithMeta«metaTypeName»
+                public class FieldWithMeta«metaTypeName» : «generateFieldInterface(type)»
                 {
                     [JsonConstructor]
-                    public FieldWithMeta«metaTypeName»(«type.toOptionalCSharpType» value, MetaFields? meta)
+                    public FieldWithMeta«metaTypeName»(«type.toQualifiedCSharpType» value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
-                    «generateAttribute(type)»
+                    «generateAttribute(type, false)»
                     
                     public MetaFields? Meta { get; }
                 }
@@ -208,11 +219,13 @@ class CSharpMetaFieldGenerator {
         
             using NodaTime;
         
+            using Rosetta.Lib.Meta;
+        
     '''
 
     private def generateReferenceWithMeta(ExpandedType type) '''
         «""»
-            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF»
+            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF» : «generateReferenceInterface(type)»
             {
                 [JsonConstructor]
                 public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
@@ -223,7 +236,7 @@ class CSharpMetaFieldGenerator {
                     Address = address;
                 }
                 
-                «generateAttribute(type)»
+                «generateAttribute(type, true)»
                 
                 public string? GlobalReference { get; }
                 
