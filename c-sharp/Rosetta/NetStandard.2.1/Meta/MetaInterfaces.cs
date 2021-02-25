@@ -4,6 +4,7 @@ namespace Rosetta.Lib.Meta
 {
     using System;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
     using Rosetta.Lib.Validation;
 
     public interface IFieldWithMeta<T> where T : class
@@ -93,14 +94,22 @@ namespace Rosetta.Lib.Meta
 
     public interface IRosettaMetaData<T> where T : IRosettaModelObject<T>
     {
+        [JsonIgnore]
         IEnumerable<IValidator<T>> DataRules { get; }
 
+        [JsonIgnore]
         IEnumerable<IValidator<T>> ChoiceRuleValidators { get; }
 
-        //TODO: IEnumerable<Function<T, QualifyResult>> GetQualifyFunctions(QualifyFunctionFactory factory);
+        /*
+        [JsonIgnore]
 
+        TODO: IEnumerable<Function<T, QualifyResult>> GetQualifyFunctions(QualifyFunctionFactory factory);
+        */
+
+        [JsonIgnore]
         IValidator<T> Validator { get; }
 
+        [JsonIgnore]
         IValidatorWithArg<T, string> OnlyExistsValidator { get; }
     }
 }
