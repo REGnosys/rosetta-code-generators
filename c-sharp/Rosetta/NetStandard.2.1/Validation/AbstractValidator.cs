@@ -30,6 +30,11 @@ namespace Rosetta.Lib.Validation
             return ModelValidationResult.Success(Name, ValidationType.MODEL_INSTANCE, nameof(T), "");
         }
 
+        public static IComparisonResult CheckCardinality(string typeName, string propertyName, int actual, int min, int max)
+        {
+            return CheckCardinality($"{typeName}.{propertyName}", actual, min, max);
+        }
+
         public static IComparisonResult CheckCardinality(string msgPrefix, int actual, int min, int max)
         {
             if (actual < min)

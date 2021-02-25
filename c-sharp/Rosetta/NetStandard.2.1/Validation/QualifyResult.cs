@@ -1,10 +1,11 @@
-﻿using System;
-namespace Rosetta.NetStandard.Validation
+﻿namespace Rosetta.NetStandard.Validation
 {
-    public class QualifyResult
+    /* TODO: Implement qualification functions
+    public class QualifyResult : IQualifyResult
     {
         public QualifyResult()
         {
         }
     }
+    */
 }

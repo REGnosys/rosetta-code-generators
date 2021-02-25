@@ -14,28 +14,37 @@ namespace Rosetta.Lib.Validation
 
         public IValidationResult Validate(T obj)
         {
-            IComparisonResult result = ExecuteDataRule(obj);
+            IComparisonResult? result = ExecuteDataRule(obj);
+
+            if (result == null)
+            {
+                // Rule is not applicable
+                return ModelValidationResult.Success(Name, ValidationType.DATA_RULE, nameof(T));
+            }
             if (result.Result)
             {
+                // Rule passed
                 return ModelValidationResult.Success(Name, ValidationType.DATA_RULE, nameof(T), Definition);
             }
 
+            // Rule failed
             return ModelValidationResult.Failure(Name, ValidationType.DATA_RULE, nameof(T), Definition, result.Error);
         }
 
-        private IComparisonResult ExecuteDataRule(T obj)
+        private IComparisonResult? ExecuteDataRule(T obj)
         {
             var comparisonResult = RuleIsApplicable(obj);
 
-            if (comparisonResult == null)
+            // Only evaluate if applicable
+            if (comparisonResult?.Result == true)
             {
-                return ComparisonResult.FailureEmptyOperand("Unable to determine if rule is applicable");
+                comparisonResult = EvaluateThenExpression(obj) ?? ComparisonResult.FailureEmptyOperand("No result from then expression");
             }
-            if (comparisonResult.Result)
+            else
             {
-                return EvaluateThenExpression(obj) ?? ComparisonResult.FailureEmptyOperand("No result from then expression");
+                comparisonResult = null;
             }
-            return ComparisonResult.Success();
+            return comparisonResult;
         }
 
         protected abstract IComparisonResult? RuleIsApplicable(T obj);
@@ -47,27 +56,42 @@ namespace Rosetta.Lib.Validation
 
         protected IComparisonResult Exists<T1>(T1? obj)
         {
+            return Exists(obj, nameof(T1));
+        }
+
+        protected IComparisonResult Exists<T1>(T1? obj, string name)
+        {
             if (obj != null)
             {
                 return ComparisonResult.Success();
             }
-            return ComparisonResult.Failure($"{nameof(T1)} does not exist");
+            return ComparisonResult.Failure($"{name} does not exist");
         }
 
         protected IComparisonResult NotExists<T1>(T1? obj)
+        {
+            return NotExists(obj, nameof(T1));
+        }
+
+        protected IComparisonResult NotExists<T1>(T1? obj, string name)
         {
             if (obj == null)
             {
                 return ComparisonResult.Success();
             }
-            return ComparisonResult.Failure($"{nameof(T1)} exists");
+            return ComparisonResult.Failure($"{name} exists");
         }
 
         protected IComparisonResult OnlyExists<T1>(T1? parent, string field) where T1 : IRosettaModelObject<T1>
         {
+            return OnlyExists(parent, field, nameof(T1));
+        }
+
+        protected IComparisonResult OnlyExists<T1>(T1? parent, string field, string name) where T1 : IRosettaModelObject<T1>
+        {
             if (parent == null)
             {
-                return ComparisonResult.FailureEmptyOperand($"Object {nameof(T1)} does not exist");
+                return ComparisonResult.FailureEmptyOperand($"Object {name} does not exist");
             }
 
             var validationResult = parent.MetaData.OnlyExistsValidator.Validate(parent, field);
