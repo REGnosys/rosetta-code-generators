@@ -67,7 +67,7 @@ class DamlFunctionGenerator {
 	''''''
 	
 	private def toType(Attribute att) {
-		if (att.card!==null && att.card.sup>1)
+		if (att.isMultiple)
 			'''[«att.toRawType»]'''
 		else
 			att.toRawType.prefixSingleOptional(att.card)
@@ -83,4 +83,10 @@ class DamlFunctionGenerator {
 		else
 			type
 	}
+	
+	private def isMultiple(Attribute att) {
+		val card = att.card
+		if (card===null) return false;
+		return ((card.isUnbounded || (card.inf > 1)) || (card.sup != 1));
+  }
 }
