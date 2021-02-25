@@ -43,9 +43,9 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.types.RosettaOperators
 import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
-import com.rosetta.model.lib.functions.MapperC
-import com.rosetta.model.lib.functions.MapperMaths
-import com.rosetta.model.lib.functions.MapperS
+import com.rosetta.model.lib.mapper.MapperC
+import com.rosetta.model.lib.expression.MapperMaths
+import com.rosetta.model.lib.mapper.MapperS
 import java.util.HashMap
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2

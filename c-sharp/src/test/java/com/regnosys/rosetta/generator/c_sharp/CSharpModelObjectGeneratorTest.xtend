@@ -1031,11 +1031,12 @@ class CSharpModelObjectGeneratorTest {
                 public class BasicReferenceWithMetaLocalDate : IValueReferenceWithMeta<NodaTime.LocalDate>
                 {
                     [JsonConstructor]
-                    public BasicReferenceWithMetaLocalDate(NodaTime.LocalDate? value, string? globalReference, string? externalReference)
+                    public BasicReferenceWithMetaLocalDate(NodaTime.LocalDate? value, string? globalReference, string? externalReference, Reference? address)
                     {
                         Value = value;
                         GlobalReference = globalReference;
                         ExternalReference = externalReference;
+                        Address = address;
                     }
                     
                     [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
@@ -1044,6 +1045,8 @@ class CSharpModelObjectGeneratorTest {
                     public string? GlobalReference { get; }
                     
                     public string? ExternalReference { get; }
+                    
+                    public Reference? Address { get; }
                 }
         '''))
 
