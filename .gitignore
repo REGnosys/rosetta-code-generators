@@ -11,3 +11,4 @@ target/
 .DS_Store
 **/src-gen/
 **/xtend-gen/
+.vscode/
