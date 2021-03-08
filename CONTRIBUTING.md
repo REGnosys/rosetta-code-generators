@@ -1,7 +1,7 @@
 # How to contribute #
 
 We'd love for you to contribute to rosetta-code-generators. There are
-a just a few small guidelines  we would like you to follow:
+a just a few small guidelines  we would like you to follow: 
 
  - [Code of Conduct](#coc)
  - [Issues and Bugs](#issue)
