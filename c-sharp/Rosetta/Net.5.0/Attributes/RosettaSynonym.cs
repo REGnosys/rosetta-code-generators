@@ -15,7 +15,7 @@
 
         public RosettaSynonym()
         {
-            Path = "";
+            Path = string.Empty;
             Maps = 1;
         }
     }

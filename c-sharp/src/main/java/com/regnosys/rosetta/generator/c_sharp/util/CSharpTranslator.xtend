@@ -1,5 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp.util
 
+import com.google.common.base.Splitter
 import com.regnosys.rosetta.types.RCalculationType
 import com.regnosys.rosetta.types.RQualifiedType
 import com.regnosys.rosetta.generator.object.ExpandedType
@@ -34,8 +35,32 @@ class CSharpTranslator {
 
 //			Ensure we rename MetaFields data members to avoid name clashes with the enclosing namespace.
 			case 'MetaFields':
-			    'Meta'
+			    '_MetaFields'
 		}
+	}
+	
+	static def toCSharpType(String typename) {
+        val basicType = toCSharpBasicType(typename);
+        if (basicType === null) {
+            return typename
+        } else {
+            return Splitter.on('.').splitToList(basicType).last
+        }
+    }
+	
+	static def isStruct(ExpandedType type) {
+	   switch type.name {
+            case 'time': true
+            case 'date': true
+            case 'dateTime': true
+            case 'zonedDateTime': true
+            default: false
+        }
+	} 
+	
+	static def isDate(ExpandedType type) {
+	    // TODO: local date time??
+	    return type.name == 'date'
 	}
 
 	static def toCSharpType(ExpandedType type) {
