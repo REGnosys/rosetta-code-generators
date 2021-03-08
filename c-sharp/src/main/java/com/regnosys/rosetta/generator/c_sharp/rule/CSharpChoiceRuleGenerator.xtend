@@ -44,7 +44,7 @@ class CSharpChoiceRuleGenerator {
         val varName = clazz.toFirstLower;
         val ruleName = rule.conditionName(data)
         val className = choiceRuleClassName(rule.conditionName(data))
-        val usedAttributes = if(rule.constraint.isOneOf) data.allAttributes else rule.constraint.attributes // TODO multi choice rules? 
+        val usedAttributes = if(rule.constraint.isOneOf) data.allAttributes else rule.constraint.attributes
         val validationType = if(rule.constraint.isOneOf || rule.constraint.necessity === Necessity.REQUIRED) 'Required' else 'Optional'
         '''
             «»
