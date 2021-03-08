@@ -36,5 +36,13 @@ class TypescriptMetaFieldGenerator {
 			externalKey?: String;
 		}
 		
+		export interface MetaAndTemplateFields {
+			id?: string;
+			key?: string;
+			reference?: string;
+			scheme?: string;
+			globalKey?: String;
+			externalKey?: String;
+		  }
 	'''
 }
