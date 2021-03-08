@@ -196,7 +196,7 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<logViolationsToConsole>false</logViolationsToConsole>
+							<logViolationsToConsole>true</logViolationsToConsole>
 							<failOnViolation>false</failOnViolation>
 							<violationSeverity>warning</violationSeverity>
 						</configuration>
