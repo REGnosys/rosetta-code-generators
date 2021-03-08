@@ -927,7 +927,7 @@ class CSharpModelObjectGeneratorTest {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(string? scheme, string? globalKey, string? externalKey, Key? location)
+                    public MetaFields(string? scheme, string? globalKey, string? externalKey, IEnumerable<Key> location)
                     {
                         Scheme = scheme;
                         GlobalKey = globalKey;
@@ -941,7 +941,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     public string? ExternalKey { get; }
                     
-                    public Key? Location { get; }
+                    public IEnumerable<Key> Location { get; }
                 }
         '''))
 

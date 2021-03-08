@@ -63,8 +63,9 @@ class CSharpMetaFieldGenerator {
         		KeyValue = keyValue;
         	}
         	
-        	public string KeyValue {get; }
-        	public string? Scope {get; }
+            [JsonProperty("value")]
+        	public string KeyValue { get; }
+        	public string? Scope { get; }
         }
         
         public class Reference
@@ -76,8 +77,8 @@ class CSharpMetaFieldGenerator {
         		ReferenceValue = reference;
         	}
         	[JsonProperty("reference")]
-        	public string? ReferenceValue {get; }
-        	public string? Scope {get; }
+        	public string? ReferenceValue { get; }
+        	public string? Scope { get; }
         }
         
         «referenceWithMeta»
@@ -158,7 +159,7 @@ class CSharpMetaFieldGenerator {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, Key? location)
+                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, IEnumerable<Key> location)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
@@ -172,7 +173,7 @@ class CSharpMetaFieldGenerator {
                     
                     public string? ExternalKey { get; }
                     
-                    public Key? Location { get; }
+                    public IEnumerable<Key> Location { get; }
                 }
                 
         '''
@@ -185,7 +186,7 @@ class CSharpMetaFieldGenerator {
                 public class MetaAndTemplateFields
                 {
                     [JsonConstructor]
-                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference, Key? location)
+                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference, IEnumerable<Key> location)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
@@ -202,7 +203,7 @@ class CSharpMetaFieldGenerator {
                     
                     public string? TemplateGlobalReference { get; }
                     
-                    public Key? Location { get; }
+                    public IEnumerable<Key> Location { get; }
                 }
                 
         '''

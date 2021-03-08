@@ -25,6 +25,8 @@
 		<ProjectReference Include="..\..\Rosetta\NetStandard.2.1\Rosetta.NetStandard.2.1.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Update="ird-ex01-vanilla-swap-versioned.json" />
+	  <None Update="ird-ex01-vanilla-swap-versioned.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
