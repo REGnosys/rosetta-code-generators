@@ -15,7 +15,7 @@ Do you want to adopt a technical standard expressed as a domain model in the *Ro
 
 Pre-reqs
 --------------------
-This project uses JDK 1.8
+This project uses JDK 11
 
 Why Code Generation?
 --------------------
