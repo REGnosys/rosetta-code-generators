@@ -148,9 +148,9 @@ namespace Rosetta.Lib.Functions
             ComparisonResult.FromBoolean(collection!.All(c => func(c.CompareTo(obj)) == true), $"Not all elements of collection are ${op} {obj}");
 
         public static IComparisonResult GreaterThan<T>(this IEnumerable<T>? collection, T? obj) where T : class, IComparable => Compare(collection, obj, i => i > 0, "greater than");
-        public static IComparisonResult GreaterThanEquals<T>(this IEnumerable<T> collection, T obj) where T : class, IComparable => Compare(collection, obj, i => i >= 0, "greater than or equal to");
-        public static IComparisonResult LessThan<T>(this IEnumerable<T> collection, T obj) where T : class, IComparable => Compare(collection, obj, i => i < 0, "less than");
-        public static IComparisonResult LessThanEquals<T>(this IEnumerable<T> collection, T obj) where T : class, IComparable => Compare(collection, obj, i => i <= 0, "less than or equal to");
+        public static IComparisonResult GreaterThanEquals<T>(this IEnumerable<T>? collection, T? obj) where T : class, IComparable => Compare(collection, obj, i => i >= 0, "greater than or equal to");
+        public static IComparisonResult LessThan<T>(this IEnumerable<T>? collection, T? obj) where T : class, IComparable => Compare(collection, obj, i => i < 0, "less than");
+        public static IComparisonResult LessThanEquals<T>(this IEnumerable<T>? collection, T? obj) where T : class, IComparable => Compare(collection, obj, i => i <= 0, "less than or equal to");
 
         // LocalDate overloads
         private static IComparisonResult Compare(IEnumerable<LocalDate?>? collection, LocalDate? obj, Func<int?, bool> func, string op) =>
@@ -183,5 +183,27 @@ namespace Rosetta.Lib.Functions
         public static IComparisonResult LessThanEquals(this IEnumerable<int?>? collection, int? obj) =>
             Test.Object(obj) ??
             CompareInt(collection, i => i <= obj, $"less than or equal to {obj}");
+
+
+        // decimal overloads
+        private static IComparisonResult CompareDecimal(IEnumerable<decimal>? collection, Func<decimal?, bool> func, string description) =>
+            Test.Collection(collection) ??
+            ComparisonResult.FromBoolean(collection!.All(c => func(c) == true), $"Not all elements of collection are ${description}");
+
+        public static IComparisonResult GreaterThan(this IEnumerable<decimal>? collection, decimal? obj) =>
+            Test.Object(obj) ??
+            CompareDecimal(collection, i => i > obj, $"greater than {obj}");
+
+        public static IComparisonResult GreaterThanEquals(this IEnumerable<decimal>? collection, decimal? obj) =>
+            Test.Object(obj) ??
+            CompareDecimal(collection, i => i >= obj, $"greater than or equal to {obj}");
+
+        public static IComparisonResult LessThan(this IEnumerable<decimal>? collection, decimal? obj) =>
+            Test.Object(obj) ??
+            CompareDecimal(collection, i => i < obj, $"less than {obj}");
+
+        public static IComparisonResult LessThanEquals(this IEnumerable<decimal>? collection, decimal? obj) =>
+            Test.Object(obj) ??
+            CompareDecimal(collection, i => i <= obj, $"less than or equal to {obj}");
     }
 }

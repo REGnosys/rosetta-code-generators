@@ -134,7 +134,7 @@ class CSharpModelObjectGeneratorTest {
     def void generateCdm() {
 
         val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.97.5/common-domain-model'),
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.97.8/common-domain-model'),
             ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
             //('rosetta-cdm/src/main/rosetta'),
             //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
@@ -345,7 +345,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class KeyWordType : IRosettaModelObject<KeyWordType>
+                public class KeyWordType : AbstractRosettaModelObject<KeyWordType>
                 {
                     private static readonly IRosettaMetaData<KeyWordType> metaData = new KeyWordTypeMeta();
                     
@@ -360,7 +360,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<KeyWordType> MetaData => metaData;
+                    public override IRosettaMetaData<KeyWordType> MetaData => metaData;
                     
                     public decimal? Decimal { get; }
                     
@@ -390,7 +390,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class EnclosingType : IRosettaModelObject<EnclosingType>
+                public class EnclosingType : AbstractRosettaModelObject<EnclosingType>
                 {
                     private static readonly IRosettaMetaData<EnclosingType> metaData = new EnclosingTypeMeta();
                     
@@ -402,7 +402,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<EnclosingType> MetaData => metaData;
+                    public override IRosettaMetaData<EnclosingType> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "enclosingType")]
                     public string? EnclosingTypeValue { get; }
@@ -446,7 +446,7 @@ class CSharpModelObjectGeneratorTest {
                 /// <summary>
                 /// Test type description.
                 /// </summary>
-                public class GtTestType : IRosettaModelObject<GtTestType>
+                public class GtTestType : AbstractRosettaModelObject<GtTestType>
                 {
                     private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
                     
@@ -462,7 +462,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GtTestType> MetaData => metaData;
+                    public override IRosettaMetaData<GtTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Optional test enum
@@ -495,7 +495,7 @@ class CSharpModelObjectGeneratorTest {
             /// <summary>
             /// Test type description.
             /// </summary>
-            public class GtTestType : IRosettaModelObject<GtTestType>
+            public class GtTestType : AbstractRosettaModelObject<GtTestType>
             {
                 private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
                 
@@ -511,7 +511,7 @@ class CSharpModelObjectGeneratorTest {
                 
                 /// <inheritdoc />
                 [JsonIgnore]
-                public IRosettaMetaData<GtTestType> MetaData => metaData;
+                public override IRosettaMetaData<GtTestType> MetaData => metaData;
                 
                 /// <summary>
                 /// Optional test enum
@@ -543,7 +543,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GtTestType2 : IRosettaModelObject<GtTestType2>
+                public class GtTestType2 : AbstractRosettaModelObject<GtTestType2>
                 {
                     private static readonly IRosettaMetaData<GtTestType2> metaData = new GtTestType2Meta();
                     
@@ -557,7 +557,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GtTestType2> MetaData => metaData;
+                    public override IRosettaMetaData<GtTestType2> MetaData => metaData;
                     
                     /// <summary>
                     /// Test enum
@@ -659,7 +659,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType : IRosettaModelObject<GteTestType>, IGteTestType2
+                public class GteTestType : AbstractRosettaModelObject<GteTestType>, IGteTestType2
                 {
                     private static readonly IRosettaMetaData<GteTestType> metaData = new GteTestTypeMeta();
                     
@@ -676,7 +676,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GteTestType> MetaData => metaData;
+                    public override IRosettaMetaData<GteTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Test string
@@ -705,7 +705,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType2 : IRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
+                public class GteTestType2 : AbstractRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
                 {
                     private static readonly IRosettaMetaData<GteTestType2> metaData = new GteTestType2Meta();
                     
@@ -720,7 +720,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GteTestType2> MetaData => metaData;
+                    public override IRosettaMetaData<GteTestType2> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public decimal? GteTestType2Value1 { get; }
@@ -739,7 +739,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType3 : IRosettaModelObject<GteTestType3>, IGteTestType3
+                public class GteTestType3 : AbstractRosettaModelObject<GteTestType3>, IGteTestType3
                 {
                     private static readonly IRosettaMetaData<GteTestType3> metaData = new GteTestType3Meta();
                     
@@ -752,7 +752,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GteTestType3> MetaData => metaData;
+                    public override IRosettaMetaData<GteTestType3> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public string? GteTestType3Value1 { get; }
@@ -806,7 +806,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class A : IRosettaModelObject<A>, IA
+                public class A : AbstractRosettaModelObject<A>, IA
                 {
                     private static readonly IRosettaMetaData<A> metaData = new AMeta();
                     
@@ -818,7 +818,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<A> MetaData => metaData;
+                    public override IRosettaMetaData<A> MetaData => metaData;
                     
                     [JsonConverter(typeof(StringEnumConverter))]
                     [JsonProperty(PropertyName = "a")]
@@ -828,7 +828,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class B : IRosettaModelObject<B>, IA
+                public class B : AbstractRosettaModelObject<B>, IA
                 {
                     private static readonly IRosettaMetaData<B> metaData = new BMeta();
                     
@@ -841,7 +841,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<B> MetaData => metaData;
+                    public override IRosettaMetaData<B> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "b")]
                     public int BValue { get; }
@@ -1052,7 +1052,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class GmtTestType : IRosettaModelObject<GmtTestType>
+                public class GmtTestType : AbstractRosettaModelObject<GmtTestType>
                 {
                     private static readonly IRosettaMetaData<GmtTestType> metaData = new GmtTestTypeMeta();
                     
@@ -1065,7 +1065,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GmtTestType> MetaData => metaData;
+                    public override IRosettaMetaData<GmtTestType> MetaData => metaData;
                     
                     public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
                     
@@ -1075,7 +1075,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class GmtTestType2 : IRosettaModelObject<GmtTestType2>
+                public class GmtTestType2 : AbstractRosettaModelObject<GmtTestType2>
                 {
                     private static readonly IRosettaMetaData<GmtTestType2> metaData = new GmtTestType2Meta();
                     
@@ -1090,7 +1090,7 @@ class CSharpModelObjectGeneratorTest {
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<GmtTestType2> MetaData => metaData;
+                    public override IRosettaMetaData<GmtTestType2> MetaData => metaData;
                     
                     public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
                     
@@ -1130,13 +1130,13 @@ class CSharpModelObjectGeneratorTest {
                 /// Test type with one-of condition.
                 /// </summary>
                 [OneOf]
-                public sealed class TestType : IRosettaModelObject<TestType>
+                public sealed class TestType : AbstractRosettaModelObject<TestType>
                 {
                     private static readonly IRosettaMetaData<TestType> metaData = new TestTypeMeta();
                     
                     /// <inheritdoc />
                     [JsonIgnore]
-                    public IRosettaMetaData<TestType> MetaData => metaData;
+                    public override IRosettaMetaData<TestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Test string field 1

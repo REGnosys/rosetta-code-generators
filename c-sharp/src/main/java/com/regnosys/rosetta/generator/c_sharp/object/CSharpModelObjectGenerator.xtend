@@ -170,7 +170,7 @@ class CSharpModelObjectGenerator {
                     «classComment(c.definition)»
                     «IF isOneOf»[OneOf]«ELSEIF isOneOf(c)»// ERROR: [OneOf] cannot be used on a derived class«ENDIF»
                     «val metaType = 'IRosettaMetaData<' + c.name +'>'»
-                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name» : «generateParents(c, superTypes)»
+                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name» : «generateParents(c, superTypes, cSharpVersion)»
                     {
                         private static readonly «metaType» metaData = new «c.name»Meta();
                         
@@ -186,7 +186,7 @@ class CSharpModelObjectGenerator {
                         «ENDIF»
                         /// <inheritdoc />
                         [JsonIgnore]
-                        public «metaType» MetaData => metaData;
+                        public override «metaType» MetaData => metaData;
                         
                         «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
@@ -280,12 +280,15 @@ class CSharpModelObjectGenerator {
         ''' */
     }
 
-    private def generateParents(Data c, Set<Data> superTypes) {
+    private def generateParents(Data c, Set<Data> superTypes, int cSharpVersion) {
         '''
 «««         Implement interfaces associated with:
 «««             super type, if it is defined.
 «««             this class, if it is a super type.
-            IRosettaModelObject<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF c.superType !== null», «getInterfaceName(c.superType)»«ENDIF»
+«««         Abstract base class has a different name if oneOf, since they are implemented as records instead of classes.
+            «val isChild = c.superType !== null»
+            «val isOneOf = isOneOf(c) && !isChild»        «»
+            AbstractRosettaModel«IF isOneOf && cSharpVersion >= 9»Record«ELSE»Object«ENDIF»<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF isChild», «getInterfaceName(c.superType)»«ENDIF»
         '''
     }
 
