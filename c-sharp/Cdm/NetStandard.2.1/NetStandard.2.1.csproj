@@ -16,10 +16,10 @@
     <DocumentationFile>bin\Release\netstandard2.1\Org.Isda.Cdm.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NodaTime" Version="3.0.5" />
+    <PackageReference Include="NodaTime" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Rosetta\NetStandard.2.1\Rosetta.NetStandard.2.1.csproj" />
+    <ProjectReference Include="..\..\Rosetta\Rosetta.csproj" />
   </ItemGroup>
 </Project>
