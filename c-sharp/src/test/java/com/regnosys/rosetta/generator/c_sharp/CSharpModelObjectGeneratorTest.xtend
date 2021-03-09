@@ -130,7 +130,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
-    //@Disabled("Test to generate the C# for CDM")
+    @Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
         val dirs = newArrayList(            
