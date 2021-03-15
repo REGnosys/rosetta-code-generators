@@ -2,14 +2,12 @@ package com.regnosys.rosetta.generator.c_sharp
 
 import com.google.inject.Inject
 import com.google.inject.Provider
-import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.List
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
@@ -19,6 +17,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import java.util.List
+import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -39,7 +39,7 @@ class CSharpModelObjectGeneratorTest {
     @Inject
     Provider<XtextResourceSet> resourceSetProvider;
 
-    protected def boolean containsCdmVersionAttribute(String c_sharp) {
+    protected def boolean containsCdmVersion(String c_sharp) {
         c_sharp.contains('[assembly: Rosetta.Lib.Attributes.CdmVersion("test")]')
     }
 
@@ -75,7 +75,7 @@ class CSharpModelObjectGeneratorTest {
         containsUsings(c_sharp, true, true)
     }
 
-    protected def boolean containsUsings(String c_sharp, boolean includeRosetta, boolean includeMetaFields) {
+    protected def boolean containsUsings(String c_sharp, boolean includeAttributes, boolean includeMetaFields) {
         c_sharp.contains('''
             «""»
                 using System.Collections.Generic;
@@ -85,23 +85,15 @@ class CSharpModelObjectGeneratorTest {
             
                 using NodaTime;
             
-                «IF includeRosetta»
-                    using Rosetta.Lib;
+                «IF includeAttributes»
                     using Rosetta.Lib.Attributes;
-                    using Rosetta.Lib.Meta;
-                    using Rosetta.Lib.Validation;
 
                 «ENDIF»
                 «IF includeMetaFields»
-                    using Org.Isda.Cdm.Meta;
                     using Org.Isda.Cdm.MetaFields;
-                    using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+                    using Meta = Org.Isda.Cdm.MetaFields.MetaFields;
                 «ENDIF»
         ''')
-    }
-
-    protected def boolean containsUsingNamespace(String c_sharp, String namespace) {
-        c_sharp.contains('''using «namespace»;''')
     }
 
     def void generateCdm(CSharpCodeGenerator generator, String subDirectory, List<RosettaModel> rosettaModels) {
@@ -133,9 +125,9 @@ class CSharpModelObjectGeneratorTest {
     @Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
-        val dirs = newArrayList(
-            ('rosetta-cdm/src/main/rosetta'),
-            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+        val dirs = newArrayList(            
+            //('rosetta-cdm/src/main/rosetta'),
+            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
         );
 
         val resourceSet = resourceSetProvider.get   
@@ -202,7 +194,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
     }
-    
+
     @Test
     def void shouldGenerateEnumWithSynonyms() {
         val c_sharp = '''
@@ -333,20 +325,17 @@ class CSharpModelObjectGeneratorTest {
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
-        //println("keywords: " + types);
 
         assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
 
         assertTrue(types.contains('''
             «""»
-                public class KeyWordType : AbstractRosettaModelObject<KeyWordType>
+                public class KeyWordType
                 {
-                    private static readonly IRosettaMetaData<KeyWordType> metaData = new KeyWordTypeMeta();
-                    
                     [JsonConstructor]
                     public KeyWordType(decimal? decimalValue, string eventValue, IEnumerable<int> intValue, string? stringValue)
                     {
@@ -355,10 +344,6 @@ class CSharpModelObjectGeneratorTest {
                         Int = intValue;
                         String = stringValue;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<KeyWordType> MetaData => metaData;
                     
                     public decimal? Decimal { get; }
                     
@@ -381,26 +366,20 @@ class CSharpModelObjectGeneratorTest {
         val types = c_sharp.get('Types.cs').toString
 
         assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
 
         assertTrue(types.contains('''
             «""»
-                public class EnclosingType : AbstractRosettaModelObject<EnclosingType>
+                public class EnclosingType
                 {
-                    private static readonly IRosettaMetaData<EnclosingType> metaData = new EnclosingTypeMeta();
-                    
                     [JsonConstructor]
                     public EnclosingType(string? enclosingType)
                     {
                         EnclosingTypeValue = enclosingType;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<EnclosingType> MetaData => metaData;
                     
                     [JsonProperty(PropertyName = "enclosingType")]
                     public string? EnclosingTypeValue { get; }
@@ -434,7 +413,7 @@ class CSharpModelObjectGeneratorTest {
         //println("types: " + types);
         
         assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
@@ -444,10 +423,8 @@ class CSharpModelObjectGeneratorTest {
                 /// <summary>
                 /// Test type description.
                 /// </summary>
-                public class GtTestType : AbstractRosettaModelObject<GtTestType>
+                public class GtTestType
                 {
-                    private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
-                    
                     [JsonConstructor]
                     public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
                     {
@@ -457,10 +434,6 @@ class CSharpModelObjectGeneratorTest {
                         GtTestTypeValue3 = gtTestTypeValue3;
                         GtTestTypeValue4 = gtTestTypeValue4;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GtTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Optional test enum
@@ -489,62 +462,11 @@ class CSharpModelObjectGeneratorTest {
                     public GtTestType2 GtTestTypeValue4 { get; }
                 }
         '''))
-        var x = '''
-            /// <summary>
-            /// Test type description.
-            /// </summary>
-            public class GtTestType : AbstractRosettaModelObject<GtTestType>
-            {
-                private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
-                
-                [JsonConstructor]
-                public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
-                {
-                    GtTestEnum = gtTestEnum;
-                    GtTestTypeValue1 = gtTestTypeValue1;
-                    GtTestTypeValue2 = gtTestTypeValue2;
-                    GtTestTypeValue3 = gtTestTypeValue3;
-                    GtTestTypeValue4 = gtTestTypeValue4;
-                }
-                
-                /// <inheritdoc />
-                [JsonIgnore]
-                public override IRosettaMetaData<GtTestType> MetaData => metaData;
-                
-                /// <summary>
-                /// Optional test enum
-                /// </summary>
-                [JsonConverter(typeof(StringEnumConverter))]]
-                public Enums.GtTest? GtTestEnum { get; }
-                
-                /// <summary>
-                /// Test string
-                /// </summary>
-                public string GtTestTypeValue1 { get; }
-                
-                /// <summary>
-                /// Test optional string
-                /// </summary>
-                public string? GtTestTypeValue2 { get; }
-                
-                /// <summary>
-                /// Test string list
-                /// </summary>
-                public IEnumerable<string> GtTestTypeValue3 { get; }
-                
-                /// <summary>
-                /// Test TestType2
-                /// </summary>
-                public GtTestType2 GtTestTypeValue4 { get; }
-            }
-        '''
 
         assertTrue(types.contains('''
             «""»
-                public class GtTestType2 : AbstractRosettaModelObject<GtTestType2>
+                public class GtTestType2
                 {
-                    private static readonly IRosettaMetaData<GtTestType2> metaData = new GtTestType2Meta();
-                    
                     [JsonConstructor]
                     public GtTestType2(Enums.GtTest gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
                     {
@@ -552,10 +474,6 @@ class CSharpModelObjectGeneratorTest {
                         GtTestType2Value1 = gtTestType2Value1;
                         GtTestType2Value2 = gtTestType2Value2;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GtTestType2> MetaData => metaData;
                     
                     /// <summary>
                     /// Test enum
@@ -571,7 +489,6 @@ class CSharpModelObjectGeneratorTest {
                     /// <summary>
                     /// Test optional date
                     /// </summary>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public LocalDate? GtTestType2Value2 { get; }
                 }
         '''))
@@ -649,18 +566,15 @@ class CSharpModelObjectGeneratorTest {
         '''))
 
         val types = c_sharp.get('Types.cs').toString
-        //println("typeExtends =" + types)
         assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType : AbstractRosettaModelObject<GteTestType>, IGteTestType2
+                public class GteTestType : IGteTestType2
                 {
-                    private static readonly IRosettaMetaData<GteTestType> metaData = new GteTestTypeMeta();
-                    
                     [JsonConstructor]
                     public GteTestType(string gteTestTypeValue1, int? gteTestTypeValue2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
@@ -671,10 +585,6 @@ class CSharpModelObjectGeneratorTest {
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GteTestType> MetaData => metaData;
                     
                     /// <summary>
                     /// Test string
@@ -690,7 +600,6 @@ class CSharpModelObjectGeneratorTest {
                     public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
@@ -703,10 +612,8 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType2 : AbstractRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
+                public class GteTestType2 : IGteTestType2, IGteTestType3
                 {
-                    private static readonly IRosettaMetaData<GteTestType2> metaData = new GteTestType2Meta();
-                    
                     [JsonConstructor]
                     public GteTestType2(decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
@@ -716,15 +623,10 @@ class CSharpModelObjectGeneratorTest {
                         GteTestType3Value2 = gteTestType3Value2;
                     }
                     
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GteTestType2> MetaData => metaData;
-                    
                     /// <inheritdoc/>
                     public decimal? GteTestType2Value1 { get; }
                     
                     /// <inheritdoc/>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
                     public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <inheritdoc/>
@@ -737,20 +639,14 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(types.contains('''
             «""»
-                public class GteTestType3 : AbstractRosettaModelObject<GteTestType3>, IGteTestType3
+                public class GteTestType3 : IGteTestType3
                 {
-                    private static readonly IRosettaMetaData<GteTestType3> metaData = new GteTestType3Meta();
-                    
                     [JsonConstructor]
                     public GteTestType3(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
                     {
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GteTestType3> MetaData => metaData;
                     
                     /// <inheritdoc/>
                     public string? GteTestType3Value1 { get; }
@@ -759,123 +655,6 @@ class CSharpModelObjectGeneratorTest {
                     public IEnumerable<int> GteTestType3Value2 { get; }
                 }
         '''))
-    }
-
-    @Test
-    def void shouldGenerateTypesExtendsWithRenamedProperty() {
-
-         val c_sharp = '''
-            enum AEnum:
-                X
-                Y
-            
-            type A:
-                a AEnum (1..1)
-            
-            type B extends A:
-                b int (1..1)
-                
-                condition RenamedProperty:
-                    a <> AEnum->X
-            
-        '''.generateCSharp
-
-        val interfaces = c_sharp.get('Interfaces.cs').toString
-        //println("interfaces =>" + interfaces)
-        assertTrue(containsFileComment(interfaces))
-        assertTrue(containsCoreNamespace(interfaces))
-        assertTrue(containsNullable(interfaces))
-        assertTrue(containsUsings(interfaces, false, true))
-
-        assertTrue(interfaces.contains('''
-            «""»
-                interface IA
-                {
-                    Enums.A AValue { get; }
-                }
-        '''))
-
-        val types = c_sharp.get('Types.cs').toString
-        //println("typeExtends =" + types)
-        assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
-        assertTrue(containsCoreNamespace(types))
-        assertTrue(containsNullable(types))
-
-        assertTrue(types.contains('''
-            «""»
-                public class A : AbstractRosettaModelObject<A>, IA
-                {
-                    private static readonly IRosettaMetaData<A> metaData = new AMeta();
-                    
-                    [JsonConstructor]
-                    public A(Enums.A a)
-                    {
-                        AValue = a;
-                    }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<A> MetaData => metaData;
-                    
-                    [JsonConverter(typeof(StringEnumConverter))]
-                    [JsonProperty(PropertyName = "a")]
-                    public Enums.A AValue { get; }
-                }
-        '''))
-
-        assertTrue(types.contains('''
-            «""»
-                public class B : AbstractRosettaModelObject<B>, IA
-                {
-                    private static readonly IRosettaMetaData<B> metaData = new BMeta();
-                    
-                    [JsonConstructor]
-                    public B(int b, Enums.A a)
-                    {
-                        BValue = b;
-                        AValue = a;
-                    }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<B> MetaData => metaData;
-                    
-                    [JsonProperty(PropertyName = "b")]
-                    public int BValue { get; }
-                    
-                    [JsonConverter(typeof(StringEnumConverter))]
-                    [JsonProperty(PropertyName = "a")]
-                    public Enums.A AValue { get; }
-                }
-        '''))
-        
-        val dataRules = c_sharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(dataRules.contains(''' 
-            «""»
-                [RosettaDataRule("BRenamedProperty")]
-                public class BRenamedProperty : AbstractDataRule<B>
-                {
-                    protected override string Definition => "a <> AEnum->X";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(b.AValue != Enums.A.X);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }'''))
     }
 
     @Test
@@ -890,7 +669,7 @@ class CSharpModelObjectGeneratorTest {
                  [metadata key]
                  gmtTestTypeValue1 GmtTestType2(1..1)
                       [metadata reference]
-            
+                      
             enum GmtTestEnum: <"Test enum description.">
                  GmtTestEnumValue1 <"Test enum value 1">
                  GmtTestEnumValue2 <"Test enum value 2">
@@ -905,9 +684,6 @@ class CSharpModelObjectGeneratorTest {
                  
                  gmtTestType2Value3 GmtTestEnum (1..1)
                       [metadata scheme]
-                      
-                 gmtTestType2Value4 date (1..1)
-                      [metadata reference]
         '''.generateCSharp
 
         val metaTypes = c_sharp.values.join('\n').toString
@@ -916,7 +692,6 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(containsFileComment(metaTypes))
         assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
-       // assertTrue(containsNamespace(metaTypes, "Rosetta.Lib.Meta"))
         assertTrue(containsNullable(metaTypes))
         assertTrue(containsUsings(metaTypes, false, false))
 
@@ -925,7 +700,7 @@ class CSharpModelObjectGeneratorTest {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(string? scheme, string? globalKey, string? externalKey, IEnumerable<Key> location)
+                    public MetaFields(string? scheme, string? globalKey, string? externalKey, Key? location)
                     {
                         Scheme = scheme;
                         GlobalKey = globalKey;
@@ -939,22 +714,22 @@ class CSharpModelObjectGeneratorTest {
                     
                     public string? ExternalKey { get; }
                     
-                    public IEnumerable<Key> Location { get; }
+                    public Key? Location { get; }
                 }
         '''))
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class FieldWithMetaString : IFieldWithMeta<string>
+                public class FieldWithMetaString
                 {
                     [JsonConstructor]
-                    public FieldWithMetaString(string value, MetaFields? meta)
+                    public FieldWithMetaString(string? value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
-                    public string Value { get; }
+                    public string? Value { get; }
                     
                     public MetaFields? Meta { get; }
                 }
@@ -962,17 +737,17 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class FieldWithMetaGmtTestEnum : IEnumFieldWithMeta<Enums.GmtTest>
+                public class FieldWithMetaGmtTestEnum
                 {
                     [JsonConstructor]
-                    public FieldWithMetaGmtTestEnum(Enums.GmtTest value, MetaFields? meta)
+                    public FieldWithMetaGmtTestEnum(Enums.GmtTest? value, MetaFields? meta)
                     {
                         Value = value;
                         Meta = meta;
                     }
                     
                     [JsonConverter(typeof(StringEnumConverter))]
-                    public Enums.GmtTest Value { get; }
+                    public Enums.GmtTest? Value { get; }
                     
                     public MetaFields? Meta { get; }
                 }
@@ -980,7 +755,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class ReferenceWithMetaGmtTestType2 : IReferenceWithMeta<GmtTestType2>
+                public class ReferenceWithMetaGmtTestType2
                 {
                     [JsonConstructor]
                     public ReferenceWithMetaGmtTestType2(GmtTestType2? value, string? globalReference, string? externalReference, Reference? address)
@@ -1003,7 +778,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class BasicReferenceWithMetaDecimal : IReferenceWithMeta<decimal>
+                public class BasicReferenceWithMetaDecimal
                 {
                     [JsonConstructor]
                     public BasicReferenceWithMetaDecimal(decimal? value, string? globalReference, string? externalReference, Reference? address)
@@ -1026,82 +801,44 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class BasicReferenceWithMetaLocalDate : IValueReferenceWithMeta<NodaTime.LocalDate>
+                public class GmtTestType
                 {
                     [JsonConstructor]
-                    public BasicReferenceWithMetaLocalDate(NodaTime.LocalDate? value, string? globalReference, string? externalReference, Reference? address)
-                    {
-                        Value = value;
-                        GlobalReference = globalReference;
-                        ExternalReference = externalReference;
-                        Address = address;
-                    }
-                    
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
-                    public NodaTime.LocalDate? Value { get; }
-                    
-                    public string? GlobalReference { get; }
-                    
-                    public string? ExternalReference { get; }
-                    
-                    public Reference? Address { get; }
-                }
-        '''))
-
-        assertTrue(metaTypes.contains('''
-            «""»
-                public class GmtTestType : AbstractRosettaModelObject<GmtTestType>
-                {
-                    private static readonly IRosettaMetaData<GmtTestType> metaData = new GmtTestTypeMeta();
-                    
-                    [JsonConstructor]
-                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, _MetaFields? meta)
+                    public GmtTestType(ReferenceWithMetaGmtTestType2 gmtTestTypeValue1, Meta? meta)
                     {
                         GmtTestTypeValue1 = gmtTestTypeValue1;
                         Meta = meta;
                     }
                     
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GmtTestType> MetaData => metaData;
-                    
                     public ReferenceWithMetaGmtTestType2 GmtTestTypeValue1 { get; }
                     
-                    public _MetaFields? Meta { get; }
+                    public Meta? Meta { get; }
                 }
         '''))
 
         assertTrue(metaTypes.contains('''
             «""»
-                public class GmtTestType2 : AbstractRosettaModelObject<GmtTestType2>
+                public class GmtTestType2
                 {
-                    private static readonly IRosettaMetaData<GmtTestType2> metaData = new GmtTestType2Meta();
-                    
                     [JsonConstructor]
-                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, BasicReferenceWithMetaLocalDate gmtTestType2Value4)
+                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3)
                     {
                         GmtTestType2Value1 = gmtTestType2Value1;
                         GmtTestType2Value2 = gmtTestType2Value2;
                         GmtTestType2Value3 = gmtTestType2Value3;
-                        GmtTestType2Value4 = gmtTestType2Value4;
                     }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GmtTestType2> MetaData => metaData;
                     
                     public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
                     
                     public FieldWithMetaString GmtTestType2Value2 { get; }
                     
                     public FieldWithMetaGmtTestEnum GmtTestType2Value3 { get; }
-                    
-                    public BasicReferenceWithMetaLocalDate GmtTestType2Value4 { get; }
                 }
         '''))
     }
 
     @Test
+    //@Disabled("TODO fix oneOf code generation for attributes that are Lists")
     def void shouldGenerateOneOfCondition() {
 
         val c_sharp = '''
@@ -1117,7 +854,7 @@ class CSharpModelObjectGeneratorTest {
         //println("oneOf ==>" + types)
 
         assertTrue(containsFileComment(types))
-        assertTrue(containsCdmVersionAttribute(types))
+        assertTrue(containsCdmVersion(types))
         assertTrue(containsCoreNamespace(types))
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
@@ -1128,14 +865,8 @@ class CSharpModelObjectGeneratorTest {
                 /// Test type with one-of condition.
                 /// </summary>
                 [OneOf]
-                public sealed class TestType : AbstractRosettaModelObject<TestType>
+                public sealed class TestType
                 {
-                    private static readonly IRosettaMetaData<TestType> metaData = new TestTypeMeta();
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<TestType> MetaData => metaData;
-                    
                     /// <summary>
                     /// Test string field 1
                     /// </summary>
@@ -1158,1052 +889,7 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
     }
-    
-    private def void hasDataRuleUsings(String dataRules) {
-        assertTrue(containsUsingNamespace(dataRules, "Org.Isda.Cdm"))
-        assertTrue(containsUsingNamespace(dataRules, "System.Linq"))
-        assertTrue(containsUsingNamespace(dataRules, "Rosetta.Lib.Attributes"))
-        assertTrue(containsUsingNamespace(dataRules, "Rosetta.Lib.Validation"))
-        
-    }
 
-    @Test
-    def void shouldGenerateDataRuleForOptionalExists() {
-        val rosettaCode = '''
-            type A:
-            
-            optionalInt int (0..1 )
-            
-            condition Rule: 
-                if optionalInt exists
-                then optionalInt > 10'''
-        
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        hasDataRuleUsings(dataRules)
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("ARule")]
-                public class ARule : AbstractDataRule<A>
-                {
-                    protected override string Definition => "if optionalInt exists then optionalInt > 10";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(A a)
-                    {
-                        try
-                        {
-                            return Exists(a.OptionalInt);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(A a)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(a.OptionalInt > 10);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }''')
-        )
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForNonOptional() {
-        val rosettaCode = '''
-            type B:
-            
-            intValue int (1..1 )
-            
-            condition Rule: 
-                intValue < 100'''
-        
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        hasDataRuleUsings(dataRules)
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BRule")]
-                public class BRule : AbstractDataRule<B>
-                {
-                    protected override string Definition => "intValue < 100";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(b.IntValue < 100);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }''')
-        )    
-    }
-    
-    @Test
-    def void shouldGenerateDataRuleForEquality() {
-        val rosettaCode = '''
-            type C:
-            
-            optionalBoolean boolean (0..1 )
-            
-            condition Rule: 
-                if optionalBoolean exists
-                then optionalBoolean = False'''
-        
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        hasDataRuleUsings(dataRules)
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("CRule")]
-                public class CRule : AbstractDataRule<C>
-                {
-                    protected override string Definition => "if optionalBoolean exists then optionalBoolean = False";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(C c)
-                    {
-                        try
-                        {
-                            return Exists(c.OptionalBoolean);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(C c)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(c.OptionalBoolean == false);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }''')
-        )
-    }
-    
-    @Test
-    def void shouldGenerateDataRuleForCollection() {
-        val rosettaCode = '''
-            type D:
-                isApplicable boolean (1..1)
-            
-            
-            type F:
-                booleanValue boolean (1..1)
-                otherBooleanValue boolean (1..1)
-                collection D (0..2)
-            
-                condition Rule1:
-                    if booleanValue = True then
-                    collection->isApplicable = False
-                
-                condition Rule2:
-                    if booleanValue = False and collection->isApplicable = False
-                    then otherBooleanValue = False
-            '''
-        
-        val csharp = rosettaCode.generateCSharp
-        //println("types: " + csharp.get("Types.cs").toString)
-        val dataRules = csharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("FRule1")]
-                public class FRule1 : AbstractDataRule<F>
-                {
-                    protected override string Definition => "if booleanValue = True then collection->isApplicable = False";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(F f)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(f.BooleanValue == true);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(F f)
-                    {
-                        try
-                        {
-                            return f.Collection.Select(d => d.IsApplicable).IsEqual(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-        
-        assertTrue(dataRules.contains('''
-            «""»
-               [RosettaDataRule("FRule2")]
-                public class FRule2 : AbstractDataRule<F>
-                {
-                    protected override string Definition => "if booleanValue = False and collection->isApplicable = False then otherBooleanValue = False";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(F f)
-                    {
-                        try
-                        {
-                            return And(ComparisonResult.FromBoolean(f.BooleanValue == false),
-                                f.Collection.Select(d => d.IsApplicable).IsEqual(false));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(F f)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(f.OtherBooleanValue == false);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))        
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForSubCollection() {
-        val rosettaCode ='''
-        
-        type B:
-            a int (0..1)
-            
-        type C:
-            b B (1..*)
-
-        type D:
-            c C (1..1)
-            
-            condition SubCollection:
-                c->b->a exists'''
-    
-        val csharp = rosettaCode.generateCSharp
-        //println("types: " + csharp.get("Types.cs").toString)
-        val dataRules = csharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("DSubCollection")]
-                public class DSubCollection : AbstractDataRule<D>
-                {
-                    protected override string Definition => "c->b->a exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(D d)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(D d)
-                    {
-                        try
-                        {
-                            return Exists(d.C.B
-                                .Select(b => b.A));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForSubCollectionOfOptional() {
-        val rosettaCode ='''
-        
-        type A:
-            x int (1..1)
-
-        type B:
-            a A (0..1)
-            
-        type C:
-            b B (1..*)
-
-            
-            condition OptionalSubCollection:
-                b->a->x exists'''
-    
-        val csharp = rosettaCode.generateCSharp
-        //println("types: " + csharp.get("Types.cs").toString)
-        val dataRules = csharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("COptionalSubCollection")]
-                public class COptionalSubCollection : AbstractDataRule<C>
-                {
-                    protected override string Definition => "b->a->x exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(C c)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(C c)
-                    {
-                        try
-                        {
-                            return Exists(c.B.Select(b => b.A)
-                                .Select(a => a?.X));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForMetaCollection() {
-        val rosettaCode ='''
-        
-        type A:
-            x int (1..1)
-
-        type B:
-            a A (0..*)
-            [metadata reference]
-
-        type C:
-            b B (1..1)
-
-            condition MetaCollection:
-                b->a->x exists'''
-    
-        val csharp = rosettaCode.generateCSharp
-        //println("types: " + csharp.get("Types.cs").toString)
-        val dataRules = csharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("CMetaCollection")]
-                public class CMetaCollection : AbstractDataRule<C>
-                {
-                    protected override string Definition => "b->a->x exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(C c)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(C c)
-                    {
-                        try
-                        {
-                            return Exists(c.B.A
-                                .Select(a => a.Value?.X));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForCollectionOfCollections() {
-        val rosettaCode ='''
-        
-        type A:
-            x int (0..1)
-
-        type B:
-            a A (1..*)
-            [metadata reference]
-
-        type C:
-            b B (1..*)
-
-            condition NestedCollections:
-                b->a->x exists'''
-    
-        val cSharp = rosettaCode.generateCSharp
-        //println("types: " + cSharp.get('Types.cs').toString)
-        //println("meta: " + cSharp.get('MetaTypes.cs').toString)
-        //println("metaFields: " + cSharp.get('MetaFieldTypes.cs').toString)
-
-        val dataRules = cSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("CNestedCollections")]
-                public class CNestedCollections : AbstractDataRule<C>
-                {
-                    protected override string Definition => "b->a->x exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(C c)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(C c)
-                    {
-                        try
-                        {
-                            return Exists(c.B.SelectMany(b => (b.A).EmptyIfNull())
-                                .Select(a => a.Value?.X));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForMetaReferenceTypes() {
-        val rosettaCode ='''
-        metaType reference string
-
-        type A:
-        
-            inner A (0..1)
-                [metadata reference]
-
-            condition MetaCollection:
-                A->inner -> reference exists'''
-    
-        val cSharp = rosettaCode.generateCSharp
-        //println("types: " + cSharp.get('Types.cs').toString)
-        
-        val dataRules = cSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("AMetaCollection")]
-                public class AMetaCollection : AbstractDataRule<A>
-                {
-                    protected override string Definition => "A->inner -> reference exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(A a)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(A a)
-                    {
-                        try
-                        {
-                            return Exists(a.Inner?.GlobalReference);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForMetaTypes() {
-        val rosettaCode ='''
-        metaType reference string
-
-        type A:
-            x int (0..1)
-        
-        type B:
-        
-            a A (1..1)
-                [metadata id]
-
-            condition MetaCollection:
-                a-> x exists'''
-    
-        val cSharp = rosettaCode.generateCSharp
-        //println("types: " + cSharp.get('Types.cs').toString)
-        
-        val dataRules = cSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BMetaCollection")]
-                public class BMetaCollection : AbstractDataRule<B>
-                {
-                    protected override string Definition => "a-> x exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return Exists(b.A.Value.X);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForResultCount() {
-        val rosettaCode ='''
-        
-        type A:
-            b int (1..*)
-
-        type B:
-            a A (1..1)
-            
-            condition ResultCount:
-                a->b count >= 2'''
-    
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BResultCount")]
-                public class BResultCount : AbstractDataRule<B>
-                {
-                    protected override string Definition => "a->b count >= 2";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(b.A.B.Count() >= 2);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForAndIf() {
-        val rosettaCode ='''
-        enum CounterpartyEnum:
-            Party1
-            Party2
-        
-        type BuyerSeller:
-            buyer CounterpartyEnum (0..1) 
-            seller CounterpartyEnum (0..1)
-            
-            condition BuyerAndSellerExists: <"Either both or neither">
-                if buyer exists then seller exists and if seller exists then buyer exists
-
-            condition CheckEnumValue:
-                if buyer exists then buyer = CounterpartyEnum -> Party1'''
-
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                /// <summary>
-                /// Either both or neither
-                /// </summary>
-                [RosettaDataRule("BuyerSellerBuyerAndSellerExists")]
-                public class BuyerSellerBuyerAndSellerExists : AbstractDataRule<BuyerSeller>
-                {
-                    protected override string Definition => "if buyer exists then seller exists and if seller exists then buyer exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(BuyerSeller buyerSeller)
-                    {
-                        try
-                        {
-                            return Exists(buyerSeller.Buyer);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(BuyerSeller buyerSeller)
-                    {
-                        try
-                        {
-                            return And(Exists(buyerSeller.Seller),
-                                IfThen(Exists(buyerSeller.Seller),
-                                    Exists(buyerSeller.Buyer)));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-            
-        '''))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BuyerSellerCheckEnumValue")]
-                public class BuyerSellerCheckEnumValue : AbstractDataRule<BuyerSeller>
-                {
-                    protected override string Definition => "if buyer exists then buyer = CounterpartyEnum -> Party1";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(BuyerSeller buyerSeller)
-                    {
-                        try
-                        {
-                            return Exists(buyerSeller.Buyer);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(BuyerSeller buyerSeller)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(buyerSeller.Buyer == Enums.Counterparty.Party1);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForSum() {
-        val rosettaCode ='''
-        func Sum:
-            inputs: x number (0..*)
-            output: sum number (1..1)
-
-        type A:
-            amount number (1..1)
-            
-        type B:
-            a A (1..*)
-            
-        type C:
-            b1 B (1..1)
-            b2 B (1..1) 
-
-            condition Sum:
-                 Sum(b1->a->amount) = b2->a->amount'''
-
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("CSum")]
-                public class CSum : AbstractDataRule<C>
-                {
-                    protected override string Definition => "Sum(b1->a->amount) = b2->a->amount";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(C c)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(C c)
-                    {
-                        try
-                        {
-                            return Sum.Evaluate(c.B1.A
-                                .Select(a => a.Amount)).IsEqual(c.B2.A
-                                .Select(a => a.Amount));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleChainedCalls() {
-        val rosettaCode ='''
-        type A:
-            idea int (1..1)
-        
-        type B:
-            a A (1..1) 
-            
-            condition ChainRule:
-                a->idea <> 9'''
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BChainRule")]
-                public class BChainRule : AbstractDataRule<B>
-                {
-                    protected override string Definition => "a->idea <> 9";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return ComparisonResult.FromBoolean(b.A.Idea != 9);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleBooleanExists() {
-        val rosettaCode ='''
-        type A:
-            b int (0..1)
-            c int (1..1)
-            d string (0..1)
-            f string (1..1)
-        
-            condition OrExists:
-                (b or c) exists or (d and f) is absent'''
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("AOrExists")]
-                public class AOrExists : AbstractDataRule<A>
-                {
-                    protected override string Definition => "(b or c) exists or (d and f) is absent";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(A a)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(A a)
-                    {
-                        try
-                        {
-                            return Or(Or(Exists(a.B),
-                                ComparisonResult.Success()),
-                                And(NotExists(a.D),
-                                    ComparisonResult.Failure("Field is not optional and must exist")));
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleWithEnumRenaming() {
-        val rosettaCode ='''
-        enum AEnum:
-            X
-            Y
-        
-        type A:
-            a AEnum (0..1)
-
-            condition NotNull:
-                a exists'''
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("ANotNull")]
-                public class ANotNull : AbstractDataRule<A>
-                {
-                    protected override string Definition => "a exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(A a)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(A a)
-                    {
-                        try
-                        {
-                            return Exists(a.AValue);
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateDataRuleForOnlyExists() {
-        val rosettaCode ='''
-        
-        type A:
-            a int (0..1)
-            [metadata scheme]
-            b string (0..1)
-
-        type B:
-            a A (0..1)
-            
-            condition OnlyExists:
-                a->a only exists'''
-        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
-        assertTrue(containsFileComment(dataRules))
-        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
-        assertTrue(dataRules.contains('''
-            «""»
-                [RosettaDataRule("BOnlyExists")]
-                public class BOnlyExists : AbstractDataRule<B>
-                {
-                    protected override string Definition => "a->a only exists";
-                    
-                    protected override IComparisonResult? RuleIsApplicable(B b)
-                    {
-                        return ComparisonResult.Success();
-                    }
-                    
-                    protected override IComparisonResult? EvaluateThenExpression(B b)
-                    {
-                        try
-                        {
-                            return OnlyExists(b.A, "AValue");
-                        }
-                        catch (Exception ex)
-                        {
-                            return ComparisonResult.Failure(ex.Message);
-                        }
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateChoiceRuleNone() {
-        val rosettaCode ='''
-        type A:
-            a int (0..1)
-            b number (0..1)
-            '''
-        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
-        //println("choiceRules: " + choiceRules)
-        assertTrue(containsFileComment(choiceRules))
-        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
-        assertFalse(choiceRules.contains('''AbstractChoiceRule<A>'''))
-    }
-
-    @Test
-    def void shouldGenerateChoiceRuleOneOf() {
-        val rosettaCode ='''
-        type A:
-            a int (0..1)
-            b number (0..1)
-            
-            condition: one-of
-            '''
-        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
-        //println("choiceRules: " + choiceRules)
-        assertTrue(containsFileComment(choiceRules))
-        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
-        assertTrue(choiceRules.contains('''
-            «""»
-                [RosettaChoiceRule("AOneOf0")]
-                public class AOneOf0 : AbstractChoiceRule<A>
-                {
-                    private static readonly string[] choiceFieldNames = { "a", "b" };
-            
-                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
-            
-                    protected override IChoiceRuleValidationMethod ValidationMethod => RequiredChoiceRuleValidationMethod.Instance;
-            
-                    protected override ICollection<string> GetPopulatedFieldNames(A a)
-                    {
-                        var populatedFieldNames = new List<string>();
-            
-                        if (a.AValue != null) populatedFieldNames.Add("a");
-                        if (a.B != null) populatedFieldNames.Add("b");
-                        return populatedFieldNames;
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateChoiceRuleOptional() {
-        val rosettaCode ='''
-        type A:
-            x int (0..1)
-            y number (0..1)
-            z date (0..1)
-
-            condition Choice: <"Optional choice rule construct.">
-                optional choice x, z
-            '''
-        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
-        //println("choiceRules: " + choiceRules)
-        assertTrue(containsFileComment(choiceRules))
-        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
-        assertTrue(choiceRules.contains('''
-            «""»
-                /// <summary>
-                /// Optional choice rule construct.
-                /// </summary>
-                [RosettaChoiceRule("AChoice")]
-                public class AChoice : AbstractChoiceRule<A>
-                {
-                    private static readonly string[] choiceFieldNames = { "x", "z" };
-            
-                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
-            
-                    protected override IChoiceRuleValidationMethod ValidationMethod => OptionalChoiceRuleValidationMethod.Instance;
-            
-                    protected override ICollection<string> GetPopulatedFieldNames(A a)
-                    {
-                        var populatedFieldNames = new List<string>();
-            
-                        if (a.X != null) populatedFieldNames.Add("x");
-                        if (a.Z != null) populatedFieldNames.Add("z");
-                        return populatedFieldNames;
-                    }
-                }
-        '''))
-    }
-
-    @Test
-    def void shouldGenerateChoiceRuleRequired() {
-        val rosettaCode ='''
-        type A:
-            x int (0..1)
-            y number (0..1)
-            z date (0..1)
-
-            condition Choice: <"Required choice rule construct.">
-                required choice y, z
-            '''
-        val choiceRules = rosettaCode.generateCSharp.get('ChoiceRules.cs').toString
-        //println("choiceRules: " + choiceRules)
-        assertTrue(containsFileComment(choiceRules))
-        assertTrue(containsNamespace(choiceRules, "Org.Isda.Cdm.Validation.ChoiceRule"))
-        assertTrue(choiceRules.contains('''
-            «""»
-                /// <summary>
-                /// Required choice rule construct.
-                /// </summary>
-                [RosettaChoiceRule("AChoice")]
-                public class AChoice : AbstractChoiceRule<A>
-                {
-                    private static readonly string[] choiceFieldNames = { "y", "z" };
-            
-                    protected override IEnumerable<string> ChoiceFieldNames => choiceFieldNames;
-            
-                    protected override IChoiceRuleValidationMethod ValidationMethod => RequiredChoiceRuleValidationMethod.Instance;
-            
-                    protected override ICollection<string> GetPopulatedFieldNames(A a)
-                    {
-                        var populatedFieldNames = new List<string>();
-            
-                        if (a.Y != null) populatedFieldNames.Add("y");
-                        if (a.Z != null) populatedFieldNames.Add("z");
-                        return populatedFieldNames;
-                    }
-                }
-        '''))
-    }
     def generateCSharp(CharSequence model) {
         val eResource = model.parseRosettaWithNoErrors.eResource
 
