@@ -86,7 +86,6 @@ class CSharpEnumGenerator {
     
 
     private def generateEnums(List<RosettaEnumeration> enums, String version) // TODO: Handle synonyms via attribute??
-    // TODO: Handle serialization to/from java style names via [EnumMember(Value = "<javaName>")]
     '''        
         «fileComment(version)»
         namespace Org.Isda.Cdm.Enums
