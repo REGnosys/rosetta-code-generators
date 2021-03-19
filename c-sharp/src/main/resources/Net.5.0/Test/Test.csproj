@@ -18,6 +18,10 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\Cdm\Cdm.csproj" />
+		<ProjectReference Include="..\Rosetta\Rosetta.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Update="ird-ex01-vanilla-swap-versioned.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
