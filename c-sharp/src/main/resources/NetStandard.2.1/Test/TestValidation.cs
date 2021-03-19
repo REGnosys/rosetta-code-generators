@@ -1,4 +1,4 @@
-namespace Cdm.Test.NetStandard2_1
+namespace Cdm.Test
 {
     using System.IO;
     using Xunit;
