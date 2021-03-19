@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>4.7.0</rosetta.dsl.version>
+				<rosetta.dsl.version>4.8.3</rosetta.dsl.version>
 				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
@@ -41,8 +41,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>4.7.0</rosetta.dsl.version>
-				<regnosys.common.version>2.88.1</regnosys.common.version>
+				<rosetta.dsl.version>4.8.3</rosetta.dsl.version>
+				<regnosys.common.version>2.99.5</regnosys.common.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -196,7 +196,7 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<logViolationsToConsole>true</logViolationsToConsole>
+							<logViolationsToConsole>false</logViolationsToConsole>
 							<failOnViolation>false</failOnViolation>
 							<violationSeverity>warning</violationSeverity>
 						</configuration>

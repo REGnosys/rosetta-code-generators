@@ -60,6 +60,9 @@ class CSharpModelObjectBoilerPlate {
         removePackage(type.toCSharpType).toFirstUpper
     }
     
+    static def toQualifiedMetaTypeName(ExpandedType type) {
+        '''«IF type.enumeration»Enums.«ENDIF»«removePackage(type.toCSharpType)»'''
+    }
 
     def toParamName(ExpandedAttribute attribute) {
         var name = attribute.name.toFirstLower
