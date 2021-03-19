@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
-		<RootNamespace>Cdm.Test.NetStandard2_1</RootNamespace>
+		<RootNamespace>Cdm.Test</RootNamespace>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,8 +21,8 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Cdm\NetStandard.2.1\NetStandard.2.1.csproj" />
-		<ProjectReference Include="..\..\Rosetta\NetStandard.2.1\Rosetta.NetStandard.2.1.csproj" />
+		<ProjectReference Include="..\Cdm\Cdm.csproj" />
+		<ProjectReference Include="..\Rosetta\Rosetta.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="ird-ex01-vanilla-swap-versioned.json">
