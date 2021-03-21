@@ -1,9 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
-		<RootNamespace>Cdm.Test.Net5</RootNamespace>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<RootNamespace>Cdm.Test</RootNamespace>
 		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DefineConstants>TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1;</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
@@ -18,12 +21,12 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<None Update="ird-ex01-vanilla-swap-versioned.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+		<ProjectReference Include="..\Cdm\Cdm.csproj" />
+		<ProjectReference Include="..\Rosetta\Rosetta.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\..\Cdm\Net.5.0\Net.5.0.csproj" />
-		<ProjectReference Include="..\..\Rosetta\Net.5.0\Rosetta.Net.5.0.csproj" />
+	  <None Update="ird-ex01-vanilla-swap-versioned.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

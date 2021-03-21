@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.c_sharp.expression;
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpType
 import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
 import com.regnosys.rosetta.rosetta.RosettaAbsentExpression
@@ -33,7 +32,6 @@ import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaParenthesisCalcExpression
 import com.regnosys.rosetta.rosetta.RosettaStringLiteral
 import com.regnosys.rosetta.rosetta.RosettaType
-import com.regnosys.rosetta.rosetta.RosettaWhenPresentExpression
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.EmptyLiteral
@@ -43,17 +41,19 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.types.RosettaOperators
 import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
-import com.rosetta.model.lib.mapper.MapperC
-import com.rosetta.model.lib.expression.MapperMaths
-import com.rosetta.model.lib.mapper.MapperS
 import java.util.HashMap
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.util.Wrapper
+import com.rosetta.model.lib.mapper.MapperS
+import com.rosetta.model.lib.mapper.MapperC
+import com.rosetta.model.lib.expression.MapperMaths
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 
-import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.toCSharpEnumName
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.toCSharpType
-import org.eclipse.emf.ecore.EObject
+import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.*
+import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
+
 
 class ExpressionGenerator {
 
@@ -102,9 +102,6 @@ class ExpressionGenerator {
             }
             RosettaAbsentExpression: {
                 absentExpr(expr, expr.argument, params)
-            }
-            RosettaWhenPresentExpression: {
-                whenPresentExpr(expr, expr.left, params)
             }
             RosettaCallableCall: {
                 callableCall(expr, params)
@@ -418,10 +415,6 @@ class ExpressionGenerator {
         '''«expr.argument.csharpCode(params)».Count()'''
     }
 
-    def StringConcatenationClient whenPresentExpr(RosettaWhenPresentExpression expr, RosettaExpression left, ParamMap params) {
-        '''DoWhenPresent(«left.csharpCode(params)», «toComparisonFunc(expr.left.csharpCode(params), expr.operator, expr.right.csharpCode(params))»)'''
-    }
-
     def StringConcatenationClient binaryExpr(RosettaBinaryOperation expr, RosettaExpression test, ParamMap params) {
         val left = getAliasExpressionIfPresent(expr.left)
         val right = getAliasExpressionIfPresent(expr.right)
@@ -688,7 +681,7 @@ class ExpressionGenerator {
             expr.set(expr.get.right)
             exprs.add(expr.get)
         }
-        '''.<«expr.get.attribute.type.name.toCSharpType»>GroupBy(g->new «MapperS»<>(g)«FOR ex : exprs»«buildMapFunc(ex.attribute as Attribute, isLast, true)»«ENDFOR»)'''
+        '''.<«expr.get.attribute.type.toCSharpType»>GroupBy(g->new «MapperS»<>(g)«FOR ex : exprs»«buildMapFunc(ex.attribute as Attribute, isLast, true)»«ENDFOR»)'''
     }
 
     private def typeName(Attribute attribute)

@@ -1,6 +1,6 @@
 #nullable enable // Allow nullable reference types
 
-namespace Cdm.Test.Net5
+namespace Cdm.Test
 {
     using System.IO;
     using Xunit;

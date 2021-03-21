@@ -133,11 +133,9 @@ class CSharpModelObjectGeneratorTest {
     @Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
-        val dirs = newArrayList(            
-            ('/Users/randal/Projects/CDM/cdm-distribution-2.97.8/common-domain-model'),
-            ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-            //('rosetta-cdm/src/main/rosetta'),
-            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
+        val dirs = newArrayList(
+            ('rosetta-cdm/src/main/rosetta'),
+            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
         );
 
         val resourceSet = resourceSetProvider.get   
