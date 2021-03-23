@@ -107,7 +107,7 @@ class CSharpModelObjectGeneratorTest {
     def void generateCdm(CSharpCodeGenerator generator, String subDirectory, List<RosettaModel> rosettaModels) {
         val generatedFiles = generator.afterGenerate(rosettaModels)
 
-        val dir =  Paths.get("Cdm/" + subDirectory)
+        val dir =  Paths.get("./target/classes/" + subDirectory + "/Cdm")
 
         generatedFiles.forEach [ fileName, contents | 
             { 
@@ -130,12 +130,14 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
-    @Disabled("Test to generate the C# for CDM")
+    //@Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
 
         val dirs = newArrayList(
-            ('rosetta-cdm/src/main/rosetta'),
-            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+            ('/Users/randal/Projects/CDM/cdm-distribution-2.99.6/common-domain-model'),
+            ('/Users/randal/Git/rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
+            //('rosetta-cdm/src/main/rosetta'),
+            //('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
         );
 
         val resourceSet = resourceSetProvider.get   
@@ -159,7 +161,11 @@ class CSharpModelObjectGeneratorTest {
         val c_sharp = '''
             enum TestEnum: <"Test enum description.">
                  TestEnumValue1 displayName "Enum Value 1" <"Test enum value 1">
-                 TestEnumValue2 <"Test enum value 2">
+                 TestEnumValue2 <"Test  enum value 2">
+            
+            enum Test2:
+                Test2Value1
+                Test2Value2
         '''.generateCSharp
 
         val enums = c_sharp.get('Enums.cs').toString
@@ -170,7 +176,7 @@ class CSharpModelObjectGeneratorTest {
 
         assertTrue(enums.contains('''
             «""»
-                /// <summary>
+               /// <summary>
                 /// Test enum description.
                 /// </summary>
                 [CdmName("TestEnum")]
@@ -183,7 +189,7 @@ class CSharpModelObjectGeneratorTest {
                     TestEnumValue1,
                     
                     /// <summary>
-                    /// Test enum value 2
+                    /// Test  enum value 2
                     /// </summary>
                     [EnumMember(Value = "TEST_ENUM_VALUE_2")]
                     TestEnumValue2
@@ -201,6 +207,72 @@ class CSharpModelObjectGeneratorTest {
                     }
                 }
         '''))
+        
+        assertTrue(enums.contains('''
+            «""»
+                [CdmName("Test2")]
+                public enum Test2
+                {
+                    [EnumMember(Value = "TEST_2_VALUE_1")]
+                    Test2Value1,
+                    
+                    [EnumMember(Value = "TEST_2_VALUE_2")]
+                    Test2Value2
+                }
+        '''))
+    }
+    
+    @Test
+    def void shouldGenerateQualifiedEnums() {
+        val c_sharp = '''
+            enum Test2:
+                Test2Value1
+                Test2Value2
+                
+            type TestType:
+                test2 Test2 (0..1)
+        '''.generateCSharp
+
+        val enums = c_sharp.get('Enums.cs').toString
+        val types = c_sharp.get('Types.cs').toString
+        //println("enums ==>\n" + enums)
+        //println("types ==>\n" + types )
+
+        assertTrue(containsFileComment(enums))
+        assertTrue(containsEnumNamespace(enums))
+
+        assertTrue(enums.contains('''
+            «""»
+                [CdmName("Test2")]
+                public enum Test2
+                {
+                    [EnumMember(Value = "TEST_2_VALUE_1")]
+                    Test2Value1,
+                    
+                    [EnumMember(Value = "TEST_2_VALUE_2")]
+                    Test2Value2
+                }
+        '''))
+        
+        assertTrue(types.contains('''
+           «""»
+               public class TestType : AbstractRosettaModelObject<TestType>
+               {
+                   private static readonly IRosettaMetaData<TestType> metaData = new TestTypeMeta();
+                   
+                   [JsonConstructor]
+                   public TestType(Enums.Test2? test2)
+                   {
+                       Test2 = test2;
+                   }
+                   
+                   /// <inheritdoc />
+                   [JsonIgnore]
+                   public override IRosettaMetaData<TestType> MetaData => metaData;
+                   
+                   [JsonConverter(typeof(StringEnumConverter))]
+                   public Enums.Test2? Test2 { get; }
+               }'''))
     }
     
     @Test

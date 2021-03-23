@@ -56,13 +56,15 @@ class CSharpEnumGenerator {
     }
 
     static def toCSharpName(String name, boolean qualify) {
+        var enumName = name
+
         if (name.endsWith(ENUM_SUFFIX)) {
-            var stem = name.substring(0, name.length - ENUM_SUFFIX.length)
-            if (qualify)
-                return "Enums." + stem;
-            return stem;
+            enumName = name.substring(0, name.length - ENUM_SUFFIX.length)
         }
-        return name
+        if (qualify) {
+            enumName = "Enums." + enumName
+        }
+        return enumName
     }
 
     static def toCSharpMetaName(String name) {
