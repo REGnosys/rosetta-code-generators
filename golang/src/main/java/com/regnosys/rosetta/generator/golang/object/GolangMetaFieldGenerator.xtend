@@ -38,5 +38,14 @@ class GolangMetaFieldGenerator {
 			ExternalKey string;
 		}
 		
+		type MetaAndTemplateFields struct {
+			Id string;
+			Key string;
+			Reference string;
+			Scheme string;
+			GlobalKey string;
+			ExternalKey string;
+		}
+		
 	'''
 }
