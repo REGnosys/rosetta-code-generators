@@ -3,7 +3,6 @@ package com.regnosys.rosetta.generator.kotlin.enums
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import com.regnosys.rosetta.generator.kotlin.object.KotlinModelObjectBoilerPlate
-import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import java.util.ArrayList
 import java.util.HashMap
@@ -40,20 +39,21 @@ class KotlinEnumGenerator {
 		'''
 		«fileComment(version)»
 		package org.isda.cdm.kotlin
+		
 		import kotlinx.serialization.*
 		
 		«FOR e : enums SEPARATOR "\n"»
-		«val allEnumValues = allEnumsValues(e)»
-		«comment(e.definition)»
-		@Serializable
-		enum class «e.name» {
-			«FOR value: allEnumValues SEPARATOR ','»
-			«comment(value.definition)»
-			@SerialName("«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValues(value)»«ENDIF»")
-			«EnumHelper.convertValues(value)»
-			«ENDFOR»
-			;
-		}
+			«val allEnumValues = allEnumsValues(e)»
+			«comment(e.definition)»
+			@Serializable
+			enum class «e.name» {
+				«FOR value: allEnumValues SEPARATOR ','»
+					«comment(value.definition)»
+					@SerialName("«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValues(value)»«ENDIF»")
+					«EnumHelper.convertValues(value)»
+				«ENDFOR»
+				;
+			}
 		«ENDFOR»
 		'''
 }

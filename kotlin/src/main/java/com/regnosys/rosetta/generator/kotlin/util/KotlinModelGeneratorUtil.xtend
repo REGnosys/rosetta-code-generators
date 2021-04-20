@@ -16,8 +16,8 @@ class KotlinModelGeneratorUtil {
 		'''
 		«IF definition !==null && !definition.isEmpty »
 		/** 
-		* «definition» 
-		*/
+		 * «definition» 
+		 */
 		«ENDIF»
 		'''
 
@@ -27,9 +27,9 @@ class KotlinModelGeneratorUtil {
 		/**
 		 * «definition»
 		 *
-		«FOR attribute : attributes»
+		 «FOR attribute : attributes»
 		 * @param «attribute.name» «attribute.definition»
-		«ENDFOR»
+		 «ENDFOR»
 		 */
 		«ENDIF»
 		'''

@@ -4,9 +4,7 @@ import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
-import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
-
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -54,23 +52,23 @@ class KotlinModelObjectGenerator {
 		«fileComment(version)»
 		package org.isda.cdm.kotlin
 		
-		import kotlinx.serialization.*		
+		import kotlinx.serialization.*
 
 		/**
 		* Basic Date implementation
 		*/
 		@Serializable
 		class Date (
-		    val year: Int,
-		    val month: Int,
-		    val day: Int
+			val year: Int,
+			val month: Int,
+			val day: Int
 		)
 
 		«FOR c : rosettaClasses SEPARATOR "\n"»
 		«classComment(c.definition, c.allExpandedAttributes)»
 		@Serializable
 		open class «c.name»«IF c.superType === null && !superTypes.contains(c)»«ENDIF» (
-		«generateAttributes(c)»
+			«generateAttributes(c)»
 		)
 		«IF c.superType !== null && superTypes.contains(c)»: «c.superType.name»()«ELSEIF c.superType !== null»: «c.superType.name»()«ENDIF»
 		«IF c.conditions.size !== 0»
@@ -85,37 +83,34 @@ class KotlinModelObjectGenerator {
     }
 
     private def generateAttributes(Data c) {
-        '''«FOR attribute : c.allExpandedAttributes»«generateExpandedAttribute(c, attribute)»«ENDFOR»'''
+        '''«FOR attribute : c.allExpandedAttributes.filter[enclosingType == c.name] SEPARATOR ","»«generateExpandedAttribute(c, attribute)»«ENDFOR»'''
     }
 
     private def generateExpandedAttribute(Data c, ExpandedAttribute attribute) {
-	   if(attribute.enclosingType == c.name){
-		    '''
-				var «attribute.toAttributeName»: «attribute.toType»? = null,
-			'''
-		}        
+	    '''
+	    var «attribute.toAttributeName»: «attribute.toType»? = null
+	    '''
     }
 
+//    private def generateConditionLogic(Data c, Condition condition) {
+//        '''
+//		«IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
+//        '''
+//    }
 
-    private def generateConditionLogic(Data c, Condition condition) {
-        '''
-		«IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
-        '''
-    }
+//    private def generateOneOfLogic(Data c) {
+//        '''
+//	        init {
+//	        	require(listOfNotNull(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).size == 1)
+//	        }
+//        '''
+//    }
 
-    private def generateOneOfLogic(Data c) {
-        '''
-	        init {
-	        	require(listOfNotNull(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).size == 1)
-	        }
-        '''
-    }
-
-    def dispatch Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
+    def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
         type.allSuperTypes.map[it.expandedAttributes].flatten
     }
     
-    def dispatch String definition(Data element){
+    def String definition(Data element){
         element.definition
     }
 }
