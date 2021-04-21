@@ -189,10 +189,9 @@ class KotlinModelObjectGeneratorTest {
 			
 			type TestType:
 				[metadata key]
-				testTypeValue1 TestType2(1..1)
+				testTypeValue1 TestType2 (1..1)
 					[metadata reference]
-				testTypeValue2 TestType3(1..1)
-					[metadata address]
+				testTypeValue2 TestType3 (1..1)
 			
 			enum TestEnum: 
 			    TestEnumValue1 
@@ -206,9 +205,16 @@ class KotlinModelObjectGeneratorTest {
 					[metadata scheme]
 				testType2Value3 TestEnum (1..1)
 					[metadata scheme]
-					
+				testTypeValue4 TestType4 (1..1)
+					[metadata address]
+			
 			type TestType3:
-				testType3Value1 number (1..1)
+				testType3Value1 TestType4 (1..1)
+					[metadata location]
+			
+			type TestType4:
+				testType4Value1 number (1..1)
+			
 	        '''.generateKotlin
 
         val types = kotlin.values.join('\n').toString
@@ -218,7 +224,17 @@ class KotlinModelObjectGeneratorTest {
 	        open class ReferenceWithMetaTestType2 (
 	          var value: TestType2? = null,
 	          var globalReference: String? = null,
-	          var externalReference: String? = null
+	          var externalReference: String? = null,
+	          var reference: Reference? = null
+	        )'''))
+	        
+        assertTrue(types.contains('''
+	        @Serializable
+	        open class ReferenceWithMetaTestType4 (
+	          var value: TestType4? = null,
+	          var globalReference: String? = null,
+	          var externalReference: String? = null,
+	          var reference: Reference? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -226,7 +242,8 @@ class KotlinModelObjectGeneratorTest {
 	        open class BasicReferenceWithMetaFloat (
 	          var value: Float? = null,
 	          var globalReference: String? = null,
-	          var externalReference: String? = null
+	          var externalReference: String? = null,
+	          var reference: Reference? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -248,7 +265,8 @@ class KotlinModelObjectGeneratorTest {
 	        open class MetaFields (
 	          var scheme: String? = null,
 	          var globalKey: String? = null,
-	          var externalKey: String? = null
+	          var externalKey: String? = null,
+	          var key: MutableList<Key>? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -257,9 +275,46 @@ class KotlinModelObjectGeneratorTest {
 	          var scheme: String? = null,
 	          var globalKey: String? = null,
 	          var externalKey: String? = null,
-	          var templateGlobalReference: String? = null
-	        )
-	        '''))
+	          var templateGlobalReference: String? = null,
+	          var key: MutableList<Key>? = null
+	        )'''))
+	        
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class Key (
+	          var scope: String? = null,
+	          var keyValue: String? = null
+	        )'''))
+	        
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class Reference (
+	          var scope: String? = null,
+	          var reference: String? = null
+	        )'''))
+	    
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class TestType (
+	          var meta: MetaFields? = null,
+	          var testTypeValue1: ReferenceWithMetaTestType2? = null,
+	          var testTypeValue2: TestType3? = null
+	        )'''))
+	        
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class TestType2 (
+	          var testType2Value1: BasicReferenceWithMetaFloat? = null,
+	          var testType2Value2: FieldWithMetaString? = null,
+	          var testType2Value3: FieldWithMetaTestEnum? = null,
+	          var testTypeValue4: ReferenceWithMetaTestType4? = null
+	        )'''))
+	        
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class TestType3 (
+	          var testType3Value1: FieldWithMetaTestType4? = null
+	        )'''))
     }
 
     @Test

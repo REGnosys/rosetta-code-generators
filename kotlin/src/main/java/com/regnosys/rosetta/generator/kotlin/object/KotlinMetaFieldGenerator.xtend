@@ -78,7 +78,8 @@ class KotlinMetaFieldGenerator {
     open class ReferenceWithMeta«type.toMetaTypeName» (
     	var value: «type.toKotlinType»? = null,
     	var globalReference: String? = null,
-    	var externalReference: String? = null
+    	var externalReference: String? = null,
+    	var reference: Reference? = null
     )
     
 	'''
@@ -88,7 +89,8 @@ class KotlinMetaFieldGenerator {
     open class BasicReferenceWithMeta«type.toMetaTypeName» (
     	var value: «type.toKotlinType»? = null,
     	var globalReference: String? = null,
-    	var externalReference: String? = null
+    	var externalReference: String? = null,
+    	var reference: Reference? = null
     )
 
 	'''
@@ -99,7 +101,8 @@ class KotlinMetaFieldGenerator {
     open class MetaFields (
     	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.type.name.toKotlinBasicType»? = null,«ENDFOR»
     	var globalKey: String? = null,
-    	var externalKey: String? = null
+    	var externalKey: String? = null,
+    	var key: MutableList<Key>? = null
     )
 
     @Serializable
@@ -107,9 +110,21 @@ class KotlinMetaFieldGenerator {
     	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.type.name.toKotlinBasicType»? = null,«ENDFOR»
     	var globalKey: String? = null,
     	var externalKey: String? = null,
-    	var templateGlobalReference: String? = null
+    	var templateGlobalReference: String? = null,
+    	var key: MutableList<Key>? = null
     )
 
-
+    @Serializable
+    open class Key (
+    	var scope: String? = null,
+    	var keyValue: String? = null
+    )
+    
+    @Serializable
+    open class Reference (
+    	var scope: String? = null,
+    	var reference: String? = null
+    )
+    
 	'''
 }
