@@ -183,6 +183,7 @@ class KotlinModelObjectGeneratorTest {
     def void shouldGenerateMetaTypes() {
         val kotlin = '''
 			metaType reference string
+			metaType address string
 			metaType scheme string
 			metaType id string
 			
@@ -190,6 +191,8 @@ class KotlinModelObjectGeneratorTest {
 				[metadata key]
 				testTypeValue1 TestType2(1..1)
 					[metadata reference]
+				testTypeValue2 TestType3(1..1)
+					[metadata address]
 			
 			enum TestEnum: 
 			    TestEnumValue1 
@@ -203,16 +206,19 @@ class KotlinModelObjectGeneratorTest {
 					[metadata scheme]
 				testType2Value3 TestEnum (1..1)
 					[metadata scheme]
+					
+			type TestType3:
+				testType3Value1 number (1..1)
 	        '''.generateKotlin
 
         val types = kotlin.values.join('\n').toString
-//        println(types)
+        println(types)
         assertTrue(types.contains('''
 	        @Serializable
 	        open class ReferenceWithMetaTestType2 (
 	          var value: TestType2? = null,
 	          var globalReference: String? = null,
-	          var externalReference: String? = null,
+	          var externalReference: String? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -220,7 +226,7 @@ class KotlinModelObjectGeneratorTest {
 	        open class BasicReferenceWithMetaFloat (
 	          var value: Float? = null,
 	          var globalReference: String? = null,
-	          var externalReference: String? = null,
+	          var externalReference: String? = null
 	        )'''))
         
         assertTrue(types.contains('''

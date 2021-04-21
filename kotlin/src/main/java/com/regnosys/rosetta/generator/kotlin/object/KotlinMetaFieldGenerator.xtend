@@ -19,7 +19,7 @@ class KotlinMetaFieldGenerator {
 
         val refs = rosettaClasses
                 .flatMap[expandedAttributes]
- 				.filter[hasMetas && metas.exists[name=="reference"]]
+ 				.filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
 
@@ -34,7 +34,7 @@ class KotlinMetaFieldGenerator {
 
         val metas =  rosettaClasses
                 .flatMap[expandedAttributes]
-                .filter[hasMetas && !metas.exists[name=="reference"]]
+                .filter[hasMetas && !metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
 
@@ -42,7 +42,7 @@ class KotlinMetaFieldGenerator {
             referenceWithMeta += generateFieldWithMeta(meta).toString
         }
 
-        val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference"], version)
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference" && t.name!="address"], version)
 
         return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
     }
@@ -78,7 +78,7 @@ class KotlinMetaFieldGenerator {
     open class ReferenceWithMeta«type.toMetaTypeName» (
     	var value: «type.toKotlinType»? = null,
     	var globalReference: String? = null,
-    	var externalReference: String? = null,
+    	var externalReference: String? = null
     )
     
 	'''
@@ -88,7 +88,7 @@ class KotlinMetaFieldGenerator {
     open class BasicReferenceWithMeta«type.toMetaTypeName» (
     	var value: «type.toKotlinType»? = null,
     	var globalReference: String? = null,
-    	var externalReference: String? = null,
+    	var externalReference: String? = null
     )
 
 	'''
