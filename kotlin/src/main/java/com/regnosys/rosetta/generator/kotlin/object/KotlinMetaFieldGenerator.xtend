@@ -42,7 +42,7 @@ class KotlinMetaFieldGenerator {
             referenceWithMeta += generateFieldWithMeta(meta).toString
         }
 
-        val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="reference" && t.name!="address"], version)
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="key" && t.name!="reference" && t.name!="address"], version)
 
         return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
     }
