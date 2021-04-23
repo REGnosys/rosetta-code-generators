@@ -108,14 +108,15 @@ class GolangModelObjectGeneratorTest {
 	def void shouldGenerateTypes() {
 		val golang = '''
 			type TestType: <"Test type description.">
-				TestTypeValue1 string(1..1) <"Test string">
-				TestTypeValue2 string(0..1) <"Test optional string">
-				TestTypeValue3 string(0..*) <"Test string list">
-				TestTypeValue4 TestType2(1..1) <"Test TestType2">
+				testTypeValue1 string (1..1) <"Test string">
+				testTypeValue2 string (0..1) <"Test optional string">
+				testTypeValue3 string (0..*) <"Test string list">
+				testTypeValue4 TestType2 (1..1) <"Test TestType2">
+				testTypeValue5 TestType2 (0..*) <"Test TestType2 list">
 				
 			type TestType2:
-				TestType2Value1 number(1..1) <"Test number">
-				TestType2Value2 date(1..1) <"Test date">
+				testType2Value1 number (1..1) <"Test number">
+				testType2Value2 date (1..1) <"Test date">
 		'''.generateGolang
 
 		val types = golang.get('org_isda_cdm/types.go').toString
@@ -152,6 +153,10 @@ class GolangModelObjectGeneratorTest {
 		   * Test TestType2
 		   */
 		  TestTypeValue4 TestType2;
+		  /**
+		   * Test TestType2 list
+		   */
+		  TestTypeValue5 []TestType2;
 		}
 		  
 		type TestType2 struct {
@@ -174,39 +179,100 @@ class GolangModelObjectGeneratorTest {
 			metaType reference string
 			metaType scheme string
 			metaType id string
+			metaType address string
 			
 			type TestType:
 				[metadata key]
-				TestTypeValue1 TestType2(1..1)
+				testTypeValue1 TestType2 (1..1)
 					[metadata reference]
 			
 			type TestType2:
-				TestType2Value1 number(1..1)
+				testType2Value1 number (1..1)
 					[metadata reference]
 					
-				TestType2Value2 string(1..1)
+				testType2Value2 string (1..1)
 					[metadata id]
 					[metadata scheme]
-							'''.generateGolang
+			
+			type TestType3:
+				testType3Value1 string (1..1)
+			
+			type TestType4:
+				testType3Location TestType3 (1..1)
+					[metadata location]
+			
+			type TestType5:
+				testType3Address TestType3 (1..1)
+					[metadata address "pointsTo"=TestType4->testType3Location]
+				'''.generateGolang
 
 		val types = golang.values.join('\n').toString
-				
-		assertTrue(types.contains('''
-		type FieldWithMeta struct {
-		  Value interface{};
-		  Meta MetaFields;
-		}'''))
+		
+		println(types)
+		
+		// types
 
 		assertTrue(types.contains('''
 		type TestType struct {
-		  TestTypeValue1 ReferenceWithMeta;
 		  Meta MetaFields;
+		  TestTypeValue1 ReferenceWithMeta;
 		}'''))
 
 		assertTrue(types.contains('''
 		type TestType2 struct {
 		  TestType2Value1 ReferenceWithMeta;
 		  TestType2Value2 FieldWithMeta;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type TestType3 struct {
+		  TestType3Value1 string;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type TestType4 struct {
+		  TestType3Location FieldWithMeta;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type TestType5 struct {
+		  TestType3Address ReferenceWithMeta;
+		}'''))
+		
+		// meta fields
+		
+		assertTrue(types.contains('''
+		type FieldWithMeta struct {
+		  Value interface{};
+		  Meta MetaFields;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type ReferenceWithMeta struct {
+		  GlobalReference string;
+		  ExternalReference string;
+		  Address Address;
+		  Value interface{};
+		}'''))
+		
+		assertTrue(types.contains('''
+		type MetaFields struct {
+		  Scheme string;
+		  GlobalKey string;
+		  ExternalKey string;
+		  Location []Location;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type Address struct {
+		  Scope string;
+		  Value string;
+		}'''))
+		
+		assertTrue(types.contains('''
+		type Location struct {
+		  Scope string;
+		  Value string;
 		}'''))
 
 	}
