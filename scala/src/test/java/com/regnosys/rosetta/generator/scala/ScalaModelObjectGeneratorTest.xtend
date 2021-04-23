@@ -234,35 +234,86 @@ class ScalaModelObjectGeneratorTest {
 			metaType reference string
 			metaType scheme string
 			metaType id string
+			metaType address string
 			
 			type TestType:
 				[metadata key]
-				testTypeValue1 TestType2(1..1)
+				testTypeValue1 TestType2 (1..1)
 					[metadata reference]
-					
+				
+				testTypeValue2 TestType2 (1..1)
+					[metadata location]
+			
 			enum TestEnum: <"Test enum description.">
 				TestEnumValue1 <"Test enum value 1">
 				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
 				testType2Value1 number (1..1)
-					[metadata address]
-					
+					[metadata id]
+				
 				testType2Value2 string (1..1)
 					[metadata id]
 					[metadata scheme]
 				
 				testType2Value3 TestEnum (1..1)
 					[metadata scheme]
+			
+			type TestType3:
+				testType3Value1 TestType2 (1..1)
+					[metadata address "pointsTo"=TestType->testTypeValue2]
+			
 		'''.generateScala
 
 		val types = scala.values.join('\n').toString
-		//println(types)
+		
+		println(types)
+		
+		// types
+		
+		assertTrue(types.contains('''
+		case class TestType(meta: Option[MetaFields],
+		    testTypeValue1: ReferenceWithMetaTestType2,
+		    testTypeValue2: FieldWithMetaTestType2) {
+		}'''))
+
+		assertTrue(types.contains('''
+		case class TestType2(testType2Value1: FieldWithMetaBigDecimal,
+		    testType2Value2: FieldWithMetaString,
+		    testType2Value3: FieldWithMetaTestEnum) {
+		}'''))
+		
+		assertTrue(types.contains('''
+		case class TestType3(testType3Value1: ReferenceWithMetaTestType2) {
+		}'''))
+		
+		// meta fields
+		
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
 		    externalKey: Option[String],
 		    location: List[Key]) {}
+	    '''))
+	    
+	    assertTrue(types.contains('''
+		case class MetaAndTemplateFields(scheme: Option[String],
+		    globalKey: Option[String],
+		    externalKey: Option[String],
+		    templateGlobalReference: Option[String],
+		    location: List[Key]) {}
+	    '''))
+	    
+	    assertTrue(types.contains('''
+		case class Key(
+		  value: String,
+		  scope: Option[String]) {}
+	    '''))
+	    
+	    assertTrue(types.contains('''
+		case class Reference(
+		  value: String,
+		  scope: Option[String]) {}
 	    '''))
 		
 		assertTrue(types.contains('''
@@ -278,7 +329,7 @@ class ScalaModelObjectGeneratorTest {
 	    '''))
 	    
 	    assertTrue(types.contains('''
-		case class FieldWithMetaString(value: Option[String],
+		case class FieldWithMetaBigDecimal(value: Option[scala.math.BigDecimal],
 		    meta: Option[MetaFields]) {}
 	    '''))
 		
@@ -288,27 +339,6 @@ class ScalaModelObjectGeneratorTest {
 		    externalReference: Option[String],
 		    address: Option[Reference]) {}
 	    '''))
-		
-		assertTrue(types.contains('''
-		case class BasicReferenceWithMetaBigDecimal(value: Option[scala.math.BigDecimal],
-		    globalReference: Option[String],
-		    externalReference: Option[String],
-		    address: Option[Reference]) {}
-	    '''))
-
-		assertTrue(types.contains('''
-		case class TestType(meta: Option[MetaFields],
-		    testTypeValue1: ReferenceWithMetaTestType2) {
-		}
-	    '''))
-
-		assertTrue(types.contains('''
-		case class TestType2(testType2Value1: BasicReferenceWithMetaBigDecimal,
-		    testType2Value2: FieldWithMetaString,
-		    testType2Value3: FieldWithMetaTestEnum) {
-		}
-	    '''))
-
 	}
 
     @Test

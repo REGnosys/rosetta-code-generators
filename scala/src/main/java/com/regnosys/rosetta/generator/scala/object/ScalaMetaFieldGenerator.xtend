@@ -42,7 +42,7 @@ class ScalaMetaFieldGenerator {
 			referenceWithMeta += generateFieldWithMeta(meta).toString
 		}
 		
-		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference"], version)
+		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference" && t.name!="address"], version)
 		
 		return fileComment(version) + metaFieldsImports + keyRef.toString + referenceWithMeta + metaFields
 	}
@@ -60,11 +60,11 @@ class ScalaMetaFieldGenerator {
 	
 	private def keyRef() '''
 		case class Key(
-			keyValue: String,
+			value: String,
 			scope: Option[String]) {}
 			
 		case class Reference(
-			reference: String,
+			value: String,
 			scope: Option[String]) {}
 		
 	'''
