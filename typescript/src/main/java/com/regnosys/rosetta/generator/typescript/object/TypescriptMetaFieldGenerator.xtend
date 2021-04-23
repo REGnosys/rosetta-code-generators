@@ -22,7 +22,7 @@ class TypescriptMetaFieldGenerator {
 		export interface ReferenceWithMeta<T> {
 		  globalReference?: string;
 		  externalReference?: string;
-		  address?: Address;
+		  address?: Reference;
 		  value?: T;
 		}
 		
@@ -35,7 +35,7 @@ class TypescriptMetaFieldGenerator {
 			«ENDFOR»
 			globalKey?: string;
 			externalKey?: string;
-			location?: Location[];
+			location?: Key[];
 		}
 		
 		export interface MetaAndTemplateFields {
@@ -45,15 +45,15 @@ class TypescriptMetaFieldGenerator {
 		  globalKey?: string;
 		  externalKey?: string;
 		  templateGlobalReference?: string;
-		  location?: Location[];
+		  location?: Key[];
 		}
 		
-		export interface Address {
+		export interface Key {
 		  scope?: string;
 		  value?: string;
 		}
 		
-		export interface Location {
+		export interface Reference {
 		  scope?: string;
 		  value?: string;
 		}

@@ -104,11 +104,6 @@ class DamlModelObjectGenerator {
 		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)
 		
-		data Address = Address with
-		  scope : Optional Text
-		  value : Optional Text
-		    deriving (Eq, Ord, Show)
-		
 	'''
 	
 	private def zonedDateTime() '''

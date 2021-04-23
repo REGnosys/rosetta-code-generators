@@ -48,5 +48,6 @@ class DamlMetaFieldGenerator {
 		  scope : Optional Text
 		  value : Optional Text
 		    deriving (Eq, Ord, Show)
+		
 	'''
 }

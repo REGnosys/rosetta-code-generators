@@ -24,7 +24,7 @@ class GolangMetaFieldGenerator {
 		type ReferenceWithMeta struct {
 		  GlobalReference string;
 		  ExternalReference string;
-		  Address Address;
+		  Address Reference;
 		  Value interface{};
 		}
 
@@ -37,7 +37,7 @@ class GolangMetaFieldGenerator {
 			«ENDFOR»
 			GlobalKey string;
 			ExternalKey string;
-			Location []Location;
+			Location []Key;
 		}
 		
 		type MetaAndTemplateFields struct {
@@ -47,15 +47,15 @@ class GolangMetaFieldGenerator {
 			GlobalKey string;
 			ExternalKey string;
 			TemplateGlobalReference string;
-			Location []Location;
+			Location []Key;
 		}
 		
-		type Address struct {
+		type Key struct {
 			Scope string;
 			Value string;
 		}
 		
-		type Location struct {
+		type Reference struct {
 			Scope string;
 			Value string;
 		}

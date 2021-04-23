@@ -251,7 +251,7 @@ class GolangModelObjectGeneratorTest {
 		type ReferenceWithMeta struct {
 		  GlobalReference string;
 		  ExternalReference string;
-		  Address Address;
+		  Address Reference;
 		  Value interface{};
 		}'''))
 		
@@ -260,17 +260,17 @@ class GolangModelObjectGeneratorTest {
 		  Scheme string;
 		  GlobalKey string;
 		  ExternalKey string;
-		  Location []Location;
+		  Location []Key;
 		}'''))
 		
 		assertTrue(types.contains('''
-		type Address struct {
+		type Key struct {
 		  Scope string;
 		  Value string;
 		}'''))
 		
 		assertTrue(types.contains('''
-		type Location struct {
+		type Reference struct {
 		  Scope string;
 		  Value string;
 		}'''))
