@@ -88,15 +88,15 @@ class DamlModelObjectGenerator {
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
 		  externalReference : Optional Text
+		  address: Optional Address
 		  value : Optional a
-		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)
 		
 		data BasicReferenceWithMeta a = BasicReferenceWithMeta with
 		  globalReference : Optional Text
 		  externalReference : Optional Text
+		  address: Optional Address
 		  value : Optional a
-		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)
 		
 		data FieldWithMeta a = FieldWithMeta with

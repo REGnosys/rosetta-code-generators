@@ -10,10 +10,10 @@ import static extension com.regnosys.rosetta.generator.golang.util.GolangTransla
 class GolangMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		fileComment(version) + metaClasses.toString + metaFields(metaTypes.filter[name !== "reference"], version)
+		fileComment(version) + metaClasses.toString + metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template" && name!="address"], version)
 	}
 	
-		private def metaClasses() '''
+	private def metaClasses() '''
 		package org_isda_cdm_metafields
 		
 		type FieldWithMeta struct {
@@ -24,9 +24,10 @@ class GolangMetaFieldGenerator {
 		type ReferenceWithMeta struct {
 		  GlobalReference string;
 		  ExternalReference string;
+		  Address Address;
 		  Value interface{};
 		}
-				
+
 	'''
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
@@ -36,6 +37,27 @@ class GolangMetaFieldGenerator {
 			«ENDFOR»
 			GlobalKey string;
 			ExternalKey string;
+			Location []Location;
+		}
+		
+		type MetaAndTemplateFields struct {
+			«FOR type : types.distinctBy(t|t.name.toFirstLower)»
+				«type.name.toFirstUpper» «type.type.name.toGOType»;
+			«ENDFOR»
+			GlobalKey string;
+			ExternalKey string;
+			TemplateGlobalReference string;
+			Location []Location;
+		}
+		
+		type Address struct {
+			Scope string;
+			Value string;
+		}
+		
+		type Location struct {
+			Scope string;
+			Value string;
 		}
 		
 	'''

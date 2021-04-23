@@ -121,6 +121,8 @@ class DamlModelObjectGeneratorTest {
 
 		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
+//		println(metaFields)
+		
 		assertTrue(metaFields.contains('''
 		daml 1.2
 		
@@ -134,6 +136,15 @@ class DamlModelObjectGeneratorTest {
 		  scheme : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data MetaAndTemplateFields = MetaAndTemplateFields with
+		  scheme : Optional Text
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  templateGlobalReference : Optional Text
+		  location: [Location]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -194,6 +205,116 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data MetaAndTemplateFields = MetaAndTemplateFields with
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  templateGlobalReference : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)'''))
+	}
+	
+	@Test
+	def void shouldGenerateClassWithRosettaTypeLocationAndAddress() {
+		val code = '''
+			metaType reference string
+			metaType address string
+			
+			type Foo:
+			    bazAddress Baz (1..1)
+			    	[metadata address "pointsTo"=Bar->bazLocation]
+			
+			type Bar:
+			    bazLocation Baz (1..1)
+			    	[metadata location]
+			
+			type Baz:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
+		
+		assertTrue(classes.contains('''
+		data Baz = Baz with 
+		  stringAttr : Text
+		    deriving (Eq, Ord, Show)'''))
+
+		assertTrue(classes.contains('''
+		data Bar = Bar with 
+		  bazLocation : (FieldWithMeta Baz)
+		    deriving (Eq, Ord, Show)'''))
+		
+		assertTrue(classes.contains('''
+		data Foo = Foo with 
+		  bazAddress : (ReferenceWithMeta Baz)
+		    deriving (Eq, Ord, Show)'''))
+
+		val metaClasses = code.get("Org/Isda/Cdm/MetaClasses.daml").toString
+		
+		assertTrue(metaClasses.contains('''
+		daml 1.2
+		
+		-- | This file is auto-generated from the ISDA Common
+		--   Domain Model, do not edit.
+		--   @version ${project.version}
+		module Org.Isda.Cdm.MetaClasses
+		  ( module Org.Isda.Cdm.MetaClasses ) where
+		
+		import Org.Isda.Cdm.MetaFields
+		
+		data ReferenceWithMeta a = ReferenceWithMeta with
+		  globalReference : Optional Text
+		  externalReference : Optional Text
+		  address: Optional Address
+		  value : Optional a
+		    deriving (Eq, Ord, Show)
+		
+		data BasicReferenceWithMeta a = BasicReferenceWithMeta with
+		  globalReference : Optional Text
+		  externalReference : Optional Text
+		  address: Optional Address
+		  value : Optional a
+		    deriving (Eq, Ord, Show)
+		
+		data FieldWithMeta a = FieldWithMeta with
+		  value : a
+		  meta : Optional MetaFields
+		    deriving (Eq, Ord, Show)'''))
+
+		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
+		
+		assertTrue(metaFields.contains('''
+		daml 1.2
+		
+		-- | This file is auto-generated from the ISDA Common
+		--   Domain Model, do not edit.
+		--   @version test
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
+		
+		data MetaFields = MetaFields with
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data MetaAndTemplateFields = MetaAndTemplateFields with
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  templateGlobalReference : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data Location = Location with
+		  scope : Optional Text
+		  value : Optional Text
+		    deriving (Eq, Ord, Show)
+		
+		data Address = Address with
+		  scope : Optional Text
+		  value : Optional Text
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -201,6 +322,9 @@ class DamlModelObjectGeneratorTest {
 	def void shouldGenerateClassWithRosettaTypeAndMetaBasicReference() {
 		val code = '''
 			metaType reference string
+			metaType id string
+			metaType key string
+			metaType address string
 			
 			type Foo:
 			    stringReference string (0..1)
@@ -216,7 +340,7 @@ class DamlModelObjectGeneratorTest {
 
 		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
-		// println(metaFields)
+//		println(metaFields)
 		
 		assertTrue(metaFields.contains('''
 		daml 1.2
@@ -230,6 +354,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data MetaAndTemplateFields = MetaAndTemplateFields with
+		  globalKey : Optional Text
+		  externalKey : Optional Text
+		  templateGlobalReference : Optional Text
+		  location: [Location]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	

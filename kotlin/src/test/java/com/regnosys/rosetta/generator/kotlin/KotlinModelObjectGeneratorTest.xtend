@@ -225,7 +225,7 @@ class KotlinModelObjectGeneratorTest {
 	          var value: TestType2? = null,
 	          var globalReference: String? = null,
 	          var externalReference: String? = null,
-	          var reference: Reference? = null
+	          var address: Address? = null
 	        )'''))
 	        
         assertTrue(types.contains('''
@@ -234,7 +234,7 @@ class KotlinModelObjectGeneratorTest {
 	          var value: TestType4? = null,
 	          var globalReference: String? = null,
 	          var externalReference: String? = null,
-	          var reference: Reference? = null
+	          var address: Address? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -243,7 +243,7 @@ class KotlinModelObjectGeneratorTest {
 	          var value: Float? = null,
 	          var globalReference: String? = null,
 	          var externalReference: String? = null,
-	          var reference: Reference? = null
+	          var address: Address? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -266,7 +266,7 @@ class KotlinModelObjectGeneratorTest {
 	          var scheme: String? = null,
 	          var globalKey: String? = null,
 	          var externalKey: String? = null,
-	          var key: MutableList<Key>? = null
+	          var location: MutableList<Location>? = null
 	        )'''))
         
         assertTrue(types.contains('''
@@ -276,21 +276,21 @@ class KotlinModelObjectGeneratorTest {
 	          var globalKey: String? = null,
 	          var externalKey: String? = null,
 	          var templateGlobalReference: String? = null,
-	          var key: MutableList<Key>? = null
+	          var location: MutableList<Location>? = null
 	        )'''))
 	        
 	    assertTrue(types.contains('''
 	        @Serializable
-	        open class Key (
+	        open class Location (
 	          var scope: String? = null,
-	          var keyValue: String? = null
+	          var value: String? = null
 	        )'''))
 	        
 	    assertTrue(types.contains('''
 	        @Serializable
-	        open class Reference (
+	        open class Address (
 	          var scope: String? = null,
-	          var reference: String? = null
+	          var value: String? = null
 	        )'''))
 	    
 	    assertTrue(types.contains('''
