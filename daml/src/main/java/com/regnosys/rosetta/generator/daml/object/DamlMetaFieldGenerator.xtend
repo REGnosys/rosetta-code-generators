@@ -10,7 +10,7 @@ import static extension com.regnosys.rosetta.generator.util.Util.*
 class DamlMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template"], version)
+		metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template" && name!="address"], version)
 	}
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''
@@ -26,6 +26,7 @@ class DamlMetaFieldGenerator {
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Location]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
@@ -35,6 +36,17 @@ class DamlMetaFieldGenerator {
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Location]
+		    deriving (Eq, Ord, Show)
+		
+		data Location = Location with
+		  scope : Optional Text
+		  value : Optional Text
+		    deriving (Eq, Ord, Show)
+		
+		data Address = Address with
+		  scope : Optional Text
+		  value : Optional Text
 		    deriving (Eq, Ord, Show)
 	'''
 }
