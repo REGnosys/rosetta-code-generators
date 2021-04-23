@@ -241,7 +241,7 @@ class TypescriptModelObjectGeneratorTest {
 		export interface ReferenceWithMeta<T> {
 		  globalReference?: string;
 		  externalReference?: string;
-		  address?: Address;
+		  address?: Reference;
 		  value?: T;
 		}'''))
 		
@@ -250,7 +250,7 @@ class TypescriptModelObjectGeneratorTest {
 		  scheme?: string;
 		  globalKey?: string;
 		  externalKey?: string;
-		  location?: Location[];
+		  location?: Key[];
 		}'''))
 		
 		assertTrue(types.contains('''
@@ -259,17 +259,17 @@ class TypescriptModelObjectGeneratorTest {
 		  globalKey?: string;
 		  externalKey?: string;
 		  templateGlobalReference?: string;
-		  location?: Location[];
+		  location?: Key[];
 		}'''))
 		
 		assertTrue(types.contains('''
-		export interface Address {
+		export interface Key {
 		  scope?: string;
 		  value?: string;
 		}'''))
 		
 		assertTrue(types.contains('''
-		export interface Location {
+		export interface Reference {
 		  scope?: string;
 		  value?: string;
 		}'''))
