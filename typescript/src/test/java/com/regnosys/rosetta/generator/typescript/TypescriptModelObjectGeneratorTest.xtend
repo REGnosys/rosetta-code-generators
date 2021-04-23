@@ -97,7 +97,7 @@ class TypescriptModelObjectGeneratorTest {
 		'''.generateTypescript
 
 		val types = typescript.get('types.ts').toString
-		println(types)
+		
 		assertTrue(types.contains('''
 			/**
 			 * This file is auto-generated from the ISDA Common Domain Model, do not edit.
@@ -166,53 +166,113 @@ class TypescriptModelObjectGeneratorTest {
 			metaType reference string
 			metaType scheme string
 			metaType id string
+			metaType address string
 			
 			type TestType:
 				[metadata key]
-				TestTypeValue1 TestType2(1..1)
+				testTypeValue1 TestType2 (1..1)
 					[metadata reference]
-					
+				testTypeValue2 TestType3 (1..1)
+					[metadata location]
+			
 			enum TestEnum: <"Test enum description.">
 				TestEnumValue1 <"Test enum value 1">
 				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
-				TestType2Value1 number(1..1)
+				testType2Value1 number (1..1)
 					[metadata reference]
-					
-				TestType2Value2 string(1..1)
+				
+				testType2Value2 string (1..1)
 					[metadata id]
 					[metadata scheme]
 				
-				testEnum TestEnum(1..1)
+				testEnum TestEnum (1..1)
 					[metadata scheme]
-					
+			
+			type TestType3:
+				testType3Value1 number (1..1)
+			
+			type TestType4:
+				testType4Value1 TestType3 (1..1)
+					[metadata address "pointsTo"=TestType->testTypeValue2]
+			
 		'''.generateTypescript
 
 		val types = typescript.values.join('\n').toString
 
-		assertTrue(types.contains('''
-		export interface MetaFields {
-		  reference?: string;
-		  scheme?: string;
-		  id?: string;
-		  globalKey?: String;
-		  externalKey?: String;
-		}'''))
+		println(types)
 
+		// types
+		
 		assertTrue(types.contains('''
 		export interface TestType {
-		  testTypeValue1?: ReferenceWithMeta<TestType2>;
 		  meta?: MetaFields;
+		  testTypeValue1?: ReferenceWithMeta<TestType2>;
+		  testTypeValue2?: FieldWithMeta<TestType3>;
 		}'''))
 
 		assertTrue(types.contains('''
-		  export interface TestType2 {
-		    testType2Value1?: ReferenceWithMeta<Number>;
-		    testType2Value2?: FieldWithMeta<String>;
-		    testEnum?: FieldWithMeta<TestEnum>;
-		  }'''))
+		export interface TestType2 {
+		  testEnum?: FieldWithMeta<TestEnum>;
+		  testType2Value1?: ReferenceWithMeta<Number>;
+		  testType2Value2?: FieldWithMeta<String>;
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface TestType3 {
+		  testType3Value1?: number;
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface TestType4 {
+		  testType4Value1?: ReferenceWithMeta<TestType3>;
+		}'''))
 
+		// meta fields
+
+		assertTrue(types.contains('''
+		export interface FieldWithMeta<T> {
+		  value?: T;
+		  meta?: MetaFields;
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface ReferenceWithMeta<T> {
+		  globalReference?: string;
+		  externalReference?: string;
+		  address?: Address;
+		  value?: T;
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface MetaFields {
+		  scheme?: string;
+		  globalKey?: string;
+		  externalKey?: string;
+		  location?: Location[];
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface MetaAndTemplateFields {
+		  scheme?: string;
+		  globalKey?: string;
+		  externalKey?: string;
+		  templateGlobalReference?: string;
+		  location?: Location[];
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface Address {
+		  scope?: string;
+		  value?: string;
+		}'''))
+		
+		assertTrue(types.contains('''
+		export interface Location {
+		  scope?: string;
+		  value?: string;
+		}'''))
 	}
 
 	def generateTypescript(CharSequence model) {

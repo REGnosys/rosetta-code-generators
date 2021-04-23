@@ -10,21 +10,22 @@ import static extension com.regnosys.rosetta.generator.typescript.util.Typescrip
 class TypescriptMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		fileComment(version) + metaClasses.toString + metaFields(metaTypes.filter[name !== "reference"], version)
+		fileComment(version) + metaClasses.toString + metaFields(metaTypes.filter[name != "id" && name != "reference" && name != "address"], version)
 	}
 	
 		private def metaClasses() '''
 		export interface FieldWithMeta<T> {
-		  value: T;
+		  value?: T;
 		  meta?: MetaFields;
 		}
 
 		export interface ReferenceWithMeta<T> {
-		  globalReference: String;
-		  externalReference: String;
-		  value: T;
+		  globalReference?: string;
+		  externalReference?: string;
+		  address?: Address;
+		  value?: T;
 		}
-				
+		
 	'''
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
@@ -32,17 +33,30 @@ class TypescriptMetaFieldGenerator {
 			«FOR type : types.distinctBy(t|t.name.toFirstLower)»
 				«type.name.toFirstLower»?: «type.type.name.toTSType»;
 			«ENDFOR»
-			globalKey?: String;
-			externalKey?: String;
+			globalKey?: string;
+			externalKey?: string;
+			location?: Location[];
 		}
 		
 		export interface MetaAndTemplateFields {
-			id?: string;
-			key?: string;
-			reference?: string;
-			scheme?: string;
-			globalKey?: String;
-			externalKey?: String;
-		  }
+		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
+		  	«type.name.toFirstLower»?: «type.type.name.toTSType»;
+		  «ENDFOR»
+		  globalKey?: string;
+		  externalKey?: string;
+		  templateGlobalReference?: string;
+		  location?: Location[];
+		}
+		
+		export interface Address {
+		  scope?: string;
+		  value?: string;
+		}
+		
+		export interface Location {
+		  scope?: string;
+		  value?: string;
+		}
+		
 	'''
 }
