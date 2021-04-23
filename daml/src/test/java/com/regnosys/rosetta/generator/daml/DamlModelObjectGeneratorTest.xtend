@@ -136,7 +136,7 @@ class DamlModelObjectGeneratorTest {
 		  scheme : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
@@ -144,7 +144,7 @@ class DamlModelObjectGeneratorTest {
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -193,6 +193,8 @@ class DamlModelObjectGeneratorTest {
 
 		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
+		println(metaFields)
+		
 		assertTrue(metaFields.contains('''
 		daml 1.2
 		
@@ -205,14 +207,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -267,14 +269,14 @@ class DamlModelObjectGeneratorTest {
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
 		  externalReference : Optional Text
-		  address: Optional Address
+		  address: Optional Reference
 		  value : Optional a
 		    deriving (Eq, Ord, Show)
 		
 		data BasicReferenceWithMeta a = BasicReferenceWithMeta with
 		  globalReference : Optional Text
 		  externalReference : Optional Text
-		  address: Optional Address
+		  address: Optional Reference
 		  value : Optional a
 		    deriving (Eq, Ord, Show)
 		
@@ -297,22 +299,22 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
-		data Location = Location with
+		data Key = Key with
 		  scope : Optional Text
 		  value : Optional Text
 		    deriving (Eq, Ord, Show)
 		
-		data Address = Address with
+		data Reference = Reference with
 		  scope : Optional Text
 		  value : Optional Text
 		    deriving (Eq, Ord, Show)'''))
@@ -354,14 +356,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
