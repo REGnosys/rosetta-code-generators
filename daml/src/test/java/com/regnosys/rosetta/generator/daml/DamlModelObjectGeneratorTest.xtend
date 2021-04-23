@@ -193,7 +193,7 @@ class DamlModelObjectGeneratorTest {
 
 		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
-		println(metaFields)
+		//println(metaFields)
 		
 		assertTrue(metaFields.contains('''
 		daml 1.2
