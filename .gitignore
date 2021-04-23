@@ -12,3 +12,7 @@ target/
 **/src-gen/
 **/xtend-gen/
 .vscode/
+kotlin/cdm/**
+kotlin/src/main/generated-sources
+kotlin/src/main/xtend-gen
+kotlin-feature.code-workspace
