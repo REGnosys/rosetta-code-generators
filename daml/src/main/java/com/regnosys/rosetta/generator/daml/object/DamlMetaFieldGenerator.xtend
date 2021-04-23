@@ -26,7 +26,7 @@ class DamlMetaFieldGenerator {
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
@@ -36,15 +36,15 @@ class DamlMetaFieldGenerator {
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Location]
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
-		data Location = Location with
+		data Key = Key with
 		  scope : Optional Text
 		  value : Optional Text
 		    deriving (Eq, Ord, Show)
 		
-		data Address = Address with
+		data Reference = Reference with
 		  scope : Optional Text
 		  value : Optional Text
 		    deriving (Eq, Ord, Show)
