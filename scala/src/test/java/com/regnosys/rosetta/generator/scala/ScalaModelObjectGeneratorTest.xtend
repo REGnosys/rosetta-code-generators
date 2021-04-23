@@ -267,7 +267,7 @@ class ScalaModelObjectGeneratorTest {
 
 		val types = scala.values.join('\n').toString
 		
-		println(types)
+		//println(types)
 		
 		// types
 		
