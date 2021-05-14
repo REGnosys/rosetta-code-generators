@@ -16,7 +16,7 @@ namespace Org.Isda.Cdm.Functions
     {
         static public ForeignExchange Evaluate(ForwardPayout forwardPayout)
         {
-            var fx = forwardPayout.Underlier.ForeignExchange;
+            var fx = forwardPayout.Underlier.UnderlyingProduct.ForeignExchange;
             if (fx == null)
             {
                 // TODO: Define ValidationException
