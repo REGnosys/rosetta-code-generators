@@ -40,20 +40,25 @@ What Code Generators Are Available?
 
 Rosetta is an open source DSL comprising a grammar and a set of default code generators (see `documentation <https://docs.rosetta-technology.io/dsl/readme.html>`_). The `Rosetta DSL repository <https://github.com/REGnosys/rosetta-dsl>`_ has 1 built-in code generator:
 
-- `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_
+- `Java <https://www.oracle.com/java/>`_: see `code generator <https://github.com/REGnosys/rosetta-dsl/blob/master/com.regnosys.rosetta/src/com/regnosys/rosetta/generator/java/object/ModelObjectGenerator.xtend>`_ (only Java 11 supported)
 
-The Rosetta Code Generators repository currently provides 3 additional code generators and allows the community to contribute code generators in any other languages (e.g. Go, Python etc.):
+The Rosetta Code Generators repository provides additional code generators and allows the community to contribute code generators in any other languages. The languages currently supported are:
 
 - `DAML <https://daml.com/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/daml/src/main/java/com/regnosys/rosetta/generator/daml/object/DamlModelObjectGenerator.xtend>`_
 - `Scala <https://www.scala-lang.org/>`_: see `code genrator <https://github.com/REGnosys/rosetta-code-generators/blob/master/scala/src/main/java/com/regnosys/rosetta/generator/scala/object/ScalaModelObjectGenerator.xtend>`_
 - `TypeScript <https://www.typescriptlang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/typescript/src/main/java/com/regnosys/rosetta/generator/typescript/object/TypescriptModelObjectGenerator.xtend>`_
+- `C# <https://docs.microsoft.com/dotnet/csharp/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/c-sharp/src/main/java/com/regnosys/rosetta/generator/c_sharp/object/CSharpModelObjectGenerator.xtend>`_ (both C# 8.0 and 9.0 supported)
+- `Go <https://golang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/golang/src/main/java/com/regnosys/rosetta/generator/golang/object/GolangModelObjectGenerator.xtend>`_
+- `Kotlin <https://kotlinlang.org/>`_: see see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/kotlin/src/main/java/com/regnosys/rosetta/generator/kotlin/object/KotlinModelObjectGenerator.xtend>`_
 
 How Does It Work?
 -----------------
 
-Code generation is akin to *translation* from the Rosetta DSL syntax into the syntax of the chosen programming language.
+Code generation is akin to a *translation* from the Rosetta DSL syntax into the syntax of the chosen programming language.
 
-It works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of a model. *Ecore* is a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ which contains the entire information about a given model (as originally expressed in the Rosetta DSL) and allows to perform a model transformation. The API expects a set *Rosetta* files (with extension *.rosetta*) as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
+It works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of the model. The API expects a set *.rosetta* files as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
+
+*Ecore* is a representation of a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_, which contains the entire information about a given model. Ecore therefore acts the the pivot that allows to transform the model originally expressed in the Rosetta DSL into the model expressed in the chosen programming language. Code generation is based on `Xtext <https://www.eclipse.org/Xtext/>`_ and the Rosetta DSL itself is expressed using Xtext.
 
 Here is an illustration of how code generation works:
 
