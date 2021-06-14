@@ -84,4 +84,14 @@ namespace Org.Isda.Cdm.Functions
             return new TradeStates(tradeStates);
         }
     }
+
+
+    // TEMPORARY: Implement function
+    public class FilterPartyRole : IRosettaFunction
+    {
+        static public IEnumerable<PartyRole> Evaluate(IEnumerable<PartyRole> partyRoles, Enums.PartyRole partyRoleEnum)
+        {
+            return Enumerable.Empty<PartyRole>();
+        }
+    }
 }
