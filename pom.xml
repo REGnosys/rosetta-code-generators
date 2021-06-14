@@ -42,7 +42,7 @@
 			</activation>
 			<properties>
 				<rosetta.dsl.version>4.9.1</rosetta.dsl.version>
-				<regnosys.common.version>2.107.2</regnosys.common.version>
+				<regnosys.common.version>2.110.1</regnosys.common.version>
 			</properties>
 		</profile>
 	</profiles>

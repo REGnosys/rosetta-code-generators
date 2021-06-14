@@ -975,14 +975,20 @@ class CSharpModelObjectGeneratorTest {
                  
                  gmtTestType2Value3 GmtTestEnum (1..1)
                       [metadata scheme]
-                      
+                 
+                 gmtTestType2List3 GmtTestEnum (1..*)
+                      [metadata scheme]
+                 
                  gmtTestType2Value4 date (1..1)
+                      [metadata reference]
+                 
+                 gmtTestType2List4 date (1..*)
                       [metadata reference]
         '''.generateCSharp
 
         val metaTypes = c_sharp.values.join('\n').toString
 
-        //println("types => " + metaTypes);
+//        println("types => " + metaTypes);
 
         assertTrue(containsFileComment(metaTypes))
         assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
@@ -1148,8 +1154,10 @@ class CSharpModelObjectGeneratorTest {
                     private static readonly IRosettaMetaData<GmtTestType2> metaData = new GmtTestType2Meta();
                     
                     [JsonConstructor]
-                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, BasicReferenceWithMetaLocalDate gmtTestType2Value4)
+                    public GmtTestType2(IEnumerable<FieldWithMetaGmtTestEnum> gmtTestType2List3, IEnumerable<BasicReferenceWithMetaLocalDate> gmtTestType2List4, BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, BasicReferenceWithMetaLocalDate gmtTestType2Value4)
                     {
+                        GmtTestType2List3 = gmtTestType2List3;
+                        GmtTestType2List4 = gmtTestType2List4;
                         GmtTestType2Value1 = gmtTestType2Value1;
                         GmtTestType2Value2 = gmtTestType2Value2;
                         GmtTestType2Value3 = gmtTestType2Value3;
@@ -1160,6 +1168,10 @@ class CSharpModelObjectGeneratorTest {
                     [JsonIgnore]
                     public override IRosettaMetaData<GmtTestType2> MetaData => metaData;
                     
+                    public IEnumerable<FieldWithMetaGmtTestEnum> GmtTestType2List3 { get; }
+                    
+                    public IEnumerable<BasicReferenceWithMetaLocalDate> GmtTestType2List4 { get; }
+                    
                     public BasicReferenceWithMetaDecimal GmtTestType2Value1 { get; }
                     
                     public FieldWithMetaString GmtTestType2Value2 { get; }
@@ -1169,6 +1181,82 @@ class CSharpModelObjectGeneratorTest {
                     public BasicReferenceWithMetaLocalDate GmtTestType2Value4 { get; }
                 }
         '''))
+    }
+    
+    @Test
+    def void shouldGenerateMetaTypesCondition() {
+
+        val c_sharp = '''
+            metaType scheme string
+            
+            enum GmtTestEnum:
+                 GmtTestEnumValue1
+                 GmtTestEnumValue2
+            
+            type GmtTestType:
+                 gmtTestType GmtTestEnum (1..*)
+                      [metadata scheme]
+                 
+                 condition EnumMetaCollectionContains:
+                 	gmtTestType contains GmtTestEnum -> GmtTestEnumValue1
+        '''.generateCSharp
+
+        val metaTypes = c_sharp.values.join('\n').toString
+
+        //println("types => " + metaTypes);
+
+        assertTrue(containsFileComment(metaTypes))
+        assertTrue(containsNamespace(metaTypes, "Org.Isda.Cdm.MetaFields"))
+       // assertTrue(containsNamespace(metaTypes, "Rosetta.Lib.Meta"))
+        assertTrue(containsNullable(metaTypes))
+        assertTrue(containsUsings(metaTypes, false, false))
+        
+        assertTrue(metaTypes.contains('''
+            «""»
+                public class GmtTestType : AbstractRosettaModelObject<GmtTestType>
+                {
+                    private static readonly IRosettaMetaData<GmtTestType> metaData = new GmtTestTypeMeta();
+                    
+                    [JsonConstructor]
+                    public GmtTestType(IEnumerable<FieldWithMetaGmtTestEnum> gmtTestType)
+                    {
+                        GmtTestTypeValue = gmtTestType;
+                    }
+                    
+                    /// <inheritdoc />
+                    [JsonIgnore]
+                    public override IRosettaMetaData<GmtTestType> MetaData => metaData;
+                    
+                    [JsonProperty(PropertyName = "gmtTestType")]
+                    public IEnumerable<FieldWithMetaGmtTestEnum> GmtTestTypeValue { get; }
+                }
+        '''))
+        
+        // TODO: this is wrong, it should be:
+        // return gmtTestType.GmtTestTypeValue.Select(x => x.Value).Includes(Enums.GmtTest.GmtTestEnumValue1);
+        assertTrue(metaTypes.contains('''
+			«""»
+			    public class GmtTestTypeEnumMetaCollectionContains : AbstractDataRule<GmtTestType>
+			    {
+			        protected override string Definition => "gmtTestType contains GmtTestEnum -> GmtTestEnumValue1";
+			        
+			        protected override IComparisonResult? RuleIsApplicable(GmtTestType gmtTestType)
+			        {
+			            return ComparisonResult.Success();
+			        }
+			        
+			        protected override IComparisonResult? EvaluateThenExpression(GmtTestType gmtTestType)
+			        {
+			            try
+			            {
+			                return gmtTestType.GmtTestTypeValue.Includes(Enums.GmtTest.GmtTestEnumValue1);
+			            }
+			            catch (Exception ex)
+			            {
+			                return ComparisonResult.Failure(ex.Message);
+			            }
+			        }
+			    }'''))
     }
 
     @Test
