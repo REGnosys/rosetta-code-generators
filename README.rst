@@ -49,7 +49,7 @@ The Rosetta Code Generators repository provides additional code generators and a
 - `TypeScript <https://www.typescriptlang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/typescript/src/main/java/com/regnosys/rosetta/generator/typescript/object/TypescriptModelObjectGenerator.xtend>`_
 - `C# <https://docs.microsoft.com/dotnet/csharp/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/c-sharp/src/main/java/com/regnosys/rosetta/generator/c_sharp/object/CSharpModelObjectGenerator.xtend>`_ (both C# 8.0 and 9.0 supported)
 - `Go <https://golang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/golang/src/main/java/com/regnosys/rosetta/generator/golang/object/GolangModelObjectGenerator.xtend>`_
-- `Kotlin <https://kotlinlang.org/>`_: see see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/kotlin/src/main/java/com/regnosys/rosetta/generator/kotlin/object/KotlinModelObjectGenerator.xtend>`_
+- `Kotlin <https://kotlinlang.org/>`_: see `code generator <https://github.com/REGnosys/rosetta-code-generators/blob/master/kotlin/src/main/java/com/regnosys/rosetta/generator/kotlin/object/KotlinModelObjectGenerator.xtend>`_
 
 How Does It Work?
 -----------------
@@ -58,7 +58,7 @@ Code generation is akin to a *translation* from the Rosetta DSL syntax into the 
 
 It works by allowing API hooks to access an `Ecore <https://wiki.eclipse.org/Ecore>`_ representation of the model. The API expects a set *.rosetta* files as input. The files are parsed using an `ANTLR <https://www.antlr.org/>`_-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
 
-*Ecore* is a representation of a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_, which contains the entire information about a given model. Ecore therefore acts the the pivot that allows to transform the model originally expressed in the Rosetta DSL into the model expressed in the chosen programming language. Code generation is based on `Xtext <https://www.eclipse.org/Xtext/>`_ and the Rosetta DSL itself is expressed using Xtext.
+*Ecore* is a representation of a `syntax tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_, which contains the entire information about a given model. Ecore therefore acts the pivot that allows to transform the model originally expressed in the Rosetta DSL into the model expressed in the chosen programming language. Code generation is based on `Xtext <https://www.eclipse.org/Xtext/>`_ and the Rosetta DSL itself is expressed using Xtext.
 
 Here is an illustration of how code generation works:
 
