@@ -2,6 +2,7 @@ package com.regnosys.rosetta.generator.c_sharp.expression;
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpType
 import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
 import com.regnosys.rosetta.rosetta.RosettaAbsentExpression
@@ -29,6 +30,7 @@ import com.regnosys.rosetta.rosetta.RosettaIntLiteral
 import com.regnosys.rosetta.rosetta.RosettaLiteral
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
+import com.regnosys.rosetta.rosetta.RosettaOnlyExistsExpression
 import com.regnosys.rosetta.rosetta.RosettaParenthesisCalcExpression
 import com.regnosys.rosetta.rosetta.RosettaStringLiteral
 import com.regnosys.rosetta.rosetta.RosettaType
@@ -41,19 +43,17 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.types.RosettaOperators
 import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
+import com.rosetta.model.lib.expression.MapperMaths
+import com.rosetta.model.lib.mapper.MapperC
+import com.rosetta.model.lib.mapper.MapperS
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.util.Wrapper
-import com.rosetta.model.lib.mapper.MapperS
-import com.rosetta.model.lib.mapper.MapperC
-import com.rosetta.model.lib.expression.MapperMaths
-import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.*
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
-
 
 class ExpressionGenerator {
 
@@ -91,8 +91,11 @@ class ExpressionGenerator {
                 }
                 featureCall(expr, params, isLast, autoValue)
             }
+            RosettaOnlyExistsExpression : {
+				onlyExistsExpr(expr, params)
+			}
             RosettaExistsExpression: {
-                existsExpr(expr, expr.argument, params)
+                existsExpr(expr, params)
             }
             RosettaBinaryOperation: {
                 binaryExpr(expr, null, params)
@@ -172,9 +175,37 @@ class ExpressionGenerator {
         '''«FOR arg : expr.args SEPARATOR ', '»«arg.csharpCode(params)»«IF !(arg instanceof EmptyLiteral)»«ENDIF»«ENDFOR»'''
     }
 
-    def StringConcatenationClient existsExpr(RosettaExistsExpression exists, RosettaExpression argument,
-        ParamMap params) {
-        val arg = getAliasExpressionIfPresent(argument)
+	def StringConcatenationClient onlyExistsExpr(RosettaOnlyExistsExpression onlyExists, ParamMap params) {
+		val paths = onlyExists.args.map[arg | 
+			if (arg.isOptional || (arg.isMetaType && arg.isReference)) {
+		        var code = '''«arg.csharpCode(params)»'''
+			    // Need to split 'parent.param' into: OnlyExists(parent, "param")
+			    // Removing trailing .Value for meta fields
+			    val suffix = ".Value"
+		        return code.endsWith(suffix) ? 
+	            	code.substring(0, code.length - suffix.length).removeOptionalChar :
+	            	code
+	        }]
+		 if (!paths.empty) {
+		 	// list of attribute names
+			 val fields = paths
+			 	.map[path | path.substring(path.lastIndexOf(".") + 1)]
+			 	.toSet
+			 // common parent
+			 val parents = paths
+			 	.map[path | path.substring(0, path.lastIndexOf(".")).removeOptionalChar]
+			 	.toSet
+			 if (parents.size !== 1) {
+			 	throw new IllegalArgumentException("Only exists expression with different parents " + parents.join(", "))
+			 }
+			'''OnlyExists(«parents.get(0)», {«fields.map['''"«it»"'''].join(", ")»})'''
+		 
+		}
+		else '''ComparisonResult.Success()'''
+    }
+
+    def StringConcatenationClient existsExpr(RosettaExistsExpression exists, ParamMap params) {
+        val arg = getAliasExpressionIfPresent(exists.argument)
         val binary = arg.findBinaryOperation
         if (binary !== null) {
                 // if the argument is a binary expression then the exists needs to be pushed down into it
@@ -201,22 +232,7 @@ class ExpressionGenerator {
 
     private def StringConcatenationClient doExistsExpr(RosettaExistsExpression exists, RosettaExpression arg, ParamMap params) {
         if (arg.isOptional || (arg.isMetaType && arg.isReference)) {
-            if (exists.only) {
-                var code = '''«arg.csharpCode(params)»'''
-                // Need to split 'parent.param' into: OnlyExists(parent, "param")
-                // Removing trailing .Value for meta fields
-                val suffix = ".Value"
-                if (code.endsWith(suffix)) {
-                    code = code.substring(0, code.length - suffix.length).removeOptionalChar
-                }
-                val ordinal = code.lastIndexOf(".")
-                val param = code.substring(ordinal + 1)
-                val parent = code.substring(0, ordinal).removeOptionalChar
-                '''OnlyExists(«parent», "«param»")'''
-            }
-            else {
-                '''«IF exists.single»Single«ELSEIF exists.multiple»Multiple«ENDIF»Exists(«arg.csharpCode(params)»)'''
-            }
+            '''«IF exists.single»Single«ELSEIF exists.multiple»Multiple«ENDIF»Exists(«arg.csharpCode(params)»)'''
         }
         else '''ComparisonResult.Success()'''
     }
@@ -740,6 +756,9 @@ class ExpressionGenerator {
             }
             RosettaConditionalExpression: {
                 '''choice'''
+            }
+            RosettaOnlyExistsExpression: {
+                '''«IF expr.args.size > 1»(«ENDIF»«expr.args.map[toNodeLabel].join(", ")»«IF expr.args.size > 1»)«ENDIF» only exists'''
             }
             RosettaExistsExpression: {
                 '''«toNodeLabel(expr.argument)» exists'''

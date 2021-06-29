@@ -82,19 +82,19 @@ namespace Rosetta.Lib.Validation
             return ComparisonResult.Failure($"{name} exists");
         }
 
-        protected IComparisonResult OnlyExists<T1>(T1? parent, string field) where T1 : IRosettaModelObject<T1>
+        protected IComparisonResult OnlyExists<T1>(T1? parent, ISet<string> fields) where T1 : IRosettaModelObject<T1>
         {
-            return OnlyExists(parent, field, nameof(T1));
+            return OnlyExists(parent, fields, nameof(T1));
         }
 
-        protected IComparisonResult OnlyExists<T1>(T1? parent, string field, string name) where T1 : IRosettaModelObject<T1>
+        protected IComparisonResult OnlyExists<T1>(T1? parent, ISet<string> fields, string name) where T1 : IRosettaModelObject<T1>
         {
             if (parent == null)
             {
                 return ComparisonResult.FailureEmptyOperand($"Object {name} does not exist");
             }
 
-            var validationResult = parent.MetaData.OnlyExistsValidator.Validate(parent, field);
+            var validationResult = parent.MetaData.OnlyExistsValidator.Validate(parent, fields);
 
             if (validationResult.IsSuccess)
             {

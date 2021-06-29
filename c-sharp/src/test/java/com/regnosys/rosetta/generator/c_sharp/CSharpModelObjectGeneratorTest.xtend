@@ -2189,17 +2189,16 @@ class CSharpModelObjectGeneratorTest {
     @Test
     def void shouldGenerateDataRuleForOnlyExists() {
         val rosettaCode ='''
-        
-        type A:
-            a int (0..1)
-            [metadata scheme]
-            b string (0..1)
+	        type A:
+	            a int (0..1)
+	            [metadata scheme]
+	            b string (0..1)
 
-        type B:
-            a A (0..1)
-            
-            condition OnlyExists:
-                a->a only exists'''
+	        type B:
+	            a A (0..1)
+	            
+	            condition OnlyExists:
+	                a->a only exists'''
         val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
         //println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
@@ -2220,7 +2219,51 @@ class CSharpModelObjectGeneratorTest {
                     {
                         try
                         {
-                            return OnlyExists(b.A, "AValue");
+                            return OnlyExists(b.A, {"AValue"});
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
+        '''))
+    }
+    
+    @Test
+    def void shouldGenerateDataRuleForOnlyExistsMultiplePaths() {
+        val rosettaCode ='''
+	        type A:
+	            a int (0..1)
+	            [metadata scheme]
+	            b string (0..1)
+
+	        type B:
+	            a A (0..1)
+	            
+	            condition OnlyExists:
+	                (a->a, a->b) only exists'''
+        val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
+        //println("dataRules: " + dataRules)
+        assertTrue(containsFileComment(dataRules))
+        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("BOnlyExists")]
+                public class BOnlyExists : AbstractDataRule<B>
+                {
+                    protected override string Definition => "(a->a, a->b) only exists";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(B b)
+                    {
+                        return ComparisonResult.Success();
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(B b)
+                    {
+                        try
+                        {
+                            return OnlyExists(b.A, {"AValue", "B"});
                         }
                         catch (Exception ex)
                         {
