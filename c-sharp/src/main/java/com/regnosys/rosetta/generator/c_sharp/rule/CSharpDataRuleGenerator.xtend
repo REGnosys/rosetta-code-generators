@@ -34,6 +34,7 @@ class CSharpDataRuleGenerator {
         
         namespace Org.Isda.Cdm.Validation.DataRule
         {
+            using System.Collections.Generic;
             using System;
             using System.Linq;
             
