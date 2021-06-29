@@ -2200,7 +2200,7 @@ class CSharpModelObjectGeneratorTest {
 	            condition OnlyExists:
 	                a->a only exists'''
         val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
+        println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
@@ -2219,7 +2219,7 @@ class CSharpModelObjectGeneratorTest {
                     {
                         try
                         {
-                            return OnlyExists(b.A, {"AValue"});
+                            return OnlyExists(b.A, new HashSet<string> {"AValue"});
                         }
                         catch (Exception ex)
                         {
@@ -2263,7 +2263,7 @@ class CSharpModelObjectGeneratorTest {
                     {
                         try
                         {
-                            return OnlyExists(b.A, {"AValue", "B"});
+                            return OnlyExists(b.A, new HashSet<string> {"AValue", "B"});
                         }
                         catch (Exception ex)
                         {

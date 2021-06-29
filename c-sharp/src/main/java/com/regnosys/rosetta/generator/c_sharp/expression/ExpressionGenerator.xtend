@@ -198,7 +198,7 @@ class ExpressionGenerator {
 			 if (parents.size !== 1) {
 			 	throw new IllegalArgumentException("Only exists expression with different parents " + parents.join(", "))
 			 }
-			'''OnlyExists(«parents.get(0)», {«fields.map['''"«it»"'''].join(", ")»})'''
+			'''OnlyExists(«parents.get(0)», new HashSet<string> {«fields.map['''"«it»"'''].join(", ")»})'''
 		 
 		}
 		else '''ComparisonResult.Success()'''
