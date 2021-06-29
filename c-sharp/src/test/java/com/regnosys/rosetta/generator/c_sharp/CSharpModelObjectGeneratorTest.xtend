@@ -2200,7 +2200,7 @@ class CSharpModelObjectGeneratorTest {
 	            condition OnlyExists:
 	                a->a only exists'''
         val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        println("dataRules: " + dataRules)
+        //println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
