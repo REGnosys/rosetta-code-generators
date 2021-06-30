@@ -161,7 +161,8 @@ class ExpressionGenerator {
                 val implicitArg = funcExt.implicitFirstArgument(expr)
                 '''«callable.name».Evaluate(«IF implicitArg !== null»«implicitArg.name.toFirstLower»«ENDIF»«args(expr, params)»)'''
             }
-            RosettaExternalFunction: '''(new «factory.create(callable.model).toCSharpType(callable as RosettaCallableWithArgs)»().Execute(«args(expr, params)»))'''
+            RosettaExternalFunction: 
+            	'''(new «factory.create(callable.model).toCSharpType(callable as RosettaCallableWithArgs)»().Execute(«args(expr, params)»))'''
             default:
                 throw new UnsupportedOperationException("Unsupported callable with args type of " + expr.eClass.name)
         }
@@ -359,6 +360,9 @@ class ExpressionGenerator {
             }
             Attribute: {
                 expr.card.isIsMany
+            }
+            Function: {
+            	expr.output.isCollection
             }
             default: false
         } 
