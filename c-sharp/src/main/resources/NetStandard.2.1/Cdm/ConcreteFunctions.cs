@@ -79,12 +79,12 @@ namespace Org.Isda.Cdm.Functions
     // TEMPORARY: Should be generated
     public class FilterOpenTradeStates : IRosettaFunction
     {
-        static public TradeStates Evaluate(IEnumerable<TradeState> tradeStates)
+        static public IEnumerable<TradeState> Evaluate(IEnumerable<TradeState> tradeStates)
         {
-            return new TradeStates(tradeStates);
+            // TODO Implement function
+            return tradeStates;
         }
     }
-
 
     // TEMPORARY: Implement function
     public class FilterPartyRole : IRosettaFunction
