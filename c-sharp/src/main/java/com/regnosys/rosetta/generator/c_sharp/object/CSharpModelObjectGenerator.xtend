@@ -249,7 +249,7 @@ class CSharpModelObjectGenerator {
                             }
                         }
                         
-                        public IValidatorWithArg<«c.name», string> OnlyExistsValidator => new «c.name»OnlyExistsValidator();
+                        public IValidatorWithArg<«c.name», ISet<string>> OnlyExistsValidator => new «c.name»OnlyExistsValidator();
 
                         public IValidator<«c.name»> Validator => new «c.name»Validator();
                     }

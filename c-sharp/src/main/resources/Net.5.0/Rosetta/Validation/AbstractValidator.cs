@@ -49,13 +49,13 @@ namespace Rosetta.Lib.Validation
         }
     }
 
-    public abstract class AbstractOnlyExistsValidator<T> : IValidatorWithArg<T, string> where T : IRosettaModelObject<T>
+    public abstract class AbstractOnlyExistsValidator<T> : IValidatorWithArg<T, ISet<string>> where T : IRosettaModelObject<T>
     {
         protected string Name => GetType().Name;
 
         protected abstract IDictionary<string, bool> GetFields(T obj);
 
-        public IValidationResult Validate(T? obj, string field)
+        public IValidationResult Validate(T? obj, ISet<string> fields)
         {
             if (obj == null)
             {
@@ -64,17 +64,19 @@ namespace Rosetta.Lib.Validation
 
             var fieldExistenceMap = GetFields(obj);
 
-            if (!fieldExistenceMap[field])
+
+            var setFields = fieldExistenceMap.Where(v => v.Value && fields.Contains(v.Key)).Select(v => v.Key);
+            if (setFields.Count() != fields.Count())
             {
                 return ModelValidationResult.Failure(Name, ValidationType.ONLY_EXISTS, nameof(T), "",
-                        $"[{field}] is not set.");
+                        $"All fields are not set.  Expected [{string.Join(',', fields)}] but found only [{string.Join(',', setFields)}].");
             }
 
-            var fields = fieldExistenceMap.Where(v => v.Value && !v.Key.Equals(field)).Select(v => v.Key);
-            if (fields.Any())
+            var otherSetFields = fieldExistenceMap.Where(v => v.Value && !fields.Contains(v.Key)).Select(v => v.Key);
+            if (otherSetFields.Any())
             {
                 return ModelValidationResult.Failure(Name, ValidationType.ONLY_EXISTS, nameof(T), "",
-                        $"[{field}] is not the only field set. Other set fields: {string.Join(',', fields)}");
+                        $"[{string.Join(',', fields)}] are not the only fields set. Other set fields: {string.Join(',', otherSetFields)}");
             }
             return ModelValidationResult.Success(Name, ValidationType.ONLY_EXISTS, nameof(T), "");
         }

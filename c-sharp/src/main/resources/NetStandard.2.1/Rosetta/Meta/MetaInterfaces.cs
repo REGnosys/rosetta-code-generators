@@ -110,6 +110,6 @@ namespace Rosetta.Lib.Meta
         IValidator<T> Validator { get; }
 
         [JsonIgnore]
-        IValidatorWithArg<T, string> OnlyExistsValidator { get; }
+        IValidatorWithArg<T, ISet<string>> OnlyExistsValidator { get; }
     }
 }
