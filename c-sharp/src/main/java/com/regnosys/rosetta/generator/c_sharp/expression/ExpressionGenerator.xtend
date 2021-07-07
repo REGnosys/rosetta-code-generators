@@ -6,7 +6,6 @@ import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpType
 import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
 import com.regnosys.rosetta.rosetta.RosettaAbsentExpression
-import com.regnosys.rosetta.rosetta.RosettaAlias
 import com.regnosys.rosetta.rosetta.RosettaBigDecimalLiteral
 import com.regnosys.rosetta.rosetta.RosettaBinaryOperation
 import com.regnosys.rosetta.rosetta.RosettaBooleanLiteral
@@ -206,7 +205,7 @@ class ExpressionGenerator {
     }
 
     def StringConcatenationClient existsExpr(RosettaExistsExpression exists, ParamMap params) {
-        val arg = getAliasExpressionIfPresent(exists.argument)
+        val arg = exists.argument
         val binary = arg.findBinaryOperation
         if (binary !== null) {
                 // if the argument is a binary expression then the exists needs to be pushed down into it
@@ -247,7 +246,7 @@ class ExpressionGenerator {
 
     def StringConcatenationClient absentExpr(RosettaAbsentExpression absent, RosettaExpression argument,
         ParamMap params) {
-        val arg = getAliasExpressionIfPresent(argument)
+        val arg = argument
         val binary = arg.findBinaryOperation
         if (binary !== null) {
                 // if the arg is binary then the operator needs to be pushed down
@@ -262,9 +261,6 @@ class ExpressionGenerator {
         switch (call) {
             Data: {
                 '''«params.getClass(call)»'''
-            }
-            RosettaAlias: {
-                call.expression.csharpCode(params)
             }
             Attribute: {
                 // Data Attributes can only be called from their conditions
@@ -436,8 +432,8 @@ class ExpressionGenerator {
     }
 
     def StringConcatenationClient binaryExpr(RosettaBinaryOperation expr, RosettaExpression test, ParamMap params) {
-        val left = getAliasExpressionIfPresent(expr.left)
-        val right = getAliasExpressionIfPresent(expr.right)
+        val left = expr.left
+        val right = expr.right
         val leftRtype = typeProvider.getRType(expr.left)
         val rightRtype = typeProvider.getRType(expr.right)
         val resultType = operators.resultType(expr.operator, leftRtype, rightRtype)
@@ -497,11 +493,7 @@ class ExpressionGenerator {
                 val leftExpr = expr.left.csharpCode(params)
                 val rightExpr = expr.right.csharpCode(params)
                 
-                if (left.needsMapperTree && !right.needsMapperTree) {
-                    toComparisonFunc('''«leftExpr»''', expr.operator, '''«toMapperTree(rightExpr)»''')
-                } else if (!left.needsMapperTree && right.needsMapperTree) {
-                    toComparisonFunc('''«toMapperTree(leftExpr)»''', expr.operator, '''«rightExpr»''')
-                } else if (expr.left.isCollection || expr.right.isCollection) {
+                if (expr.left.isCollection || expr.right.isCollection) {
                     '''«leftExpr».«toComparisonFuncName(expr.operator)»(«rightExpr»)'''
                 } else {
                     // TODO: Produce error message?
@@ -511,39 +503,9 @@ class ExpressionGenerator {
         }
     }
 
-    private def boolean needsMapperTree(RosettaExpression expr) {
-        if (expr instanceof RosettaGroupByFeatureCall) {
-            val call = expr.call
-            switch (call) {
-                RosettaCallableCall: {
-                    val callable = call.callable
-                    if (callable instanceof RosettaAlias) {
-                        return callable.expression.isLogicalOperation
-                    }
-                }
-                RosettaBinaryOperation:
-                    return call.isLogicalOperation
-            }
-        }
-        return expr.isLogicalOperation
-    }
-
     private def boolean isLogicalOperation(RosettaExpression expr) {
         if (expr instanceof RosettaBinaryOperation) return expr.operator == "and" || expr.operator == "or"
         return false
-    }
-
-    /**
-     * Inspect expression and return alias expression if present.  Currently, nested aliases are not supported.
-     */
-    private def getAliasExpressionIfPresent(RosettaExpression expr) {
-        if (expr instanceof RosettaCallableCall) {
-            val callable = expr.callable
-            if (callable instanceof RosettaAlias) {
-                return callable.expression
-            }
-        }
-        return expr
     }
 
     /**
