@@ -201,7 +201,7 @@ class TypescriptModelObjectGeneratorTest {
 
 		val types = typescript.values.join('\n').toString
 
-		println(types)
+//		println(types)
 
 		// types
 		

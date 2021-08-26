@@ -60,8 +60,8 @@ class ExpressionGenerator {
     protected RosettaTypeProvider typeProvider
     @Inject
     RosettaOperators operators
-    //@Inject
-    //CardinalityProvider cardinalityProvider // TODO: Decide if this should be used in place of isCollection
+//    @Inject
+//    CardinalityProvider cardinalityProvider // TODO: Decide if this should be used in place of isCollection
     @Inject
     CSharpNames.Factory factory
     @Inject
@@ -353,7 +353,7 @@ class ExpressionGenerator {
                 return isReference(expr.feature)
             }
             Attribute: {
-                return !expr.metaAnnotations.nullOrEmpty && expr.metaAnnotations.exists[attribute.name == "reference"]
+                return !expr.metaAnnotations.nullOrEmpty && expr.metaAnnotations.exists[attribute.name == "reference" || attribute.name == "address"]
             }
             default: false
         }    
@@ -609,9 +609,9 @@ class ExpressionGenerator {
      */
     def StringConcatenationClient buildMapFunc(Attribute attribute, boolean isLast, boolean autoValue) {
         if (attribute.card.isIsMany) {
-            '''.«attribute.getPropertyName»'''
+            '''.«attribute.propertyName»«IF isLast && attribute.isMetaType && autoValue».EmptyIfNull().Select(«attribute.name.toFirstLower» => «attribute.name.toFirstLower».Value)«ENDIF»'''
         } else {
-            val memberCall = '''«IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.getPropertyName»'''
+            val memberCall = '''«IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.propertyName»'''
             if (!attribute.isMetaType || !autoValue) {
                 '''«memberCall»'''
             } else {// FieldWithMeta
