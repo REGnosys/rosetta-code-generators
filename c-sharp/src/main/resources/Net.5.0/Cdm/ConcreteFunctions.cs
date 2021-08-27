@@ -70,12 +70,12 @@ namespace Org.Isda.Cdm.Functions
     // TEMPORARY: Should be generated
     public class PriceQuantityTriangulation : IRosettaFunction
     {
-        static public bool Evaluate(IEnumerable<PriceQuantity> priceQuantity)
+        static public bool Evaluate(IEnumerable<Quantity> quantity, IEnumerable<Price> price)
         {
             return true;
         }
     }
-    
+
     // TEMPORARY: Should be generated
     public class FilterOpenTradeStates : IRosettaFunction
     {

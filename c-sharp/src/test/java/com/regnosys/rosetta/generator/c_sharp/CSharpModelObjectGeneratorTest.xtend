@@ -1714,6 +1714,64 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
     }
+    
+    @Test
+    def void shouldGenerateDataRuleForMetaLeafCollection() {
+        val rosettaCode ='''
+        
+        type A:
+            x int (1..1)
+
+        type B:
+            a A (0..*)
+            [metadata location]
+
+        type C:
+            b B (1..1)
+
+            condition MetaLeafCollection:
+                D(b->a) = True
+        
+        func D:
+        	inputs:
+        		aList A (0..*)
+        	output:
+        		result boolean (1..1)
+        
+        '''
+    
+        val csharp = rosettaCode.generateCSharp
+        //println("types: " + csharp.get("Types.cs").toString)
+        val dataRules = csharp.get('DataRules.cs').toString
+        //println("dataRules: " + dataRules)
+        assertTrue(containsFileComment(dataRules))
+        assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
+        assertTrue(dataRules.contains('''
+            «""»
+                [RosettaDataRule("CMetaLeafCollection")]
+                public class CMetaLeafCollection : AbstractDataRule<C>
+                {
+                    protected override string Definition => "D(b->a) = True";
+                    
+                    protected override IComparisonResult? RuleIsApplicable(C c)
+                    {
+                        return ComparisonResult.Success();
+                    }
+                    
+                    protected override IComparisonResult? EvaluateThenExpression(C c)
+                    {
+                        try
+                        {
+                            return ComparisonResult.FromBoolean(D.Evaluate(c.B.A.EmptyIfNull().Select(a => a.Value)) == true);
+                        }
+                        catch (Exception ex)
+                        {
+                            return ComparisonResult.Failure(ex.Message);
+                        }
+                    }
+                }
+    	'''))
+    }
 
     @Test
     def void shouldGenerateDataRuleForCollectionOfCollections() {
@@ -2404,7 +2462,8 @@ class CSharpModelObjectGeneratorTest {
                     }
                 }
         '''))
-    }
+    }	
+    
     def generateCSharp(CharSequence model) {
         val eResource = model.parseRosettaWithNoErrors.eResource
 
