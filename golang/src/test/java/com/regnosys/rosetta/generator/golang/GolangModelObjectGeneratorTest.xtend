@@ -208,7 +208,7 @@ class GolangModelObjectGeneratorTest {
 
 		val types = golang.values.join('\n').toString
 		
-		println(types)
+		//println(types)
 		
 		// types
 
