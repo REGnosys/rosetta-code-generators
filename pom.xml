@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>4.17.3</rosetta.dsl.version>
+				<rosetta.dsl.version>4.18.1</rosetta.dsl.version>
 				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
@@ -41,7 +41,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>4.17.3</rosetta.dsl.version>
+				<rosetta.dsl.version>4.18.1</rosetta.dsl.version>
 				<regnosys.common.version>2.121.0</regnosys.common.version>
 			</properties>
 		</profile>
