@@ -23,8 +23,6 @@ import com.regnosys.rosetta.rosetta.RosettaExpression
 import com.regnosys.rosetta.rosetta.RosettaExternalFunction
 import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaFeatureCall
-import com.regnosys.rosetta.rosetta.RosettaGroupByExpression
-import com.regnosys.rosetta.rosetta.RosettaGroupByFeatureCall
 import com.regnosys.rosetta.rosetta.RosettaIntLiteral
 import com.regnosys.rosetta.rosetta.RosettaLiteral
 import com.regnosys.rosetta.rosetta.RosettaMetaType
@@ -44,12 +42,10 @@ import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
 import com.rosetta.model.lib.expression.MapperMaths
 import com.rosetta.model.lib.mapper.MapperC
-import com.rosetta.model.lib.mapper.MapperS
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
-import org.eclipse.xtext.util.Wrapper
 
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.*
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
@@ -516,9 +512,11 @@ class ExpressionGenerator {
         collectExpressions(expr, [exprs.add(it)])
 
         return !exprs.empty && exprs.stream.allMatch [
-            it instanceof RosettaGroupByFeatureCall || it instanceof RosettaFeatureCall ||
-                it instanceof RosettaCallableCall || it instanceof RosettaFeatureCall ||
-                it instanceof RosettaCallableWithArgsCall || it instanceof RosettaLiteral
+            it instanceof RosettaFeatureCall || 
+            	it instanceof RosettaCallableCall || 
+            	it instanceof RosettaFeatureCall ||
+                it instanceof RosettaCallableWithArgsCall || 
+                it instanceof RosettaLiteral
         ]
     }
 
@@ -654,18 +652,7 @@ class ExpressionGenerator {
 //            '''.Select(a => a.Meta.«meta.name.toFirstUpper»)'''
         }
     }
-
-    def StringConcatenationClient buildGroupBy(RosettaGroupByExpression expression, boolean isLast) {
-        val exprs = newArrayList
-        val expr = Wrapper.wrap(expression)
-        exprs.add(expr.get)
-        while (expr.get.right !== null) {
-            expr.set(expr.get.right)
-            exprs.add(expr.get)
-        }
-        '''.<«expr.get.attribute.type.toCSharpType»>GroupBy(g->new «MapperS»<>(g)«FOR ex : exprs»«buildMapFunc(ex.attribute as Attribute, isLast, true)»«ENDFOR»)'''
-    }
-
+    
     private def typeName(Attribute attribute)
         // TODO: Handle Meta types
         '''«attribute.type.toCSharpType»'''
@@ -708,9 +695,6 @@ class ExpressionGenerator {
      */
     def StringConcatenationClient toNodeLabel(RosettaExpression expr) {
         switch (expr) {
-            RosettaGroupByFeatureCall: {
-                toNodeLabel(expr.call)
-            }
             RosettaFeatureCall: {
                 toNodeLabel(expr)
             }
