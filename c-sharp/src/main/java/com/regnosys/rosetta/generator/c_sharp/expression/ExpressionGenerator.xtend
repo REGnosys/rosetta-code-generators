@@ -438,38 +438,14 @@ class ExpressionGenerator {
 
         switch expr.operator {
             case ("and"): {
-                if (evalulatesToMapper(left)) {
-                    // Mappers
-//                    if (isComparableTypes(expr))
-                        '''
-                        And(«left.booleanize(test, params)»,
-                            «right.booleanize(test, params)»)'''
-//                    else
-//                        '''
-//                        «left.booleanize(test, params)» && «right.booleanize(test, params)»'''
-                } else {
-                    // ComparisonResults
-                    '''
-                    And(«left.csharpCode(params)»,
-                        «right.csharpCode(params)»)'''
-                }
+                '''
+                And(«left.csharpCode(params)»,
+                    «right.csharpCode(params)»)'''
             }
             case ("or"): {
-                if (evalulatesToMapper(left)) {
-                    // Mappers
-//                    if (isComparableTypes(expr))
-                        '''
-                        Or(«left.booleanize(test, params)»,
-                            «right.booleanize(test, params)»)'''
-//                    else
-//                        '''
-//                        «left.booleanize(test, params)» || «right.booleanize(test, params)»'''
-                } else {
-                    // ComparisonResult
                     '''
                     Or(«left.csharpCode(params)»,
                         «right.csharpCode(params)»)'''
-                }
             }
             case ("+"): {
                 '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Add(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
