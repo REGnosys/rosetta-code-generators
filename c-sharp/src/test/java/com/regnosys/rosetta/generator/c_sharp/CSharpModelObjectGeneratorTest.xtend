@@ -2166,9 +2166,9 @@ class CSharpModelObjectGeneratorTest {
             f string (1..1)
         
             condition OrExists:
-                (b or c) exists or (d and f) is absent'''
+                (b exists or c exists) or (d is absent and f is absent)'''
         val dataRules = rosettaCode.generateCSharp.get('DataRules.cs').toString
-        //println("dataRules: " + dataRules)
+//        println("dataRules: " + dataRules)
         assertTrue(containsFileComment(dataRules))
         assertTrue(containsNamespace(dataRules, "Org.Isda.Cdm.Validation.DataRule"))
         assertTrue(dataRules.contains('''
@@ -2176,7 +2176,7 @@ class CSharpModelObjectGeneratorTest {
                 [RosettaDataRule("AOrExists")]
                 public class AOrExists : AbstractDataRule<A>
                 {
-                    protected override string Definition => "(b or c) exists or (d and f) is absent";
+                    protected override string Definition => "(b exists or c exists) or (d is absent and f is absent)";
                     
                     protected override IComparisonResult? RuleIsApplicable(A a)
                     {

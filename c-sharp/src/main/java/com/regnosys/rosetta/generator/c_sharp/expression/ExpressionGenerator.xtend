@@ -496,19 +496,6 @@ class ExpressionGenerator {
         ]
     }
 
-    /**
-     * Search leaf node objects to determine whether this is a comparison of matching objects types
-     */
-    private def isComparableTypes(RosettaBinaryOperation binaryExpr) {
-        // get list of the object type at each leaf node
-        val rosettaTypes = newHashSet
-        collectLeafTypes(binaryExpr, [rosettaTypes.add(it)])
-
-        // check whether they're all the same type
-        val type = rosettaTypes.stream.findAny
-        return type.isPresent && rosettaTypes.stream.allMatch[it.equals(type.get)]
-    }
-
     private def StringConcatenationClient toComparisonFunc(StringConcatenationClient left, String operator,  StringConcatenationClient right) {
         // NB: Based on https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/nullable-value-types#lifted-operators
         // we can use normal operators for nullable value types, which will return false if the parameter is null
