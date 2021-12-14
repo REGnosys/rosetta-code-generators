@@ -438,38 +438,14 @@ class ExpressionGenerator {
 
         switch expr.operator {
             case ("and"): {
-                if (evalulatesToMapper(left)) {
-                    // Mappers
-//                    if (isComparableTypes(expr))
-                        '''
-                        And(«left.booleanize(test, params)»,
-                            «right.booleanize(test, params)»)'''
-//                    else
-//                        '''
-//                        «left.booleanize(test, params)» && «right.booleanize(test, params)»'''
-                } else {
-                    // ComparisonResults
-                    '''
-                    And(«left.csharpCode(params)»,
-                        «right.csharpCode(params)»)'''
-                }
+                '''
+                And(«left.csharpCode(params)»,
+                    «right.csharpCode(params)»)'''
             }
             case ("or"): {
-                if (evalulatesToMapper(left)) {
-                    // Mappers
-//                    if (isComparableTypes(expr))
-                        '''
-                        Or(«left.booleanize(test, params)»,
-                            «right.booleanize(test, params)»)'''
-//                    else
-//                        '''
-//                        «left.booleanize(test, params)» || «right.booleanize(test, params)»'''
-                } else {
-                    // ComparisonResult
                     '''
                     Or(«left.csharpCode(params)»,
                         «right.csharpCode(params)»)'''
-                }
             }
             case ("+"): {
                 '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Add(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
@@ -518,19 +494,6 @@ class ExpressionGenerator {
                 it instanceof RosettaCallableWithArgsCall || 
                 it instanceof RosettaLiteral
         ]
-    }
-
-    /**
-     * Search leaf node objects to determine whether this is a comparison of matching objects types
-     */
-    private def isComparableTypes(RosettaBinaryOperation binaryExpr) {
-        // get list of the object type at each leaf node
-        val rosettaTypes = newHashSet
-        collectLeafTypes(binaryExpr, [rosettaTypes.add(it)])
-
-        // check whether they're all the same type
-        val type = rosettaTypes.stream.findAny
-        return type.isPresent && rosettaTypes.stream.allMatch[it.equals(type.get)]
     }
 
     private def StringConcatenationClient toComparisonFunc(StringConcatenationClient left, String operator,  StringConcatenationClient right) {

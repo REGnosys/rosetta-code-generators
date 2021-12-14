@@ -2,6 +2,7 @@ package com.regnosys.rosetta.generator.c_sharp.util
 
 import com.google.inject.Inject
 import com.google.inject.Injector
+import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages.Package
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage
@@ -25,14 +26,12 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.types.RBuiltinType
 import com.regnosys.rosetta.types.RDataType
 import com.regnosys.rosetta.types.REnumType
-import com.regnosys.rosetta.types.RFeatureCallType
 import com.regnosys.rosetta.types.RRecordType
 import com.regnosys.rosetta.types.RType
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
-import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 
 class CSharpNames {
 
@@ -95,8 +94,6 @@ class CSharpNames {
                 rType.enumeration.toCSharpType
             RDataType:
                 rType.data.toCSharpType
-            RFeatureCallType:
-                rType.featureType.toCSharpType
             RRecordType:
                 (rType.record as RosettaType).toCSharpType
             default:
