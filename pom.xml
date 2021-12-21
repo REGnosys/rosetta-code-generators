@@ -90,7 +90,6 @@
                 <groupId>com.regnosys</groupId>
                 <artifactId>rosetta-testing</artifactId>
                 <version>${regnosys.common.version}</version>
-                <scope>test</scope>
             </dependency>
 			<dependency>
 				<groupId>org.eclipse.emf</groupId>
