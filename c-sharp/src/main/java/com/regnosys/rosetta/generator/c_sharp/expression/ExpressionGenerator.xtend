@@ -448,16 +448,16 @@ class ExpressionGenerator {
                         «right.csharpCode(params)»)'''
             }
             case ("+"): {
-                '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Add(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
+                '''«expr.left.csharpCode(params)» + «expr.right.csharpCode(params)»'''
             }
             case ("-"): {
-                '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Subtract(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
+                '''«expr.left.csharpCode(params)» - «expr.right.csharpCode(params)»'''
             }
             case ("*"): {
-                '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Multiply(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
+                '''«expr.left.csharpCode(params)» * «expr.right.csharpCode(params)»'''
             }
             case ("/"): {
-                '''«MapperMaths».<«resultType.name.toCSharpType», «leftType», «rightType»>Divide(«expr.left.csharpCode(params)», «expr.right.csharpCode(params)»)'''
+                '''«expr.left.csharpCode(params)» / «expr.right.csharpCode(params)»'''
             }
             default: {
                 // Comparisons
