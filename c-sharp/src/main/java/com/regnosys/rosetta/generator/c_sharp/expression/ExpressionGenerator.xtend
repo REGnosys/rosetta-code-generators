@@ -309,7 +309,7 @@ class ExpressionGenerator {
         val isReference = call.receiver.isReference
         val receiver = '''«csharpCode(call.receiver, params, false)»'''
         
-        if (call.toOne || !call.receiver.isCollection) {
+        if (call.onlyElement || !call.receiver.isCollection) {
             return '''«receiver»«IF call.receiver.isOptional || isReference»?«ENDIF»«right»'''
         }
         else if (feature instanceof Attribute) {
