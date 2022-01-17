@@ -36,11 +36,11 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.EmptyLiteral
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.ListLiteral
+import com.regnosys.rosetta.rosetta.simple.ListOperation
 import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.types.RosettaOperators
 import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
-import com.rosetta.model.lib.expression.MapperMaths
 import com.rosetta.model.lib.mapper.MapperC
 import java.util.HashMap
 import org.eclipse.emf.ecore.EObject
@@ -140,6 +140,9 @@ class ExpressionGenerator {
             ListLiteral: {
                 '''«MapperC».of(«FOR ele : expr.elements SEPARATOR ', '»«ele.csharpCode(params)»«ENDFOR»)'''
             }
+            ListOperation : {
+				'''/* list operation unsupported */'''
+			}
             default:
                 throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
         }
