@@ -63,13 +63,12 @@
         <dependency>
             <groupId>com.regnosys</groupId>
             <artifactId>rosetta-common</artifactId>
-            <version>${regnosys.common.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.ecore</artifactId>
-        </dependency>
-        <dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+		</dependency>
+		<dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -86,7 +85,6 @@
         <dependency>
             <groupId>org.eclipse.xtext</groupId>
             <artifactId>org.eclipse.xtext</artifactId>
-            <version>${xtext.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
