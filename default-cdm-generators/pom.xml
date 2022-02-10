@@ -52,7 +52,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
-			<artifactId>org.eclipse.emf.ecore</artifactId>
+			<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
 		</dependency>
 	</dependencies>
 
