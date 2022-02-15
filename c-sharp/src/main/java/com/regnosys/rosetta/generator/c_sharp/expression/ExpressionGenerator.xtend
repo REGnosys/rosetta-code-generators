@@ -141,7 +141,7 @@ class ExpressionGenerator {
                 '''«MapperC».of(«FOR ele : expr.elements SEPARATOR ', '»«ele.csharpCode(params)»«ENDFOR»)'''
             }
             ListOperation : {
-				'''/* list operation unsupported */'''
+				listOperation(expr, params)
 			}
             default:
                 throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
@@ -625,6 +625,18 @@ class ExpressionGenerator {
 
     private def attributeTypeVariableName(Attribute attribute)
          '''«(attribute.eContainer as Data).toCSharpType.simpleName.toFirstLower»'''
+
+	def StringConcatenationClient listOperation(ListOperation op, ParamMap params) {
+		switch (op.operationKind) {
+			case SUM: {
+				'''
+				«op.receiver.csharpCode(params)»
+					.Sum()'''	
+			}
+			default:
+				'''/* Unsupported list operation «op.operationKind.literal» */'''
+		}
+	}
 
     /**
      * The id for a parameter - either a Class name or a positional index
