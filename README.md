@@ -1,7 +1,7 @@
 ---
 title: "Rosetta Code Generators"
 date: 2022-02-09T00:38:25+09:00
-description: "Do you want to adopt a technical standard expressed as a domain model in the *Rosetta DSL*, but in a language other than the default (Java) distribution? You can use this guide to write your own *code generator* in the language of your choosing."
+description: "Do you want to adopt a technical standard expressed as a domain model in the Rosetta DSL, but in a language other than the default (Java) distribution? You can use this guide to write your own code generator in the language of your choosing."
 draft: false
 weight: 3
 ---
