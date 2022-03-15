@@ -250,6 +250,16 @@
 			<name>libs-snapshot</name>
 			<url>https://regnosys.jfrog.io/regnosys/libs-snapshot</url>
 		</repository>
+        <repository>
+            <id>sonatype_snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
 	</repositories>
 
 
