@@ -81,7 +81,6 @@
 		<dependency>
 			<groupId>org.eclipse.xtext</groupId>
 			<artifactId>org.eclipse.xtext</artifactId>
-			<version>${xtext.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>

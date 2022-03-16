@@ -412,7 +412,7 @@ class ExpressionGenerator {
                 expr.output.isOptional
             }
             Attribute: {
-                expr.card.isIsOptional && !expr.card.isIsMany
+                expr.card.optional
             }
             default: false
         } 
@@ -420,7 +420,7 @@ class ExpressionGenerator {
     def private boolean isOptional(RosettaFeature feature) {
         switch (feature) {
             Attribute:
-                feature.card.isIsOptional
+                feature.card.inf == 0
             default:
                 false
         }
