@@ -244,6 +244,7 @@
 		</plugins>
 	</build>
 
+	<!-- Required for Xsemantics, added as part of DSL version 4.34.0 -->
 	<repositories>
 		<repository>
 			<id>regnosys-snapshots</id>
