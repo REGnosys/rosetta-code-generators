@@ -117,6 +117,6 @@ In folder `test-helper/src/main/resources/rosetta` you can see the file: `types.
 
 These types are used to bootstrap the Rosetta-enabled application.
 
-# How to contribute
+## How to contribute
 
 Please read the [detailed guide](https://github.com/REGnosys/rosetta-code-generators/blob/master/CONTRIBUTING.md).
