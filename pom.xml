@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>4.34.0</rosetta.dsl.version>
+				<rosetta.dsl.version>4.35.0</rosetta.dsl.version>
 				<regnosys.common.version>0.0.0.master</regnosys.common.version>
 			</properties>
 		</profile>
@@ -41,8 +41,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>4.34.0</rosetta.dsl.version>
-				<regnosys.common.version>2.151.0</regnosys.common.version>
+				<rosetta.dsl.version>4.35.0</rosetta.dsl.version>
+				<regnosys.common.version>2.152.1</regnosys.common.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -243,25 +243,4 @@
 
 		</plugins>
 	</build>
-
-	<!-- Required for Xsemantics, added as part of DSL version 4.34.0 -->
-	<repositories>
-		<repository>
-			<id>regnosys-snapshots</id>
-			<name>libs-snapshot</name>
-			<url>https://regnosys.jfrog.io/regnosys/libs-snapshot</url>
-		</repository>
-        <repository>
-            <id>sonatype_snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-	</repositories>
-
-
 </project>
