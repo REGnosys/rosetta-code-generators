@@ -68,14 +68,7 @@
 
 	<modules>
 		<module>test-helper</module>
-		<module>sample</module>
-		<module>daml</module>
-		<module>default-cdm-generators</module>
-		<module>typescript</module>
-		<module>scala</module>
-		<module>golang</module>
-	  	<module>kotlin</module>
-		<module>c-sharp</module>
+		<module>elm</module>
 	</modules>
 
 	<dependencyManagement>
