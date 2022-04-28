@@ -38,6 +38,7 @@ class ElmModelObjectGeneratorTest {
 	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
+	@Disabled
 	def void shouldGenerateRules() {
 		val golang = '''
 				body Authority CFTC
@@ -54,32 +55,31 @@ class ElmModelObjectGeneratorTest {
 				type CFTCPart45TransactionReport:
 				    tradeDate date (1..1)
 				        [ruleReference TradeDate]
-«««				    eventTimestamp zonedDateTime (0..1)
-«««				        [ruleReference EventTimestampRule]
+				    eventTimestamp zonedDateTime (0..1)
+				        [ruleReference EventTimestampRule]
 				    eventTimestamp1 zonedDateTime (0..1)
 				        [ruleReference EventTimestampRule1]
-«««				    foo1 string (0..1)
-«««				        [ruleReference Foo1]
+				    foo1 string (0..1)
+				        [ruleReference Foo1]
 				        
 				
 				reporting rule TradeDate <"Trade Date">
 				    extract ReportableEvent -> reportableTrade -> trade -> tradeDate 
 				    as "Trade timestamp"
-«««				
-«««				reporting rule EventTimestampRule
-«««				        extract ReportableEvent -> originatingWorkflowStep -> timestamp
-«««				            filter [ item -> qualification = EventTimestampQualificationEnum -> eventCreationDateTime ]
-«««				            map [ item -> dateTime ]
-«««				            only-element
-«««				        as "30 Event timestamp"
-«««				
+				
+				reporting rule EventTimestampRule
+				        extract ReportableEvent -> originatingWorkflowStep -> timestamp
+				            filter [ item -> qualification = EventTimestampQualificationEnum -> eventCreationDateTime ]
+				            map [ item -> dateTime ]
+				            only-element
+				        as "30 Event timestamp"
+				
 				reporting rule EventTimestampRule1
 				        extract ReportableEvent -> originatingWorkflowStep -> timestamp -> dateTime only-element
-«««
-«««				reporting rule Foo1
-«««				        extract ReportableEvent -> originatingWorkflowStep -> timestamp -> foo only-element
-«««				        as "30 Event timestamp"
-						        
+				reporting rule Foo1
+				        extract ReportableEvent -> originatingWorkflowStep -> timestamp -> foo only-element
+				        as "30 Event timestamp"
+				
 				type ReportableEvent:
 				    [rootType]
 				    originatingWorkflowStep WorkflowStep (1..1)

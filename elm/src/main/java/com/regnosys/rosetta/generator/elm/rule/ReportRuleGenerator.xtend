@@ -45,7 +45,6 @@ import static extension com.regnosys.rosetta.generator.elm.util.ElmTranslator.to
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 
-
 import com.regnosys.rosetta.rosetta.impl.BlueprintExtractImpl
 import com.regnosys.rosetta.rosetta.BlueprintExtract
 import com.regnosys.rosetta.rosetta.simple.Attribute
@@ -69,120 +68,132 @@ import com.regnosys.rosetta.rosetta.WithCardinality
 import com.regnosys.rosetta.rosetta.RosettaBlueprint
 import java.util.Set
 import org.eclipse.xtext.util.Tuples
+import com.regnosys.rosetta.generator.java.expression.ListOperationExtensions
+import com.regnosys.rosetta.rosetta.simple.ListOperationKind
+import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
+import com.regnosys.rosetta.types.RosettaTypeProvider
+import com.regnosys.rosetta.types.RosettaOperators
 
 class ReportRuleGenerator {
-	
+
 	@Inject extension RosettaExtensions
 	@Inject extension RosettaBlueprintTypeResolver
 	@Inject extension ElmModelObjectBoilerPlate
 //		@Inject extension ExpressionGenerator
-		@Inject extension com.regnosys.rosetta.generator.util.Util
-			@Inject CardinalityProvider cardinalityProvider
-		
-	
+	@Inject extension com.regnosys.rosetta.generator.util.Util
+	@Inject CardinalityProvider cardinalityProvider
+	@Inject extension ListOperationExtensions
+	@Inject RosettaFunctionExtensions funcExt
+	@Inject protected RosettaTypeProvider typeProvider
+	@Inject RosettaOperators operators
 
-	def Map<String, ? extends CharSequence> generate(String namespace, List<RosettaBlueprintReport> reports, List<Data> dataImports, List<RosettaEnumeration> enumImports, String version) {
-		val result = new HashMap		
-		
+	def Map<String, ? extends CharSequence> generate(String namespace, List<RosettaBlueprintReport> reports,
+		List<Data> dataImports, List<RosettaEnumeration> enumImports, String version) {
+		val result = new HashMap
+
 		val elm = reports.generateElm(dataImports, enumImports, namespace, version)
-		
+
 		val folder = namespace.split("\\.").map[it.toFirstUpper].join('/')
-		val fileName =  "Rule.elm"
-		
+		val fileName = "Rule.elm"
+
 		result.put(folder + '/' + fileName, elm)
 
 		result;
 	}
-	
-	
-	def String generateElm(List<RosettaBlueprintReport> reports, List<Data> dataImports, List<RosettaEnumeration> enumImports, String namespace, String version) 
-	'''	
-	module «namespace.split("\\.").map[it.toFirstUpper].join(".")».Rule exposing (..)
-	
-	import Morphir.SDK.LocalDate exposing (LocalDate)
-	import Morphir.SDK.LocalTime exposing (LocalTime)
-	import Com.Rosetta.Model.Type exposing (ZonedDateTime)
-	import Com.Rosetta.Model.Type exposing (Date)
 
-	«FOR enumImport : enumImports»
-		import «(enumImport.eContainer as RosettaModel).name.split("\\.").map[it.toFirstUpper].join(".")».Enum exposing («enumImport.name»)
-	«ENDFOR»
-	«FOR dataImport : dataImports»
-		import «(dataImport.eContainer as RosettaModel).name.split("\\.").map[it.toFirstUpper].join(".")».Type exposing («dataImport.name»)
-	«ENDFOR»
-	«fileComment(version)»
-	
-	«FOR c : reports»
-	«val typeGraph = buildTypeGraph(c.firstNodeExpression, null)»
-	«c.reportOutputTypeName.toFirstLower» : «typeGraph.inputTypeName» -> «c.reportOutputTypeName»
-	«c.reportOutputTypeName.toFirstLower» «typeGraph.inputTypeName.toFirstLower» =
-		«FOR attribute : c.reportType.attributes»
-			«IF c.reportType.attributes.indexOf(attribute) === 0»{ «ELSE», «ENDIF»	«attribute.toAttributeName» = «attribute.ruleReference.reportingRule.name.toFirstLower» «typeGraph.inputTypeName.toFirstLower»
+	def String generateElm(List<RosettaBlueprintReport> reports, List<Data> dataImports,
+		List<RosettaEnumeration> enumImports, String namespace, String version) '''	
+		module «namespace.split("\\.").map[it.toFirstUpper].join(".")».Rule exposing (..)
+		
+		import Morphir.SDK.LocalDate exposing (LocalDate)
+		import Morphir.SDK.LocalTime exposing (LocalTime)
+		import Com.Rosetta.Model.Type exposing (ZonedDateTime)
+		import Com.Rosetta.Model.Type exposing (Date)
+		
+		«FOR enumNamespace : enumImports.map[eContainer as RosettaModel].toSet.map[name]»
+			import «enumNamespace.split("\\.").map[it.toFirstUpper].join(".")».Enum as Enum
 		«ENDFOR»
-		}
-	
-	«FOR ruleTuple : c.allReportingRules»
-	«val ruleTypeGraph = buildTypeGraph(ruleTuple.first.nodes, null)»
-	«ruleTuple.first.name.toFirstLower» : «ruleTypeGraph.inputTypeName» -> «IF ruleTuple.second»Maybe «ENDIF»«ruleTypeGraph.output.type.name.toElmType»
-	«ruleTuple.first.name.toFirstLower» «ruleTypeGraph.inputTypeName.toFirstLower» =
-		«(ruleTuple.first.nodes.node as BlueprintExtract).call.elmCode(new ParamMap(ruleTypeGraph.input.type))»
-
-	«ENDFOR»
-
-	«ENDFOR»
-	
-	
-	onlyElement : List a -> Maybe a
-	onlyElement list =
-	    case list of
-	        [ a ] ->
-	            Just a
-	
-	        _ ->
-	            Nothing
+		«FOR enumImport : enumImports»
+			import «(enumImport.eContainer as RosettaModel).name.split("\\.").map[it.toFirstUpper].join(".")».Enum exposing («enumImport.name»)
+		«ENDFOR»
+		«FOR dataImport : dataImports»
+			import «(dataImport.eContainer as RosettaModel).name.split("\\.").map[it.toFirstUpper].join(".")».Type exposing («dataImport.name»)
+		«ENDFOR»
+		«fileComment(version)»
+		
+		«FOR c : reports»
+			«val typeGraph = buildTypeGraph(c.firstNodeExpression, null)»
+			«c.reportOutputTypeName.toFirstLower» : «typeGraph.inputTypeName» -> «c.reportOutputTypeName»
+			«c.reportOutputTypeName.toFirstLower» «typeGraph.inputTypeName.toFirstLower» =
+				«FOR attribute : c.reportType.attributes»
+					«IF c.reportType.attributes.indexOf(attribute) === 0»{ «ELSE», «ENDIF»	«attribute.toAttributeName» = «attribute.ruleReference.reportingRule.name.toFirstLower» «typeGraph.inputTypeName.toFirstLower»
+				«ENDFOR»
+				}
+			
+			«FOR ruleTuple : c.allReportingRules»
+				«val ruleTypeGraph = buildTypeGraph(ruleTuple.first.nodes, null)»
+				«ruleTuple.first.name.toFirstLower» : «ruleTypeGraph.inputTypeName» -> «IF ruleTuple.second»Maybe «ENDIF»«ruleTypeGraph.output.type.name.toElmType»
+				«ruleTuple.first.name.toFirstLower» «ruleTypeGraph.inputTypeName.toFirstLower» =
+					«(ruleTuple.first.nodes.node as BlueprintExtract).call.elmCode(new ParamMap(ruleTypeGraph.input.type))»
+		
+			«ENDFOR»
+		
+		«ENDFOR»
+		
+		
+		onlyElement : List a -> Maybe a
+		onlyElement list =
+		    case list of
+		        [ a ] ->
+		            Just a
+		
+		        _ ->
+		            Nothing
+		            
+		flatten : List (List a) -> List a
+		flatten =
+		    List.foldr (++) []
 	'''
-	
+
 	protected def String inputTypeName(TypedBPNode typeGraph) {
 		typeGraph.input.type.name
 	}
-	
-	def String reportOutputTypeName(RosettaBlueprintReport report){
+
+	def String reportOutputTypeName(RosettaBlueprintReport report) {
 		report.reportType.name
 	}
-	
+
 	def getAllReportingRules(RosettaBlueprintReport report) {
 		val rules = newHashSet
-		report.reportType.collectReportingRules([a,b|rules.add(Tuples.create(a, b))], newHashSet)
+		report.reportType.collectReportingRules([a, b|rules.add(Tuples.create(a, b))], newHashSet)
 		return rules
 	}
-	
-	
+
 	/**
 	 * get first node expression
 	 */
 	def firstNodeExpression(RosettaBlueprintReport report) {
 		var BlueprintNodeExp currentNodeExpr = null
 		var BlueprintNodeExp firstNodeExpr = null
-		
+
 		for (eligibilityRule : report.eligibilityRules) {
 			val ref = RosettaFactory.eINSTANCE.createBlueprintRef
 			ref.blueprint = eligibilityRule
 			ref.name = eligibilityRule.name
-			
+
 			var newNodeExpr = RosettaFactory.eINSTANCE.createBlueprintNodeExp
 			newNodeExpr.node = ref
 			newNodeExpr.node.name = ref.name
-						
-			if (null === currentNodeExpr) firstNodeExpr = newNodeExpr
-			else currentNodeExpr.next = newNodeExpr
-				
+
+			if(null === currentNodeExpr) firstNodeExpr = newNodeExpr else currentNodeExpr.next = newNodeExpr
+
 			currentNodeExpr = newNodeExpr
 		}
-		
+
 		val node = RosettaFactory.eINSTANCE.createBlueprintAnd
 		node.name = report.name
-		
-		report.allReportingRules.sortBy[first.name].forEach[
+
+		report.allReportingRules.sortBy[first.name].forEach [
 			val ref = RosettaFactory.eINSTANCE.createBlueprintRef
 			ref.blueprint = it.first
 			ref.name = it.first.name
@@ -191,118 +202,114 @@ class ReportRuleGenerator {
 			rule.node.name = ref.name
 			node.bps.add(rule)
 		]
-		
+
 		if (!node.bps.empty) {
 			val andNodeExpr = RosettaFactory.eINSTANCE.createBlueprintNodeExp
 			andNodeExpr.node = node
-			currentNodeExpr.next = andNodeExpr			
+			currentNodeExpr.next = andNodeExpr
 		}
-			
+
 		return firstNodeExpr
 	}
-	
-	
+
 	def String elmCode(RosettaExpression expr, ParamMap params) {
 		switch (expr) {
-			RosettaFeatureCall : {
+			RosettaFeatureCall: {
 				featureCall(expr, params, false)
 			}
-			RosettaOnlyExistsExpression : {
-				//onlyExistsExpr(expr, params)
+			RosettaOnlyExistsExpression: {
+				// onlyExistsExpr(expr, params)
 				'RosettaOnlyExistsExpression:not supported:' + expr
 			}
-			RosettaExistsExpression : {
-				//existsExpr(expr, params)
+			RosettaExistsExpression: {
+				// existsExpr(expr, params)
 				'RosettaExistsExpression:not supported:' + expr
 			}
-			RosettaBinaryOperation : {
-				//binaryExpr(expr, null, params)
-				'RosettaBinaryOperation:not supported:' + expr
+			RosettaBinaryOperation: {
+				binaryExpr(expr, null, params)
 			}
-			RosettaCountOperation : {
-				//countExpr(expr, null, params)
+			RosettaCountOperation: {
+				// countExpr(expr, null, params)
 				'RosettaCountOperation:not supported:' + expr
 			}
-			RosettaAbsentExpression : {
-				//absentExpr(expr, expr.argument, params)
+			RosettaAbsentExpression: {
+				// absentExpr(expr, expr.argument, params)
 				'RosettaAbsentExpression:not supported:' + expr
 			}
-			RosettaCallableCall : {
-				callableCall(expr, params) 
+			RosettaCallableCall: {
+				callableCall(expr, params)
 //				'RosettaCallableCall:not supported:' + expr
 			}
 			RosettaCallableWithArgsCall: {
-				//callableWithArgs(expr, params)
+				// callableWithArgs(expr, params)
 				'RosettaCallableWithArgsCall:not supported:' + expr
 			}
-			RosettaBigDecimalLiteral : {
-				//'''«MapperS».of(«BigDecimal».valueOf(«expr.value»))'''
+			RosettaBigDecimalLiteral: {
+				// '''«MapperS».of(«BigDecimal».valueOf(«expr.value»))'''
 				'RosettaBigDecimalLiteral:not supported:' + expr
 			}
-			RosettaBooleanLiteral : {
-				//'''«MapperS».of(Boolean.valueOf(«expr.value»))'''
+			RosettaBooleanLiteral: {
+				// '''«MapperS».of(Boolean.valueOf(«expr.value»))'''
 				'RosettaBooleanLiteral:not supported:' + expr
 			}
-			RosettaIntLiteral : {
-				//'''«MapperS».of(Integer.valueOf(«expr.value»))'''
+			RosettaIntLiteral: {
+				// '''«MapperS».of(Integer.valueOf(«expr.value»))'''
 				'RosettaIntLiteral:not supported:' + expr
 			}
-			RosettaStringLiteral : {
-				//'''«MapperS».of("«expr.value»")'''
+			RosettaStringLiteral: {
+				// '''«MapperS».of("«expr.value»")'''
 				'RosettaStringLiteral:not supported:' + expr
 			}
-			RosettaEnumValueReference : {
-				//'''«MapperS».of(«expr.enumeration.toJavaType».«expr.value.convertValues»)'''
+			RosettaEnumValueReference: {
+				// '''«MapperS».of(«expr.enumeration.toJavaType».«expr.value.convertValues»)'''
 				'RosettaEnumValueReference:not supported:' + expr
 			}
-			RosettaConditionalExpression : {
-				//'''«expr.genConditionalMapper(params)»'''
+			RosettaConditionalExpression: {
+				// '''«expr.genConditionalMapper(params)»'''
 				'RosettaConditionalExpression:not supported:' + expr
 			}
-			RosettaContainsExpression : {
-				//'''«importMethod(ExpressionOperators,"contains")»(«expr.container.javaCode(params)», «expr.contained.javaCode(params)»)'''
+			RosettaContainsExpression: {
+				// '''«importMethod(ExpressionOperators,"contains")»(«expr.container.javaCode(params)», «expr.contained.javaCode(params)»)'''
 				'RosettaContainsExpression:not supported:' + expr
 			}
-			RosettaDisjointExpression : {
-				//'''«importMethod(ExpressionOperators,"disjoint")»(«expr.container.javaCode(params)», «expr.disjoint.javaCode(params)»)'''
+			RosettaDisjointExpression: {
+				// '''«importMethod(ExpressionOperators,"disjoint")»(«expr.container.javaCode(params)», «expr.disjoint.javaCode(params)»)'''
 				'RosettaDisjointExpression:not supported:' + expr
 			}
-			RosettaParenthesisCalcExpression : {
-				//expr.expression.javaCode(params)
+			RosettaParenthesisCalcExpression: {
+				// expr.expression.javaCode(params)
 				'RosettaParenthesisCalcExpression:not supported:' + expr
 			}
-			EmptyLiteral : {
+			EmptyLiteral: {
 				'''null'''
 			}
-			ListLiteral : {
-				//'''«MapperC».of(«FOR ele: expr.elements SEPARATOR ', '»«ele.javaCode(params)»«ENDFOR»)'''
+			ListLiteral: {
+				// '''«MapperC».of(«FOR ele: expr.elements SEPARATOR ', '»«ele.javaCode(params)»«ENDFOR»)'''
 				'ListLiteral:not supported:' + expr
 			}
-			ListOperation : {
-				//listOperation(expr, params)
-				'ListOperation:not supported:' + expr
+			ListOperation: {
+				listOperation(expr, params)
 			}
-			default: 
+			default:
 				throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
 		}
 	}
-	
+
 	private def String featureCall(RosettaFeatureCall call, ParamMap params, boolean autoValue) {
 		val feature = call.feature
 		val String right = switch (feature) {
 			Attribute:
 				feature.buildMapFunc(cardinalityProvider.isMulti(call.receiver))
-			RosettaEnumValue: 
-				return '''«feature.enumeration.name»'''
-			RosettaFeature: 
-				'''.«feature.name.toFirstUpper»'''
+			RosettaEnumValue:
+				return '''Enum.«feature.name.toFirstUpper»'''
+			RosettaFeature: '''.«feature.name.toFirstUpper»'''
 			default:
 				throw new UnsupportedOperationException("Unsupported expression type of " + feature.eClass.name)
 		}
-		
+
 		return distinctOrOnlyElement('''«elmCode(call.receiver, params)»«right»''', false, call.onlyElement)
 	}
-	
+
 	private def String distinctOrOnlyElement(String code, boolean distinct, boolean onlyElement) {
 		return '''«code»«IF onlyElement»
 			|> onlyElement
@@ -320,41 +327,36 @@ class ReportRuleGenerator {
 //      
 //		}
 //		else 
-		if (inListStream) 
-		{
-//							'''
-//				
-//				|> List.«IF attribute.card.isIsMany»flatMap«ELSE»map«ENDIF»
-//					(\ item -> item.«attribute.name»
-//					'''
-				'''
+		if (inListStream) {
+
+			'''
 				
 				|> List.map
 					(\ item -> item.«attribute.name»
 					)«IF attribute.card.isIsMany»
-						|> List.flatten
+							|> flatten
 					«ENDIF»
-					'''
-					
+				'''
+
 		} else {
-				'''.«attribute.name»'''
-			
+			'''.«attribute.name»'''
+
 		}
-	}	
-	
+	}
+
 	private def String buildMapFuncAttribute(Attribute attribute) {
 		'''«attribute.name.toFirstUpper»'''
 //		if(attribute.eContainer instanceof Data) 
 //			'''"get«attribute.name.toFirstUpper»", «attribute.attributeTypeVariableName» -> «IF attribute.override»(«attribute.type.toJavaType») «ENDIF»«attribute.attributeTypeVariableName».get«attribute.name.toFirstUpper»()'''
 	}
-	
+
 	protected def String callableCall(RosettaCallableCall expr, ParamMap params) {
 		if (expr.implicitReceiver) {
-			return '''«EcoreUtil2.getContainerOfType(expr, ListOperation).firstOrImplicit.getNameOrDefault.toDecoratedName»'''
+			return '''«EcoreUtil2.getContainerOfType(expr, ListOperation).firstOrImplicit.getNameOrDefault»'''
 		}
 		val call = expr.callable
-		switch (call)  {
-			Data : {
+		switch (call) {
+			Data: {
 				'''«params.getClass(call)»'''
 			}
 //			Attribute : {
@@ -370,18 +372,15 @@ class ReportRuleGenerator {
 //				val multi = cardinalityProvider.isMulti(call)
 //				distinctOrOnlyElement('''«IF multi»«MapperC»«ELSE»«MapperS»«ENDIF».of(«call.name»(«aliasCallArgs(call)»).«IF exprHelper.usesOutputParameter(call.expression)»build()«ELSE»«IF multi»getMulti()«ELSE»get()«ENDIF»«ENDIF»)''', false, expr.onlyElement)
 //			}
-			RosettaEnumeration: '''«call.name.toElmType»'''
-			ClosureParameter: '''«call.getNameOrDefault.toDecoratedName»'''
-			default: 
+			RosettaEnumeration: '''xxx «call.name.toElmType»'''
+			ClosureParameter: '''«call.getNameOrDefault»'''
+			default:
 				throw new UnsupportedOperationException("Unsupported callable type of " + call?.class?.simpleName)
 		}
 	}
-	
-	
-	
-	
-	def void collectReportingRules(Data dataType, (RosettaBlueprint, boolean) => void visitor, Set<Data> collectedTypes) {
-		dataType.allNonOverridesAttributes.forEach[attr|
+
+	def void collectReportingRules(Data dataType, (RosettaBlueprint, boolean)=>void visitor, Set<Data> collectedTypes) {
+		dataType.allNonOverridesAttributes.forEach [ attr |
 			val attrType = attr.type
 			val attrEx = attr.toExpandedAttribute
 			if (attrEx.builtInType || attrEx.enum) {
@@ -397,21 +396,108 @@ class ReportRuleGenerator {
 					// e.g. nested reporting rules are not supported (except for repeatable rules where only the top level rule should be collected) 
 					if (attrRule === null)
 						attrType.collectReportingRules(visitor, collectedTypes)
-					else 
+					else
 						visitor.apply(attrRule, attr.card.optional)
 				}
 			} else {
 				throw new IllegalArgumentException("Did not collect reporting rules from type " + attrType)
 			}
-		]	
+		]
 	}
+
+	def String listOperation(ListOperation op, ParamMap params) {
+		switch (op.operationKind) {
+			case FILTER: {
+				val itemName = op.itemName
+				val isBodyMulti = op.isBodyExpressionMulti
+				val bodyExpr = op.body.elmCode(params)
+				'''
+					«op.receiver.elmCode(params)»
+					|> List.filter
+						(\ item -> «bodyExpr»
+						)
+					'''
+			}
+			case MAP: {
+
+				val itemName = op.itemName
+				val isBodyMulti = op.isBodyExpressionMulti
+				val bodyExpr = op.body.elmCode(params)
+				'''
+					«op.receiver.elmCode(params)»
+					|> List.map
+						(\ item -> «bodyExpr»
+						)
+					'''
+			}
+			case ONLY_ELEMENT: {
+				distinctOrOnlyElement('''«op.receiver.elmCode(params)»''', false, true)
+			}
+			case FLATTEN: {
+				// buildListOperationNoBody(op, "flattenList", params)
+			}
+			default: '''"Unsupported operationKind of «op.operationKind»)'''
+		}
 	}
 
+	def String getItemName(ListOperation op) {
+		op.firstOrImplicit.getNameOrDefault
+	}
 
+	def String binaryExpr(RosettaBinaryOperation expr, RosettaExpression test, ParamMap params) {
+		val left = expr.left
+		val right = expr.right
+		val leftRtype = typeProvider.getRType(expr.left)
+		val rightRtype = typeProvider.getRType(expr.right)
+		val resultType = operators.resultType(expr.operator, leftRtype, rightRtype)
+		val leftType = '''«leftRtype.name.toElmType»'''
+		val rightType = '''«rightRtype.name.toElmType»'''
 
+		switch expr.operator {
+//			case ("and"): {
+//				'''«left.toComparisonResult(params)».and(«right.toComparisonResult(params)»)'''
+//			}
+//			case ("or"): {
+//				'''«left.toComparisonResult(params)».or(«right.toComparisonResult(params)»)'''
+//			}
+//			case ("+"): {
+//				'''«MapperMaths».<«resultType.name.toJavaClass», «leftType», «rightType»>add(«expr.left.javaCode(params)», «expr.right.javaCode(params)»)'''
+//			}
+//			case ("-"): {
+//				'''«MapperMaths».<«resultType.name.toJavaClass», «leftType», «rightType»>subtract(«expr.left.javaCode(params)», «expr.right.javaCode(params)»)'''
+//			}
+//			case ("*"): {
+//				'''«MapperMaths».<«resultType.name.toJavaClass», «leftType», «rightType»>multiply(«expr.left.javaCode(params)», «expr.right.javaCode(params)»)'''
+//			}
+//			case ("/"): {
+//				'''«MapperMaths».<«resultType.name.toJavaClass», «leftType», «rightType»>divide(«expr.left.javaCode(params)», «expr.right.javaCode(params)»)'''
+//			}
+			default: {
+				toComparisonOp('''«expr.left.elmCode(params)»''', expr.operator, '''«expr.right.elmCode(params)»''',
+					expr.cardOp)
+			}
+		}
+	}
+	
+		private def String toComparisonOp(String left, String operator, String right, String cardOp) {
+			
+			switch operator {
+			case ("="):
+				'''«left» == «right»'''
+			case ("<>"):
+				'''«left» != «right»'''
+			case ("<") : 
+				'''«left» < «right»'''
+			case ("<=") : 
+				'''«left» <= «right»'''
+			case (">") : 
+				'''«left» > «right»'''
+			case (">=") : 
+				'''«left» >= «right»'''
+			default: 
+				throw new UnsupportedOperationException("Unsupported binary operation of " + operator)
+			
+		}
+	}
 
-
-
-
-
-
+}
