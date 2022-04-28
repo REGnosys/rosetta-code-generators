@@ -5,7 +5,6 @@ import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import java.util.List
 
-import static com.regnosys.rosetta.generator.elm.util.GolangModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import java.util.Map
@@ -16,6 +15,7 @@ import java.util.Set
 import com.google.common.collect.Lists
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
+import static com.regnosys.rosetta.generator.elm.util.ElmModelGeneratorUtil.*
 
 class ElmModelObjectGenerator {
 

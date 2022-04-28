@@ -1,6 +1,6 @@
 package com.regnosys.rosetta.generator.elm.util
 
-class GolangModelGeneratorUtil {
+class ElmModelGeneratorUtil {
 	
 	static def fileComment(String version) '''
 			-- This file is auto-generated from the ISDA Common Domain Model, do not edit.

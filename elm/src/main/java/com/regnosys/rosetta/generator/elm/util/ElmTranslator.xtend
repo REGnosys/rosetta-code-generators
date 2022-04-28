@@ -15,9 +15,9 @@ class ElmTranslator {
 			case 'time':
 				'LocalTime'
 			case 'date':
-				'LocalDate'
+				'Date'
 			case 'Date':
-				'LocalDate'
+				'Date'
 			case 'zonedDateTime':
 				'ZonedDateTime'
 			case 'number':

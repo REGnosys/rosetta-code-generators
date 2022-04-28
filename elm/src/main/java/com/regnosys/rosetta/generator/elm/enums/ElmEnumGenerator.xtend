@@ -8,7 +8,6 @@ import java.util.HashMap
 import java.util.List
 import java.util.Map
 
-import static com.regnosys.rosetta.generator.elm.util.GolangModelGeneratorUtil.*
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -18,7 +17,6 @@ import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import java.util.List
 
-import static com.regnosys.rosetta.generator.elm.util.GolangModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import java.util.Map
@@ -28,6 +26,7 @@ import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import java.util.Set
 import com.google.common.collect.Lists
 import java.util.Enumeration
+import static com.regnosys.rosetta.generator.elm.util.ElmModelGeneratorUtil.*
 
 class ElmEnumGenerator {
 	

@@ -10,10 +10,10 @@ import java.util.List
 import java.util.Map
 import javax.inject.Inject
 
-import static com.regnosys.rosetta.generator.elm.util.GolangModelGeneratorUtil.*
 
 import com.regnosys.rosetta.generator.elm.object.ElmModelObjectBoilerPlate
 import static extension com.regnosys.rosetta.generator.elm.util.ElmTranslator.toElmType
+import static com.regnosys.rosetta.generator.elm.util.ElmModelGeneratorUtil.*
 
 class ElmFunctionGenerator {
 	@Inject extension ElmModelObjectBoilerPlate

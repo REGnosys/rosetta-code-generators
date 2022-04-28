@@ -11,8 +11,10 @@ import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.elm.enums.ElmEnumGenerator;
 import com.regnosys.rosetta.generator.elm.functions.ElmFunctionGenerator;
 import com.regnosys.rosetta.generator.elm.object.ElmModelObjectGenerator;
+import com.regnosys.rosetta.generator.elm.rule.ReportRuleGenerator;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.rosetta.RosettaBlueprintReport;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.RosettaNamed;
@@ -25,6 +27,7 @@ public class ElmCodeGenerator extends AbstractExternalGenerator {
 	@Inject	private ElmModelObjectGenerator pojoGenerator;
 	@Inject private ElmEnumGenerator enumGenerator;
 	@Inject	private ElmFunctionGenerator functionGenerator;
+	@Inject private ReportRuleGenerator reportRuleGenerator;
 
 	public ElmCodeGenerator() {
 		super("Golang");
@@ -66,17 +69,23 @@ public class ElmCodeGenerator extends AbstractExternalGenerator {
 					.filter(t -> Function.class.isInstance(t))
 					.map(RosettaNamed.class::cast).collect(Collectors.toList());
 
+			List<RosettaBlueprintReport> rosettaReports = models.stream().flatMap(m->m.getElements().stream())
+					.filter(RosettaBlueprintReport.class::isInstance)
+					.map(RosettaBlueprintReport.class::cast).collect(Collectors.toList());
+
 			result.putAll(pojoGenerator.generate(namespace, rosettaClasses, version));
 			
 			// TODO - add these
 			 result.putAll(enumGenerator.generate(namespace, rosettaEnums, version));
+			 result.putAll(reportRuleGenerator.generate(namespace, rosettaReports, rosettaClasses, rosettaEnums, version));
+			 
+			 
 			// result.putAll(functionGenerator.generate(namespace, rosettaFunctions, version));
 		}
 		
 		result.put("Com/Rosetta/Model/Type.elm", 
 				"module Com.Rosetta.Model.Type exposing (..)"
 				+ "\n"
-				+ "import Morphir.SDK.LocalDate exposing (LocalDate)\n"
 				+ "import Morphir.SDK.LocalTime exposing (LocalTime)\n"
 				+ "\n"
 				+ "type alias Date =\n"
@@ -86,7 +95,7 @@ public class ElmCodeGenerator extends AbstractExternalGenerator {
 				+ "    }\n"
 				+ "\n"
 				+ "type alias ZonedDateTime =\n"
-				+ "    { date : LocalDate\n"
+				+ "    { date : Date\n"
 				+ "    , time : LocalTime\n"
 				+ "    , timezone : String\n"
 				+ "    }");
