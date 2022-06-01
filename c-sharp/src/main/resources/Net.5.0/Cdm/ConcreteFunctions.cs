@@ -94,4 +94,13 @@ namespace Org.Isda.Cdm.Functions
             return Enumerable.Empty<PartyRole>();
         }
     }
+
+    // TEMPORARY: Implement function
+    public class Qualify_AssetClass_Equity : IRosettaFunction
+    {
+        static public bool Evaluate(Product product)
+        {
+            return false;
+        }
+    }
 }
