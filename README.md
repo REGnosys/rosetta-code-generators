@@ -65,7 +65,7 @@ Here is an illustration of how code generation works:
 
 ## Quick start guide
 
-Note that you will need Java 8 SDK installed and referenced by the JAVA_HOME environment variable.
+Note that you will need Java 11 SDK installed and referenced by the JAVA_HOME environment variable.
 
 You will need [Maven](http://maven.apache.org/) and [Git](https://git-scm.com/) installed and configured in your environment.
 
