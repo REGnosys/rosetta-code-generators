@@ -15,8 +15,6 @@ import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 
-//import com.rosetta.model.lib.validation.ModelObjectValidator
-
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
 import static com.regnosys.rosetta.rosetta.simple.SimplePackage.Literals.CONDITION__EXPRESSION
