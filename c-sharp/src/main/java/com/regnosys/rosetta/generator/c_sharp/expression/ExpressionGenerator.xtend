@@ -640,8 +640,8 @@ class ExpressionGenerator {
 		}
 	}
 	
-	def StringConcatenationClient onlyElement(RosettaOnlyElement e, ParamMap params) {
-		'''/* Unsupported list operation only-element */'''
+	def StringConcatenationClient onlyElement(RosettaOnlyElement expr, ParamMap params) {
+		'''«expr.argument.csharpCode(params)».FirstOrDefault()?'''
 	}
 
     /**
