@@ -28,12 +28,10 @@ import com.regnosys.rosetta.rosetta.RosettaLiteral
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaOnlyExistsExpression
-import com.regnosys.rosetta.rosetta.RosettaParenthesisCalcExpression
 import com.regnosys.rosetta.rosetta.RosettaStringLiteral
 import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
-import com.regnosys.rosetta.rosetta.simple.EmptyLiteral
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.ListLiteral
 import com.regnosys.rosetta.rosetta.simple.ListOperation
@@ -49,6 +47,7 @@ import org.eclipse.xtext.EcoreUtil2
 
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.*
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
+import com.regnosys.rosetta.rosetta.RosettaOnlyElement
 
 class ExpressionGenerator {
 
@@ -125,23 +124,20 @@ class ExpressionGenerator {
             RosettaConditionalExpression: {
                 '''
                 «expr.doIfName»(«expr.^if.csharpCode(params)»,
-                    «expr.ifthen.csharpCode(params)»«IF expr.elsethen !== null»,
+                    «expr.ifthen.csharpCode(params)»«IF !expr.elsethen.isEmpty»,
                     «expr.elsethen.csharpCode(params)»«ENDIF»)'''
             }
             RosettaContainsExpression: {
                 '''«expr.container.csharpCode(params)».Includes(«expr.contained.csharpCode(params)»)'''
-            }
-            RosettaParenthesisCalcExpression: {
-                expr.expression.csharpCode(params, isLast)
-            }
-            EmptyLiteral: {
-                '''null'''
             }
             ListLiteral: {
                 '''«MapperC».of(«FOR ele : expr.elements SEPARATOR ', '»«ele.csharpCode(params)»«ENDFOR»)'''
             }
             ListOperation : {
 				listOperation(expr, params)
+			}
+			RosettaOnlyElement: {
+				onlyElement(expr, params)
 			}
             default:
                 throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
@@ -151,6 +147,13 @@ class ExpressionGenerator {
     private def String doIfName(RosettaConditionalExpression expr) {
         //if (expr.ifthen.evalulatesToMapper) "DoIf" else "ResultDoIf"
         "IfThen"
+    }
+    
+    private def boolean isEmpty(RosettaExpression e) {
+    	if (e instanceof ListLiteral) {
+    		return e.elements.size === 0;
+    	}
+    	return false;
     }
 
     def StringConcatenationClient callableWithArgs(RosettaCallableWithArgsCall expr, ParamMap params) {
@@ -171,7 +174,7 @@ class ExpressionGenerator {
     }
 
     private def StringConcatenationClient args(RosettaCallableWithArgsCall expr, ParamMap params) {
-        '''«FOR arg : expr.args SEPARATOR ', '»«arg.csharpCode(params)»«IF !(arg instanceof EmptyLiteral)»«ENDIF»«ENDFOR»'''
+        '''«FOR arg : expr.args SEPARATOR ', '»«arg.csharpCode(params)»«ENDFOR»'''
     }
 
 	def StringConcatenationClient onlyExistsExpr(RosettaOnlyExistsExpression onlyExists, ParamMap params) {
@@ -217,7 +220,6 @@ class ExpressionGenerator {
     def RosettaBinaryOperation findBinaryOperation(RosettaExpression expression) {
         switch (expression) {
             RosettaBinaryOperation: expression
-            RosettaParenthesisCalcExpression: expression.expression.findBinaryOperation
             default: null
         }
     }
@@ -312,7 +314,7 @@ class ExpressionGenerator {
         val isReference = call.receiver.isReference
         val receiver = '''«csharpCode(call.receiver, params, false)»'''
         
-        if (call.onlyElement || !call.receiver.isCollection) {
+        if (!call.receiver.isCollection) {
             return '''«receiver»«IF call.receiver.isOptional || isReference»?«ENDIF»«right»'''
         }
         else if (feature instanceof Attribute) {
@@ -636,6 +638,10 @@ class ExpressionGenerator {
 			default:
 				'''/* Unsupported list operation «op.operationKind.literal» */'''
 		}
+	}
+	
+	def StringConcatenationClient onlyElement(RosettaOnlyElement e, ParamMap params) {
+		'''/* Unsupported list operation only-element */'''
 	}
 
     /**
