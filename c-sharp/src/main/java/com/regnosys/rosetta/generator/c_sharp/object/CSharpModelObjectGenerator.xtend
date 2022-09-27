@@ -94,11 +94,11 @@ class CSharpModelObjectGenerator {
         val choiceRules = sortedClasses.generateChoiceRules(version).replaceTabsWithSpaces
         result.put(CHOICE_RULES_FILENAME, choiceRules)
         
-        val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
-        result.put(DATA_RULES_FILENAME, dataRules)
+//        val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
+//        result.put(DATA_RULES_FILENAME, dataRules)
 
-        val validators = sortedClasses.generateValidators(version).replaceTabsWithSpaces
-        result.put(VALIDATORS_FILENAME, validators)
+//        val validators = sortedClasses.generateValidators(version).replaceTabsWithSpaces
+//        result.put(VALIDATORS_FILENAME, validators)
 
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
