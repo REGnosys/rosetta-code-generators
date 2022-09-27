@@ -97,8 +97,8 @@ class CSharpModelObjectGenerator {
 //        val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
 //        result.put(DATA_RULES_FILENAME, dataRules)
 
-//        val validators = sortedClasses.generateValidators(version).replaceTabsWithSpaces
-//        result.put(VALIDATORS_FILENAME, validators)
+        val validators = sortedClasses.generateValidators(version).replaceTabsWithSpaces
+        result.put(VALIDATORS_FILENAME, validators)
 
         result.put(ASSEMBLY_INFO_FILENAME, generateAssemblyInfo(getAssemblyVersion(version), cSharpCodeInfo.getDotNetVersion))
 
@@ -229,11 +229,11 @@ class CSharpModelObjectGenerator {
                     {
                         public IEnumerable<IValidator<«c.name»>> DataRules {
                             get {
-                                «FOR r : conditionRules(c, c.conditions)[!isChoiceRuleCondition]»
-                                    yield return new «CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
-«««                             TODO: Sort out package
-«««                             yield return new «javaNames.packages.model.dataRule.name».«CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
-                                «ENDFOR»
+«««                                «FOR r : conditionRules(c, c.conditions)[!isChoiceRuleCondition]»
+«««                                    yield return new «CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
+««««««                             TODO: Sort out package
+««««««                             yield return new «javaNames.packages.model.dataRule.name».«CSharpDataRuleGenerator.dataRuleClassName(r.ruleName)»();
+«««                                «ENDFOR»
                                 yield break;
                             }
                         }
