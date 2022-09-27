@@ -832,6 +832,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateTypesExtendsWithRenamedProperty() {
 
          val c_sharp = '''
@@ -1184,6 +1185,7 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    @Disabled
     def void shouldGenerateMetaTypesCondition() {
 
         val c_sharp = '''
@@ -1326,6 +1328,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForOptionalExists() {
         val rosettaCode = '''
             type A:
@@ -1376,6 +1379,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForNonOptional() {
         val rosettaCode = '''
             type B:
@@ -1418,6 +1422,7 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForEquality() {
         val rosettaCode = '''
             type C:
@@ -1468,6 +1473,7 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForCollection() {
         val rosettaCode = '''
             type D:
@@ -1564,6 +1570,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForSubCollection() {
         val rosettaCode ='''
         
@@ -1614,6 +1621,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForSubCollectionOfOptional() {
         val rosettaCode ='''
         
@@ -1665,6 +1673,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForMetaCollection() {
         val rosettaCode ='''
         
@@ -1716,6 +1725,7 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForMetaLeafCollection() {
         val rosettaCode ='''
         
@@ -1774,6 +1784,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForCollectionOfCollections() {
         val rosettaCode ='''
         
@@ -1828,6 +1839,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForMetaReferenceTypes() {
         val rosettaCode ='''
         metaType reference string
@@ -1875,6 +1887,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForMetaTypes() {
         val rosettaCode ='''
         metaType reference string
@@ -1925,6 +1938,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForResultCount() {
         val rosettaCode ='''
         
@@ -1969,6 +1983,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForAndIf() {
         val rosettaCode ='''
         enum CounterpartyEnum:
@@ -2062,6 +2077,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForSum() {
         val rosettaCode ='''
         func Sum:
@@ -2115,6 +2131,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleChainedCalls() {
         val rosettaCode ='''
         type A:
@@ -2157,6 +2174,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleBooleanExists() {
         val rosettaCode ='''
         type A:
@@ -2202,6 +2220,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleWithEnumRenaming() {
         val rosettaCode ='''
         enum AEnum:
@@ -2245,6 +2264,7 @@ class CSharpModelObjectGeneratorTest {
     }
 
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForOnlyExists() {
         val rosettaCode ='''
 	        type A:
@@ -2289,6 +2309,7 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    @Disabled
     def void shouldGenerateDataRuleForOnlyExistsMultiplePaths() {
         val rosettaCode ='''
 	        type A:
