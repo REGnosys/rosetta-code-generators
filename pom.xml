@@ -42,7 +42,7 @@
 			</activation>
 			<properties>
 				<rosetta.dsl.version>4.45.0</rosetta.dsl.version>
-				<rosetta.bundle.version>3.15.6</rosetta.bundle.version>
+				<rosetta.bundle.version>3.19.0</rosetta.bundle.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -59,8 +59,8 @@
         <commons-io.version>2.6</commons-io.version>
         <guava.version>30.0-jre</guava.version>
         <guice.version>5.0.1</guice.version>
-        <slf4j-api.version>1.7.25</slf4j-api.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j-api.version>2.0.3</slf4j-api.version>
+        <slf4j.version>2.0.3</slf4j.version>
         <xtend.version>2.27.0</xtend.version>
         <xtext.version>2.27.0</xtext.version>
         <org.eclipse.emf.codegen.ecore-version>2.31.0</org.eclipse.emf.codegen.ecore-version>
