@@ -9,7 +9,7 @@ import com.regnosys.rosetta.generator.c_sharp.expression.ExpressionGenerator
 import com.regnosys.rosetta.generator.c_sharp.expression.ExpressionGenerator.ParamMap
 //import com.regnosys.rosetta.generator.java.function.RosettaFunctionDependencyProvider
 import com.regnosys.rosetta.generator.java.util.RosettaGrammarUtil
-import com.regnosys.rosetta.rosetta.RosettaConditionalExpression
+import com.regnosys.rosetta.rosetta.expression.RosettaConditionalExpression
 import com.regnosys.rosetta.rosetta.RosettaType
 
 import com.regnosys.rosetta.rosetta.simple.Condition
