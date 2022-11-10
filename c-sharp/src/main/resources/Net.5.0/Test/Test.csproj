@@ -5,6 +5,7 @@
 		<RootNamespace>Cdm.Test</RootNamespace>
 		<IsPackable>false</IsPackable>
 	    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	    <WarningsNotAsErrors>CS7034</WarningsNotAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
