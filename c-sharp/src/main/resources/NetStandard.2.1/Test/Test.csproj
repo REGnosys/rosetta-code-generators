@@ -4,8 +4,6 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<RootNamespace>Cdm.Test</RootNamespace>
 		<IsPackable>false</IsPackable>
-	    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	    <WarningsNotAsErrors>CS7034</WarningsNotAsErrors>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 		<DefineConstants>TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1;</DefineConstants>

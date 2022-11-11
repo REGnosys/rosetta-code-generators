@@ -4,8 +4,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Org.Isda.Cdm</AssemblyName>
     <RootNamespace>Org.Isda.Cdm</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <WarningsNotAsErrors>CS7034</WarningsNotAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -5,8 +5,6 @@
     <LangVersion>preview</LangVersion>
     <AssemblyName>Org.Isda.Cdm</AssemblyName>
     <RootNamespace>Org.Isda.Cdm</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <WarningsNotAsErrors>CS7034</WarningsNotAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
