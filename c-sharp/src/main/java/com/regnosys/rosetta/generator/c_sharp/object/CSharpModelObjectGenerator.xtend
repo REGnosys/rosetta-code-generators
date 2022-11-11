@@ -116,7 +116,7 @@ class CSharpModelObjectGenerator {
         [assembly: AssemblyCopyright("Copyright © ISDA «getYear»")]
         [assembly: AssemblyTrademark("CDM")]
 
-        [assembly: AssemblyVersion("«version.replace("dev.", "")»")]
+        [assembly: AssemblyVersion("«version.replace(".dev", "")»")]
         '''
     }
 
