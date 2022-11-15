@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>4.49.4</rosetta.dsl.version>
+				<rosetta.dsl.version>5.0.0</rosetta.dsl.version>
 				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
 			</properties>
 		</profile>
@@ -41,8 +41,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>4.49.4</rosetta.dsl.version>
-				<rosetta.bundle.version>3.26.0</rosetta.bundle.version>
+				<rosetta.dsl.version>5.0.0</rosetta.dsl.version>
+				<rosetta.bundle.version>4.0.0</rosetta.bundle.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -55,14 +55,14 @@
         <junit.jupiter.version>5.8.1</junit.jupiter.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <apache.commons.lang.version>3.9</apache.commons.lang.version>
-        <apache.commons.text.version>1.9</apache.commons.text.version>
+        <apache.commons.text.version>1.10.0</apache.commons.text.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>30.0-jre</guava.version>
         <guice.version>5.0.1</guice.version>
         <slf4j-api.version>2.0.3</slf4j-api.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <xtend.version>2.25.0</xtend.version>
-        <xtext.version>2.25.0</xtext.version>
+        <xtend.version>2.27.0</xtend.version>
+        <xtext.version>2.27.0</xtext.version>
         <org.eclipse.emf.codegen.ecore-version>2.28.0</org.eclipse.emf.codegen.ecore-version>
 	</properties>
 
