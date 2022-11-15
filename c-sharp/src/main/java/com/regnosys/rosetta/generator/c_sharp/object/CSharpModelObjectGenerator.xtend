@@ -259,6 +259,9 @@ class CSharpModelObjectGenerator {
     }
 
     static def getAssemblyVersion(String version) {
+    	if (version.contains("-dev.")) {
+    		return version.replace("-dev", "")
+    	}
         // Take the first three numbers from the version string, which could be "0.0.0.master".
         return String.join(".", Arrays.copyOfRange(version.split("\\."), 0, 3))
     }
