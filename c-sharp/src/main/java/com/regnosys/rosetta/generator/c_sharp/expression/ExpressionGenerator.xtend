@@ -9,9 +9,7 @@ import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaBigDecimalLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaCallableCall
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
-import com.regnosys.rosetta.rosetta.expression.RosettaCallableWithArgsCall
 import com.regnosys.rosetta.rosetta.expression.RosettaConditionalExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaCountOperation
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
@@ -49,6 +47,8 @@ import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
 import com.regnosys.rosetta.rosetta.expression.RosettaUnaryOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ExistsModifier
+import com.regnosys.rosetta.rosetta.expression.RosettaReference
+import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 
 class ExpressionGenerator {
 
@@ -101,12 +101,9 @@ class ExpressionGenerator {
             RosettaAbsentExpression: {
                 absentExpr(expr, expr.argument, params)
             }
-            RosettaCallableCall: {
-                callableCall(expr, params)
-            }
-            RosettaCallableWithArgsCall: {
-                callableWithArgs(expr, params)
-            }
+            RosettaReference: {
+				reference(expr, params, isLast)
+			}
             RosettaBigDecimalLiteral: {
                 '''Convert.ToDecimal(«expr.value»)'''
             }
@@ -154,14 +151,13 @@ class ExpressionGenerator {
     	return false;
     }
 
-    def StringConcatenationClient callableWithArgs(RosettaCallableWithArgsCall expr, ParamMap params) {
-        val callable = expr.callable
+    def StringConcatenationClient callableWithArgs(RosettaSymbolReference expr, ParamMap params) {
+        val callable = expr.symbol
 
         return switch (callable) {
             Function: {
                 funcExt.getOutput(callable).card.isMany
-                val implicitArg = funcExt.implicitFirstArgument(expr)
-                '''«callable.name».Evaluate(«IF implicitArg !== null»«implicitArg.name.toFirstLower»«ENDIF»«args(expr, params)»)'''
+                '''«callable.name».Evaluate(«args(expr, params)»)'''
             }
             RosettaExternalFunction: 
             	'''(new «factory.create(callable.model).toCSharpType(callable as RosettaCallableWithArgs)»().Execute(«args(expr, params)»))'''
@@ -171,7 +167,7 @@ class ExpressionGenerator {
 
     }
 
-    private def StringConcatenationClient args(RosettaCallableWithArgsCall expr, ParamMap params) {
+    private def StringConcatenationClient args(RosettaSymbolReference expr, ParamMap params) {
         '''«FOR arg : expr.args SEPARATOR ', '»«arg.csharpCode(params)»«ENDFOR»'''
     }
 
@@ -254,32 +250,41 @@ class ExpressionGenerator {
             '''«doAbsentExpr(absent, arg, params)»'''
         }
     }
-
-    protected def StringConcatenationClient callableCall(RosettaCallableCall expr, ParamMap params) {
-        val call = expr.callable
-        switch (call) {
-            Data: {
-                '''«params.getClass(call)»'''
-            }
-            Attribute: {
-                // Data Attributes can only be called from their conditions
-                // The current container (Data) is stored in Params, but we need also look for superTypes
-                // so we could also do: (call.eContainer as Data).allSuperTypes.map[it|params.getClass(it)].filterNull.head
-                if (call.eContainer instanceof Data) {
-                    val variableName = EcoreUtil2.getContainerOfType(expr, Data).getName.toFirstLower
-                    '''«variableName»«buildMapFunc(call, false, true)»'''
-                }
-                else
-                    '''«call.name»'''
-            }
-            ShortcutDeclaration: {
-                '''«call.name»(«aliasCallArgs(call)»).«IF exprHelper.usesOutputParameter(call.expression)»build()«ELSE»get()«ENDIF»'''
-            }
-            RosettaEnumeration: '''Enums.«call.toCSharpType»'''
-            default:
-                throw new UnsupportedOperationException("Unsupported callable type of " + call.class.simpleName)
-        }
-    }
+    
+    protected def StringConcatenationClient reference(RosettaReference expr, ParamMap params, boolean isLast) {
+		switch (expr) {
+			RosettaSymbolReference: {
+				val s = expr.symbol
+				switch (s)  {
+					Data: {
+						'''«params.getClass(s)»'''
+					}
+					Attribute: {
+						// Data Attributes can only be called from their conditions
+		                // The current container (Data) is stored in Params, but we need also look for superTypes
+		                // so we could also do: (call.eContainer as Data).allSuperTypes.map[it|params.getClass(it)].filterNull.head
+		                if (s.eContainer instanceof Data) {
+		                    val variableName = EcoreUtil2.getContainerOfType(expr, Data).getName.toFirstLower
+		                    '''«variableName»«buildMapFunc(s, false, true)»'''
+		                }
+		                else
+		                    '''«s.name»'''
+					}
+					ShortcutDeclaration: {
+		                '''«s.name»(«aliasCallArgs(s)»).«IF exprHelper.usesOutputParameter(s.expression)»build()«ELSE»get()«ENDIF»'''
+		            }
+					RosettaEnumeration: '''Enums.«s.toCSharpType»'''
+					RosettaCallableWithArgs: {
+						callableWithArgs(expr, params)
+					}
+					default: 
+						throw new UnsupportedOperationException("Unsupported symbol type of " + s?.class?.name)
+				}
+			}
+			default: 
+				throw new UnsupportedOperationException("Unsupported reference type of " + expr?.class?.name)
+		}
+	}
 
     def aliasCallArgs(ShortcutDeclaration alias) {
         val func = EcoreUtil2.getContainerOfType(alias, Function)
@@ -330,8 +335,8 @@ class ExpressionGenerator {
 
     def private boolean isMetaType(EObject expr) {
         switch (expr) {
-            RosettaCallableCall: {
-                isMetaType(expr.callable)
+            RosettaSymbolReference: {
+                isMetaType(expr.symbol)
             }
             RosettaFeatureCall: {
                 return isMetaType(expr.feature)
@@ -345,8 +350,8 @@ class ExpressionGenerator {
 
     def private boolean isReference(EObject expr) {
         switch (expr) {
-            RosettaCallableCall: {
-                isReference(expr.callable)
+            RosettaSymbolReference: {
+                isReference(expr.symbol)
             }
             RosettaFeatureCall: {
                 return isReference(expr.feature)
@@ -360,11 +365,8 @@ class ExpressionGenerator {
     
     def private boolean isCollection(EObject expr) {
         switch (expr) {
-            RosettaCallableCall: {
-                expr.callable.isCollection
-            }
-            RosettaCallableWithArgsCall: {
-                expr.callable.isCollection
+            RosettaSymbolReference: {
+                expr.symbol.isCollection
             }
             RosettaFeatureCall: {
                 expr.feature.isCollection || expr.receiver.isCollection
@@ -399,11 +401,8 @@ class ExpressionGenerator {
 
     def private boolean isOptional(EObject expr) {
         switch (expr) {
-            RosettaCallableCall: {
-                expr.callable.isOptional
-            }
-            RosettaCallableWithArgsCall: {
-                expr.callable.isOptional
+            RosettaSymbolReference: {
+                expr.symbol.isOptional
             }
             RosettaFeatureCall: {
                 expr.feature.isOptional || expr.receiver.isOptional
@@ -481,28 +480,6 @@ class ExpressionGenerator {
     private def boolean isLogicalOperation(RosettaExpression expr) {
         if (expr instanceof RosettaBinaryOperation) return expr.operator == "and" || expr.operator == "or"
         return false
-    }
-
-    /**
-     * Collects all expressions down the tree, and checks that they're all either FeatureCalls or CallableCalls (or anything that resolves to a Mapper)
-     */
-    private def boolean evalulatesToMapper(RosettaExpression expr) {
-        val exprs = newHashSet
-        collectExpressions(expr, [exprs.add(it)])
-
-        return !exprs.empty && exprs.stream.allMatch [
-            it instanceof RosettaFeatureCall || 
-            	it instanceof RosettaCallableCall || 
-            	it instanceof RosettaFeatureCall ||
-                it instanceof RosettaCallableWithArgsCall || 
-                it instanceof RosettaLiteral
-        ]
-    }
-
-    private def StringConcatenationClient toComparisonFunc(StringConcatenationClient left, String operator,  StringConcatenationClient right) {
-        // NB: Based on https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/nullable-value-types#lifted-operators
-        // we can use normal operators for nullable value types, which will return false if the parameter is null
-        return '''«toComparisonFuncName(operator)»(«left», «right»)'''
     }
 
     private def String toComparisonFuncName(String operator) {
@@ -723,7 +700,7 @@ class ExpressionGenerator {
 
         val receiver = call.receiver
         val left = switch receiver {
-            RosettaCallableCall: '''''' // (receiver.callable as RosettaClass).name
+            RosettaReference: '''''' // (receiver.callable as RosettaClass).name
             RosettaFeatureCall:
                 toNodeLabel(receiver)
             default:
