@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>6.0.0</rosetta.dsl.version>
+				<rosetta.dsl.version>6.1.0</rosetta.dsl.version>
 				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
 			</properties>
 		</profile>
@@ -41,7 +41,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>6.0.0</rosetta.dsl.version>
+				<rosetta.dsl.version>6.1.0</rosetta.dsl.version>
 				<rosetta.bundle.version>5.0.3</rosetta.bundle.version>
 			</properties>
 		</profile>
@@ -50,9 +50,8 @@
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <maven.compiler.release>8</maven.compiler.release>
+   		<junit.jupiter.version>5.9.1</junit.jupiter.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <apache.commons.text.version>1.10.0</apache.commons.text.version>
