@@ -3,10 +3,7 @@ package com.regnosys.rosetta.generator.c_sharp.object
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpValidatorsGenerator
-import com.regnosys.rosetta.generator.c_sharp.rule.CSharpChoiceRuleGenerator
-import com.regnosys.rosetta.generator.c_sharp.rule.CSharpDataRuleGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Condition
@@ -32,12 +29,6 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension CSharpMetaFieldGenerator
-
-    @Inject
-    extension CSharpChoiceRuleGenerator
-
-    @Inject
-    extension CSharpDataRuleGenerator
     
     @Inject
     extension CSharpValidatorsGenerator
@@ -48,7 +39,6 @@ class CSharpModelObjectGenerator {
     static final String META_FILENAME = 'MetaTypes.cs'
     static final String META_FIELD_FILENAME = 'MetaFieldTypes.cs'
     static final String DATA_RULES_FILENAME = "DataRules.cs"
-    static final String CHOICE_RULES_FILENAME = "ChoiceRules.cs"
     static final String VALIDATORS_FILENAME = "Validators.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
@@ -90,9 +80,6 @@ class CSharpModelObjectGenerator {
 
         val metaFields = sortedClasses.generateMetaFields(metaTypes, version).replaceTabsWithSpaces
         result.put(META_FIELD_FILENAME, metaFields)
-
-        val choiceRules = sortedClasses.generateChoiceRules(version).replaceTabsWithSpaces
-        result.put(CHOICE_RULES_FILENAME, choiceRules)
         
 //        val dataRules = sortedClasses.generateDataRules(version).replaceTabsWithSpaces
 //        result.put(DATA_RULES_FILENAME, dataRules)
@@ -164,17 +151,13 @@ class CSharpModelObjectGenerator {
                     «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
 «««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment.
 «««                 Use of one-of condtion on a derived class is not properly defined, so mark it as an error and ignore. 
-                    «val isChild = c.superType !== null»
-                    «val isOneOf = isOneOf(c) && !isChild»
-                    «var properties = if (isOneOf) getOneOfProperty(cSharpVersion) else " { get; }"»
+                    «var properties = " { get; }"»
                     «classComment(c.definition)»
-                    «IF isOneOf»[OneOf]«ELSEIF isOneOf(c)»// ERROR: [OneOf] cannot be used on a derived class«ENDIF»
                     «val metaType = 'IRosettaMetaData<' + c.name +'>'»
-                    public «IF isOneOf»«getOneOfType(cSharpVersion)»«ELSE»class«ENDIF» «c.name» : «generateParents(c, superTypes, cSharpVersion)»
+                    public class «c.name» : «generateParents(c, superTypes, cSharpVersion)»
                     {
                         private static readonly «metaType» metaData = new «c.name»Meta();
                         
-                        «IF !isOneOf»
                         [JsonConstructor]
                         public «c.name»(«FOR attribute : expandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
                         {
@@ -183,7 +166,6 @@ class CSharpModelObjectGenerator {
                             «ENDFOR»
                         }
                         
-                        «ENDIF»
                         /// <inheritdoc />
                         [JsonIgnore]
                         public override «metaType» MetaData => metaData;
@@ -194,7 +176,7 @@ class CSharpModelObjectGenerator {
                             «IF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
-                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType(isOneOf)» «attribute.toPropertyName»«properties»
+                            «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType» «attribute.toPropertyName»«properties»
                         «ENDFOR»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
@@ -240,11 +222,6 @@ class CSharpModelObjectGenerator {
                     
                         public IEnumerable<IValidator<«c.name»>> ChoiceRuleValidators {
                             get {
-                                «FOR r : conditionRules(c, c.conditions)[isChoiceRuleCondition]»
-                                    yield return new «CSharpChoiceRuleGenerator.choiceRuleClassName(r.ruleName)»();
-«««                             TODO: Sort out package
-«««                                    yield return new «javaNames.packages.model.choiceRule.name».«CSharpChoiceRuleGenerator.choiceRuleClassName(r.ruleName)»();
-                                «ENDFOR»
                                 yield break;
                             }
                         }
@@ -266,16 +243,6 @@ class CSharpModelObjectGenerator {
         return String.join(".", Arrays.copyOfRange(version.split("\\."), 0, 3))
     }
 
-    private def getOneOfProperty(int cSharpVersion) '''
-            «IF cSharpVersion >= 9» { get; init; }«ELSE» { get; set; }«ENDIF»'''
-
-    private def getOneOfType(int cSharpVersion) '''
-            «IF cSharpVersion >= 9»sealed record«ELSE»sealed class«ENDIF»'''
-
-    private def isOneOf(Data rosettaClass) {
-        rosettaClass.conditions !== null && !rosettaClass.conditions.filter[constraint?.oneOf].isEmpty()
-    }
-
     private def generateConditionLogic(Data c, Condition condition) {
         /*
         '''
@@ -289,9 +256,8 @@ class CSharpModelObjectGenerator {
 «««             super type, if it is defined.
 «««             this class, if it is a super type.
 «««         Abstract base class has a different name if oneOf, since they are implemented as records instead of classes.
-            «val isChild = c.superType !== null»
-            «val isOneOf = isOneOf(c) && !isChild»        «»
-            AbstractRosettaModel«IF isOneOf && cSharpVersion >= 9»Record«ELSE»Object«ENDIF»<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF isChild», «getInterfaceName(c.superType)»«ENDIF»
+            «val isChild = c.superType !== null»        «»
+            AbstractRosettaModelObject<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF isChild», «getInterfaceName(c.superType)»«ENDIF»
         '''
     }
 
