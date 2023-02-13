@@ -130,14 +130,6 @@ class ScalaModelObjectGenerator {
 	
 	private def generateConditionLogic(Data c, Condition condition) {
 		'''
-		«IF condition.constraint !== null && condition.constraint.oneOf»«generateOneOfLogic(c)»«ENDIF»
-		'''
-	}
-
-	private def generateOneOfLogic(Data c) {
-		'''
-		//val numberOfPopulatedFields = List(«FOR attribute : c.allExpandedAttributes SEPARATOR ', '»«attribute.toAttributeName»«ENDFOR»).flatten.length
-		//require(numberOfPopulatedFields == 1)
 		'''
 	}
 

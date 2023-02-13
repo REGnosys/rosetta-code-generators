@@ -45,7 +45,7 @@ class CSharpDataRuleGenerator {
             
         «FOR rosettaClass : rosettaClasses»
             «FOR c : rosettaClass.conditions»
-                «IF !c.isChoiceRuleCondition»«c.dataRuleClassBody(rosettaClass, version)»«ENDIF»
+                «c.dataRuleClassBody(rosettaClass, version)»
             «ENDFOR»
         «ENDFOR»
         }
