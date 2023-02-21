@@ -199,7 +199,6 @@ class CSharpModelObjectGenerator {
                 using Rosetta.Lib.Meta;
                 using Rosetta.Lib.Validation;
                 
-                using Org.Isda.Cdm.Validation.ChoiceRule;
                 using Org.Isda.Cdm.Validation.DataRule;
                 
                 «FOR c : rosettaClasses SEPARATOR '\n'»
