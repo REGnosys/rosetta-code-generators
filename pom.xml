@@ -42,7 +42,7 @@
 			</activation>
 			<properties>
 				<rosetta.dsl.version>6.4.3</rosetta.dsl.version>
-				<rosetta.bundle.version>5.3.3</rosetta.bundle.version>
+				<rosetta.bundle.version>5.3.7</rosetta.bundle.version>
 			</properties>
 		</profile>
 	</profiles>
