@@ -31,7 +31,7 @@
 		<profile>
 			<id>regnosys</id>
 			<properties>
-				<rosetta.dsl.version>6.5.0</rosetta.dsl.version>
+				<rosetta.dsl.version>0.0.0.remove-tycho</rosetta.dsl.version>
 				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
 			</properties>
 		</profile>
@@ -41,8 +41,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<rosetta.dsl.version>6.5.0</rosetta.dsl.version>
-				<rosetta.bundle.version>5.3.9</rosetta.bundle.version>
+				<rosetta.dsl.version>0.0.0.remove-tycho</rosetta.dsl.version>
+				<rosetta.bundle.version>0.0.0.remove-tycho</rosetta.bundle.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -51,38 +51,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.release>8</maven.compiler.release>
-   		<junit.jupiter.version>5.9.1</junit.jupiter.version>
+   		<junit.version>5.9.1</junit.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
         <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <apache.commons.text.version>1.10.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <guava.version>30.1.1-jre</guava.version>
-        <guice.version>5.0.1</guice.version>
-        <slf4j.version>2.0.1</slf4j.version>
 
-        <!-- xtext start -->
-        <xtend.version>2.27.0</xtend.version>
         <xtext.version>2.27.0</xtext.version>
-        <org.eclipse.jdt.core.version>3.30.0</org.eclipse.jdt.core.version>
-        <org.eclipse.core.resources.version>3.17.0</org.eclipse.core.resources.version>
-        <org.eclipse.osgi.version>3.18.0</org.eclipse.osgi.version>
-        <org.eclipse.jdt.compiler.apt.version>1.3.1100</org.eclipse.jdt.compiler.apt.version>
-        <org.eclipse.jdt.compiler.tool.version>1.3.150</org.eclipse.jdt.compiler.tool.version>
-        <org.eclipse.equinox.common.version>3.16.100</org.eclipse.equinox.common.version>
-        <org.eclipse.equinox.registry.version>3.11.100</org.eclipse.equinox.registry.version>
-        <org.eclipse.equinox.preferences.version>3.10.1</org.eclipse.equinox.preferences.version>
-        <org.eclipse.core.runtime.version>3.25.0</org.eclipse.core.runtime.version>
-        <org.eclipse.emf.ecore.xmi.version>2.16.0</org.eclipse.emf.ecore.xmi.version>
-        <org.eclipse.emf.codegen.ecore-version>2.30.0</org.eclipse.emf.codegen.ecore-version>
-        <org.eclipse.core.expressions.version>3.8.100</org.eclipse.core.expressions.version>
-        <org.eclipse.core.filesystem.version>1.9.400</org.eclipse.core.filesystem.version>
-        <org.eclipse.core.variables.version>3.5.100</org.eclipse.core.variables.version>
-        <org.eclipse.debug.core.version>3.19.100</org.eclipse.debug.core.version>
-        <org.eclipse.emf.common.version>2.25.0</org.eclipse.emf.common.version>
-        <org.eclipse.emf.ecore.version>2.27.0</org.eclipse.emf.ecore.version>
-        <org.eclipse.jdt.launching.version>3.19.600</org.eclipse.jdt.launching.version>
-        <org.eclipse.text.version>3.12.100</org.eclipse.text.version>
-        <!-- xtext end -->
     </properties>
 
 	<modules>
@@ -111,59 +86,16 @@
             </dependency>
             <!-- xtext START -->
             <dependency>
-                <artifactId>org.eclipse.equinox.common</artifactId>
-                <groupId>org.eclipse.platform</groupId>
-                <version>${org.eclipse.equinox.common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jdt</groupId>
-                <artifactId>org.eclipse.jdt.core</artifactId>
-                <version>${org.eclipse.jdt.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.core.resources</artifactId>
-                <version>${org.eclipse.core.resources.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.osgi</artifactId>
-                <version>${org.eclipse.osgi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jdt</groupId>
-                <artifactId>org.eclipse.jdt.compiler.apt</artifactId>
-                <version>${org.eclipse.jdt.compiler.apt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jdt</groupId>
-                <artifactId>org.eclipse.jdt.compiler.tool</artifactId>
-                <version>${org.eclipse.jdt.compiler.tool.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.core.runtime</artifactId>
-                <version>${org.eclipse.core.runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.equinox.preferences</artifactId>
-                <version>${org.eclipse.equinox.preferences.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.equinox.registry</artifactId>
-                <version>${org.eclipse.equinox.registry.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.emf</groupId>
-                <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-                <version>${org.eclipse.emf.ecore.xmi.version}</version>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>xtext-dev-bom</artifactId>
+                <version>${xtext.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.xtend</groupId>
                 <artifactId>org.eclipse.xtend.lib</artifactId>
-                <version>${xtend.version}</version>
+                <version>${xtext.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.xtext</groupId>
@@ -187,49 +119,9 @@
                 <version>${xtext.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.emf</groupId>
-                <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-                <version>${org.eclipse.emf.codegen.ecore-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.core.expressions</artifactId>
-                <version>${org.eclipse.core.expressions.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.core.filesystem</artifactId>
-                <version>${org.eclipse.core.filesystem.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.debug.core</artifactId>
-                <version>${org.eclipse.debug.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.emf</groupId>
-                <artifactId>org.eclipse.emf.common</artifactId>
-                <version>${org.eclipse.emf.common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.emf</groupId>
-                <artifactId>org.eclipse.emf.ecore</artifactId>
-                <version>${org.eclipse.emf.ecore.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jdt</groupId>
-                <artifactId>org.eclipse.jdt.launching</artifactId>
-                <version>${org.eclipse.jdt.launching.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.text</artifactId>
-                <version>${org.eclipse.text.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.platform</groupId>
-                <artifactId>org.eclipse.core.variables</artifactId>
-                <version>${org.eclipse.core.variables.version}</version>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext.util</artifactId>
+                <version>${xtext.version}</version>
             </dependency>
             <!-- xtext END -->
 			<dependency>
@@ -253,32 +145,13 @@
 				<artifactId>rosetta-common</artifactId>
 				<version>${rosetta.bundle.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.inject</groupId>
-				<artifactId>guice</artifactId>
-				<version>${guice.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.xtext</groupId>
-				<artifactId>org.eclipse.xtext.util</artifactId>
-				<version>${xtext.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>log4j-over-slf4j</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
-				<version>${junit.jupiter.version}</version>
-				<scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>java-hamcrest</artifactId>
@@ -293,12 +166,6 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-		</dependency>
-	</dependencies>
 	<build>
 		<!-- lock down plugins versions to avoid using maven defaults -->
 		<pluginManagement>
@@ -338,6 +205,11 @@
 						<configLocation>checkstyle/checkstyle.xml</configLocation>
 					</configuration>
 				</plugin>
+                <plugin>
+                    <groupId>org.eclipse.xtend</groupId>
+                    <artifactId>xtend-maven-plugin</artifactId>
+                    <version>${xtext.version}</version>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 
