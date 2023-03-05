@@ -8,10 +8,6 @@
 		<artifactId>parent</artifactId>
 		<version>0.0.0.master</version>
 	</parent>
-	
-	<properties>
-		<xtend.maven.plugin.version>${xtend.version}</xtend.maven.plugin.version>
-	</properties>
 
 	<artifactId>daml</artifactId>
 	<name>code-gen-daml</name>
@@ -22,7 +18,6 @@
 			<plugin>
 				<groupId>org.eclipse.xtend</groupId>
 				<artifactId>xtend-maven-plugin</artifactId>
-				<version>${xtend.maven.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>Generate xtend sources</id>
@@ -61,28 +56,12 @@
 			<artifactId>rosetta-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.emf</groupId>
-			<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.xtend</groupId>
 			<artifactId>org.eclipse.xtend.lib</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.xtext</groupId>
-			<artifactId>org.eclipse.xtext</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
 		</dependency>
 
 		<dependency>
@@ -96,11 +75,11 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
