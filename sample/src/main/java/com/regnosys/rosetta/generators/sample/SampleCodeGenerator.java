@@ -36,12 +36,12 @@ public class SampleCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	private String generateFilename(RosettaJavaPackages packages, Data clazz) {
-		return packages.model().directoryName() + "/" + clazz.getName() + ".sample";
+		return packages.model().withForwardSlashes() + "/" + clazz.getName() + ".sample";
 	}
 
 	private String generateClass(RosettaJavaPackages packages, Data clazz, String version) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("package ").append(packages.model().name());
+		sb.append("package ").append(packages.model());
 		sb.append(GeneratorUtils.LINE_SEPARATOR).append(GeneratorUtils.LINE_SEPARATOR);
 		sb.append(GeneratorUtils.groovyDocWithVersion(clazz.getDefinition(), version));
 		sb.append("class ").append(clazz.getName()).append(" {");
