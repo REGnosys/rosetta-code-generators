@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.Package
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.object.ExpandedType
@@ -32,6 +31,7 @@ import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
+import com.regnosys.rosetta.utils.DottedPath
 
 class CSharpNames {
 
@@ -75,7 +75,7 @@ class CSharpNames {
                 createCSharpType(modelRootPackage(type), CSharpEnumGenerator.toCSharpName(type.name, true))
             RosettaRecordType:
                 CSharpType.create(type.name) ?:
-                    CSharpType.create(packages.defaultLibRecords.name + '.' + type.name.toFirstUpper)
+                    CSharpType.create(packages.defaultLibRecords.withDots + '.' + type.name.toFirstUpper)
             RosettaExternalFunction:
                 createCSharpType(packages.defaultLibFunctions, type.name)
             RosettaCalculationType,
@@ -101,8 +101,8 @@ class CSharpNames {
         }
     }
 
-    def createCSharpType(Package pack, String typeName) {
-        CSharpType.create(pack.child(typeName).name())
+    def createCSharpType(DottedPath pack, String typeName) {
+        CSharpType.create(pack.child(typeName).withDots)
     }
     
     def createMetaType(String parent, String meta) {
@@ -128,10 +128,10 @@ class CSharpNames {
             return createCSharpType(packages.basicMetafields, name)
         }
         var parentPKG = new RootPackage(type.type.model)
-        var metaParent = parentPKG.child(type.type.name).name()
+        var metaParent = parentPKG.child(type.type.name).withDots
         
         var metaPKG = parentPKG.metaField
-        var meta = metaPKG.child(name).name()       
+        var meta = metaPKG.child(name).withDots
         createMetaType(metaParent, meta)
     }
 
