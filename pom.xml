@@ -42,7 +42,7 @@
 			</activation>
 			<properties>
 				<rosetta.dsl.version>7.3.1</rosetta.dsl.version>
-				<rosetta.bundle.version>5.8.0</rosetta.bundle.version>
+				<rosetta.bundle.version>5.9.0</rosetta.bundle.version>
 			</properties>
 		</profile>
 	</profiles>
@@ -51,13 +51,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.release>8</maven.compiler.release>
-   		<junit.version>5.9.1</junit.version>
-        <hamcrest.version>2.0.0.0</hamcrest.version>
-        <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
+        
+   		<apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <apache.commons.text.version>1.10.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
 
         <xtext.version>2.27.0</xtext.version>
+        
+        <junit.version>5.9.1</junit.version>
+        <hamcrest.version>2.2</hamcrest.version>
     </properties>
 
 	<modules>
@@ -154,7 +156,7 @@
             </dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
-				<artifactId>java-hamcrest</artifactId>
+				<artifactId>hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
 				<scope>test</scope>
 			</dependency>
