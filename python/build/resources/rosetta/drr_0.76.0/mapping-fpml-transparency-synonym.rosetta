@@ -1,0 +1,10 @@
+namespace drr.mapping.fpml.transparency
+version "0.76.0"
+
+import drr.mapping.fpml.regulatoryreportingview.*
+
+synonym source FpML_5_10_Transparency extends FpML_5_10_RegulatoryReportingView
+{
+
+}
+

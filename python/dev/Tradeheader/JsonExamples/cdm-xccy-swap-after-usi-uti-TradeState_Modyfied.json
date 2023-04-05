@@ -1,0 +1,543 @@
+{
+    "meta": {"globalKey": "d6f45e0d"},
+    "trade": {
+        "meta": {"globalKey": "8bbc78cb"},
+        "party": [
+            {
+                "meta": {
+                    "externalKey": "party1",
+                    "globalKey": "7cec034c"
+                },
+                "name": "Party A",
+                "partyId": [
+                    {
+                        "identifier": "54930084UKLVMY22DS16",
+                        "identifierType": "LEI",
+                        "meta": {"globalKey": "121d7965"}
+                    }
+                ]
+            },
+            {
+                "meta": {
+                    "externalKey": "party2",
+                    "globalKey": "490e5f44"
+                },
+                "name": "Party B",
+                "partyId": [
+                    {
+                        "identifier": "48750084UKLVTR22DS78",
+                        "identifierType": "LEI",
+                        "meta": {"globalKey": "de31bddc"}
+                    }
+                ]
+            }
+        ],
+        "tradableProduct": {
+            "counterparty": [
+                {
+                    "partyReference": {
+                        "externalReference": "party1",
+                        "globalReference": "7cec034c"
+                    },
+                    "role": "PARTY_1"
+                },
+                {
+                    "partyReference": {
+                        "externalReference": "party2",
+                        "globalReference": "490e5f44"
+                    },
+                    "role": "PARTY_2"
+                }
+            ],
+            "product": {
+                "contractualProduct": {
+                    "productIdentifier": [
+                        {
+                            "identifier": "InterestRate:CrossCurrency:Basis",
+                            "meta": {"globalKey": "b0bf3e75"},
+                            "source": "OTHER"
+                        }
+                    ],
+                    "productTaxonomy": [
+                        {"primaryAssetClass": "INTEREST_RATE"},
+                        {
+                            "taxonomySource": "CFI",
+                            "taxonomyValue": "SRAXCC"
+                        },
+                        {
+                            "taxonomySource": "EMIR",
+                            "taxonomyValue": "SW"
+                        },
+                        {
+                            "productQualifier": "InterestRate_CrossCurrency_Basis",
+                            "taxonomySource": "ISDA"
+                        }
+                    ],
+                    "economicTerms": {
+                        "payout": {
+                            "interestRatePayout": [
+                                {
+                                    "payerReceiver": {
+                                        "payer": "PARTY_1",
+                                        "receiver": "PARTY_2"
+                                    },
+                                    "priceQuantity": {
+                                        "meta": {"globalKey": "658381c3"},
+                                        "quantityMultiplier": {
+                                            "fxLinkedNotionalSchedule": {
+                                                "fixingTime": {
+                                                    "businessCenter": "GBLO",
+                                                    "hourMinuteTime": "11:00:00"
+                                                },
+                                                "fxSpotRateSource": {
+                                                    "primarySource": {
+                                                        "sourcePage": "WM Company LDN 11am Mid",
+                                                        "sourcePageHeading": "USD/EUR",
+                                                        "sourceProvider": "TELERATE"
+                                                    }
+                                                },
+                                                "varyingNotionalCurrency": "USD",
+                                                "varyingNotionalFixingDates": {
+                                                    "meta": {"globalKey": "937e4a3"},
+                                                    "period": "D",
+                                                    "periodMultiplier": 2,
+                                                    "dayType": "BUSINESS",
+                                                    "businessCenters": {
+                                                        "businessCenter": ["GBLO"],
+                                                        "meta": {"globalKey": "21479e"}
+                                                    },
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                },
+                                                "varyingNotionalInterimExchangePaymentDates": {
+                                                    "meta": {"globalKey": "937e4a3"},
+                                                    "period": "D",
+                                                    "periodMultiplier": 2,
+                                                    "dayType": "BUSINESS",
+                                                    "businessCenters": {
+                                                        "businessCenter": ["GBLO"],
+                                                        "meta": {"globalKey": "21479e"}
+                                                    },
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                }
+                                            }
+                                        },
+                                        "quantityReference": {
+                                            "externalReference": "fixed_notional_schedule",
+                                            "globalReference": "0"
+                                        },
+                                        "quantitySchedule": {"address": "quantity-1"}
+                                    },
+                                    "principalPayment": {
+                                        "finalPayment": false,
+                                        "initialPayment": false,
+                                        "intermediatePayment": true,
+                                        "meta": {"globalKey": "12be2f"}
+                                    },
+                                    "settlementTerms": {
+                                        "meta": {"globalKey": "14966"},
+                                        "settlementType": "CASH",
+                                        "settlementCurrency": "USD"
+                                    },
+                                    "calculationPeriodDates": {
+                                        "calculationPeriodDatesAdjustments": {
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "5865eac3"}
+                                        },
+                                        "calculationPeriodFrequency": {
+                                            "meta": {"globalKey": "28c48"},
+                                            "period": "M",
+                                            "periodMultiplier": 3,
+                                            "rollConvention": "21"
+                                        },
+                                        "effectiveDate": {
+                                            "adjustableDate": {
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "meta": {"globalKey": "5865eac3"}
+                                                },
+                                                "meta": {"globalKey": "733f98e"},
+                                                "unadjustedDate": "2018-03-21"
+                                            },
+                                            "meta": {"globalKey": "733f98e"}
+                                        },
+                                        "meta": {
+                                            "externalKey": "d0e5304",
+                                            "globalKey": "40e712a7"
+                                        },
+                                        "terminationDate": {
+                                            "adjustableDate": {
+                                                "adjustedDate": "2023-03-21",
+                                                "dateAdjustments": {
+                                                    "businessCenters": {
+                                                        "meta": {"globalKey": "81e33772"}
+                                                    },
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "meta": {"globalKey": "5865eac3"}
+                                                },
+                                                "meta": {"globalKey": "80e0d18e"},
+                                                "unadjustedDate": "2023-03-21"
+                                            },
+                                            "meta": {"globalKey": "80e0d18e"}
+                                        }
+                                    },
+                                    "cashflowRepresentation": {"cashflowsMatchParameters": false},
+                                    "compoundingMethod": "NONE",
+                                    "dayCountFraction": "ACT/360",
+                                    "meta": {"globalKey": "6965de00"},
+                                    "paymentDates": {
+                                        "firstPaymentDate": "2018-06-21",
+                                        "meta": {"globalKey": "b7434d18"},
+                                        "payRelativeTo": "CALCULATION_PERIOD_END_DATE",
+                                        "paymentDatesAdjustments": {
+                                            "businessCenters": {
+                                                "meta": {"globalKey": "81e33772"}
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "5865eac3"}
+                                        },
+                                        "paymentFrequency": {
+                                            "meta": {"globalKey": "956"},
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        }
+                                    },
+                                    "rateSpecification": {
+                                        "floatingRate": {
+                                            "meta": {"globalKey": "0"},
+                                            "rateOption": {"address": "rateOption-2"},
+                                            "spreadSchedule": {
+                                                "price": {
+                                                    "priceExpression": {"priceType": "ASSET_PRICE"},
+                                                    "address": "price-1"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "resetDates": {
+                                        "calculationPeriodDatesReference": {
+                                            "externalReference": "d0e5304",
+                                            "globalReference": "40e712a7"
+                                        },
+                                        "fixingDates": {
+                                            "meta": {"globalKey": "7a0be842"},
+                                            "period": "D",
+                                            "periodMultiplier": -2,
+                                            "dayType": "BUSINESS",
+                                            "businessCenters": {
+                                                "meta": {"globalKey": "21479e"}
+                                            },
+                                            "businessDayConvention": "NONE"
+                                        },
+                                        "meta": {
+                                            "externalKey": "d0e5651",
+                                            "globalKey": "3c25fa77"
+                                        },
+                                        "resetDatesAdjustments": {
+                                            "businessCenters": {
+                                                "businessCenter": ["GBLO"],
+                                                "meta": {"globalKey": "21479e"}
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "365c4b6f"}
+                                        },
+                                        "resetFrequency": {
+                                            "meta": {"globalKey": "956"},
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        },
+                                        "resetRelativeTo": "CALCULATION_PERIOD_START_DATE"
+                                    }
+                                },
+                                {
+                                    "payerReceiver": {
+                                        "payer": "PARTY_2",
+                                        "receiver": "PARTY_1"
+                                    },
+                                    "priceQuantity": {
+                                        "meta": {
+                                            "externalKey": "fixed_notional_schedule",
+                                            "globalKey": "0"
+                                        },
+                                        "quantitySchedule": {"address": "quantity-2"}
+                                    },
+                                    "principalPayment": {
+                                        "finalPayment": true,
+                                        "initialPayment": true,
+                                        "intermediatePayment": true,
+                                        "meta": {"globalKey": "747c1b93"},
+                                        "principalPaymentSchedule": {
+                                            "finalPrincipalPayment": {
+                                                "meta": {"globalKey": "37cbd860"},
+                                                "payerReceiver": {
+                                                    "payer": "PARTY_2",
+                                                    "receiver": "PARTY_1"
+                                                },
+                                                "principalAmount": {
+                                                    "amount": 1400.0,
+                                                    "unitOfAmount": {"currency": "EUR"},
+                                                    "meta": {"globalKey": "7b889f5f"}
+                                                },
+                                                "principalPaymentDate": {
+                                                    "adjustedDate": "2023-03-21",
+                                                    "meta": {"globalKey": "0"}
+                                                }
+                                            },
+                                            "initialPrincipalPayment": {
+                                                "meta": {"globalKey": "4d0e6c2"},
+                                                "payerReceiver": {
+                                                    "payer": "PARTY_1",
+                                                    "receiver": "PARTY_2"
+                                                },
+                                                "principalAmount": {
+                                                    "amount": 1400.0,
+                                                    "unitOfAmount": {"currency": "EUR"},
+                                                    "meta": {"globalKey": "7b889f5f"}
+                                                },
+                                                "principalPaymentDate": {
+                                                    "adjustedDate": "2018-03-21",
+                                                    "meta": {"globalKey": "0"}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "settlementTerms": {
+                                        "meta": {"globalKey": "10da2"},
+                                        "settlementType": "CASH",
+                                        "settlementCurrency": "EUR"
+                                    },
+                                    "calculationPeriodDates": {
+                                        "calculationPeriodDatesAdjustments": {
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "5865eac3"}
+                                        },
+                                        "calculationPeriodFrequency": {
+                                            "meta": {"globalKey": "28c48"},
+                                            "period": "M",
+                                            "periodMultiplier": 3,
+                                            "rollConvention": "21"
+                                        },
+                                        "effectiveDate": {
+                                            "adjustableDate": {
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "meta": {"globalKey": "5865eac3"}
+                                                },
+                                                "meta": {"globalKey": "733f98e"},
+                                                "unadjustedDate": "2018-03-21"
+                                            },
+                                            "meta": {"globalKey": "733f98e"}
+                                        },
+                                        "meta": {
+                                            "externalKey": "d0e6023",
+                                            "globalKey": "40e712a7"
+                                        },
+                                        "terminationDate": {
+                                            "adjustableDate": {
+                                                "adjustedDate": "2023-03-21",
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "meta": {"globalKey": "5865eac3"}
+                                                },
+                                                "meta": {"globalKey": "80e0d18e"},
+                                                "unadjustedDate": "2023-03-21"
+                                            },
+                                            "meta": {"globalKey": "80e0d18e"}
+                                        }
+                                    },
+                                    "cashflowRepresentation": {"cashflowsMatchParameters": false},
+                                    "compoundingMethod": "NONE",
+                                    "dayCountFraction": "ACT/360",
+                                    "meta": {"globalKey": "8c9fc8ff"},
+                                    "paymentDates": {
+                                        "firstPaymentDate": "2018-06-21",
+                                        "meta": {"globalKey": "b7434d18"},
+                                        "payRelativeTo": "CALCULATION_PERIOD_END_DATE",
+                                        "paymentDatesAdjustments": {
+                                            "businessCenters": {
+                                                "meta": {"globalKey": "81e33772"}
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "5865eac3"}
+                                        },
+                                        "paymentFrequency": {
+                                            "meta": {"globalKey": "956"},
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        }
+                                    },
+                                    "rateSpecification": {
+                                        "floatingRate": {
+                                            "meta": {"globalKey": "0"},
+                                            "rateOption": {"address": "rateOption-1"},
+                                            "spreadSchedule": {
+                                                "price": {
+                                                    "priceExpression": {"priceType": "ASSET_PRICE"},
+                                                    "address": "price-2"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "resetDates": {
+                                        "calculationPeriodDatesReference": {
+                                            "externalReference": "d0e6023",
+                                            "globalReference": "40e712a7"
+                                        },
+                                        "fixingDates": {
+                                            "meta": {"globalKey": "77b1cd44"},
+                                            "period": "D",
+                                            "periodMultiplier": -2,
+                                            "dayType": "BUSINESS",
+                                            "businessCenters": {
+                                                "businessCenter": ["EUTA"],
+                                                "meta": {"globalKey": "20a71d"}
+                                            },
+                                            "businessDayConvention": "NONE"
+                                        },
+                                        "meta": {
+                                            "externalKey": "d0e6369",
+                                            "globalKey": "3dfddeb3"
+                                        },
+                                        "resetDatesAdjustments": {
+                                            "businessCenters": {
+                                                "businessCenter": ["EUTA"],
+                                                "meta": {"globalKey": "20a71d"}
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING",
+                                            "meta": {"globalKey": "365baaee"}
+                                        },
+                                        "resetFrequency": {
+                                            "meta": {"globalKey": "956"},
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        },
+                                        "resetRelativeTo": "CALCULATION_PERIOD_START_DATE"
+                                    }
+                                }
+                            ],
+                            "meta": {"globalKey": "44e92aff"}
+                        }
+                    },
+                    "meta": {"globalKey": "7a05a138"}
+                },
+                "meta": {"globalKey": "7a05a138"}
+            },
+            "tradeLot": [
+                {
+                    "priceQuantity": [
+                        {
+                            "meta": {"globalKey": "70c63f1d"},
+                            "observable": {
+                                "meta": {"globalKey": "5f0c6d05"},
+                                "rateOption": {
+                                    "floatingRateIndex": "USD-LIBOR-BBA",
+                                    "indexTenor": {
+                                        "meta": {"globalKey": "956"},
+                                        "period": "M",
+                                        "periodMultiplier": 3
+                                    }
+                                }
+                            },
+                            "price": [
+                                {
+                                    "amount": 0.0,
+                                    "unitOfAmount": {"currency": "USD"},
+                                    "perUnitOfAmount": {"currency": "USD"},
+                                    "priceExpression": {
+                                        "priceType": "INTEREST_RATE",
+                                        "spreadType": "SPREAD"
+                                    }
+                                }
+                            ],
+                            "quantity": [
+                                {
+                                    "amount": 1726.62,
+                                    "unitOfAmount": {"currency": "USD"}
+                                }
+                            ]
+                        },
+                        {
+                            "meta": {"globalKey": "cd0f041b"},
+                            "observable": {
+                                "meta": {"globalKey": "bf589e0e"},
+                                "rateOption": {
+                                    "floatingRateIndex": "EUR-EURIBOR-Telerate",
+                                    "indexTenor": {
+                                        "meta": {"globalKey": "956"},
+                                        "period": "M",
+                                        "periodMultiplier": 3
+                                    }
+                                }
+                            },
+                            "price": [
+                                {
+                                    "amount": -0.0045,
+                                    "unitOfAmount": {"currency": "EUR"},
+                                    "perUnitOfAmount": {"currency": "EUR"},
+                                    "priceExpression": {
+                                        "priceType": "INTEREST_RATE",
+                                        "spreadType": "SPREAD"
+                                    }
+                                }
+                            ],
+                            "quantity": [
+                                {
+                                    "amount": 1400,
+                                    "unitOfAmount": {"currency": "EUR"}
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "tradeDate": "2018-03-19",
+        "tradeIdentifier": [
+            {
+                "assignedIdentifier": [
+                    {
+                        "identifier": "DRTY123456",
+                        "identifierType": "UNIQUE_TRANSACTION_IDENTIFIER"
+                    }
+                ],
+                "issuer": "54930084UKLVMY22DS16",
+                "meta": {"globalKey": "7dd25aa3"}
+            },
+            {
+                "assignedIdentifier": [
+                    {
+                        "identifier": "UITD7895394",
+                        "identifierType": "UNIQUE_SWAP_IDENTIFIER"
+                    }
+                ],
+                "issuer": "1031234567",
+                "meta": {"globalKey": "39af0494"}
+            }
+        ]
+    },
+    "transferHistory": [
+        {
+            "meta": {
+                "externalKey": "SDB123-AB5.EUR.20180209.0",
+                "globalKey": "9384e638"
+            },
+            "transfer": {
+                "payerReceiver": {
+                    "payerPartyReference": {
+                        "externalReference": "party1",
+                        "globalReference": "7cec034c"
+                    },
+                    "receiverPartyReference": {
+                        "externalReference": "party2",
+                        "globalReference": "490e5f44"
+                    }
+                },
+                "quantity": {
+                    "amount": 5.0,
+                    "unitOfAmount": {"currency": "EUR"}
+                },
+                "settlementDate": {"adjustedDate": "2018-02-09"},
+                "transferExpression": {"priceTransfer": "UPFRONT"}
+            }
+        }
+    ]
+}

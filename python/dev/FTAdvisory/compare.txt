@@ -1,0 +1,296 @@
+49d48
+< ./__init__.py
+51,52d49
+< ./.gitignore
+< ./init.bat
+741a739
+> ./build/lib/cdm/product/asset/__init__.py
+767a766
+> ./build/lib/cdm/product/asset/floatingrate/__init__.py
+770d768
+< ./build/lib/cdm/product/asset/floatingrate/init.py
+775d772
+< ./build/lib/cdm/product/asset/init.py
+826a824
+> ./build/lib/cdm/product/template/__init__.py
+859d856
+< ./build/lib/cdm/product/template/init.py
+874a872
+> ./build/lib/cdm/product/__init__.py
+888a887
+> ./build/lib/cdm/product/common/schedule/__init__.py
+903d901
+< ./build/lib/cdm/product/common/schedule/init.py
+920a919
+> ./build/lib/cdm/product/common/settlement/__init__.py
+938d936
+< ./build/lib/cdm/product/common/settlement/init.py
+949,950c947
+< ./build/lib/cdm/product/common/init.py
+< ./build/lib/cdm/product/init.py
+---
+> ./build/lib/cdm/product/common/__init__.py
+951a949
+> ./build/lib/cdm/product/qualification/__init__.py
+953d950
+< ./build/lib/cdm/product/qualification/init.py
+957a955
+> ./build/lib/cdm/legalagreement/contract/__init__.py
+960d957
+< ./build/lib/cdm/legalagreement/contract/init.py
+1016a1014
+> ./build/lib/cdm/legalagreement/csa/__init__.py
+1072d1069
+< ./build/lib/cdm/legalagreement/csa/init.py
+1097a1095
+> ./build/lib/cdm/legalagreement/__init__.py
+1111a1110
+> ./build/lib/cdm/legalagreement/common/__init__.py
+1127d1125
+< ./build/lib/cdm/legalagreement/common/init.py
+1142a1141
+> ./build/lib/cdm/legalagreement/master/__init__.py
+1148d1146
+< ./build/lib/cdm/legalagreement/master/init.py
+1154d1151
+< ./build/lib/cdm/legalagreement/init.py
+1176a1174
+> ./build/lib/cdm/observable/asset/fro/__init__.py
+1184d1181
+< ./build/lib/cdm/observable/asset/fro/init.py
+1213a1211
+> ./build/lib/cdm/observable/asset/__init__.py
+1233a1232
+> ./build/lib/cdm/observable/asset/calculatedrate/__init__.py
+1237d1235
+< ./build/lib/cdm/observable/asset/calculatedrate/init.py
+1262d1259
+< ./build/lib/cdm/observable/asset/init.py
+1272a1270
+> ./build/lib/cdm/observable/__init__.py
+1276c1274
+< ./build/lib/cdm/observable/common/init.py
+---
+> ./build/lib/cdm/observable/common/__init__.py
+1278d1275
+< ./build/lib/cdm/observable/init.py
+1290a1288
+> ./build/lib/cdm/observable/event/__init__.py
+1300d1297
+< ./build/lib/cdm/observable/event/init.py
+1316a1314
+> ./build/lib/cdm/regulation/__init__.py
+1330d1327
+< ./build/lib/cdm/regulation/init.py
+1338a1336
+> ./build/lib/cdm/event/position/__init__.py
+1342d1339
+< ./build/lib/cdm/event/position/init.py
+1343a1341
+> ./build/lib/cdm/event/__init__.py
+1377a1376
+> ./build/lib/cdm/event/common/__init__.py
+1408d1406
+< ./build/lib/cdm/event/common/init.py
+1421a1420
+> ./build/lib/cdm/event/workflow/__init__.py
+1432d1430
+< ./build/lib/cdm/event/workflow/init.py
+1436d1433
+< ./build/lib/cdm/event/init.py
+1441c1438
+< ./build/lib/cdm/base/datetime/daycount/init.py
+---
+> ./build/lib/cdm/base/datetime/daycount/__init__.py
+1459a1457
+> ./build/lib/cdm/base/datetime/__init__.py
+1473d1470
+< ./build/lib/cdm/base/datetime/init.py
+1478a1476
+> ./build/lib/cdm/base/__init__.py
+1495a1494
+> ./build/lib/cdm/base/math/__init__.py
+1505d1503
+< ./build/lib/cdm/base/math/init.py
+1515a1514
+> ./build/lib/cdm/base/staticdata/asset/credit/__init__.py
+1517d1515
+< ./build/lib/cdm/base/staticdata/asset/credit/init.py
+1520c1518
+< ./build/lib/cdm/base/staticdata/asset/rates/init.py
+---
+> ./build/lib/cdm/base/staticdata/asset/rates/__init__.py
+1521a1520
+> ./build/lib/cdm/base/staticdata/asset/__init__.py
+1540a1540
+> ./build/lib/cdm/base/staticdata/asset/common/__init__.py
+1565d1564
+< ./build/lib/cdm/base/staticdata/asset/common/init.py
+1572d1570
+< ./build/lib/cdm/base/staticdata/asset/init.py
+1587a1586
+> ./build/lib/cdm/base/staticdata/party/__init__.py
+1598d1596
+< ./build/lib/cdm/base/staticdata/party/init.py
+1607a1606
+> ./build/lib/cdm/base/staticdata/__init__.py
+1609a1609
+> ./build/lib/cdm/base/staticdata/identifier/__init__.py
+1612d1611
+< ./build/lib/cdm/base/staticdata/identifier/init.py
+1614,1615d1612
+< ./build/lib/cdm/base/staticdata/init.py
+< ./build/lib/cdm/base/init.py
+1619d1615
+< ./src/cdm/.DS_Store
+1651a1648
+> ./src/cdm/product/asset/__init__.py
+1678a1676
+> ./src/cdm/product/asset/floatingrate/__init__.py
+1681d1678
+< ./src/cdm/product/asset/floatingrate/init.py
+1686d1682
+< ./src/cdm/product/asset/init.py
+1737a1734
+> ./src/cdm/product/template/__init__.py
+1770d1766
+< ./src/cdm/product/template/init.py
+1785a1782
+> ./src/cdm/product/__init__.py
+1799a1797
+> ./src/cdm/product/common/schedule/__init__.py
+1814d1811
+< ./src/cdm/product/common/schedule/init.py
+1831a1829
+> ./src/cdm/product/common/settlement/__init__.py
+1849d1846
+< ./src/cdm/product/common/settlement/init.py
+1860,1861c1857
+< ./src/cdm/product/common/init.py
+< ./src/cdm/product/init.py
+---
+> ./src/cdm/product/common/__init__.py
+1862a1859
+> ./src/cdm/product/qualification/__init__.py
+1864d1860
+< ./src/cdm/product/qualification/init.py
+1868a1865
+> ./src/cdm/legalagreement/contract/__init__.py
+1871d1867
+< ./src/cdm/legalagreement/contract/init.py
+1927a1924
+> ./src/cdm/legalagreement/csa/__init__.py
+1983d1979
+< ./src/cdm/legalagreement/csa/init.py
+2008a2005
+> ./src/cdm/legalagreement/__init__.py
+2022a2020
+> ./src/cdm/legalagreement/common/__init__.py
+2038d2035
+< ./src/cdm/legalagreement/common/init.py
+2053a2051
+> ./src/cdm/legalagreement/master/__init__.py
+2059d2056
+< ./src/cdm/legalagreement/master/init.py
+2065d2061
+< ./src/cdm/legalagreement/init.py
+2087a2084
+> ./src/cdm/observable/asset/fro/__init__.py
+2095d2091
+< ./src/cdm/observable/asset/fro/init.py
+2124a2121
+> ./src/cdm/observable/asset/__init__.py
+2144a2142
+> ./src/cdm/observable/asset/calculatedrate/__init__.py
+2148d2145
+< ./src/cdm/observable/asset/calculatedrate/init.py
+2173d2169
+< ./src/cdm/observable/asset/init.py
+2183a2180
+> ./src/cdm/observable/__init__.py
+2187c2184
+< ./src/cdm/observable/common/init.py
+---
+> ./src/cdm/observable/common/__init__.py
+2189d2185
+< ./src/cdm/observable/init.py
+2201a2198
+> ./src/cdm/observable/event/__init__.py
+2211d2207
+< ./src/cdm/observable/event/init.py
+2227a2224
+> ./src/cdm/regulation/__init__.py
+2241d2237
+< ./src/cdm/regulation/init.py
+2248d2243
+< ./src/cdm/event/.DS_Store
+2250a2246
+> ./src/cdm/event/position/__init__.py
+2254d2249
+< ./src/cdm/event/position/init.py
+2255a2251
+> ./src/cdm/event/__init__.py
+2289a2286
+> ./src/cdm/event/common/__init__.py
+2320d2316
+< ./src/cdm/event/common/init.py
+2333a2330
+> ./src/cdm/event/workflow/__init__.py
+2344d2340
+< ./src/cdm/event/workflow/init.py
+2348d2343
+< ./src/cdm/event/init.py
+2351d2345
+< ./src/cdm/base/.DS_Store
+2355c2349
+< ./src/cdm/base/datetime/daycount/init.py
+---
+> ./src/cdm/base/datetime/daycount/__init__.py
+2373a2368
+> ./src/cdm/base/datetime/__init__.py
+2387d2381
+< ./src/cdm/base/datetime/init.py
+2392a2387
+> ./src/cdm/base/__init__.py
+2409a2405
+> ./src/cdm/base/math/__init__.py
+2419d2414
+< ./src/cdm/base/math/init.py
+2425d2419
+< ./src/cdm/base/staticdata/.DS_Store
+2430a2425
+> ./src/cdm/base/staticdata/asset/credit/__init__.py
+2432d2426
+< ./src/cdm/base/staticdata/asset/credit/init.py
+2435c2429
+< ./src/cdm/base/staticdata/asset/rates/init.py
+---
+> ./src/cdm/base/staticdata/asset/rates/__init__.py
+2436a2431
+> ./src/cdm/base/staticdata/asset/__init__.py
+2455a2451
+> ./src/cdm/base/staticdata/asset/common/__init__.py
+2480d2475
+< ./src/cdm/base/staticdata/asset/common/init.py
+2487d2481
+< ./src/cdm/base/staticdata/asset/init.py
+2502a2497
+> ./src/cdm/base/staticdata/party/__init__.py
+2513d2507
+< ./src/cdm/base/staticdata/party/init.py
+2522a2517
+> ./src/cdm/base/staticdata/__init__.py
+2524a2520
+> ./src/cdm/base/staticdata/identifier/__init__.py
+2527d2522
+< ./src/cdm/base/staticdata/identifier/init.py
+2529,2537d2523
+< ./src/cdm/base/staticdata/init.py
+< ./src/cdm/base/init.py
+< ./src/.DS_Store
+< ./src/python_cdm.egg-info
+< ./src/python_cdm.egg-info/PKG-INFO
+< ./src/python_cdm.egg-info/SOURCES.txt
+< ./src/python_cdm.egg-info/requires.txt
+< ./src/python_cdm.egg-info/top_level.txt
+< ./src/python_cdm.egg-info/dependency_links.txt

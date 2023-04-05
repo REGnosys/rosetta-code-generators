@@ -1,0 +1,458 @@
+{
+    "trade": {
+        "party": [
+            {
+                "name": "Party A",
+                "partyId": [
+                    {
+                        "identifier": "54930084UKLVMY22DS16",
+                        "identifierType": "LEI"
+                    }
+                ]
+            },
+            {
+                "name": "Party B",
+                "partyId": [
+                    {
+                        "identifier": "48750084UKLVTR22DS78",
+                        "identifierType": "LEI"
+                    }
+                ]
+            }
+        ],
+        "tradableProduct": {
+            "counterparty": [
+                {
+                    "partyReference": {},
+                    "role": "PARTY_1"
+                },
+                {
+                    "partyReference": {},
+                    "role": "PARTY_2"
+                }
+            ],
+            "product": {
+                "contractualProduct": {
+                    "productIdentifier": [
+                        {
+                            "identifier": "InterestRate:CrossCurrency:Basis",
+                            "source": "OTHER"
+                        }
+                    ],
+                    "productTaxonomy": [
+                        {
+                            "primaryAssetClass": "INTEREST_RATE"
+                        },
+                        {
+                            "taxonomySource": "CFI",
+                            "taxonomyValue": "SRAXCC"
+                        },
+                        {
+                            "taxonomySource": "EMIR",
+                            "taxonomyValue": "SW"
+                        },
+                        {
+                            "productQualifier": "InterestRate_CrossCurrency_Basis",
+                            "taxonomySource": "ISDA"
+                        }
+                    ],
+                    "economicTerms": {
+                        "payout": {
+                            "interestRatePayout": [
+                                {
+                                    "payerReceiver": {
+                                        "payer": "PARTY_1",
+                                        "receiver": "PARTY_2"
+                                    },
+                                    "priceQuantity": {
+                                        "quantityMultiplier": {
+                                            "fxLinkedNotionalSchedule": {
+                                                "fixingTime": {
+                                                    "businessCenter": "GBLO",
+                                                    "hourMinuteTime": "11:00:00"
+                                                },
+                                                "fxSpotRateSource": {
+                                                    "primarySource": {
+                                                        "sourcePage": "WM Company LDN 11am Mid",
+                                                        "sourcePageHeading": "USD/EUR",
+                                                        "sourceProvider": "TELERATE"
+                                                    }
+                                                },
+                                                "varyingNotionalCurrency": "USD",
+                                                "varyingNotionalFixingDates": {
+                                                    "period": "D",
+                                                    "periodMultiplier": 2,
+                                                    "dayType": "BUSINESS",
+                                                    "businessCenters": {
+                                                        "businessCenter": [
+                                                            "GBLO"
+                                                        ]
+                                                    },
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "dateRelativeTo": "2018-03-19"
+                                                },
+                                                "varyingNotionalInterimExchangePaymentDates": {
+                                                    "period": "D",
+                                                    "periodMultiplier": 2,
+                                                    "dayType": "BUSINESS",
+                                                    "businessCenters": {
+                                                        "businessCenter": [
+                                                            "GBLO"
+                                                        ]
+                                                    },
+                                                    "businessDayConvention": "MODFOLLOWING",
+                                                    "dateRelativeTo": "2018-03-19"
+                                                }
+                                            }
+                                        },
+                                        "quantityReference": {},
+                                        "quantitySchedule": {}
+                                    },
+                                    "principalPayment": {
+                                        "finalPayment": false,
+                                        "initialPayment": false,
+                                        "intermediatePayment": true
+                                    },
+                                    "settlementTerms": {
+                                        "settlementCurrency": "USD",
+                                        "settlementType": "CASH"
+                                    },
+                                    "calculationPeriodDates": {
+                                        "calculationPeriodDatesAdjustments": {
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "calculationPeriodFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3,
+                                            "rollConvention": "21"
+                                        },
+                                        "effectiveDate": {
+                                            "adjustableDate": {
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                },
+                                                "unadjustedDate": "2018-03-21"
+                                            }
+                                        },
+                                        "terminationDate": {
+                                            "adjustableDate": {
+                                                "adjustedDate": "2023-03-21",
+                                                "dateAdjustments": {
+                                                    "businessCenters": {},
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                },
+                                                "unadjustedDate": "2023-03-21"
+                                            }
+                                        }
+                                    },
+                                    "cashflowRepresentation": {
+                                        "cashflowsMatchParameters": false
+                                    },
+                                    "compoundingMethod": "NONE",
+                                    "dayCountFraction": "ACT/360",
+                                    "paymentDates": {
+                                        "firstPaymentDate": "2018-06-21",
+                                        "payRelativeTo": "CALCULATION_PERIOD_END_DATE",
+                                        "paymentDatesAdjustments": {
+                                            "businessCenters": {},
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "paymentFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        }
+                                    },
+                                    "rateSpecification": {
+                                        "floatingRate": {
+                                            "rateOption": {},
+                                            "spreadSchedule": {
+                                                "price": {
+                                                    "priceExpression": {
+                                                        "priceType": "ASSET_PRICE"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "resetDates": {
+                                        "calculationPeriodDatesReference": {},
+                                        "fixingDates": {
+                                            "period": "D",
+                                            "periodMultiplier": -2,
+                                            "dayType": "BUSINESS",
+                                            "businessCenters": {},
+                                            "businessDayConvention": "NONE"
+                                        },
+                                        "resetDatesAdjustments": {
+                                            "businessCenters": {
+                                                "businessCenter": [
+                                                    "GBLO"
+                                                ]
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "resetFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        },
+                                        "resetRelativeTo": "CALCULATION_PERIOD_START_DATE"
+                                    }
+                                },
+                                {
+                                    "payerReceiver": {
+                                        "payer": "PARTY_2",
+                                        "receiver": "PARTY_1"
+                                    },
+                                    "priceQuantity": {
+                                        "quantitySchedule": {}
+                                    },
+                                    "principalPayment": {
+                                        "finalPayment": true,
+                                        "initialPayment": true,
+                                        "intermediatePayment": true,
+                                        "principalPaymentSchedule": {
+                                            "finalPrincipalPayment": {
+                                                "payerReceiver": {
+                                                    "payer": "PARTY_2",
+                                                    "receiver": "PARTY_1"
+                                                },
+                                                "principalAmount": {
+                                                    "amount": 1400.0,
+                                                    "unitOfAmount": {
+                                                        "currency": "EUR"
+                                                    }
+                                                },
+                                                "principalPaymentDate": {
+                                                    "adjustedDate": "2023-03-21"
+                                                }
+                                            },
+                                            "initialPrincipalPayment": {
+                                                "payerReceiver": {
+                                                    "payer": "PARTY_1",
+                                                    "receiver": "PARTY_2"
+                                                },
+                                                "principalAmount": {
+                                                    "amount": 1400.0,
+                                                    "unitOfAmount": {
+                                                        "currency": "EUR"
+                                                    }
+                                                },
+                                                "principalPaymentDate": {
+                                                    "adjustedDate": "2018-03-21"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "settlementTerms": {
+                                        "settlementCurrency": "EUR",
+                                        "settlementType": "CASH"
+                                    },
+                                    "calculationPeriodDates": {
+                                        "calculationPeriodDatesAdjustments": {
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "calculationPeriodFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3,
+                                            "rollConvention": "21"
+                                        },
+                                        "effectiveDate": {
+                                            "adjustableDate": {
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                },
+                                                "unadjustedDate": "2018-03-21"
+                                            }
+                                        },
+                                        "terminationDate": {
+                                            "adjustableDate": {
+                                                "adjustedDate": "2023-03-21",
+                                                "dateAdjustments": {
+                                                    "businessDayConvention": "MODFOLLOWING"
+                                                },
+                                                "unadjustedDate": "2023-03-21"
+                                            }
+                                        }
+                                    },
+                                    "cashflowRepresentation": {
+                                        "cashflowsMatchParameters": false
+                                    },
+                                    "compoundingMethod": "NONE",
+                                    "dayCountFraction": "ACT/360",
+                                    "paymentDates": {
+                                        "firstPaymentDate": "2018-06-21",
+                                        "payRelativeTo": "CALCULATION_PERIOD_END_DATE",
+                                        "paymentDatesAdjustments": {
+                                            "businessCenters": {},
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "paymentFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        }
+                                    },
+                                    "rateSpecification": {
+                                        "floatingRate": {
+                                            "rateOption": {},
+                                            "spreadSchedule": {
+                                                "price": {
+                                                    "priceExpression": {
+                                                        "priceType": "ASSET_PRICE"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "resetDates": {
+                                        "calculationPeriodDatesReference": {},
+                                        "fixingDates": {
+                                            "period": "D",
+                                            "periodMultiplier": -2,
+                                            "dayType": "BUSINESS",
+                                            "businessCenters": {
+                                                "businessCenter": [
+                                                    "EUTA"
+                                                ]
+                                            },
+                                            "businessDayConvention": "NONE"
+                                        },
+                                        "resetDatesAdjustments": {
+                                            "businessCenters": {
+                                                "businessCenter": [
+                                                    "EUTA"
+                                                ]
+                                            },
+                                            "businessDayConvention": "MODFOLLOWING"
+                                        },
+                                        "resetFrequency": {
+                                            "period": "M",
+                                            "periodMultiplier": 3
+                                        },
+                                        "resetRelativeTo": "CALCULATION_PERIOD_START_DATE"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "tradeLot": [
+                {
+                    "priceQuantity": [
+                        {
+                            "observable": {
+                                "rateOption": {
+                                    "floatingRateIndex": "USD-LIBOR-BBA",
+                                    "indexTenor": {
+                                        "period": "M",
+                                        "periodMultiplier": 3
+                                    }
+                                }
+                            },
+                            "price": [
+                                {
+                                    "amount": 0.0,
+                                    "unitOfAmount": {
+                                        "currency": "USD"
+                                    },
+                                    "perUnitOfAmount": {
+                                        "currency": "USD"
+                                    },
+                                    "priceExpression": {
+                                        "priceType": "INTEREST_RATE",
+                                        "spreadType": "SPREAD"
+                                    }
+                                }
+                            ],
+                            "quantity": [
+                                {
+                                    "amount": 1726.62,
+                                    "unitOfAmount": {
+                                        "currency": "USD"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "observable": {
+                                "rateOption": {
+                                    "floatingRateIndex": "EUR-EURIBOR-Telerate",
+                                    "indexTenor": {
+                                        "period": "M",
+                                        "periodMultiplier": 3
+                                    }
+                                }
+                            },
+                            "price": [
+                                {
+                                    "amount": -0.0045,
+                                    "unitOfAmount": {
+                                        "currency": "EUR"
+                                    },
+                                    "perUnitOfAmount": {
+                                        "currency": "EUR"
+                                    },
+                                    "priceExpression": {
+                                        "priceType": "INTEREST_RATE",
+                                        "spreadType": "SPREAD"
+                                    }
+                                }
+                            ],
+                            "quantity": [
+                                {
+                                    "amount": 1400.0,
+                                    "unitOfAmount": {
+                                        "currency": "EUR"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "tradeDate": "2018-03-19",
+        "tradeIdentifier": [
+            {
+                "assignedIdentifier": [
+                    {
+                        "identifier": "DRTY123456",
+                        "identifierType": "UNIQUE_TRANSACTION_IDENTIFIER"
+                    }
+                ],
+                "issuer": "54930084UKLVMY22DS16"
+            },
+            {
+                "assignedIdentifier": [
+                    {
+                        "identifier": "UITD7895394",
+                        "identifierType": "UNIQUE_SWAP_IDENTIFIER"
+                    }
+                ],
+                "issuer": "1031234567"
+            }
+        ]
+    },
+    "transferHistory": [
+        {
+            "transfer": {
+                "payerReceiver": {
+                    "payerPartyReference": {},
+                    "receiverPartyReference": {}
+                },
+                "quantity": {
+                    "amount": 5.0,
+                    "unitOfAmount": {
+                        "currency": "EUR"
+                    }
+                },
+                "settlementDate": {
+                    "adjustedDate": "2018-02-09"
+                },
+                "transferExpression": {
+                    "priceTransfer": "UPFRONT"
+                }
+            }
+        }
+    ]
+}

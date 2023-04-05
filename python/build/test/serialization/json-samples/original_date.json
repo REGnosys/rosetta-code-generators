@@ -1,0 +1,17 @@
+{
+	"adjustableDate": {
+		"dateAdjustments": {
+			"businessDayConvention": "NONE",
+			"meta": {
+				"globalKey": "24a738"
+			}
+		},
+		"meta": {
+			"globalKey": "ece3837b"
+		},
+		"unadjustedDate": "2018-04-03"
+	},
+	"meta": {
+		"globalKey": "ece3837b"
+	}
+}

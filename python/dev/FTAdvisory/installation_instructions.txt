@@ -1,0 +1,93 @@
+installation instructions
+
+https://github.com/REGnosys/rosetta-code-generators
+
+https://github.com/REGnosys/rosetta-code-generators/issues/149
+
+prerequisites:
+
+Eclipse 2021 (JSEE) + xtend support (Eclipse IDE for Java and DSL Developers)
+https://www.eclipse.org/downloads/packages/release/2021-12/r/eclipse-ide-java-and-dsl-developers
+
+git
+
+1. create a directory structure referred to throughout as <code_gen>
+
+mkdir ~/projects/isda-cdm-code-gen
+mkdir ~/projects/isda-cdm-code-gen/.m2
+mkdir ~/projects/isda-cdm-code-gen/github
+mkdir ~/projects/isda-cdm-code-gen/github/REGnosys
+
+2. fork  and clone repository to <code_gen>/github/REGnosys
+
+cd ~/projects/isda-cdm-code-gen/github/REGnosys/
+
+git clone https://github.com/dschwartznyc/rosetta-code-generators.git
+
+3. download settings.xml to .m2 directory and update for your repository path
+
+https://github.com/REGnosys/rosetta-code-generators/issues/149#issuecomment-1151680983
+
+save to <code_ge>/.m2/settings.xml
+
+update <localRepository> to <code_gen>/.m2 
+
+<localRepository>/Users/dls/projects/isda-cdm-code-gen/.m2/repository</localRepository>
+
+4. do a clean maven install 
+
+cd ~/projects/isda-cdm-code-gen/github/REGnosys/rosetta-code-generators
+
+mvn -s ~/projects/isda-cdm-code-gen/.m2/settings.xml clean install
+
+all the test should pass.
+
+5. create a python project
+
+mvn archetype:generate -DgroupId=com.regnosys.rosetta.code-generators  -DartifactId=python
+
+take the defaults for all of the prompts
+
+6. grab the python codebase (TradeHeaderBranch) and run a maven clean install
+
+cd python
+git clone -b TradeHeaderBranch https://github.com/Cloudrisk/isda-cdm-python.git
+cp -Rf ./isda-cdm-python/***** ./
+cp -Rf ./isda-cdm-python/.***** ./
+mvn -s ~/projects/isda-cdm-code-gen/.m2/settings.xml clean install
+
+(tbc but likely to fail)
+
+7. update properties in the parent pom.xml  
+
+~/projects/isda-cdm-code-gen/github/REGnosys/rosetta-code-generators
+
+properties:
+
+- set rosetta.dsl.version to 4.44.0 in all places
+        <rosetta.dsl.version>4.44.0</rosetta.dsl.version>
+        
+- set rosetta.bundle.version to 3.13.0  
+        <rosetta.bundle.version>3.13.0</rosetta.bundle.version>
+
+- optionally comment out modules for other languages to speed up compilation and runtime
+
+    <!--mdule>sample</!module-->
+    <!--module>daml</!module-->
+    <!--mdule>default-cdm-generators</!module-->
+    <!--module>typescript</module-->
+    <!--module>scala</module-->
+    <!--module>golang</module-->
+    <!--module>c-sharp</module-->
+
+7. open in eclipse  
+
+import existing maven project
+update maven user preferences to use settings.xml as created above: ~/projects/isda-cdm-code-gen/.m2/settings.xml
+update java version to 11
+
+8. to generate python 
+
+run PythonFilesGeneratorTest.xtend as a JUnit 
+
+

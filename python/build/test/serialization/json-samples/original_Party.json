@@ -1,0 +1,52 @@
+{
+	"businessUnit": [
+		{
+			"meta": {
+				"externalKey": "desk1",
+				"globalKey": "5c10b72e"
+			},
+			"name": "NY Swaps Desk"
+		}
+	],
+	"meta": {
+		"externalKey": "party1",
+		"globalKey": "a3826565"
+	},
+	"name": {
+		"value": "Bank X"
+	},
+	"partyId": [
+		{
+			"identifier": {
+				"meta": {
+					"scheme": "http://www.fpml.org/coding-scheme/external/iso17442"
+				},
+				"value": "LEI1RPT0001"
+			},
+			"identifierType": "LEI",
+			"meta": {
+				"globalKey": "b8962566"
+			}
+		}
+	],
+	"person": [
+		{
+			"meta": {
+				"externalKey": "trader",
+				"globalKey": "baeb8c0d"
+			},
+			"personId": [
+				{
+					"value": {
+						"identifier": {
+							"value": "jjones"
+						},
+						"meta": {
+							"globalKey": "baeb8c0d"
+						}
+					}
+				}
+			]
+		}
+	]
+}

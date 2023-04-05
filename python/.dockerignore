@@ -1,0 +1,30 @@
+** # Ignore everything
+Explicitly allow only following directories
+!.settings
+!src
+!pom.xml
+
+# exclude all .git files
+.git
+
+#exclude IntelliJ and VSCode files
+.idea
+.vscode
+
+# exclude virtual environment directories
+venv
+env
+.venv
+**/.pyenv
+**/.vs
+.settings
+.project
+
+# exclude log files
+*.log
+
+# exclude test files
+tests/
+__pycache__/
+**/*.pyc
+**/python_cdm-*-py3-none-any.whl
