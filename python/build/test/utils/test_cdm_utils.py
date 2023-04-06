@@ -1,6 +1,6 @@
-
 from cdm.utils import multiprop
-from cdm.utils import check_cardinality
+from cdm.utils import check_cardinality, join, contains, disjoint
+# pylint: disable=missing-function-docstring, invalid-name, missing-class-docstring, too-few-public-methods
 
 
 class A:
@@ -107,10 +107,37 @@ def test_check_cardinality_list():
     assert not check_cardinality(self.x, 1, None)
 
 
+def test_join_no_sep():
+    assert join([1,2,3], ) == '123'
+
+
+def test_join_no_sep2():
+    assert join([1,2,3]) == '123'
+
+
+def test_join_sep():
+    assert join([1,2,3], ',') == '1,2,3'
+
+
+def test_contains():
+    assert contains([1, 2, 3], [3, 1])
+
+
+def test_doesnt_contains():
+    assert not contains([1, 2, 3], [3, 1, 0])
+
+
+def test_disjoint():
+    assert disjoint([1, 2, 3], [4, 5])
+
+
+def test_not_disjoint():
+    assert not disjoint([1, 2, 3], [1, 4, 5])
+
+
 if __name__ == "__main__":
-	test_multiprop()
-	test_multiprop_int()
-	test_check_cardinality_1_1()
-	test_check_cardinality_0_1()
-	test_check_cardinality_list()
-# EOF
+    test_multiprop()
+    test_multiprop_int()
+    test_check_cardinality_1_1()
+    test_check_cardinality_0_1()
+    test_check_cardinality_list()

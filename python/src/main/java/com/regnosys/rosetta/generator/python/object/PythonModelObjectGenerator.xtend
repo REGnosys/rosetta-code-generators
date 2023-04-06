@@ -495,15 +495,15 @@ class PythonModelObjectGenerator {
 	                '''(«generateExpression(expr.left, iflvl)» != «generateExpression(expr.right, iflvl)»)'''
 	            }
 	            case("contains"):{
-	            	'''«generateExpression(expr.left, iflvl)».contains(«generateExpression(expr.right, iflvl)»)'''
+	            	'''contains(«generateExpression(expr.left, iflvl)», «generateExpression(expr.right, iflvl)»)'''
 	            	
 	            }
 	            case("disjoint"):{
-	            	'''«generateExpression(expr.left, iflvl)».isdisjoint(«generateExpression(expr.right, iflvl)»)'''
+	            	'''disjoint(«generateExpression(expr.left, iflvl)», «generateExpression(expr.right, iflvl)»)'''
 	            	
 	            }
 	            case("join"):{
-	            	'''«generateExpression(expr.left, iflvl)».join(«generateExpression(expr.right, iflvl)»)'''
+	            	'''join(«generateExpression(expr.left, iflvl)», «generateExpression(expr.right, iflvl)»)'''
 	            }
 	            default: {
 	                '''(«generateExpression(expr.left, iflvl)» «expr.operator» «generateExpression(expr.right, iflvl)»)'''
@@ -576,7 +576,6 @@ class PythonModelObjectGenerator {
 		@cdm_condition
 		def cardinality_«attrName»(self):
 		    return check_cardinality(self.«attrName», «attribute.inf», «sup_str»)
-
 		«ENDIF»
 		'''
 		

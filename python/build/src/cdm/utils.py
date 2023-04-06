@@ -9,6 +9,7 @@ from pydantic import Extra
 
 __all__ = ['if_cond', 'multiprop', 'cdm_condition', 'BaseDataClass',
            'ConditionViolationError', 'any_elements', 'all_elements',
+           'contains', 'disjoint', 'join',
            'check_cardinality',
            'AttributeWithMeta',
            'AttributeWithAddress',
@@ -134,7 +135,7 @@ class BaseDataClass(BaseModel):
         for name, condition in _get_conditions(self.__class__):
             log.info('Checking condition %s for %s...', name, self)
             if not condition(self):
-                msg = (f'Condition "{name}" for {repr(self)} failed!')
+                msg = f'Condition "{name}" for {repr(self)} failed!'
                 log.error(msg)
                 exc = ConditionViolationError(msg)
                 if raise_exc:
@@ -237,6 +238,7 @@ def _to_list(op) -> list|tuple:
 
 
 def all_elements(lhs, op, rhs) -> bool:
+    '''Checks that two lists have the same elements'''
     cmp = _cmp[op]
     op1 = _to_list(lhs)
     op2 = _to_list(rhs)
@@ -244,7 +246,28 @@ def all_elements(lhs, op, rhs) -> bool:
     return all(cmp(el1, el2) for el1 in op1 for el2 in op2)
 
 
+def disjoint(op1, op2):
+    '''Checks if two lists have no common elements'''
+    op1 = set(_to_list(op1))
+    op2 = set(_to_list(op2))
+    return not op1 & op2
+
+
+def contains(op1, op2):
+    '''Checks if op2 is contained in op1 (e.g. every element of op2 is in op1)'''
+    op1 = set(_to_list(op1))
+    op2 = set(_to_list(op2))
+
+    return op2.issubset(op1)
+
+
+def join(lst, sep=''):
+    '''Joins the string representation of the list elements, optionally separted'''
+    return sep.join([str(el) for el in lst])
+
+
 def any_elements(lhs, op, rhs) -> bool:
+    '''Checks if to lists have any comon element(s)'''
     cmp = _cmp[op]
     op1 = _to_list(lhs)
     op2 = _to_list(rhs)
