@@ -1,15 +1,12 @@
 package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
@@ -24,8 +21,6 @@ class ModelObjectGeneratorTest {
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-    @Inject extension ParseHelper<RosettaModel>
-    @Inject Provider<XtextResourceSet> resourceSetProvider;
 	
 	
 	@Test
@@ -191,7 +186,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void shouldGenerateMetadFieldWhenAttributeSchemePresent() {
-		val python = '''
+		'''
 			type TestObject: <"">
 				fieldOne string (0..1) [metadata scheme]
 		'''.generatePython
@@ -202,7 +197,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void shouldGenerateRosettaReferenceField() {
-		val python = '''
+		'''
 			type TestObject: <"">
 				fieldOne Test2 (0..1) [metadata reference]
 			
@@ -216,7 +211,7 @@ class ModelObjectGeneratorTest {
 	@Disabled
 	def void shouldGenerateBasicReferenceField() {
 		val namespace = 'test.ns.basicref'
-		val python = '''
+		'''
 			namespace "«namespace»"
 			
 			// import basic types
@@ -232,7 +227,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void shouldCreateFieldWithReferenceTypeWhenAttributeIsReference() {
-		val python = '''
+		'''
 			
 			type ComplexObject:
 			
@@ -247,7 +242,7 @@ class ModelObjectGeneratorTest {
 	@Disabled
     def void shouldGenerateTypeWithMetaFieldImport() {
     	val namespace = 'test.ns.metafield'
-        val python = '''
+        '''
             namespace "«namespace»"
             version "test"
             
@@ -266,7 +261,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void shouldImplementGlobalKeyWhenDefined() {
-		val python = '''
+		'''
 			type WithGlobalKey:
 				[metadata key]
 				bar string (1..1)
@@ -299,7 +294,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void shouldGenerateReferenceAttributeAsReference() {
-		val python = '''
+		'''
 			type Foo:
 				[metadata key]
 				bar string (1..1)
@@ -441,7 +436,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void isProductWithEnumValueRef() {
-		val python = '''
+		'''
 			isProduct root Foo;
 			
 			enum Enum: 
@@ -464,7 +459,7 @@ class ModelObjectGeneratorTest {
 	@Test
 	@Disabled
 	def void internalReferenceTest() {
-		val python ='''
+		'''
 
 			type Foo:
 				foo string (1..1) 

@@ -1,15 +1,12 @@
 package com.regnosys.rosetta.generator.python.rule
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
@@ -23,8 +20,7 @@ class DataRuleGeneratorTest {
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-    @Inject extension ParseHelper<RosettaModel>
-    @Inject Provider<XtextResourceSet> resourceSetProvider;
+    
 	
 	@Test
 	def void shouldGenerateConditionWithIfElseIf() {
@@ -40,17 +36,19 @@ class DataRuleGeneratorTest {
 
 		val expected=
 		'''
-		class Foo(BaseModel):
-		    bar: Optional[str] = Field(None,description = "")
-		    baz: Optional[str] = Field(None,description = "")
+		class Foo(BaseDataClass):
+		    bar: Optional[str] = Field(None, description="")
+		    baz: Optional[str] = Field(None, description="")
 		    
-		    @root_validator
-		    @classmethod
-		    def condition_0_(cls, values):
-		        return _if(self.bar == "Y", ((self.baz) is not None), _if((self.bar == "I" or self.bar == "N"), ((self.baz) is None), False))
+		    @cdm_condition
+		    def condition_0_(self):
+		        return if_cond(all_elements(self.bar, "=", "Y"), '((self.baz) is not None)', 'if_cond((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), \'((self.baz) is None)\', \'True\', self)', self)
+		
+		
+		Foo.update_forward_refs()
 		'''
 		
-		//assertTrue(python.toString.contains(expected))
+		assertTrue(python.toString.contains(expected))
 	}
 
 	@Test

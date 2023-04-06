@@ -2,8 +2,6 @@ package com.regnosys.rosetta.generator.python.validation
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaRuntimeModule
-import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
@@ -28,7 +26,7 @@ class RosettaValidatorTest implements RosettaIssueCodes {
 
 	@Inject extension ValidationTestHelper
 	@Inject extension ModelHelper
-	@Inject PythonCodeGenerator generator;
+	
 	
 	/*
 	 * There are some tests which uses variables from RosettaIssueCodes which give a fail in the test even though they are correct.

@@ -61,7 +61,7 @@ class PythonModelObjectBoilerPlate {
 
     static def toMetaTypeName(ExpandedType type) {
         val name = type.toPythonType
-        if (name == null) {
+        if (name === null) {
             return "null-name"
         }
 

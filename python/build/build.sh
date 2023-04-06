@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 function processError() {
   echo ""
   echo ""
@@ -8,11 +8,13 @@ function processError() {
   echo "*                                                                         *"
   echo "***************************************************************************"
   echo ""
-  exit 1
+  exit -1
 }
 
-python -m venv .pyenv || processError
-# source .pyenv/Scripts/activate
+ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
+
+python -m venv --clear .pyenv || processError
+source .pyenv/$ACDIR/activate || processError
 python -m pip install --upgrade pip || processError
 python -m pip install "setuptools>=62.0" || processError
 python -m pip install pylint || processError

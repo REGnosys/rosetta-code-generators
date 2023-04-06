@@ -50,7 +50,7 @@
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
         
    		<apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <apache.commons.text.version>1.10.0</apache.commons.text.version>
@@ -72,6 +72,7 @@
 		<module>golang</module>
 	  	<module>kotlin</module>
 		<module>c-sharp</module>
+		<module>python</module>
 	</modules>
 
 	<dependencyManagement>

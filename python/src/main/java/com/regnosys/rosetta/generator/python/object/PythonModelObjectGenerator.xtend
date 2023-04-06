@@ -14,7 +14,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaBigDecimalLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaContainsExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaCountOperation
 import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
@@ -30,69 +29,22 @@ import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.expression.ListLiteral
 import com.regnosys.rosetta.rosetta.expression.ListOperation
 import java.util.HashMap
-
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.rosetta.expression.Necessity
 import java.util.ArrayList
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaFeature
-import com.regnosys.rosetta.rosetta.expression.ListOperation
 import java.util.Arrays
-import java.util.stream.Collectors
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.types.RQualifiedType
 import com.regnosys.rosetta.types.RCalculationType
-
 import com.regnosys.rosetta.rosetta.expression.OneOfOperation
 import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
-import org.eclipse.emf.ecore.EObject
 import com.regnosys.rosetta.rosetta.expression.RosettaReference
-import com.regnosys.rosetta.utils.ImplicitVariableUtil
 import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
-import java.util.List
 import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
-
 import com.regnosys.rosetta.rosetta.expression.FilterOperation
-import com.regnosys.rosetta.rosetta.expression.NamedFunctionReference
-import com.regnosys.rosetta.rosetta.expression.InlineFunction
-import com.regnosys.rosetta.rosetta.expression.MapOperation
-import com.regnosys.rosetta.rosetta.expression.FlattenOperation
-import com.regnosys.rosetta.rosetta.expression.DistinctOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
-import com.regnosys.rosetta.rosetta.expression.MinOperation
-import com.regnosys.rosetta.rosetta.expression.MaxOperation
-import com.regnosys.rosetta.rosetta.expression.SortOperation
-import com.regnosys.rosetta.rosetta.expression.ReverseOperation
-import com.regnosys.rosetta.rosetta.expression.ReduceOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaUnaryOperation
-import com.regnosys.rosetta.rosetta.expression.FirstOperation
-import com.regnosys.rosetta.rosetta.expression.LastOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaFunctionalOperation
-import com.regnosys.rosetta.rosetta.expression.ExistsModifier
-import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
-import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
-import com.regnosys.rosetta.rosetta.expression.CardinalityModifier
-import com.regnosys.rosetta.rosetta.expression.LogicalOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaContainsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaDisjointExpression
-import com.regnosys.rosetta.rosetta.expression.ComparisonOperation
-import com.regnosys.rosetta.rosetta.expression.EqualityOperation
-import com.regnosys.rosetta.rosetta.expression.ExtractAllOperation
-import org.eclipse.emf.ecore.EObject
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
-import com.regnosys.rosetta.utils.ImplicitVariableUtil
-import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
-import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
-import java.util.List
-import com.regnosys.rosetta.rosetta.RosettaRecordFeature
-import com.regnosys.rosetta.generator.util.RecordFeatureMap
-import com.regnosys.rosetta.rosetta.expression.AsKeyOperation
-import com.regnosys.rosetta.rosetta.expression.OneOfOperation
-import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
-import com.regnosys.rosetta.rosetta.expression.Necessity
-import com.rosetta.model.lib.validation.ValidationResult.ChoiceRuleValidationMethod
-import com.regnosys.rosetta.types.RDataType
 
 class PythonModelObjectGenerator {
 
@@ -274,27 +226,6 @@ class PythonModelObjectGenerator {
 	}
 
     
-    private def checkSuperTypes(List<Data>orderedCls ,List<Data> cls ,Data cl){
-    	
-    	if(cl.superType !== null){
-    		checkSuperTypes(orderedCls, cls, cl.superType)		
-    	}
-
-    	if(!orderedCls.contains(cl) && cls.contains(cl)){
-    		orderedCls.add(cl)
-		}	
-    }
-    
-    private def boolean checkAttributesApartFromMetaAtrributes(Data cl){
-    	val attributes = cl.allExpandedAttributes.filter[enclosingType == cl.name]
-    	var result = false
-    	for(ExpandedAttribute attr: attributes){
-    		if(!attr.toRawType.toString.contains("Meta")){
-    			result = true
-    		}
-    	}
-    	return result
-    }
     
     def boolean isConstraintCondition(Condition cond) {
 		return cond.isOneOf || cond.isChoice
@@ -390,7 +321,7 @@ class PythonModelObjectGenerator {
                 	right="NONE"
                 val receiver = generateExpression(expr.receiver, iflvl)
                 
-                if(receiver==null){
+                if(receiver===null){
                 	addImportsFromConditions(right.toString)
                 	'''«right»'''
                 }

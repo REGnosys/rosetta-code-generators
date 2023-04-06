@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.python
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
@@ -15,7 +14,6 @@ import java.util.Map
 import java.util.Scanner
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.ResourceSet
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -44,11 +42,9 @@ import java.lang.reflect.Array
 @InjectWith(RosettaInjectorProvider)
 class PythonFilesGeneratorTest {
 
-    @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator
 
     @Inject extension ParseHelper<RosettaModel>
-    @Inject Provider<XtextResourceSet> resourceSetProvider;
 	
 	def static void main(String[] args) {
 /* 		val pfgt = new PythonFilesGeneratorTest () 

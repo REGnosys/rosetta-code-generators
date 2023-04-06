@@ -1,16 +1,6 @@
 package com.regnosys.rosetta.generator.python.func
 
-import com.google.inject.Inject
-import com.regnosys.rosetta.generator.util.Util
-import com.regnosys.rosetta.rosetta.RosettaEnumValue
-import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
-import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaFeature
-import com.regnosys.rosetta.rosetta.RosettaMetaType
-import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Attribute
-import com.regnosys.rosetta.rosetta.simple.Condition
-import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
 import java.util.ArrayList
 import java.util.HashMap
@@ -41,19 +31,6 @@ class  PythonFunctionGenerator {
 	}
 	
 	private def generateFunctions(List<Function> rosettaFunctions,String version) {
-		
-		val existingFunctions = new ArrayList<RosettaNamed>();
-		
-		
-		for(Function func: rosettaFunctions){
-
-			if(!existingFunctions.contains(func)){
-				val sharedFunctions = rosettaFunctions.filter[name==func.name]
-				
-			}
-			
-			
-		}
 		
 		'''
 		«FOR function : rosettaFunctions SEPARATOR "\n"»

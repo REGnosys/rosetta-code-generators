@@ -1,6 +1,5 @@
 package com.regnosys.rosetta.generator.python.validation;
 
-import com.regnosys.rosetta.validation.*;
 
 public interface RosettaIssueCodes {
 	

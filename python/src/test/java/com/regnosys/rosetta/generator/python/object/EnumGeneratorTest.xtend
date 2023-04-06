@@ -1,16 +1,13 @@
 package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
@@ -21,13 +18,12 @@ import static org.junit.jupiter.api.Assertions.*
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
-class RosettaEnumHelperTest {
+class EnumGeneratorTest {
     
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-    @Inject extension ParseHelper<RosettaModel>
-    @Inject Provider<XtextResourceSet> resourceSetProvider;
+
     
    
 	@Test
@@ -130,7 +126,7 @@ class RosettaEnumHelperTest {
     @Test
     @Disabled
     def void shouldGenerateAllDisplayName() {
-        val code = '''
+        '''
         	synonym source FpML
         	enum TestEnumWithDisplay:
         		one displayName "uno" <"Some description"> [synonym FpML value "oneSynonym"]
@@ -178,7 +174,7 @@ class RosettaEnumHelperTest {
     @Test
     @Disabled
     def void shouldAllowDeprectedAnnotationForEnum() {
-        val code = '''
+        '''
             enum TestEnumDeprecated:
             	[deprecated]
             	one

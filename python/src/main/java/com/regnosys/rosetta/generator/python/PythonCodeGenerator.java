@@ -16,11 +16,9 @@ import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
-import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
 
 

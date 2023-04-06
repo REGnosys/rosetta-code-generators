@@ -54,3 +54,4 @@ build/build/
 python_cdm.egg-info
 build/src/cdm/*
 !build/src/cdm/utils.py
+/build/python_cdm-*-py3-none-any.whl

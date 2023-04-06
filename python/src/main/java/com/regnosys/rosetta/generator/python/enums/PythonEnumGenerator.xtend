@@ -38,7 +38,7 @@ class PythonEnumGenerator {
     }
 
     private def generateEnums(List<RosettaEnumeration> enums, String version){
-        val rosettaClasses = enums.map[name].map["'"+it+"'"]
+
 	    '''
 	    from enum import Enum
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 function processError() {
   echo ""
   echo ""
@@ -17,16 +17,19 @@ echo "**************************************************************************
 echo "*                                                                         *"
 echo "*                              PYTHON TESTS!!!                            *"
 echo "*                                                                         *"
-echo "*                Install wheel and test python-cdm package!               *"
+echo "*                       test the python-cdm package!                      *"
 echo "*                                                                         *"
 echo "***************************************************************************"
 echo ""
 
-# install the .whl package using pip
-python -m pip install python_cdm-*-py3-none-any.whl || processError
+ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
+
+# It is assumed, that the build.sh script has been run (it installs the cdm package
+# in the local virtual environment)
+source .pyenv/$ACDIR/activate || processError
 
 # navigate to the folder containing pytests
-cd test
+cd test || processError
 
 # run all pytests
 python -m pytest || processError
