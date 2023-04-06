@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 function processError() {
   echo ""
   echo ""
@@ -8,7 +8,7 @@ function processError() {
   echo "*                                                                         *"
   echo "***************************************************************************"
   echo ""
-  exit -1
+  exit 1
 }
 
 ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")

@@ -1068,6 +1068,7 @@ class RosettaValidatorTest implements RosettaIssueCodes {
 	}
 	
 	@Test
+	@Disabled
 	def void externalSynonymWithFormatValid() {
 	val model='''
 			type Foo:

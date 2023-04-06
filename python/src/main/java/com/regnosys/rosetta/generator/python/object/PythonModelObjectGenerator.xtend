@@ -45,6 +45,7 @@ import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.FilterOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
+import com.regnosys.rosetta.generator.java.enums.EnumHelper
 
 class PythonModelObjectGenerator {
 
@@ -311,7 +312,11 @@ class PythonModelObjectGenerator {
                 var right = switch (expr.feature) {
                     Attribute: expr.feature.name
                     RosettaMetaType: expr.feature.name
-                    RosettaEnumValue: expr.feature.name
+                    RosettaEnumValue:{
+                    	val rosettaValue = expr.feature as RosettaEnumValue
+                    	val value = EnumHelper.convertValues(rosettaValue)
+                    	value
+                    } 
                     //TODO: RosettaFeature: '''.Select(x => x.«feature.name.toFirstUpper»)'''
                     RosettaFeature: expr.feature.name
                     default:
@@ -363,8 +368,9 @@ class PythonModelObjectGenerator {
             RosettaOnlyElement:{
             	'''(«generateExpression(expr.argument, iflvl)»)'''
             }
-            RosettaEnumValueReference: {
-                '''«expr.enumeration».«expr.value»'''
+            RosettaEnumValueReference: {            
+                val value = EnumHelper.convertValues(expr.value)              
+                '''«expr.enumeration».«value»'''
             }
 
             RosettaOnlyExistsExpression : {
