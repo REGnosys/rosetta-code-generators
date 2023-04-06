@@ -337,13 +337,15 @@ class PythonModelObjectGenerator {
                 	
             }
             RosettaExistsExpression: {
-                '''((«generateExpression(expr.argument, iflvl)») is not None)'''
+            	val argument = expr.argument as RosettaExpression
+                '''((«generateExpression(argument, iflvl)») is not None)'''
             }
             RosettaBinaryOperation: {
                 binaryExpr(expr, iflvl)
             }
             RosettaAbsentExpression: {
-                '''((«generateExpression(expr.argument, iflvl)») is None)'''
+            	val argument = expr.argument as RosettaExpression         	
+                '''((«generateExpression(argument, iflvl)») is None)'''
             }
 
             RosettaReference: {
@@ -366,7 +368,8 @@ class PythonModelObjectGenerator {
                 '''"«expr.value»"'''
             }
             RosettaOnlyElement:{
-            	'''(«generateExpression(expr.argument, iflvl)»)'''
+            	val argument = expr.argument as RosettaExpression           	
+            	'''(«generateExpression(argument, iflvl)»)'''
             }
             RosettaEnumValueReference: {            
                 val value = EnumHelper.convertValues(expr.value)              
@@ -378,7 +381,8 @@ class PythonModelObjectGenerator {
                 '''self.check_one_of_constraint(self, «generateExpression(aux.getArgs().get(0), iflvl)»)'''
             }
             RosettaCountOperation: {
-                '''len(«generateExpression(expr.argument, iflvl)»)'''
+            	val argument = expr.argument as RosettaExpression            	
+                '''len(«generateExpression(argument, iflvl)»)'''
             }
                            
             ListLiteral: {

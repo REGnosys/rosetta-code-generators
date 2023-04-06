@@ -148,6 +148,7 @@ class PythonObjectGenerationTest {
                @cdm_condition
                def cardinality_testType2Value1(self):
                    return check_cardinality(self.testType2Value1, 1, None)
+               
                testType2Value2: Optional[date] = Field(None, description="Test date")
                """
                      Test date
@@ -274,6 +275,7 @@ class PythonObjectGenerationTest {
             def cardinality_TestType4Value2(self):
                 return check_cardinality(self.TestType4Value2, 1, None)
         
+            
         class TestType2(TestType3):
             TestType2Value1: Optional[float] = Field(None, description="Test number")
             """

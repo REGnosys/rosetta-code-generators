@@ -339,11 +339,13 @@ class ModelObjectGeneratorTest {
 		    def cardinality_s(self):
 		        return check_cardinality(self.s, 1, None)
 		
+		    
 		class A(B):
 		    c: List[C] = Field(None, description="")
 		    @cdm_condition
 		    def cardinality_c(self):
 		        return check_cardinality(self.c, 1, None)
+		    
 		
 		
 		B.update_forward_refs()
@@ -598,6 +600,7 @@ class ModelObjectGeneratorTest {
                @cdm_condition
                def cardinality_testType2Value1(self):
                    return check_cardinality(self.testType2Value1, 1, None)
+               
                testType2Value2: Optional[date] = Field(None, description="Test date")
                """
                      Test date
@@ -708,6 +711,7 @@ class ModelObjectGeneratorTest {
             def cardinality_TestType4Value2(self):
                 return check_cardinality(self.TestType4Value2, 1, None)
         
+            
         class TestType2(TestType3):
             TestType2Value1: Optional[float] = Field(None, description="Test number")
             """
