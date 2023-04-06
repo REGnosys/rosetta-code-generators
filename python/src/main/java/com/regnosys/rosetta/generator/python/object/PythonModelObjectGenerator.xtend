@@ -576,6 +576,7 @@ class PythonModelObjectGenerator {
 		@cdm_condition
 		def cardinality_«attrName»(self):
 		    return check_cardinality(self.«attrName», «attribute.inf», «sup_str»)
+
 		«ENDIF»
 		'''
 		
