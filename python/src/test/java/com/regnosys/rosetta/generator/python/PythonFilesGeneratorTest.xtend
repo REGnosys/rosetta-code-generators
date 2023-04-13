@@ -34,6 +34,7 @@ import java.util.Arrays
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.lang.reflect.Array
+import org.junit.jupiter.api.Disabled
 
 /*
  * Test Principal
@@ -46,11 +47,6 @@ class PythonFilesGeneratorTest {
 
     @Inject extension ParseHelper<RosettaModel>
 	
-	def static void main(String[] args) {
-/* 		val pfgt = new PythonFilesGeneratorTest () 
-		pfgt.generatePython ();
-		*/		
-	}
 	/*
 	 * Test which is used as main to create all the Python Generation
 	 */
@@ -406,7 +402,7 @@ class PythonFilesGeneratorTest {
      */
     def private getContent(Map<String, ? extends CharSequence> python){
     	
-    	val List<String> keys = Arrays.asList("Imports.kt", "Enums.kt", "Types.kt", "Funcs.kt");
+    	val List<String> keys = Arrays.asList("Imports.py", "Enums.py", "Types.py", "Funcs.py");
 	    val content = new StringBuilder();
 	    for (String key : keys) {
 	        if (python.containsKey(key)) {

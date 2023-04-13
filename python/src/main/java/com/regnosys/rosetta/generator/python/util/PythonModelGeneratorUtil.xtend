@@ -72,6 +72,7 @@ class PythonModelGeneratorUtil {
 		from datetime import date
 		from datetime import time
 		from datetime import datetime
+		from decimal import Decimal
 		from pydantic import Field
 		«IF simpleNameSpace!==null»from «simpleNameSpace».utils import *«ENDIF»
 		
@@ -79,7 +80,7 @@ class PythonModelGeneratorUtil {
 		
 		'''
 		
-		result.put('Imports.kt', imports)
+		result.put('Imports.py', imports)
 		
 		result
 		

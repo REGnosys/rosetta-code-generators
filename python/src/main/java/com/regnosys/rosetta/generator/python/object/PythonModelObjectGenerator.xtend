@@ -53,8 +53,8 @@ class PythonModelObjectGenerator {
     @Inject extension PythonModelObjectBoilerPlate
     @Inject extension PythonMetaFieldGenerator
 
-    static final String CLASSES_FILENAME = 'Types.kt'
-    static final String META_FILENAME = 'Metatypes.kt'
+    static final String CLASSES_FILENAME = 'Types.py'
+    static final String META_FILENAME = 'Metatypes.py'
     
     var importedFromConditions = new ArrayList<String>()
 
@@ -65,7 +65,7 @@ class PythonModelObjectGenerator {
             case 'date': 'date'
             case 'dateTime': 'datetime'
             case 'zonedDateTime': 'datetime'
-            case 'number': 'float'
+            case 'number': 'Decimal'
             case 'boolean': 'bool'
             case 'int': 'int'
             case RQualifiedType.PRODUCT_TYPE.qualifiedType: 'str'
@@ -139,7 +139,7 @@ class PythonModelObjectGenerator {
     }
     
     def boolean checkBasicType(ExpandedAttribute attr){    	
-    	val types = Arrays.asList('int', 'str', 'float', 'date', 'datetime', 'datetime.date', 'datetime.time','time', 'bool')
+    	val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time','time', 'bool')
     	var attrType = ""
     	try{
     		 attrType = attr.toRawType.toString()	
@@ -261,7 +261,7 @@ class PythonModelObjectGenerator {
     private def generateConditionBoilerPlate(Condition cond, int n_condition) { 		
         '''
         
-        @cdm_condition
+        @rosetta_condition
         def condition_«n_condition»_«cond.name»(self):
             «IF cond.definition!==null»
             """
@@ -577,7 +577,7 @@ class PythonModelObjectGenerator {
 		"""
 		«ENDIF»
 		«IF need_card_check»
-		@cdm_condition
+		@rosetta_condition
 		def cardinality_«attrName»(self):
 		    return check_cardinality(self.«attrName», «attribute.inf», «sup_str»)
 

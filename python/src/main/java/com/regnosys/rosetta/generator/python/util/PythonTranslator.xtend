@@ -13,7 +13,7 @@ class PythonTranslator {
             case 'date': 'date'
             case 'dateTime': 'datetime'
             case 'zonedDateTime': 'datetime'
-            case 'number': 'float'
+            case 'number': 'Decimal'
             case 'boolean': 'bool'
             case 'int': 'int'
             case RQualifiedType.PRODUCT_TYPE.qualifiedType: 'str'

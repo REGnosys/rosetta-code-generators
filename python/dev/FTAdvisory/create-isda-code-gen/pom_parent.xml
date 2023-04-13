@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) REGnosys 2019 (www.regnosys.com) All rights reserved.
+	This program is licensed to you under the Apache License Version 2.0, and
+	you may not use this file except in compliance with the Apache License Version
+	2.0. You may obtain a copy of the Apache License Version 2.0 at http://www.apache.org/licenses/LICENSE-2.0.
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the Apache License Version 2.0 is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the Apache License Version 2.0 for the specific language governing permissions
+	and limitations there under. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.regnosys.rosetta.code-generators</groupId>
+	<artifactId>parent</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.0.master</version>
+
+	<name>code-gen-parent</name>
+	<description>A place to write code generators for the rosetta DSL</description>
+
+	<url>https://github.com/REGnosys/rosetta-code-generators</url>
+	<organization>
+		<name>REGnosys Limited</name>
+		<url>https://www.regnosys.com/</url>
+	</organization>
+
+	<profiles>
+		<profile>
+			<id>regnosys</id>
+			<properties>
+				<rosetta.dsl.version>7.3.1</rosetta.dsl.version>
+				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>external</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<rosetta.dsl.version>7.3.1</rosetta.dsl.version>
+				<rosetta.bundle.version>5.9.0</rosetta.bundle.version>
+			</properties>
+		</profile>
+	</profiles>
+
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        
+   		<apache.commons.lang.version>3.12.0</apache.commons.lang.version>
+        <apache.commons.text.version>1.10.0</apache.commons.text.version>
+        <commons-io.version>2.11.0</commons-io.version>
+
+        <xtext.version>2.27.0</xtext.version>
+        
+        <junit.version>5.9.1</junit.version>
+        <hamcrest.version>2.2</hamcrest.version>
+    </properties>
+
+	<modules>
+		<module>test-helper</module>
+		<module>sample</module>
+		<module>daml</module>
+		<!--<module>default-cdm-generators</module>
+		<module>typescript</module>
+		<module>scala</module>
+		<module>golang</module>
+	  	<module>kotlin</module>
+		<module>c-sharp</module>-->
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${apache.commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${apache.commons.text.version}</version>
+            </dependency>
+            <!-- xtext START -->
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>xtext-dev-bom</artifactId>
+                <version>${xtext.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtend</groupId>
+                <artifactId>org.eclipse.xtend.lib</artifactId>
+                <version>${xtext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+                <version>${xtext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext</artifactId>
+                <version>${xtext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext.xbase.testing</artifactId>
+                <version>${xtext.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext.testing</artifactId>
+                <version>${xtext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.xtext</groupId>
+                <artifactId>org.eclipse.xtext.util</artifactId>
+                <version>${xtext.version}</version>
+            </dependency>
+            <!-- xtext END -->
+			<dependency>
+				<groupId>com.regnosys.rosetta</groupId>
+				<artifactId>com.regnosys.rosetta</artifactId>
+				<version>${rosetta.dsl.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>com.regnosys.rosetta</groupId>
+                <artifactId>com.regnosys.rosetta.tests</artifactId>
+                <version>${rosetta.dsl.version}</version>
+                <scope>test</scope>
+            </dependency>
+			<dependency>
+				<groupId>com.regnosys.rosetta</groupId>
+				<artifactId>com.regnosys.rosetta.lib</artifactId>
+				<version>${rosetta.dsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.regnosys</groupId>
+				<artifactId>rosetta-common</artifactId>
+				<version>${rosetta.bundle.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest</artifactId>
+				<version>${hamcrest.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<!-- lock down plugins versions to avoid using maven defaults -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.22.2</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.1.0</version>
+					<configuration>
+						<configLocation>checkstyle/checkstyle.xml</configLocation>
+					</configuration>
+				</plugin>
+                <plugin>
+                    <groupId>org.eclipse.xtend</groupId>
+                    <artifactId>xtend-maven-plugin</artifactId>
+                    <version>${xtext.version}</version>
+                </plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>checkstyle</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<logViolationsToConsole>false</logViolationsToConsole>
+							<failOnViolation>false</failOnViolation>
+							<violationSeverity>warning</violationSeverity>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

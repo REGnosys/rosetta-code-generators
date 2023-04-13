@@ -10,7 +10,7 @@ import java.util.Map
 class  PythonFunctionGenerator {
 
 	
-	static final String FUNCTIONS_FILENAME = 'Funcs.kt'
+	static final String FUNCTIONS_FILENAME = 'Funcs.py'
 	
 	def Map<String, ? extends CharSequence> generate(List<Function> rosettaFunctions, String version) {
 		val result = new HashMap

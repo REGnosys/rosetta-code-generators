@@ -36,7 +36,7 @@ class EnumGeneratorTest {
 	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
 	        '''.generatePython
 
-        val enums = python.get('Enums.kt').toString
+        val enums = python.get('Enums.py').toString
         val expected = '''
         from enum import Enum
         
@@ -97,7 +97,7 @@ class EnumGeneratorTest {
 	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
 	        '''.generatePython
 
-        val enums = python.get('Enums.kt').toString
+        val enums = python.get('Enums.py').toString
         val expected = '''
         class TestEnum(Enum):
             """

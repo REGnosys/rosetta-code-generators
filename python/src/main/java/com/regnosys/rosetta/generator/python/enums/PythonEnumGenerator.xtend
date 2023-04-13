@@ -14,7 +14,7 @@ class PythonEnumGenerator {
 
     @Inject extension PythonModelObjectBoilerPlate
 
-    static final String FILENAME = 'Enums.kt'
+    static final String FILENAME = 'Enums.py'
 
     def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
         val result = new HashMap

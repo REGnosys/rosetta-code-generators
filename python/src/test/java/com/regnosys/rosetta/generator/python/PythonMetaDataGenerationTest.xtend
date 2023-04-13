@@ -85,7 +85,7 @@ class PythonMetaDataGenerationTest {
 
                 val expected3 =
                 '''
-                class BasicReferenceWithMetaFloat:
+                class BasicReferenceWithMetaDecimal:
                     value = None
                     globalReference = None
                     externalReference = None
@@ -162,7 +162,7 @@ class PythonMetaDataGenerationTest {
                 /*val expected11=
                 '''
                 class TestType2:
-                    testType2Value1 = BasicReferenceWithMetaFloat()
+                    testType2Value1 = BasicReferenceWithMetaDecimal()
                     testType2Value2 = FieldWithMetaStr()
                     testType2Value3 = FieldWithMetaTestEnum
                     testTypeValue4 = ReferenceWithMetaTestType4()

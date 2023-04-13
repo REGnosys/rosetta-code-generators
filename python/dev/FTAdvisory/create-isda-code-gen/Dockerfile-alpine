@@ -1,0 +1,56 @@
+FROM alpine
+RUN apk add --no-cache bash procps curl tar openjdk11
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk/
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# common for all images
+ENV MAVEN_HOME=/usr/share/maven
+
+COPY --from=maven:3.9.1-eclipse-temurin-11 ${MAVEN_HOME} ${MAVEN_HOME}
+COPY --from=maven:3.9.1-eclipse-temurin-11 /usr/local/bin/mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
+COPY --from=maven:3.9.1-eclipse-temurin-11 /usr/share/maven/ref/settings-docker.xml /usr/share/maven/ref/settings-docker.xml
+
+RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
+
+ARG MAVEN_VERSION=3.9.1
+ARG USER_HOME_DIR="/root"
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+LABEL Dan Schwartz "daniel.schwartz@ftadvisory.co"
+
+# Install ssh client and git
+RUN apk update && apk add --no-cache openssh-client git python3 py3-pip
+
+RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+RUN echo $(ssh-add -l) && echo $SSH_AUTH_SOCK
+
+RUN mkdir /opt/isda-cdm-code-gen-5.5.1 && mkdir /opt/isda-cdm-code-gen-5.5.1/.m2 && mkdir /opt/isda-cdm-code-gen-5.5.1/github && mkdir /opt/isda-cdm-code-gen-5.5.1/github/REGnosys
+COPY settings-docker.xml /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml
+WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/
+RUN git clone https://github.com/REGnosys/rosetta-code-generators.git
+WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/
+COPY pom_parent.xml pom.xml
+RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml clean install
+RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml archetype:generate -DgroupId="com.regnosys.rosetta.code-generators"  -DartifactId=python
+RUN rm -rf ./python
+
+RUN --mount=type=ssh git clone git@github.com:cloudrisk/isda-cdm-python.git
+RUN mv isda-cdm-python python
+WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/python
+RUN rm -rf build/src/cdm/base build/src/cdm/event build/src/cdm/legaldocumentation build/src/cdm/observable build/src/cdm/product build/src/cdm/regulation
+COPY pom_python.xml pom.xml
+RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml clean install
+WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/python/build
+COPY requirements.txt .
+RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install .
+RUN python3 -m pip wheel --only-binary :all: .
+RUN rm -f typing_extensions-*.whl
+RUN rm -f pydantic-*.whl
+RUN python3 -m pip install python_cdm-3.3.2-py3-none-any.whl
+
+COPY test_party.py ./test/serialization/
+COPY test_trade_state_product_3_2_2.py ./test/serialization/
+COPY run_test.sh .
+RUN chmod +x run_test.sh
+CMD ./run_test.sh

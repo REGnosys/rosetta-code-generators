@@ -87,7 +87,7 @@ class RosettaExtensionsTest {
 		    FOO_1 = "FOO_1"
 		'''
 		
-		assertTrue(python.get("Enums.kt").toString.contains(expected))
+		assertTrue(python.get("Enums.py").toString.contains(expected))
 	}
 	
 	

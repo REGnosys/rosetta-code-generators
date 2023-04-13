@@ -35,7 +35,6 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
 	public PythonCodeGenerator() {
 		super("Python");
-		enumGenerator = new PythonEnumGenerator();
 	}
 
 	@Override

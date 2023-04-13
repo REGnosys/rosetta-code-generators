@@ -7,7 +7,9 @@ from pydantic.main import BaseModel, validate_model
 from pydantic.generics import GenericModel
 from pydantic import Extra
 
-__all__ = ['if_cond', 'multiprop', 'cdm_condition', 'BaseDataClass',
+
+
+__all__ = ['if_cond', 'multiprop', 'rosetta_condition', 'BaseDataClass',
            'ConditionViolationError', 'any_elements', 'all_elements',
            'contains', 'disjoint', 'join',
            'check_cardinality',
@@ -41,7 +43,7 @@ class multiprop(list):
 _CONDITIONS_REGISTRY = defaultdict(dict)
 
 
-def cdm_condition(condition):
+def rosetta_condition(condition):
     path_components = condition.__qualname__.split('.')
     path = '.'.join([condition.__module__ or ''] + path_components[:-1])
     name = path_components[-1]

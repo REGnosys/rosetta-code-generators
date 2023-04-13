@@ -63,7 +63,7 @@ class RosettaObjectInheritanceGeneratorTest {
 		D.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 
 	

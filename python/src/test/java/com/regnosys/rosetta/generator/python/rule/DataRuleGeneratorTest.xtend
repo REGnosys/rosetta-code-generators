@@ -40,7 +40,7 @@ class DataRuleGeneratorTest {
 		    bar: Optional[str] = Field(None, description="")
 		    baz: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return if_cond(all_elements(self.bar, "=", "Y"), '((self.baz) is not None)', 'if_cond((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), \'((self.baz) is None)\', \'True\', self)', self)
 		
@@ -71,7 +71,7 @@ class DataRuleGeneratorTest {
 		    bar: Optional[str] = Field(None, description="")
 		    baz: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return if_cond(((self.bar) is not None), 'if_cond(all_elements(self.bar, "=", "Y"), \'((self.baz) is not None)\', \'if_cond((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), \\\'((self.baz) is None)\\\', \\\'True\\\', self)\', self)', 'True', self)
 		
@@ -80,7 +80,7 @@ class DataRuleGeneratorTest {
 		'''
 		
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 
 
@@ -103,20 +103,20 @@ class DataRuleGeneratorTest {
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
 		        return if_cond(((self.quotePrice) is not None), '(((self.quotePrice.bidPrice) is not None) or ((self.quotePrice.offerPrice) is not None))', 'True', self)
 		
 		class QuotePrice(BaseDataClass):
-		    bidPrice: Optional[float] = Field(None, description="")
-		    offerPrice: Optional[float] = Field(None, description="")
+		    bidPrice: Optional[Decimal] = Field(None, description="")
+		    offerPrice: Optional[Decimal] = Field(None, description="")
 		
 		
 		Quote.update_forward_refs()
 		QuotePrice.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 
 	@Test
@@ -145,21 +145,21 @@ class DataRuleGeneratorTest {
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
 		        return if_cond(((self.quotePrice) is not None), '((((self.quotePrice.price1) is not None) and ((self.quotePrice.price2) is not None)) and ((self.quotePrice.price3) is not None))', 'True', self)
 		
 		class QuotePrice(BaseDataClass):
-		    price1: Optional[float] = Field(None, description="")
-		    price2: Optional[float] = Field(None, description="")
-		    price3: Optional[float] = Field(None, description="")
+		    price1: Optional[Decimal] = Field(None, description="")
+		    price2: Optional[Decimal] = Field(None, description="")
+		    price3: Optional[Decimal] = Field(None, description="")
 		
 		
 		Quote.update_forward_refs()
 		QuotePrice.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 
 	@Test
@@ -181,12 +181,12 @@ class DataRuleGeneratorTest {
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
 		        return if_cond(((self.quotePrice) is not None), 'all_elements(self.quotePrice.bidPrice, "=", 0.0)', 'True', self)
 		
 		class QuotePrice(BaseDataClass):
-		    bidPrice: Optional[float] = Field(None, description="")
+		    bidPrice: Optional[Decimal] = Field(None, description="")
 		
 		
 		Quote.update_forward_refs()
@@ -194,7 +194,7 @@ class DataRuleGeneratorTest {
 		'''
 		
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 	
 	@Test
@@ -222,9 +222,9 @@ class DataRuleGeneratorTest {
 		val expectedType='''
 		
 		class Quote(BaseDataClass):
-		    price: Optional[float] = Field(None, description="")
+		    price: Optional[Decimal] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return if_cond(((self.price) is not None), 'all_elements(Foo(self.price), "=", 5.0)', 'True', self)
 		
@@ -233,8 +233,8 @@ class DataRuleGeneratorTest {
 		'''
 		
 		
-		assertTrue(python.get("Types.kt").toString.contains(expectedType))
-		assertTrue(python.get("Funcs.kt").toString.contains(expectedFunc))
+		assertTrue(python.get("Types.py").toString.contains(expectedType))
+		assertTrue(python.get("Funcs.py").toString.contains(expectedFunc))
 		
 	}
 	
@@ -259,9 +259,9 @@ class DataRuleGeneratorTest {
 		val expected1=
 		'''
 		class Quote(BaseDataClass):
-		    price: Optional[float] = Field(None, description="")
+		    price: Optional[Decimal] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return if_cond(((self.price) is not None), 'all_elements(Foo(self.price), "=", 5.0)', 'False', self)
 		
@@ -292,7 +292,7 @@ class DataRuleGeneratorTest {
 		    head: Optional[bool] = Field(None, description="")
 		    tail: Optional[bool] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_CoinHeadRule(self):
 		        return if_cond(all_elements(self.head, "=", False), 'all_elements(self.tail, "=", False)', 'True', self)
 		
@@ -321,7 +321,7 @@ class DataRuleGeneratorTest {
 		    head: Optional[bool] = Field(None, description="")
 		    tail: Optional[bool] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_CoinTailRule(self):
 		        return if_cond(all_elements(self.tail, "=", False), 'all_elements(self.head, "=", False)', 'True', self)
 		
@@ -329,7 +329,7 @@ class DataRuleGeneratorTest {
 		Coin.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.kt").toString.contains(expected))
+		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
 	
 	@Test
@@ -350,7 +350,7 @@ class DataRuleGeneratorTest {
 		    head: Optional[bool] = Field(None, description="")
 		    tail: Optional[bool] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_EdgeRule(self):
 		        return if_cond(all_elements(self.tail, "=", False), 'all_elements(self.head, "=", False)', 'True', self)
 		
@@ -376,9 +376,9 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class CondTest(BaseDataClass):
-		    multiAttr: Optional[List[float]] = Field(None, description="")
+		    multiAttr: Optional[List[Decimal]] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return all_elements(len(self.multiAttr), ">=", 0)
 		
@@ -413,14 +413,14 @@ class DataRuleGeneratorTest {
 		    x: Optional[str] = Field(None, description="")
 		    y: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.x) is not None)
 		
 		class Bar(Foo):
 		    z: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.y) is not None)
 		
@@ -456,14 +456,14 @@ class DataRuleGeneratorTest {
 		    x: Optional[str] = Field(None, description="")
 		    y: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.x) is not None)
 		
 		class Bar(Foo):
 		    z: Optional[str] = Field(None, description="")
 		    
-		    @cdm_condition
+		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.y) is not None)
 		

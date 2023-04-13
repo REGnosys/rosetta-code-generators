@@ -52,7 +52,7 @@ class PythonObjectGenerationTest {
             a0: Optional[int] = Field(None, description="")
             a1: Optional[int] = Field(None, description="")
             
-            @cdm_condition
+            @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
         
@@ -61,18 +61,18 @@ class PythonObjectGenerationTest {
             intValue1: Optional[int] = Field(None, description="")
             intValue2: Optional[int] = Field(None, description="")
             
-            @cdm_condition
+            @rosetta_condition
             def condition_0_Rule(self):
                 return all_elements(self.intValue1, "<", 100)
             
-            @cdm_condition
+            @rosetta_condition
             def condition_1_OneOrTwo(self):
                 """
                 Choice rule to represent an FpML choice construct.
                 """
                 return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
             
-            @cdm_condition
+            @rosetta_condition
             def condition_2_SecondOneOrTwo(self):
                 """
                 FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
@@ -141,11 +141,11 @@ class PythonObjectGenerationTest {
                """
                      Optional test enum
                """
-               testType2Value1: List[float] = Field(None, description="Test number list")
+               testType2Value1: List[Decimal] = Field(None, description="Test number list")
                """
                      Test number list
                """
-               @cdm_condition
+               @rosetta_condition
                def cardinality_testType2Value1(self):
                    return check_cardinality(self.testType2Value1, 1, None)
                
@@ -203,7 +203,7 @@ class PythonObjectGenerationTest {
                """
                Provides an abstract base class shared by Price and Quantity.
                """
-               amount: float = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
+               amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
                """
                      Specifies an amount to be qualified and used in a Price or Quantity definition.
                """
@@ -225,7 +225,7 @@ class PythonObjectGenerationTest {
                """
                Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
                """
-               multiplier: Optional[float] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
+               multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
                """
                      Defines the number to be multiplied by the amount to derive a total quantity.
                """
@@ -259,7 +259,7 @@ class PythonObjectGenerationTest {
         '''.generatePython
 
 
-        val types = python.get('Types.kt').toString
+        val types = python.get('Types.py').toString
         val expected =
         '''
         class TestType3(BaseDataClass):
@@ -271,13 +271,13 @@ class PythonObjectGenerationTest {
             """
                   Test int
             """
-            @cdm_condition
+            @rosetta_condition
             def cardinality_TestType4Value2(self):
                 return check_cardinality(self.TestType4Value2, 1, None)
         
             
         class TestType2(TestType3):
-            TestType2Value1: Optional[float] = Field(None, description="Test number")
+            TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
             """
                   Test number
             """
@@ -317,7 +317,7 @@ class PythonObjectGenerationTest {
     	            		required choice field1, field2
     	        '''.generatePython
 
-            val types = python.get('Types.kt').toString
+            val types = python.get('Types.py').toString
 
             val expected =
             '''
@@ -333,16 +333,16 @@ class PythonObjectGenerationTest {
                 """
                       Test string field 2
                 """
-                field3: Optional[float] = Field(None, description="Test number field 3")
+                field3: Optional[Decimal] = Field(None, description="Test number field 3")
                 """
                       Test number field 3
                 """
-                field4: Optional[List[float]] = Field(None, description="Test number field 4")
+                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
                 """
                       Test number field 4
                 """
                 
-                @cdm_condition
+                @rosetta_condition
                 def condition_0_BusinessCentersChoice(self):
                     """
                     Choice rule to represent an FpML choice construct.
@@ -368,7 +368,7 @@ class PythonObjectGenerationTest {
     	            				then field3 > 0
     	        '''.generatePython
 
-            val types = python.get('Types.kt').toString
+            val types = python.get('Types.py').toString
 
             val expected =
             '''
@@ -384,16 +384,16 @@ class PythonObjectGenerationTest {
                 """
                       Test string field 2
                 """
-                field3: Optional[float] = Field(None, description="Test number field 3")
+                field3: Optional[Decimal] = Field(None, description="Test number field 3")
                 """
                       Test number field 3
                 """
-                field4: Optional[List[float]] = Field(None, description="Test number field 4")
+                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
                 """
                       Test number field 4
                 """
                 
-                @cdm_condition
+                @rosetta_condition
                 def condition_0_BusinessCentersChoice(self):
                     """
                     Choice rule to represent an FpML choice construct.
@@ -438,7 +438,7 @@ class PythonObjectGenerationTest {
             a0: Optional[int] = Field(None, description="")
             a1: Optional[int] = Field(None, description="")
             
-            @cdm_condition
+            @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
         
@@ -447,25 +447,25 @@ class PythonObjectGenerationTest {
             intValue1: Optional[int] = Field(None, description="")
             intValue2: Optional[int] = Field(None, description="")
             
-            @cdm_condition
+            @rosetta_condition
             def condition_0_Rule(self):
                 return all_elements(self.intValue1, "<", 100)
             
-            @cdm_condition
+            @rosetta_condition
             def condition_1_OneOrTwo(self):
                 """
                 Choice rule to represent an FpML choice construct.
                 """
                 return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
             
-            @cdm_condition
+            @rosetta_condition
             def condition_2_ReqOneOrTwo(self):
                 """
                 Choice rule to represent an FpML choice construct.
                 """
                 return self.check_one_of_constraint('intValue1', 'intValue2', necessity=True)
             
-            @cdm_condition
+            @rosetta_condition
             def condition_3_SecondOneOrTwo(self):
                 """
                 FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
@@ -476,7 +476,7 @@ class PythonObjectGenerationTest {
         A.update_forward_refs()
         B.update_forward_refs()
         '''
-        assertTrue(python.get('Types.kt').toString.contains(expected))
+        assertTrue(python.get('Types.py').toString.contains(expected))
     }
     
     
