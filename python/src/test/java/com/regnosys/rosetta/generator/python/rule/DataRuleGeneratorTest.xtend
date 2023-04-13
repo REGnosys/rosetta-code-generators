@@ -376,7 +376,7 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class CondTest(BaseDataClass):
-		    multiAttr: Optional[List[Decimal]] = Field(None, description="")
+		    multiAttr: List[Decimal] = Field([], description="")
 		    
 		    @rosetta_condition
 		    def condition_0_(self):

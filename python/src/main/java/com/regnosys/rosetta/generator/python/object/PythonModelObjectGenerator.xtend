@@ -528,29 +528,24 @@ class PythonModelObjectGenerator {
 
      private def generateExpandedAttribute(Data c, ExpandedAttribute attribute) {
 		var att = ""
-		if (attribute.inf == 0) {
-			att += "Optional"
-		}
-		if (attribute.sup != 1) {
-			if (attribute.inf == 0) {
-				att += "[List[" + toPythonType(attribute) + "]]"
-			}
-			else {
-				att += "List[" + toPythonType(attribute) + "]"
-			}
+		if (attribute.sup > 1 || attribute.unbound) {
+			att += "List[" + toPythonType(attribute) + "]"
 		}
 		else {
- 			if (attribute.inf == 0) {
-				att += "[" + toPythonType(attribute) + "]"	
+ 			if (attribute.inf == 0) { // edge case (0..0) will come here
+				att += "Optional[" + toPythonType(attribute) + "]"	
 			}
 			else {
-				att += toPythonType(attribute)
+				att += toPythonType(attribute) // cardinality (1..1)
 			}
 		}
 
   		var field_default = 'None'
  		if (attribute.inf == 1 && attribute.sup == 1)
 			field_default = '...' // mandatory field -> cardinality (1..1)
+		else if (attribute.sup > 1 || attribute.unbound) { // List filed of cardinality (m..n)
+			field_default = '[]'
+		}
 
   		var attrName = ""
  		if (attribute.name == "global")

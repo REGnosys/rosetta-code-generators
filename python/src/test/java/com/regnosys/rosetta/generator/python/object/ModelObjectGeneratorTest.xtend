@@ -35,7 +35,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[str]] = Field(None, description="")
+		    list: List[str] = Field([], description="")
 		    one: Optional[str] = Field(None, description="")
 		
 		
@@ -56,7 +56,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[int]] = Field(None, description="")
+		    list: List[int] = Field([], description="")
 		    one: Optional[int] = Field(None, description="")
 		
 		
@@ -80,7 +80,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[Decimal]] = Field(None, description="")
+		    list: List[Decimal] = Field([], description="")
 		    one: Optional[Decimal] = Field(None, description="")
 		
 		
@@ -104,7 +104,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[bool]] = Field(None, description="")
+		    list: List[bool] = Field([], description="")
 		    one: Optional[bool] = Field(None, description="")
 		
 		
@@ -127,7 +127,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[date]] = Field(None, description="")
+		    list: List[date] = Field([], description="")
 		    one: Optional[date] = Field(None, description="")
 		
 		
@@ -149,7 +149,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[date]] = Field(None, description="")
+		    list: List[date] = Field([], description="")
 		    one: Optional[date] = Field(None, description="")
 		    zoned: Optional[datetime] = Field(None, description="")
 		
@@ -171,7 +171,7 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		    list: Optional[List[time]] = Field(None, description="")
+		    list: List[time] = Field([], description="")
 		    one: Optional[time] = Field(None, description="")
 		
 		
@@ -330,18 +330,18 @@ class ModelObjectGeneratorTest {
 		    pass
 		
 		class C(BaseDataClass):
-		    list: Optional[List[int]] = Field(None, description="")
+		    list: List[int] = Field([], description="")
 		    one: Optional[int] = Field(None, description="")
 		
 		class D(BaseDataClass):
-		    s: List[str] = Field(None, description="")
+		    s: List[str] = Field([], description="")
 		    @rosetta_condition
 		    def cardinality_s(self):
 		        return check_cardinality(self.s, 1, None)
 		
 		    
 		class A(B):
-		    c: List[C] = Field(None, description="")
+		    c: List[C] = Field([], description="")
 		    @rosetta_condition
 		    def cardinality_c(self):
 		        return check_cardinality(self.c, 1, None)
@@ -579,7 +579,7 @@ class ModelObjectGeneratorTest {
                """
                      Test optional string
                """
-               testTypeValue3: Optional[List[str]] = Field(None, description="Test string list")
+               testTypeValue3: List[str] = Field([], description="Test string list")
                """
                      Test string list
                """
@@ -593,7 +593,7 @@ class ModelObjectGeneratorTest {
                """
                      Optional test enum
                """
-               testType2Value1: List[Decimal] = Field(None, description="Test number list")
+               testType2Value1: List[Decimal] = Field([], description="Test number list")
                """
                      Test number list
                """
@@ -703,7 +703,7 @@ class ModelObjectGeneratorTest {
             """
                   Test string
             """
-            TestType4Value2: List[int] = Field(None, description="Test int")
+            TestType4Value2: List[int] = Field([], description="Test int")
             """
                   Test int
             """
@@ -717,7 +717,7 @@ class ModelObjectGeneratorTest {
             """
                   Test number
             """
-            TestType2Value2: Optional[List[date]] = Field(None, description="Test date")
+            TestType2Value2: List[date] = Field([], description="Test date")
             """
                   Test date
             """
@@ -773,7 +773,7 @@ class ModelObjectGeneratorTest {
                 """
                       Test number field 3
                 """
-                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
+                field4: List[Decimal] = Field([], description="Test number field 4")
                 """
                       Test number field 4
                 """
@@ -824,7 +824,7 @@ class ModelObjectGeneratorTest {
                 """
                       Test number field 3
                 """
-                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
+                field4: List[Decimal] = Field([], description="Test number field 4")
                 """
                       Test number field 4
                 """

@@ -127,7 +127,7 @@ class PythonObjectGenerationTest {
                """
                      Test optional string
                """
-               testTypeValue3: Optional[List[str]] = Field(None, description="Test string list")
+               testTypeValue3: List[str] = Field([], description="Test string list")
                """
                      Test string list
                """
@@ -141,7 +141,7 @@ class PythonObjectGenerationTest {
                """
                      Optional test enum
                """
-               testType2Value1: List[Decimal] = Field(None, description="Test number list")
+               testType2Value1: List[Decimal] = Field([], description="Test number list")
                """
                      Test number list
                """
@@ -267,7 +267,7 @@ class PythonObjectGenerationTest {
             """
                   Test string
             """
-            TestType4Value2: List[int] = Field(None, description="Test int")
+            TestType4Value2: List[int] = Field([], description="Test int")
             """
                   Test int
             """
@@ -281,7 +281,7 @@ class PythonObjectGenerationTest {
             """
                   Test number
             """
-            TestType2Value2: Optional[List[date]] = Field(None, description="Test date")
+            TestType2Value2: List[date] = Field([], description="Test date")
             """
                   Test date
             """
@@ -337,7 +337,7 @@ class PythonObjectGenerationTest {
                 """
                       Test number field 3
                 """
-                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
+                field4: List[Decimal] = Field([], description="Test number field 4")
                 """
                       Test number field 4
                 """
@@ -388,7 +388,7 @@ class PythonObjectGenerationTest {
                 """
                       Test number field 3
                 """
-                field4: Optional[List[Decimal]] = Field(None, description="Test number field 4")
+                field4: List[Decimal] = Field([], description="Test number field 4")
                 """
                       Test number field 4
                 """

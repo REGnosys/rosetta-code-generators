@@ -22,7 +22,14 @@ echo "*                                                                         
 echo "***************************************************************************"
 echo ""
 
-ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
+type -P python > /dev/null && PYEXE=python || PYEXE=python3
+if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1; then
+        echo "Found $($PYEXE -V)"
+        echo "Expecting at least python 3.10 - exiting!"
+        exit 1
+fi
+
+ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 # It is assumed, that the build.sh script has been run (it installs the cdm package
 # in the local virtual environment)
@@ -32,7 +39,7 @@ source .pyenv/$ACDIR/activate || processError
 cd test || processError
 
 # run all pytests
-python -m pytest || processError
+$PYEXE -m pytest || processError
 
 echo ""
 echo ""
