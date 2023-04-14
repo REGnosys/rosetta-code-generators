@@ -1,6 +1,7 @@
+'''Utility functions (runtime) for rosetta models.'''
 from __future__ import annotations
 import logging as log
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
 from collections import defaultdict
 from pydantic.main import BaseModel, validate_model
@@ -9,9 +10,9 @@ from pydantic import Extra
 
 
 
-__all__ = ['if_cond', 'multiprop', 'rosetta_condition', 'BaseDataClass',
-           'ConditionViolationError', 'any_elements', 'all_elements',
-           'contains', 'disjoint', 'join',
+__all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
+           'BaseDataClass', 'ConditionViolationError', 'any_elements',
+           'all_elements', 'contains', 'disjoint', 'join',
            'check_cardinality',
            'AttributeWithMeta',
            'AttributeWithAddress',
@@ -23,17 +24,24 @@ __all__ = ['if_cond', 'multiprop', 'rosetta_condition', 'BaseDataClass',
 
 
 def if_cond(ifexpr, thenexpr: str, elseexpr: str, obj: object):
-    """ A helper to return the value of the ternary operator. """
+    '''A helper to return the value of the ternary operator.'''
     expr = thenexpr if ifexpr else elseexpr
     return eval(expr, globals(), {'self': obj})
 
 
-class multiprop(list):
+def if_cond_fn(ifexpr, thenexpr: Callable, elseexpr: Callable) -> Any:
+    '''A helper to return the value of the ternary operator (functional version).'''
+    expr = thenexpr if ifexpr else elseexpr
+    return expr()
+
+
+class Multiprop(list):
+    '''A class allowing for dot access to a attribute of all elements of a list'''
     def __getattr__(self, attr):
         # return multiprop(getattr(x, attr) for x in self)
-        res = multiprop()
+        res = Multiprop()
         for x in self:
-            if isinstance(x, multiprop):
+            if isinstance(x, Multiprop):
                 res.extend(x.__getattr__(attr))
             else:
                 res.append(getattr(x, attr))
@@ -44,6 +52,7 @@ _CONDITIONS_REGISTRY = defaultdict(dict)
 
 
 def rosetta_condition(condition):
+    '''Wrapper to register all constraint functions in the global registry'''
     path_components = condition.__qualname__.split('.')
     path = '.'.join([condition.__module__ or ''] + path_components[:-1])
     name = path_components[-1]
@@ -56,6 +65,7 @@ def rosetta_condition(condition):
 
 
 class ConditionViolationError(ValueError):
+    '''Exception thrown on violation of a constraint'''
     pass
 
 
@@ -73,7 +83,7 @@ def _get_conditions(cls) -> list:
     return res
 
 
-class MetaAddress(BaseModel):
+class MetaAddress(BaseModel):  # pylint: disable=missing-class-docstring
     scope: str
     value: str
 
@@ -93,6 +103,7 @@ class BaseDataClass(BaseModel):
     address: MetaAddress | None = None
 
     class Config:
+        '''Disables the validity of extra parameters'''
         extra = Extra.forbid
 
     def validate_model(self,
@@ -180,42 +191,42 @@ class BaseDataClass(BaseModel):
 ValueT = TypeVar('ValueT')
 
 
-class AttributeWithMeta(GenericModel, Generic[ValueT]):
+class AttributeWithMeta(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     value: ValueT
 
 
-class AttributeWithAddress(GenericModel, Generic[ValueT]):
+class AttributeWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     address: MetaAddress | None = None
     value: ValueT | None = None
 
 
-class AttributeWithReference(BaseDataClass):
+class AttributeWithReference(BaseDataClass):  # pylint: disable=missing-class-docstring
     externalReference: str | None = None
     globalReference: str | None = None
 
 
-class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     address: MetaAddress | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     address: MetaAddress | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     address: MetaAddress | None = None
     externalReference: str | None = None
@@ -278,9 +289,9 @@ def any_elements(lhs, op, rhs) -> bool:
 
 
 def check_cardinality(prop, inf: int, sup: int | None = None) -> bool:
-    """ If the supremum is not supplied (e.g. is None), the property is
+    ''' If the supremum is not supplied (e.g. is None), the property is
         unbounded (e.g. it corresponds to (x..*) in rosetta).
-    """
+    '''
     if not prop:
         prop_card = 0
     elif isinstance(prop, (list, tuple)):

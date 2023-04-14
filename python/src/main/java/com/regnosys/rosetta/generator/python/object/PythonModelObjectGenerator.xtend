@@ -57,6 +57,7 @@ class PythonModelObjectGenerator {
     static final String META_FILENAME = 'Metatypes.py'
     
     var importedFromConditions = new ArrayList<String>()
+    var if_cond_blocks = new ArrayList<String>()
 
     static def toPythonBasicType(String typename) {
         switch typename {
@@ -288,8 +289,13 @@ class PythonModelObjectGenerator {
     }
 
     private def generateExpressionCondition(Data cls, Condition c) {
-        return '''    return «generateExpression(c.expression, 0)»
-               '''
+    	if_cond_blocks = new ArrayList<String>()
+    	var expr = generateExpression(c.expression, 0)
+        return 
+        '''    «FOR arg : if_cond_blocks SEPARATOR '\n'»«arg»«ENDFOR»
+
+    return «expr»
+        '''
     }
     
     def addImportsFromConditions(String value){
@@ -301,12 +307,24 @@ class PythonModelObjectGenerator {
     def String generateExpression(RosettaExpression expr, int iflvl) {
         switch (expr) {
             RosettaConditionalExpression: {
-            	val nslashes = (2**iflvl - 1) as int;
-            	val escsec = '\\'.repeat(nslashes) + "'";
+            	// val nslashes = (2**iflvl - 1) as int;
+            	// val escsec = '\\'.repeat(nslashes) + "'";
                 val ifexpr = generateExpression(expr.getIf(), iflvl+1)
                 val ifthen = generateExpression(expr.ifthen, iflvl+1)
                 var elsethen = expr.elsethen !== null && expr.full? generateExpression(expr.elsethen, iflvl+1): 'True'
-                '''if_cond(«ifexpr», «escsec»«ifthen»«escsec», «escsec»«elsethen»«escsec», self)'''
+                
+                val if_blocks = 
+                '''
+                def _then_fn«iflvl»():
+                    return «ifthen»
+
+                def _else_fn«iflvl»():
+                    return «elsethen»
+                '''
+                if_cond_blocks.add(if_blocks)
+
+				//'''if_cond(«ifexpr», «escsec»«ifthen»«escsec», «escsec»«elsethen»«escsec», self)'''
+				'''if_cond_fn(«ifexpr», _then_fn«iflvl», _else_fn«iflvl»)'''
             }
             RosettaFeatureCall: {
                 var right = switch (expr.feature) {
@@ -566,16 +584,16 @@ class PythonModelObjectGenerator {
 		}
 		'''
 		«attrName»: «att» = Field(«field_default», description="«attribute.definition»")
- 		«IF attribute.definition !== null»
+		«IF attribute.definition !== null»
 		"""
-  		«attribute.definition»
+		«attribute.definition»
 		"""
 		«ENDIF»
 		«IF need_card_check»
 		@rosetta_condition
 		def cardinality_«attrName»(self):
 		    return check_cardinality(self.«attrName», «attribute.inf», «sup_str»)
-
+		
 		«ENDIF»
 		'''
 		

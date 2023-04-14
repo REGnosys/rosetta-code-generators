@@ -1,5 +1,5 @@
 
-from cdm.utils import multiprop
+from cdm.utils import Multiprop
 from cdm.utils import check_cardinality, join, contains, disjoint
 # pylint: disable=missing-function-docstring, invalid-name, missing-class-docstring, too-few-public-methods
 
@@ -12,12 +12,12 @@ class A:
 
 class C:
     def __init__(self):
-        self.c = multiprop([A(2), A(3)])
+        self.c = Multiprop([A(2), A(3)])
 
 
 class B:
     def __init__(self, i):
-        self.b = multiprop(C() for i in range(0, i))
+        self.b = Multiprop(C() for i in range(0, i))
 
 
 class A0:
@@ -27,7 +27,7 @@ class A0:
 
 class A1:
     def __init__(self, x):
-        self.a1 = multiprop((A0(i) for i in range(0, x)))
+        self.a1 = Multiprop((A0(i) for i in range(0, x)))
 
 
 class B1:
@@ -37,7 +37,7 @@ class B1:
 
 class C1:
     def __init__(self):
-        self.c1 = multiprop([B1(3), B1(0), B1(5)])
+        self.c1 = Multiprop([B1(3), B1(0), B1(5)])
 
 
 class C0:
@@ -46,14 +46,14 @@ class C0:
 
 
 def test_multiprop():
-    x = multiprop(range(0, 10))
+    x = Multiprop(range(0, 10))
     assert x == list(range(0, 10))
 
-    y = multiprop(A(i) for i in range(0, 10))
+    y = Multiprop(A(i) for i in range(0, 10))
     assert y.a == list(range(0, 10))
     assert y.b == [i**2 for i in range(0, 10)]
 
-    z = multiprop(B(i) for i in range(1, 10))
+    z = Multiprop(B(i) for i in range(1, 10))
     assert z.b.c.b == [4, 9] * 45
 
 
