@@ -701,11 +701,11 @@ class ModelObjectGeneratorTest {
         class TestType3(BaseDataClass):
             TestType3Value1: Optional[str] = Field(None, description="Test string")
             """
-                  Test string
+            Test string
             """
             TestType4Value2: List[int] = Field([], description="Test int")
             """
-                  Test int
+            Test int
             """
             @rosetta_condition
             def cardinality_TestType4Value2(self):
@@ -715,21 +715,21 @@ class ModelObjectGeneratorTest {
         class TestType2(TestType3):
             TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
             """
-                  Test number
+            Test number
             """
             TestType2Value2: List[date] = Field([], description="Test date")
             """
-                  Test date
+            Test date
             """
         
         class TestType(TestType2):
             TestTypeValue1: str = Field(..., description="Test string")
             """
-                  Test string
+            Test string
             """
             TestTypeValue2: Optional[int] = Field(None, description="Test int")
             """
-                  Test int
+            Test int
             """
         
         
@@ -763,19 +763,19 @@ class ModelObjectGeneratorTest {
                 """
                 field1: Optional[str] = Field(None, description="Test string field 1")
                 """
-                      Test string field 1
+                Test string field 1
                 """
                 field2: Optional[str] = Field(None, description="Test string field 2")
                 """
-                      Test string field 2
+                Test string field 2
                 """
                 field3: Optional[Decimal] = Field(None, description="Test number field 3")
                 """
-                      Test number field 3
+                Test number field 3
                 """
                 field4: List[Decimal] = Field([], description="Test number field 4")
                 """
-                      Test number field 4
+                Test number field 4
                 """
                 
                 @rosetta_condition
@@ -814,19 +814,19 @@ class ModelObjectGeneratorTest {
                 """
                 field1: Optional[str] = Field(None, description="Test string field 1")
                 """
-                      Test string field 1
+                Test string field 1
                 """
                 field2: Optional[str] = Field(None, description="Test string field 2")
                 """
-                      Test string field 2
+                Test string field 2
                 """
                 field3: Optional[Decimal] = Field(None, description="Test number field 3")
                 """
-                      Test number field 3
+                Test number field 3
                 """
                 field4: List[Decimal] = Field([], description="Test number field 4")
                 """
-                      Test number field 4
+                Test number field 4
                 """
                 
                 @rosetta_condition
@@ -834,7 +834,13 @@ class ModelObjectGeneratorTest {
                     """
                     Choice rule to represent an FpML choice construct.
                     """
-                    return if_cond(((self.field1) is not None), 'all_elements(self.field3, ">", 0)', 'True', self)
+                    def _then_fn0():
+                        return all_elements(self.field3, ">", 0)
+                    
+                    def _else_fn0():
+                        return True
+                    
+                    return if_cond_fn(((self.field1) is not None), _then_fn0, _else_fn0)
             
             
             TestType.update_forward_refs()

@@ -288,13 +288,23 @@ class PythonModelObjectGenerator {
                
     }
 
-    private def generateExpressionCondition(Data cls, Condition c) {
+    /*private def generateExpressionCondition(Data cls, Condition c) {
     	if_cond_blocks = new ArrayList<String>()
     	var expr = generateExpression(c.expression, 0)
         return 
         '''    «FOR arg : if_cond_blocks SEPARATOR '\n'»«arg»«ENDFOR»
-
     return «expr»
+        '''
+    }*/
+    private def generateExpressionCondition(Data cls, Condition c) {
+    	if_cond_blocks = new ArrayList<String>()
+    	var expr = generateExpression(c.expression, 0)
+    	var blocks = ""
+    	if (!if_cond_blocks.isEmpty()) {
+    		blocks = '''    «FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
+    	}
+        return 
+        '''«blocks»    return «expr»
         '''
     }
     
@@ -320,6 +330,7 @@ class PythonModelObjectGenerator {
 
                 def _else_fn«iflvl»():
                     return «elsethen»
+
                 '''
                 if_cond_blocks.add(if_blocks)
 

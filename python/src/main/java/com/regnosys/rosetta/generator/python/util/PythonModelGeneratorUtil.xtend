@@ -68,7 +68,7 @@ class PythonModelGeneratorUtil {
 		val imports=
 		'''
 		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
-		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
 		from __future__ import annotations
 		from typing import List, Optional
 		from datetime import date

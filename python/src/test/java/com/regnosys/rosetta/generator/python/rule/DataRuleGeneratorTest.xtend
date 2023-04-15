@@ -147,14 +147,20 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
-		        return if_cond(((self.quotePrice) is not None), '((((self.quotePrice.price1) is not None) and ((self.quotePrice.price2) is not None)) and ((self.quotePrice.price3) is not None))', 'True', self)
+		        def _then_fn0():
+		            return ((((self.quotePrice.price1) is not None) and ((self.quotePrice.price2) is not None)) and ((self.quotePrice.price3) is not None))
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
 		
 		class QuotePrice(BaseDataClass):
 		    price1: Optional[Decimal] = Field(None, description="")
 		    price2: Optional[Decimal] = Field(None, description="")
 		    price3: Optional[Decimal] = Field(None, description="")
 		
-		
+
 		Quote.update_forward_refs()
 		QuotePrice.update_forward_refs()
 		'''
@@ -263,7 +269,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return if_cond(((self.price) is not None), 'all_elements(Foo(self.price), "=", 5.0)', 'False', self)
+		        def _then_fn0():
+		            return all_elements(Foo(self.price), "=", 5.0)
+		        
+		        def _else_fn0():
+		            return False
+		        
+		        return if_cond_fn(((self.price) is not None), _then_fn0, _else_fn0)
 		
 		
 		Quote.update_forward_refs()
