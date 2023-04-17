@@ -21,25 +21,18 @@ LABEL Dan Schwartz "daniel.schwartz@ftadvisory.co"
 # Install ssh client and git
 RUN apk update && apk add --no-cache openssh-client git python3 py3-pip
 
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-RUN echo $(ssh-add -l) && echo $SSH_AUTH_SOCK
+
 
 RUN mkdir /opt/isda-cdm-code-gen-5.5.1 && mkdir /opt/isda-cdm-code-gen-5.5.1/.m2 && mkdir /opt/isda-cdm-code-gen-5.5.1/github && mkdir /opt/isda-cdm-code-gen-5.5.1/github/REGnosys
 COPY settings-docker.xml /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml
 WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/
-RUN git clone https://github.com/REGnosys/rosetta-code-generators.git
-WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/
-COPY pom_parent.xml pom.xml
-RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml clean install
-RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml archetype:generate -DgroupId="com.regnosys.rosetta.code-generators"  -DartifactId=python
-RUN rm -rf ./python
+RUN git clone --branch pythonGeneration https://github.com/dcarrascosa00/rosetta-code-generators.git
 
-RUN --mount=type=ssh git clone git@github.com:cloudrisk/isda-cdm-python.git
-RUN mv isda-cdm-python python
 WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/python
 RUN rm -rf build/src/cdm/base build/src/cdm/event build/src/cdm/legaldocumentation build/src/cdm/observable build/src/cdm/product build/src/cdm/regulation
-COPY pom_python.xml pom.xml
+WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/
 RUN mvn -s /opt/isda-cdm-code-gen-5.5.1/.m2/settings.xml clean install
+
 WORKDIR /opt/isda-cdm-code-gen-5.5.1/github/REGnosys/rosetta-code-generators/python/build
 COPY requirements.txt .
 RUN python3 -m pip install -r requirements.txt

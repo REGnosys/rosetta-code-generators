@@ -42,7 +42,19 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return if_cond(all_elements(self.bar, "=", "Y"), '((self.baz) is not None)', 'if_cond((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), \'((self.baz) is None)\', \'True\', self)', self)
+		        def _then_fn1():
+		            return ((self.baz) is None)
+		        
+		        def _else_fn1():
+		            return True
+		        
+		        def _then_fn0():
+		            return ((self.baz) is not None)
+		        
+		        def _else_fn0():
+		            return if_cond_fn((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), _then_fn1, _else_fn1)
+		        
+		        return if_cond_fn(all_elements(self.bar, "=", "Y"), _then_fn0, _else_fn0)
 		
 		
 		Foo.update_forward_refs()
@@ -73,7 +85,25 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return if_cond(((self.bar) is not None), 'if_cond(all_elements(self.bar, "=", "Y"), \'((self.baz) is not None)\', \'if_cond((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), \\\'((self.baz) is None)\\\', \\\'True\\\', self)\', self)', 'True', self)
+		        def _then_fn2():
+		            return ((self.baz) is None)
+		        
+		        def _else_fn2():
+		            return True
+		        
+		        def _then_fn1():
+		            return ((self.baz) is not None)
+		        
+		        def _else_fn1():
+		            return if_cond_fn((all_elements(self.bar, "=", "I") or all_elements(self.bar, "=", "N")), _then_fn2, _else_fn2)
+		        
+		        def _then_fn0():
+		            return if_cond_fn(all_elements(self.bar, "=", "Y"), _then_fn1, _else_fn1)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((self.bar) is not None), _then_fn0, _else_fn0)
 		
 		
 		Foo.update_forward_refs()
@@ -105,7 +135,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
-		        return if_cond(((self.quotePrice) is not None), '(((self.quotePrice.bidPrice) is not None) or ((self.quotePrice.offerPrice) is not None))', 'True', self)
+		        def _then_fn0():
+		            return (((self.quotePrice.bidPrice) is not None) or ((self.quotePrice.offerPrice) is not None))
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
 		
 		class QuotePrice(BaseDataClass):
 		    bidPrice: Optional[Decimal] = Field(None, description="")
@@ -160,9 +196,8 @@ class DataRuleGeneratorTest {
 		    price2: Optional[Decimal] = Field(None, description="")
 		    price3: Optional[Decimal] = Field(None, description="")
 		
-
+		
 		Quote.update_forward_refs()
-		QuotePrice.update_forward_refs()
 		'''
 		
 		assertTrue(python.get("Types.py").toString.contains(expected))
@@ -189,7 +224,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
-		        return if_cond(((self.quotePrice) is not None), 'all_elements(self.quotePrice.bidPrice, "=", 0.0)', 'True', self)
+		        def _then_fn0():
+		            return all_elements(self.quotePrice.bidPrice, "=", 0.0)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
 		
 		class QuotePrice(BaseDataClass):
 		    bidPrice: Optional[Decimal] = Field(None, description="")
@@ -226,13 +267,18 @@ class DataRuleGeneratorTest {
 			pass
 		'''
 		val expectedType='''
-		
 		class Quote(BaseDataClass):
 		    price: Optional[Decimal] = Field(None, description="")
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return if_cond(((self.price) is not None), 'all_elements(Foo(self.price), "=", 5.0)', 'True', self)
+		        def _then_fn0():
+		            return all_elements(Foo(self.price), "=", 5.0)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((self.price) is not None), _then_fn0, _else_fn0)
 		
 		
 		Quote.update_forward_refs()
@@ -306,7 +352,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_CoinHeadRule(self):
-		        return if_cond(all_elements(self.head, "=", False), 'all_elements(self.tail, "=", False)', 'True', self)
+		        def _then_fn0():
+		            return all_elements(self.tail, "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(self.head, "=", False), _then_fn0, _else_fn0)
 		
 		
 		Coin.update_forward_refs()
@@ -335,7 +387,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_CoinTailRule(self):
-		        return if_cond(all_elements(self.tail, "=", False), 'all_elements(self.head, "=", False)', 'True', self)
+		        def _then_fn0():
+		            return all_elements(self.head, "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(self.tail, "=", False), _then_fn0, _else_fn0)
 		
 		
 		Coin.update_forward_refs()
@@ -364,7 +422,13 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_EdgeRule(self):
-		        return if_cond(all_elements(self.tail, "=", False), 'all_elements(self.head, "=", False)', 'True', self)
+		        def _then_fn0():
+		            return all_elements(self.head, "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(self.tail, "=", False), _then_fn0, _else_fn0)
 		
 		
 		Coin.update_forward_refs()

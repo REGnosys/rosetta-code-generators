@@ -530,7 +530,13 @@ class ModelObjectGeneratorTest {
                 """
                 FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
                 """
-                return if_cond(((B) is not None), '((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))', 'True', self)
+                def _then_fn0():
+                    return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
+                
+                def _else_fn0():
+                    return True
+                
+                return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
         
         
         A.update_forward_refs()
@@ -569,33 +575,33 @@ class ModelObjectGeneratorTest {
                """
                testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
                """
-                     Optional test enum
+               Optional test enum
                """
                testTypeValue1: str = Field(..., description="Test string")
                """
-                     Test string
+               Test string
                """
                testTypeValue2: Optional[str] = Field(None, description="Test optional string")
                """
-                     Test optional string
+               Test optional string
                """
                testTypeValue3: List[str] = Field([], description="Test string list")
                """
-                     Test string list
+               Test string list
                """
                testTypeValue4: TestType2 = Field(..., description="Test TestType2")
                """
-                     Test TestType2
+               Test TestType2
                """
            
            class TestType2(BaseDataClass):
                testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
                """
-                     Optional test enum
+               Optional test enum
                """
                testType2Value1: List[Decimal] = Field([], description="Test number list")
                """
-                     Test number list
+               Test number list
                """
                @rosetta_condition
                def cardinality_testType2Value1(self):
@@ -603,7 +609,7 @@ class ModelObjectGeneratorTest {
                
                testType2Value2: Optional[date] = Field(None, description="Test date")
                """
-                     Test date
+               Test date
                """
            
            
@@ -641,11 +647,11 @@ class ModelObjectGeneratorTest {
                """
                amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
                """
-                     Specifies an amount to be qualified and used in a Price or Quantity definition.
+               Specifies an amount to be qualified and used in a Price or Quantity definition.
                """
                unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
                """
-                     Qualifies the unit by which the amount is measured.
+               Qualifies the unit by which the amount is measured.
                """
            
            class UnitType(BaseDataClass):
@@ -654,7 +660,7 @@ class ModelObjectGeneratorTest {
                """
                currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
                """
-                     Defines the currency to be used as a unit for a price, quantity, or other purpose.
+               Defines the currency to be used as a unit for a price, quantity, or other purpose.
                """
            
            class Quantity(MeasureBase):
@@ -663,11 +669,11 @@ class ModelObjectGeneratorTest {
                """
                multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
                """
-                     Defines the number to be multiplied by the amount to derive a total quantity.
+               Defines the number to be multiplied by the amount to derive a total quantity.
                """
                multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
                """
-                     Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
+               Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
                """
            
            
@@ -912,7 +918,13 @@ class ModelObjectGeneratorTest {
                 """
                 FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
                 """
-                return if_cond(((B) is not None), '((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))', 'True', self)
+                def _then_fn0():
+                    return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
+                
+                def _else_fn0():
+                    return True
+                
+                return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
         
         
         A.update_forward_refs()
