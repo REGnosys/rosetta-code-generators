@@ -10,6 +10,7 @@ import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Collections
+import java.util.Arrays
 import java.util.Map
 import java.util.Scanner
 import org.eclipse.emf.common.util.URI
@@ -35,6 +36,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.lang.reflect.Array
 import org.junit.jupiter.api.Disabled
+import com.google.inject.Provider
+import org.eclipse.xtext.resource.XtextResourceSet
 
 /*
  * Test Principal
@@ -47,6 +50,8 @@ class PythonFilesGeneratorTest {
 
     @Inject extension ParseHelper<RosettaModel>
 	
+	@Inject
+    Provider<XtextResourceSet> resourceSetProvider;
 	/*
 	 * Test which is used as main to create all the Python Generation
 	 */
@@ -78,13 +83,15 @@ class PythonFilesGeneratorTest {
 			val cdmVersion       = iniConfig.getSection('CDM').getProperty ('version').toString ()
 	
 		    // Create a resource set and add the common Rosetta models to it
-		    val resourceSet = parse(ModelHelper.commonTestTypes).eResource.resourceSet
+		    val resourceSet = resourceSetProvider.get  
+            parse(ModelHelper.commonTestTypes, resourceSet)
 		    resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
 		    resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
 		
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    var dslFile   = new File(dslPath)
-		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')]
+		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
+		    Arrays.sort(listFiles)
 		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)
 		
 		    // Get a list of all the Rosetta models in the resource set
@@ -219,6 +226,7 @@ class PythonFilesGeneratorTest {
                         directory = directory + File.separator + key
 						if (key == topLevelKey && !seenRoot) {
                         	// initialize the top most directory if this is the first time through
+			    	    	println ('PythonFilesGeneratorTest::createStrucurePython ... writing Python files')
 							initializeTopDirectory (dslPath,  cdmVersion, directory)
 							seenRoot = true;
 							dirFileCount.put (key, 0)
@@ -229,7 +237,7 @@ class PythonFilesGeneratorTest {
 	                        	if(newDir.exists()){
 	                        		FileUtils.forceDelete (new File (directory))
 	                        	}
-			    	    		println ('PythonFilesGeneratorTest::createStrucurePython ... cleaned directory: ' + directory + ' key: ' + key)
+			    	    		println ('PythonFilesGeneratorTest::createStrucurePython ... removed and created directory: ' + directory + ' key: ' + key)
 								dirFileCount.put (key, 0)
 							}
 	                        // Create a new directory if it does not already exist and add __init__.py
