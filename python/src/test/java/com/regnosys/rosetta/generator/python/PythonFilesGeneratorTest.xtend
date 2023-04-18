@@ -31,7 +31,6 @@ import org.apache.commons.io.FileUtils
 import java.io.IOException
 import org.apache.commons.configuration2.INIConfiguration
 import static java.nio.file.StandardCopyOption.*
-import java.util.Arrays
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.lang.reflect.Array
@@ -342,6 +341,7 @@ class PythonFilesGeneratorTest {
 			println ('PythonFilesGeneratorTest::loadResourceSet ... parsing file: ' + file.name)
          	val filePath = file.path
      		val content  = new String(Files.readAllBytes(Paths.get(filePath)))
+     		resourceSet.getResource(URI.createURI(filePath), true)
 			val model    = parse(content,resourceSet)
 			val List<Data> types = new ArrayList<Data>()
 			val List<RosettaEnumeration> enums = new ArrayList<RosettaEnumeration>()
