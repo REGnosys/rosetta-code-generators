@@ -57,14 +57,15 @@ class PythonModelGeneratorUtil {
 		
 		
 		val all = unitedList.map["'"+it+"'"]
-		var simpleNameSpace = "";
+		/*var simpleNameSpace = "";
 		try{
 			val fullNameSpace = importsVariables.get(unitedList.get(0)).get(0)
 			simpleNameSpace = fullNameSpace.split("\\.").get(0)
 		}catch(Exception ex){
 			simpleNameSpace = null;
-		}
+		}*/
 		
+		// «IF simpleNameSpace!==null»from «simpleNameSpace».utils import *«ENDIF»
 		val imports=
 		'''
 		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
@@ -76,7 +77,7 @@ class PythonModelGeneratorUtil {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		«IF simpleNameSpace!==null»from «simpleNameSpace».utils import *«ENDIF»
+		from rosetta.runtime.utils import *
 		
 		__all__ = «all»
 		

@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from cdm.utils import ConditionViolationError
+from rosetta.runtime.utils import ConditionViolationError
 from cdm.base.math.NonNegativeQuantity import NonNegativeQuantity
 from cdm.base.math.UnitType import UnitType
 

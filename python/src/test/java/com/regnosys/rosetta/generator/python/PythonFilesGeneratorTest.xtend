@@ -138,6 +138,7 @@ class PythonFilesGeneratorTest {
     	// Determine where to put the generated code
     	val pythonTgtFile       = new File(pythonTgtPath)
 		// create a top-level __init__.py file with the current version
+		pythonTgtFile.mkdirs()
 		val initFile            = new File(pythonTgtFile+File.separator+"__init__.py")
         val initFileWriter      = new FileWriter(initFile)
         initFileWriter.write("from .version import __version__")
@@ -145,8 +146,8 @@ class PythonFilesGeneratorTest {
         val cdmVersionComma     = cdmVersion.replace ('.', ',')
         val versionFile         = new File(pythonTgtFile+File.separator+"version.py")
        	val versionFileWriter   = new FileWriter(versionFile)
-       	versionFileWriter.write("version = ("+cdmVersionComma+",0,'g4cc81f0')\n"+
-       										"version_str = '"+cdmVersionComma+"-0-g4cc81f0'\n"+
+       	versionFileWriter.write("version = ("+cdmVersionComma+",0)\n"+
+       										"version_str = '"+cdmVersion+"-0'\n"+
        										"__version__ = '"+cdmVersion+"'\n"+
        										"__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'")       	
         versionFileWriter.close()

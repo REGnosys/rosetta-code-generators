@@ -1,10 +1,4 @@
-import pytest
-from cdm.utils import ConditionViolationError
-from cdm.utils import if_cond
-##from cdm.base.math.Measure import Measure
-from cdm.base.math.QuantitySchedule import QuantitySchedule
-from cdm.base.math.UnitType import UnitType
-##from drr.regulation.cftc.rewrite.CFTCPart43TransactionReport import CFTCPart43TransactionReport
+from rosetta.runtime.utils import if_cond
 
 
 '''

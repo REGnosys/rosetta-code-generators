@@ -54,4 +54,7 @@ build/build/
 python_cdm.egg-info
 build/src/cdm/*
 !build/src/cdm/utils.py
-/build/python_cdm-*-py3-none-any.whl
+build/python_cdm-*-py3-none-any.whl
+build/rosetta.runtime-*-py3-none-any.whl
+build/resources/runtime/build
+build/resources/runtime/src/rosetta.runtime.egg-info

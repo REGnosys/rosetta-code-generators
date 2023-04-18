@@ -29,6 +29,9 @@ if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1;
         exit 1
 fi
 
+MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd $MYPATH
+
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 # It is assumed, that the build.sh script has been run (it installs the cdm package

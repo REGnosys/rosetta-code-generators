@@ -18,6 +18,9 @@ if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1;
         exit 1
 fi
 
+MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd $MYPATH
+
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 $PYEXE -m venv --clear .pyenv || processError
@@ -30,10 +33,12 @@ $PYEXE -m pip install yapf || processError
 $PYEXE -m pip install pytest || processError
 $PYEXE -m pip install pydantic || processError
 $PYEXE -m pip install jsonpickle || processError
+$PYEXE -m pip install -e resources/runtime || processError
+$PYEXE -m pip wheel --no-deps --only-binary :all: resources/runtime || processError
 $PYEXE -m pip install -e . || processError
-$PYEXE -m pip wheel --only-binary :all: . || processError
-rm -f typing_extensions-*.whl
-rm -f pydantic-*.whl
+$PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
+# rm -f typing_extensions-*.whl
+# rm -f pydantic-*.whl
 
 echo ""
 echo ""

@@ -1,6 +1,6 @@
 
-from cdm.utils import Multiprop
-from cdm.utils import check_cardinality, join, contains, disjoint
+from rosetta.runtime.utils import Multiprop
+from rosetta.runtime.utils import check_cardinality, join, contains, disjoint
 # pylint: disable=missing-function-docstring, invalid-name, missing-class-docstring, too-few-public-methods
 
 
