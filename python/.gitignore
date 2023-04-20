@@ -58,3 +58,4 @@ build/python_cdm-*-py3-none-any.whl
 build/rosetta.runtime-*-py3-none-any.whl
 build/resources/runtime/build
 build/resources/runtime/src/rosetta.runtime.egg-info
+build/testenv
