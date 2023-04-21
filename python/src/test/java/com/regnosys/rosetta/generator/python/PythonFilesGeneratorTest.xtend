@@ -192,11 +192,10 @@ class PythonFilesGeneratorTest {
         var seenRoot      = false;
 	    
 	    // Iterate through each Rosetta file in the input list
-
-	    for (File file: listFiles){
-	        val filePath  = file.path // Get the path of the current file
+		val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+		println(rosettaModels)
+	    for (RosettaModel model: rosettaModels){
 	        var className = ""        // Initialize the class name to an empty string
-            val model = resourceSet.getResource(URI.createURI(filePath), false).contents.filter(RosettaModel).get(0)
             // Get a list of existing functions that have already been generated
             val existingCreatedFunctions = new File(resourcesPath + File.separator + "functions").list().map[it.split("\\.").get(0)]
             
