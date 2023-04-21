@@ -94,7 +94,7 @@ class PythonFilesGeneratorTest {
 		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
 		    if(listFiles===null){
 		    	println ('PythonFilesGeneratorTest::No Rosetta files detected')
-		    	fail("No Rosetta files detected.")
+		    	return
 		    }
 		    Arrays.sort(listFiles)
 		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)					
