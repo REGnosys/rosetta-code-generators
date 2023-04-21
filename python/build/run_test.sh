@@ -14,7 +14,7 @@ ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') 
 rm *.whl
 rm -rf testenv -rf
 
-./build.sh
+bash build.sh
 
 $PYEXE -m venv --clear testenv
 source testenv/$ACDIR/activate
