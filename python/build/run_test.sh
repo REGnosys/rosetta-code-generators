@@ -9,12 +9,12 @@ fi
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $MYPATH
 
-ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
+ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 rm *.whl
 rm -rf testenv -rf
 
-./build.sh
+bash build.sh
 
 $PYEXE -m venv --clear testenv
 source testenv/$ACDIR/activate
