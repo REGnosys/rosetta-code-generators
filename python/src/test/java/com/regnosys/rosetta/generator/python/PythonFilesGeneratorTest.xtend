@@ -196,8 +196,7 @@ class PythonFilesGeneratorTest {
 	    for (File file: listFiles){
 	        val filePath  = file.path // Get the path of the current file
 	        var className = ""        // Initialize the class name to an empty string
-            val content   = new String(Files.readAllBytes(Paths.get(filePath))) // Read the contents of the file
-            val model     = parse(content,resourceSet) // Parse the contents of the file
+            val model = resourceSet.getResource(URI.createURI(filePath), false).contents.filter(RosettaModel).get(0)
             // Get a list of existing functions that have already been generated
             val existingCreatedFunctions = new File(resourcesPath + File.separator + "functions").list().map[it.split("\\.").get(0)]
             
@@ -339,11 +338,18 @@ class PythonFilesGeneratorTest {
      */
     def private HashMap<String,List<String>> loadResourceSet(File[] listFiles, ResourceSet resourceSet, HashMap<String, List<String>> importsVariables){
     	for (File file: listFiles){
-			println ('PythonFilesGeneratorTest::loadResourceSet ... parsing file: ' + file.name)
          	val filePath = file.path
      		val content  = new String(Files.readAllBytes(Paths.get(filePath)))
-     		resourceSet.getResource(URI.createURI(filePath), true)
-			val model    = parse(content,resourceSet)
+			parse(content,resourceSet)
+		}
+    	
+    	for (File file: listFiles){
+			println ('PythonFilesGeneratorTest::loadResourceSet ... parsing file: ' + file.name)
+         	val filePath = file.path
+     		val content  = new String(Files.readAllBytes(Paths.get(filePath)))   		
+			parse(content,URI.createURI(filePath),resourceSet)
+			
+			val model = resourceSet.getResource(URI.createURI(filePath), false).contents.filter(RosettaModel).get(0)
 			val List<Data> types = new ArrayList<Data>()
 			val List<RosettaEnumeration> enums = new ArrayList<RosettaEnumeration>()
 			val List<Function> funcs = new ArrayList<Function>()
