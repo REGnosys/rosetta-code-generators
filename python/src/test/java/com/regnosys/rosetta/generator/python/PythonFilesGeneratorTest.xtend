@@ -90,7 +90,7 @@ class PythonFilesGeneratorTest {
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    var dslFile   = new File(dslPath)
 		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
-		    Arrays.sort(listFiles)
+		    //Arrays.sort(listFiles)
 		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)
 		
 		    // Get a list of all the Rosetta models in the resource set
