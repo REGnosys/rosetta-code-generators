@@ -1,2 +1,0 @@
-namespace cdm.product.collateral
-version "${project.version}"
