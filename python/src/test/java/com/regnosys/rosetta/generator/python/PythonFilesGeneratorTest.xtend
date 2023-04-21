@@ -37,6 +37,7 @@ import java.lang.reflect.Array
 import org.junit.jupiter.api.Disabled
 import com.google.inject.Provider
 import org.eclipse.xtext.resource.XtextResourceSet
+import static org.junit.jupiter.api.Assertions.*
 
 /*
  * Test Principal
@@ -71,7 +72,7 @@ class PythonFilesGeneratorTest {
 			val iniConfig     = new INIConfiguration()
 			val fileReader    = new FileReader(iniFileName)
 			iniConfig.read(fileReader)
-	
+			
 		    val resourcesPath    = iniConfig.getSection('paths').getProperty ('resources').toString () 
 			val dslPath          = iniConfig.getSection('paths').getProperty ('dslPath').toString ()
 			// pythonTgtPath is the target directory for the generated python
@@ -82,6 +83,7 @@ class PythonFilesGeneratorTest {
 			val cdmVersion       = iniConfig.getSection('CDM').getProperty ('version').toString ()
 	
 		    // Create a resource set and add the common Rosetta models to it
+		    println ('PythonFilesGeneratorTest::generatePython ... get resource set')
 		    val resourceSet = resourceSetProvider.get  
             parse(ModelHelper.commonTestTypes, resourceSet)
 		    resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
@@ -90,14 +92,13 @@ class PythonFilesGeneratorTest {
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    var dslFile   = new File(dslPath)
 		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
+		    if(listFiles===null){
+		    	println ('PythonFilesGeneratorTest::No Rosetta files detected')
+		    	fail("No Rosetta files detected.")
+		    }
 		    Arrays.sort(listFiles)
-		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)
-		
-		    // Get a list of all the Rosetta models in the resource set
-			println ('PythonFilesGeneratorTest::generatePython ... get resource set')
-	
-		    val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-		
+		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)					
+			
 		    // Create a map to store the import statements and variables for each file
 
 		    var importsVariables = new HashMap<String, List<String>>()
