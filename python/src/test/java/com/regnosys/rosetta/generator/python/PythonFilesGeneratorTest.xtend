@@ -155,30 +155,17 @@ class PythonFilesGeneratorTest {
 		println (' ... done')
 	}
     
-    def String getNameRootElement(RosettaRootElement element){
-    	val List<Data> types = new ArrayList<Data>() 
-    	val List<RosettaEnumeration> enums = new ArrayList<RosettaEnumeration>()
-    	val List<Function> funcs = new ArrayList<Function>()  
-    	
-    	if(element instanceof Data){
-    		types.add(element)
-    	}
-    	if(element instanceof RosettaEnumeration){
-    		enums.add(element)
-    	}
-    	if(element instanceof Function){
-    		funcs.add(element)
-    	}
-    	for(Data type: types){
-    		return(type.name)
-    	}
-    	for(RosettaEnumeration enum: enums){
-    		return(enum.name)
-    	}
-    	for(Function func: funcs){
-    		return(func.name)
-    	}
-    }
+    def String getNameRootElement(RosettaRootElement element) {
+	    if (element instanceof Data) {
+	        return (element as Data).name
+	    } else if (element instanceof RosettaEnumeration) {
+	        return (element as RosettaEnumeration).name
+	    } else if (element instanceof Function) {
+	        return (element as Function).name
+	    }
+	    return null
+	}
+
     
     /*
      * Method that generates python by iterating through each Rosetta definition

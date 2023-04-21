@@ -139,19 +139,17 @@ class PythonModelObjectGenerator {
         result;
     }
     
-    def boolean checkBasicType(ExpandedAttribute attr){    	
-    	val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time','time', 'bool')
-    	try{
-    		 val attrType = attr.toRawType.toString()	
-    		 return types.contains(attrType)
-    		 
-    	}
-    	catch(Exception ex){
-    		println("Error while getting raw type for attribute ${attr.name}: ${ex.message}")
-    		return false
-    	}
-    	
-    }
+    def boolean checkBasicType(ExpandedAttribute attr) {
+	    val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool')
+	    try {
+	        val attrType = attr.toRawType.toString()
+	        return types.contains(attrType)
+	    } catch (Exception ex) {
+	        return false
+	    }
+	 }
+
+
     
     private def sortClassesByHierarchy(List<Data> rosettaClasses) {
 	    val sortedClasses = newArrayList
