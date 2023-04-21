@@ -141,19 +141,16 @@ class PythonModelObjectGenerator {
     
     def boolean checkBasicType(ExpandedAttribute attr){    	
     	val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time','time', 'bool')
-    	var attrType = ""
     	try{
-    		 attrType = attr.toRawType.toString()	
+    		 val attrType = attr.toRawType.toString()	
+    		 return types.contains(attrType)
+    		 
     	}
     	catch(Exception ex){
-    		return true
+    		println("Error while getting raw type for attribute ${attr.name}: ${ex.message}")
+    		return false
     	}
     	
-    	if(types.contains(attrType)){
-    		return true
-    	}
-    	else
-    		return false
     }
     
     private def sortClassesByHierarchy(List<Data> rosettaClasses) {
@@ -182,39 +179,34 @@ class PythonModelObjectGenerator {
 	    var List<String> updateForwardRefs = newArrayList
 	    var List<String> importFromConditions = newArrayList
 	
+	    // Iterate through sorted Rosetta classes
 	    for (Data rosettaClass : sortedRosettaClasses) {
 	        try {
-	            enumImports += rosettaClass.allExpandedAttributes.filter[enclosingType == rosettaClass.name].filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")].filter[!checkBasicType(it)].filter[importsVariables.get(it.toRawType.toString).get(1)==='ENUM'].map[it.toRawType].toSet().toList().map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
-	            dataImports += rosettaClass.allExpandedAttributes.filter[enclosingType == rosettaClass.name].filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")].filter[!checkBasicType(it)].filter[importsVariables.get(it.toRawType.toString).get(1)==='DATA'].map[it.toRawType].toSet().toList().map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	            enumImports += getEnumImportsForClass(rosettaClass, importsVariables)
+	            dataImports += getDataImportsForClass(rosettaClass, importsVariables)
 	        } catch (Exception ex) {
 	        }
 	
+	        // Add super type imports
 	        if (rosettaClass.superType !== null && importsVariables.containsKey(rosettaClass.superType.name)) {
 	            superTypeImports.add('''from «importsVariables.get(rosettaClass.superType.name).get(0)».«rosettaClass.superType.name» import «rosettaClass.superType.name»''')
 	        }
 	
-	        val classDefinition = '''
-	            class «rosettaClass.name»«IF rosettaClass.superType === null && !superTypes.contains(rosettaClass)»«ENDIF»«IF rosettaClass.superType !== null && superTypes.contains(rosettaClass)»(«rosettaClass.superType.name»):«ELSEIF rosettaClass.superType !== null»(«rosettaClass.superType.name»):«ELSE»(BaseDataClass):«ENDIF»
-	                «IF rosettaClass.definition!==null»
-	                """
-	                «rosettaClass.definition»
-	                """
-	                «ENDIF»
-	                «generateAttributes(rosettaClass)»
-	                «generateConditions(rosettaClass)»
-	        '''
+	        // Generate class definition
+	        val classDefinition = generateClassDefinition(rosettaClass, superTypes)
 	        classDefinitions.add(classDefinition)
-	       	importFromConditions += importedFromConditions.filter[importsVariables.containsKey(it)].toSet().toList().map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
-	        
+	        importFromConditions += getImportedFromConditions(rosettaClass, importsVariables)
 	
+	        // Add update forward references
 	        updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
 	    }
-	    	
+	
+	    // Remove duplicates
 	    enumImports = enumImports.toSet().toList()
 	    dataImports = dataImports.toSet().toList()
 	
-	    return 
-	    '''
+	    // Return generated classes
+	    return '''
 	«FOR enumImport : enumImports SEPARATOR "\n"»«enumImport»«ENDFOR»
 	«FOR superTypeImport : superTypeImports SEPARATOR "\n"»«superTypeImport»«ENDFOR»
 	
@@ -224,8 +216,53 @@ class PythonModelObjectGenerator {
 	«FOR conditionImport : importFromConditions SEPARATOR "\n"»«conditionImport»«ENDFOR»
 	
 	«FOR updateForwardRef : updateForwardRefs SEPARATOR "\n"»«updateForwardRef»«ENDFOR»
-	    '''
+	'''
 	}
+	
+	
+	private def getEnumImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	    return rosettaClass.allExpandedAttributes
+	        .filter[enclosingType == rosettaClass.name]
+	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
+	        .filter[!checkBasicType(it)]
+	        .filter[importsVariables.get(it.toRawType.toString).get(1)==='ENUM']
+	        .map[it.toRawType]
+	        .toSet().toList()
+	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	}
+	
+	private def getDataImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	    return rosettaClass.allExpandedAttributes
+	        .filter[enclosingType == rosettaClass.name]
+	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
+	        .filter[!checkBasicType(it)]
+	        .filter[importsVariables.get(it.toRawType.toString).get(1)==='DATA']
+	        .map[it.toRawType]
+	        .toSet().toList()
+	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	}
+	
+	private def generateClassDefinition(Data rosettaClass, Set<Data> superTypes) {
+	    return '''
+		class «rosettaClass.name»«IF rosettaClass.superType === null && !superTypes.contains(rosettaClass)»«ENDIF»«IF rosettaClass.superType !== null && superTypes.contains(rosettaClass)»(«rosettaClass.superType.name»):«ELSEIF rosettaClass.superType !== null»(«rosettaClass.superType.name»):«ELSE»(BaseDataClass):«ENDIF»
+		    «IF rosettaClass.definition !== null»
+		    """
+		    «rosettaClass.definition»
+		    """
+		    «ENDIF»
+		    «generateAttributes(rosettaClass)»
+		    «generateConditions(rosettaClass)»
+		'''
+	}
+	
+	private def getImportedFromConditions(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	    return importedFromConditions
+	        .filter[importsVariables.containsKey(it)]
+	        .toSet().toList()
+	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	}	
+		
+        
 
     
     

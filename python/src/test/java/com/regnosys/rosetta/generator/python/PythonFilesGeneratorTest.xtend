@@ -90,7 +90,7 @@ class PythonFilesGeneratorTest {
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    var dslFile   = new File(dslPath)
 		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
-		    //Arrays.sort(listFiles)
+		    Arrays.sort(listFiles)
 		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)
 		
 		    // Get a list of all the Rosetta models in the resource set
@@ -193,7 +193,6 @@ class PythonFilesGeneratorTest {
 	    
 	    // Iterate through each Rosetta file in the input list
 		val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-		println(rosettaModels)
 	    for (RosettaModel model: rosettaModels){
 	        var className = ""        // Initialize the class name to an empty string
             // Get a list of existing functions that have already been generated
