@@ -68,6 +68,10 @@ class PythonFilesGeneratorTest {
 		
 		try {
 			val iniFileName   = new File("build/pythonCDMGenerator.ini")
+			if(!iniFileName.exists()){
+				println ('PythonFilesGeneratorTest::generatePython ... start ... no ini file detected')
+				return
+			}
 			println ('PythonFilesGeneratorTest::generatePython ... start ... reading ini file:' + iniFileName)
 			val iniConfig     = new INIConfiguration()
 			val fileReader    = new FileReader(iniFileName)
