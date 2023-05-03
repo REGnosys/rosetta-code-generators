@@ -41,7 +41,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Override
     public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
-        LOGGER.info("generate [packages={}, elements={}, version={}]", packages.model().withForwardSlashes(), elements.size(), version);
+        LOGGER.info("Generating python for namespace {}, version={}]", packages.model().withDots(), version);
 
         Map<String, CharSequence> result = new HashMap<>();
 
