@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
-
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 
@@ -19,7 +18,6 @@ class RosettaExistsExpressionTest {
 	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
 
 	@Test
 	@Disabled
@@ -164,14 +162,11 @@ class RosettaExistsExpressionTest {
 				set result:
 					foo -> bar -> before exists or ( foo -> baz -> other exists and foo -> bar -> after exists ) or foo -> baz -> bazValue exists
 			'''.generatePython
-
 	}
 	
 	def generatePython(CharSequence model) {
-		
 		val eResource = model.parseRosettaWithNoErrors.eResource
-	    generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+	    generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
 	    
 	}
-	
 }

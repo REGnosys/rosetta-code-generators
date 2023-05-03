@@ -118,7 +118,7 @@ class PythonModelObjectGenerator {
     }
 
     def Map<String, ? extends CharSequence> generate(
-        Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, HashMap<String, List<String>> importsVariables
+        Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, Map<String, List<String>> importsVariables
     ) {
         val result = new HashMap
 		
@@ -168,7 +168,7 @@ class PythonModelObjectGenerator {
 	 */
 	 // TODO remove Date implementation in beginning
 	 // TODO removed one-of condition due to limitations after instantiation of objects
-   private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, HashMap<String,List<String>> importsVariables) {
+   private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, Map<String,List<String>> importsVariables) {
 	    val sortedRosettaClasses = sortClassesByHierarchy(rosettaClasses)
 	    var List<String> enumImports = newArrayList
 	    var List<String> dataImports = newArrayList
@@ -218,7 +218,7 @@ class PythonModelObjectGenerator {
 	}
 	
 	
-	private def getEnumImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	private def getEnumImportsForClass(Data rosettaClass, Map<String, List<String>> importsVariables) {
 	    return rosettaClass.allExpandedAttributes
 	        .filter[enclosingType == rosettaClass.name]
 	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
@@ -229,7 +229,7 @@ class PythonModelObjectGenerator {
 	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
 	}
 	
-	private def getDataImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	private def getDataImportsForClass(Data rosettaClass, Map<String, List<String>> importsVariables) {
 	    return rosettaClass.allExpandedAttributes
 	        .filter[enclosingType == rosettaClass.name]
 	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
@@ -253,15 +253,12 @@ class PythonModelObjectGenerator {
 		'''
 	}
 	
-	private def getImportedFromConditions(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
+	private def getImportedFromConditions(Data rosettaClass, Map<String, List<String>> importsVariables) {
 	    return importedFromConditions
 	        .filter[importsVariables.containsKey(it)]
 	        .toSet().toList()
 	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
 	}	
-		
-        
-
     
     
     def boolean isConstraintCondition(Condition cond) {
@@ -534,7 +531,7 @@ class PythonModelObjectGenerator {
     }
     
     def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl){
-        addImportsFromConditions(s.name.toString)
+        addImportsFromConditions(s.name?.toString)
 
         var args = '''«FOR arg : expr.args SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»'''
         '''«s.name»(«args»)'''

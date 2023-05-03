@@ -18,7 +18,6 @@ class PythonObjectGenerationTest {
 	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
 	
 	@Test
     def void testConditions1() {
@@ -497,10 +496,8 @@ class PythonObjectGenerationTest {
         assertTrue(python.get('Types.py').toString.contains(expected))
     }
     
-    
     def generatePython(CharSequence model) {
          val eResource = model.parseRosetta.eResource
-         generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+         generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     }
-	
 }

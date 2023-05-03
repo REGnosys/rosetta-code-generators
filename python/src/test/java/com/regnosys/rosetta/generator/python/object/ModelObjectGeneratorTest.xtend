@@ -20,8 +20,6 @@ class ModelObjectGeneratorTest {
 
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
-	
 	
 	@Test
 	def void generateStringBasicType() {
@@ -937,7 +935,7 @@ class ModelObjectGeneratorTest {
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosetta.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 }

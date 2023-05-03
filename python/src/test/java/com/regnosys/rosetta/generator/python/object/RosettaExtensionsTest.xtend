@@ -90,10 +90,9 @@ class RosettaExtensionsTest {
 		assertTrue(python.get("Enums.py").toString.contains(expected))
 	}
 	
-	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 }

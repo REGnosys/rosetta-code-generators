@@ -33,14 +33,14 @@ class PythonModelGeneratorUtil {
 		#
 		# «definition»
 		#
-		 «FOR attribute : attributes»
+		«FOR attribute : attributes»
 		# @param «attribute.name» «attribute.definition»
-		 «ENDFOR»
+		«ENDFOR»
 		#
 		«ENDIF»
 		'''
 		
-	def Map<String, ? extends CharSequence> createImports(List<Data> classes, List<RosettaEnumeration> enums, List<Function> functions, HashMap<String, List<String>> importsVariables){
+	def Map<String, ? extends CharSequence> createImports(List<Data> classes, List<RosettaEnumeration> enums, List<Function> functions, Map<String, List<String>> importsVariables) {
 		
 		val result = new HashMap
 		val List<String> classesNames = classes.map[name]
@@ -86,8 +86,5 @@ class PythonModelGeneratorUtil {
 		result.put('Imports.py', imports)
 		
 		result
-		
-		
-		
 	}
 }

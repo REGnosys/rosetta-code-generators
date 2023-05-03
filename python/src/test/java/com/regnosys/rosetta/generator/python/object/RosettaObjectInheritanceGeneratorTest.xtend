@@ -20,8 +20,6 @@ class RosettaObjectInheritanceGeneratorTest {
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-
-
 	@Test
 	def void shouldGeneratePythonClassWithMultipleParents() {
 		val python = '''
@@ -65,12 +63,9 @@ class RosettaObjectInheritanceGeneratorTest {
 		
 		assertTrue(python.get("Types.py").toString.contains(expected))
 	}
-
-	
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
-    	
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     }
 }
