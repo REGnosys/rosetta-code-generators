@@ -17,7 +17,10 @@
 
 	<profiles>
 		<profile>
-            <id>example-generate</id>
+			<!-- For demonstration purposes only, this is how the code generation step is hooked into the CDM build -->
+			<!-- Run from parent working directory, i.e. rosetta-code-generators, specifying this profile, i.e. -->
+			<!-- mvn clean install -P example-generate -DskipTests -->
+			<id>example-generate</id>
 			<build>
                 <plugins>
                     <plugin>
@@ -33,6 +36,7 @@
                                 </goals>
                                 <configuration>
                                     <sourceRoots>
+            							<!-- Checkout FINOS/common-domain-model locally, and specify the relative path (or absolute path) here -->
                                         <sourceRoot>../../finos/common-domain-model/rosetta-source/src/main/rosetta</sourceRoot>
                                     </sourceRoots>
                                     <classPathLookupFilter>.*com\.regnosys\.rosetta.*</classPathLookupFilter>

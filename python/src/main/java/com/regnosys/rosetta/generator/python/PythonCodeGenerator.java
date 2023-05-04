@@ -41,8 +41,10 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Override
     public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
-        LOGGER.info("Generating python for namespace {}, version={}]", packages.model().withDots(), version);
+        LOGGER.info("Generating python for namespace {} and version {}", packages.model().withDots(), version);
 
+        // Map key should contain the fileName with path from namespace root, e.g. "cdm/base/math/Quantity.py"
+        // The infra will create the files on the file system, it's not the responsibility of the code generator 
         Map<String, CharSequence> result = new HashMap<>();
 
         result.put(utils.toPyFileName(packages, "__init__"), EMPTY_FILE_CONTENTS);
