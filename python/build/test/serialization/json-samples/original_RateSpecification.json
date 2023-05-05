@@ -1,0 +1,13 @@
+{
+	"floatingRate": {
+		"meta": {
+			"globalKey": "0"
+		},
+		"rateOption": {
+			"address": {
+				"scope": "DOCUMENT",
+				"value": "rateOption-1"
+			}
+		}
+	}
+}

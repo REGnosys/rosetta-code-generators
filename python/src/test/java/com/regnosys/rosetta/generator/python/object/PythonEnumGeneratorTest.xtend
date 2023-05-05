@@ -32,7 +32,7 @@ class PythonEnumGeneratorTest {
 	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
 	        '''.generatePython
 
-        val enums = python.get('Enums.py').toString
+        val enums = python.toString
         val expected = '''
         class TestEnum(Enum):
             """
@@ -60,7 +60,7 @@ class PythonEnumGeneratorTest {
     
     def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     }
     
 	

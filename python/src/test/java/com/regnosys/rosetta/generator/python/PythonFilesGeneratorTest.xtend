@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Disabled
 import com.google.inject.Provider
 import org.eclipse.xtext.resource.XtextResourceSet
 import static org.junit.jupiter.api.Assertions.*
+import java.nio.charset.StandardCharsets
+import java.nio.file.StandardCopyOption
 
 /*
  * Test Principal
@@ -94,27 +96,29 @@ class PythonFilesGeneratorTest {
 		    resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
 		
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
-		    var dslFile   = new File(dslPath)
-		    var listFiles = dslFile.listFiles[it.name.endsWith('.rosetta')] as File[]
-		    if(listFiles===null){
-		    	println ('PythonFilesGeneratorTest::No Rosetta files detected')
-		    	return
-		    }
-		    Arrays.sort(listFiles)
-		    println ('PythonFilesGeneratorTest::generatePython ... found ' + listFiles.length.toString () + ' rosetta files in: ' + dslPath)					
+		    val dirs = new File(dslPath)
+			dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sortBy[ it.getName ].forEach [file |
+			  val content = new String(Files.readAllBytes(file.toPath))
+			  parse(content, resourceSet)
+			]
 			
-		    // Create a map to store the import statements and variables for each file
+			dirs.listFiles.forEach [file |
+			  val content = new String(Files.readAllBytes(file.toPath))
+			  parse(content, resourceSet)
+			]
 
-		    var importsVariables = new HashMap<String, List<String>>()
-		
-		    // Load the Rosetta models in the input files and add their import statements and variables to the map
-		    importsVariables = loadResourceSet(listFiles, resourceSet, importsVariables)
-		
-		    // Generate the Python files and structure
-		    createStrucurePython(resourcesPath, dslPath, cdmVersion, pythonTgtPath, listFiles, resourceSet, importsVariables) 
-	
-	        // create the Toml file    
-	
+
+		    
+		    val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+
+			val generatedFiles = generator.afterGenerate(rosettaModels)
+			
+			writeFiles(generatedFiles)
+
+			
+		    //Arrays.sort(listFiles)
+		    println ('PythonFilesGeneratorTest::generatePython ... found ' + rosettaModels.length.toString () + ' rosetta files in: ' + dslPath)					
+			  	
 	        createProjectToml(tomlTemplatePath, cdmVersion, tomlTargetPath)
 			println ('PythonFilesGeneratorTest::generatePython ... done')
 		} 
@@ -133,6 +137,51 @@ class PythonFilesGeneratorTest {
 	    	println (e.toString ())
 	    	e.printStackTrace ()
 		}
+	}
+	
+	def writeFiles(Map<String, ? extends CharSequence> generatedFiles){
+		// Assuming 'generatedFiles' is a HashMap<String, CharSequence>
+		for (entry : generatedFiles.entrySet) {
+		  val key = entry.key
+		  val value = entry.value.toString
+		
+		  // Split the key into its components and replace '.' with the file separator
+		  val filePathComponents = key.split("\\.").toList
+		  val fileName = filePathComponents.last
+		  val outputPath = "build" + File.separator + "src" + File.separator + filePathComponents.take(filePathComponents.size - 1).join(File.separator)
+		  val outputDir = new File(outputPath)
+		
+		  // Create the directory structure if it doesn't exist
+		  if (!outputDir.exists) {
+		    outputDir.mkdirs()
+		   }
+		   // Create __init__.py files in each subdirectory starting from the second element of the key
+	       var parentDir = outputDir
+	       var stop = false
+	       while (parentDir != null && parentDir.getParent.contains(File.separator) && !stop) {
+	           new File(parentDir, "__init__.py").createNewFile()
+	           parentDir = parentDir.getParentFile
+	           // Stop at the first element of the key (e.g., "cdm" folder)
+	           if (parentDir.getName == filePathComponents.get(0)) {
+	               stop = true
+	           }
+	       }
+			  	
+		  // Create the output file with a '.py' extension
+		  val outputFile = new File(outputDir, fileName + ".py")
+		
+		  // Overwrite the content of the file
+		  Files.write(outputFile.toPath, value.getBytes(StandardCharsets.UTF_8))
+		}
+		
+		// Copy all files from build/runtime/src/rosetta/runtime to the first sublevel
+		  val sourceDir = new File("build/resources/runtime/src/rosetta/runtime")
+	      if (sourceDir.exists && sourceDir.isDirectory) {
+	        sourceDir.listFiles.forEach [
+	          file |
+	            Files.copy(file.toPath, new File("build/src/cdm", file.getName).toPath, StandardCopyOption.REPLACE_EXISTING)
+	        ]
+	      }
 	}
     
     /*
@@ -197,7 +246,7 @@ class PythonFilesGeneratorTest {
                 // If the current element is a RosettaEnumeration, Data, or Function object
                 if(element instanceof RosettaEnumeration || element instanceof Data || element instanceof Function){
                     // Generate Python code from the current model element
-                    val python         = generator.afterGenerate(Collections.singletonList(model), element, importsVariables)
+                    val python         = generator.afterGenerate(Collections.singletonList(model))
                     
                     // Remove any leading or trailing whitespace from the generated code
                     val generatedFiles = checkNoWhiteSpaces(getContent(python))

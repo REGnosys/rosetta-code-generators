@@ -1,0 +1,2 @@
+namespace cdm.base.staticdata : <"Basic static data concepts: e.g. party, asset identifiers etc.">
+version "2.182.3"

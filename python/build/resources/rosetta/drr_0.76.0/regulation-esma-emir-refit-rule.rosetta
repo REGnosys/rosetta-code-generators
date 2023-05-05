@@ -1,0 +1,1498 @@
+namespace drr.regulation.esma.emir.refit
+version "0.76.0"
+
+import cdm.base.*
+import cdm.base.staticdata.asset.common.*
+import cdm.base.staticdata.asset.rates.*
+import cdm.base.staticdata.party.*
+import cdm.base.math.*
+import cdm.base.datetime.*
+import cdm.base.staticdata.asset.common.*
+import cdm.base.staticdata.identifier.*
+
+import cdm.observable.asset.*
+
+import cdm.product.template.*
+import cdm.product.common.schedule.*
+import cdm.product.asset.*
+import cdm.product.qualification.*
+
+import cdm.legalagreement.common.*
+import cdm.legalagreement.master.*
+
+import cdm.event.common.*
+import cdm.event.workflow.*
+import cdm.event.qualification.*
+
+import drr.regulation.common.*
+import drr.regulation.esma.*
+import drr.regulation.esma.emir.*
+
+import drr.standards.iosco.cde.*
+
+corpus CommissionDelegatedRegulation "2019/834" Refit
+	<"Regulation (EU) 2019/834 of the European Parliament and of the Council of 20 May 2019 amending Regulation (EU) No 648/2012 as regards the clearing obligation, the suspension of the clearing obligation, the reporting requirements, the risk-mitigation techniques for OTC derivative contracts not cleared by a central counterparty, the registration and supervision of trade repositories and the requirements for trade repositories. ">
+
+corpus ESMAFinalReport "ESMA74-362-824" RefitFinalReport
+    <"Final Report Published 17 December 2020 | ESMA74-362-824 Technical standards on reporting, data quality, data access and registration of Trade Repositories under EMIR REFIT">
+// https://www.esma.europa.eu/sites/default/files/library/esma74-362-824_fr_on_the_ts_on_reporting_data_quality_data_access_and_registration_of_trs_under_emir_refit_0.pdf
+
+// Currently only at a draft stage in 10.4 Annex IV of ESMA74-362-824: "Draft RTS on details of the reports to be reported to TRs under EMIR"
+corpus CommissionDelegatedRegulation "YYYY/XXX" REFIT_RTS
+<"Commission Delegated Regulation (EU) YYYY/XXX of..... supplementing Regulation (EU) No 648/2012 of the European Parliament and of the Council on OTC derivatives, central counterparties and trade repositories with regard to regulatory technical standards specifying the minimum details of the data to be reported to trade repositories and repealing Delegated Regulation (EU) No 148/2013">
+
+report ESMA EMIR Refit in T+1
+  	when ReportableProduct
+  	using standard ISO_20022
+	with type ESMAEMIRTransactionReport
+
+type ESMAEMIRTransactionReport:
+    reportingTimestamp zonedDateTime (1..1)
+        [ruleReference ReportingTimestamp]
+    reportSubmittingEntityID string (1..1)
+        [ruleReference ReportSubmittingEntityID]
+    counterparty1 string (1..1)
+        [ruleReference Counterparty1]
+    counterparty2 string (1..1)
+        [ruleReference Counterparty2]
+    counterparty2IdentifierType string (1..1)
+        [ruleReference Counterparty2IdentifierType]
+	direction string (1..1)
+		[ruleReference Direction]
+	directionLeg1 string (1..1)
+		[ruleReference DirectionLeg1]
+	directionLeg2 string (1..1)
+		[ruleReference DirectionLeg2]
+    uti string (1..1)
+        [ruleReference UTI]
+    reportTrackingNumber string (1..1)
+        [ruleReference ReportTrackingNumber]
+    isin string (1..1)
+        [ruleReference ISIN]
+    contractType string (1..1)
+        [ruleReference ContractType]
+    assetClass string (1..1)
+        [ruleReference AssetClass]
+    settlementCurrency1 string (1..1)
+        [ruleReference SettlementCurrency1]
+    settlementCurrency2	string (1..1)
+        [ruleReference SettlementCurrency2]
+    cleared string (1..1)
+        [ruleReference Cleared]
+    clearingTimestamp zonedDateTime (1..1)
+        [ruleReference ClearingTimestamp]
+	confirmationTimestamp zonedDateTime (1..1)
+        [ruleReference ConfirmationTimestamp]
+	confirmed string (1..1)
+        [ruleReference Confirmed]
+    centralCounterparty string (1..1)
+        [ruleReference CentralCounterparty]
+    masterAgreementType	string (1..1)
+        [ruleReference MasterAgreementType]
+    otherMasterAgreementType string (1..1)
+        [ruleReference OtherMasterAgreementType]
+    masterAgreementVersion int (1..1)
+        [ruleReference MasterAgreementVersion]
+    executionTimestamp zonedDateTime (1..1)
+        [ruleReference ExecutionTimestamp]
+    effectiveDate date (1..1)
+        [ruleReference EffectiveDate]
+    expirationDate date (1..1)
+        [ruleReference ExpirationDate]
+    finalContractualSettlementDate date (1..1)
+        [ruleReference FinalContractualSettlementDate]
+    deliveryType string (1..1)
+        [ruleReference DeliveryType]
+    price number (1..1)
+        [ruleReference Price]
+    priceCurrency string (1..1)
+        [ruleReference PriceCurrency]
+    notionalLeg1 number (1..1)
+        [ruleReference NotionalLeg1]
+    notionalCurrency1 string (1..1)
+        [ruleReference NotionalCurrency1]
+    notionalAmountScheduleLeg1 number (1..1)
+        [ruleReference NotionalAmountScheduleLeg1]
+    notionalLeg2 number (1..1)
+        [ruleReference NotionalLeg2]
+    notionalCurrency2 string (1..1)
+        [ruleReference NotionalCurrency2]
+    otherPayment1 OtherPayment1Report (0..*)
+		[ruleReference OtherPayment1]
+    otherPayment3 OtherPayment3Report (0..1)
+    fixedRateOfLeg1	number (1..1)
+        [ruleReference FixedRateOfLeg1]
+    fixedRateDayCountConventionLeg1 string (1..1)
+        [ruleReference FixedRateDayCountConventionLeg1]
+    fixedRatePaymentFrequencyPeriodLeg1 string (1..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg1]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg1 int (1..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg1]
+    nameOfTheFloatingRateOfLeg1	FloatingRateIndexEnum (1..1)
+        [ruleReference NameOfTheFloatingRateOfLeg1]
+    floatingRateDayCountConventionLeg1 string (1..1)
+        [ruleReference FloatingRateDayCountConventionLeg1]
+    floatingRatePaymentFrequencyPeriodLeg1 string (1..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg1]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg1 int (1..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg1]
+    // floatingRateReferencePeriodOfLeg1TimePeriod	PeriodEnum	(1..1)
+    // 	[ruleReference FloatingRateReferencePeriodOfLeg1TimePeriod]
+    floatingRateReferencePeriodOfLeg1Multiplier int (1..1)
+        [ruleReference FloatingRateReferencePeriodOfLeg1Multiplier]
+    spreadOfLeg1 number (1..1)
+        [ruleReference SpreadOfLeg1]
+    spreadCurrencyOfLeg1 string (1..1)
+        [ruleReference SpreadCurrencyOfLeg1]
+    fixedRateOfLeg2 number (1..1)
+        [ruleReference FixedRateOfLeg2]
+    fixedRateDayCountConventionLeg2 string (1..1)
+        [ruleReference FixedRateDayCountConventionLeg2]
+    fixedRatePaymentFrequencyPeriodLeg2 string (1..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg2]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg2 int (1..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg2]
+    nameOfTheFloatingRateOfLeg2 FloatingRateIndexEnum (1..1)
+        [ruleReference NameOfTheFloatingRateOfLeg2]
+    floatingRateDayCountConventionLeg2 string (1..1)
+        [ruleReference FloatingRateDayCountConventionLeg2]
+    floatingRatePaymentFrequencyPeriodLeg2 string (1..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg2]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg2 int (1..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg2]
+    floatingRateReferencePeriodOfLeg2TimePeriod PeriodEnum (1..1)
+        [ruleReference FloatingRateReferencePeriodOfLeg2TimePeriod]
+    floatingRateReferencePeriodOfLeg2Multiplier int(1..1)
+        [ruleReference FloatingRateReferencePeriodOfLeg2Multiplier]
+    spreadOfLeg2 number (1..1)
+        [ruleReference SpreadOfLeg2]
+    spreadCurrencyOfLeg2 string (1..1)
+        [ruleReference SpreadCurrencyOfLeg2]
+    exchangeRate number (1..1)
+        [ruleReference ExchangeRate]
+    exchangeRateBasis string (1..1)
+        [ruleReference ExchangeRateBasis]
+    optionType string (1..1)
+        [ruleReference OptionType]
+    optionStyle string (1..1)
+        [ruleReference OptionStyle]
+    strikePrice	number (1..1)
+        [ruleReference StrikePrice]
+    strikePriceCurrency string (1..1)
+        [ruleReference StrikePriceCurrency]
+    optionPremiumAmount number (1..1)
+        [ruleReference OptionPremiumAmount]
+    optionPremiumCurrency string (1..1)
+        [ruleReference OptionPremiumCurrency]
+    optionPremiumPaymentDate date (1..1)
+        [ruleReference OptionPremiumPaymentDate]
+    series int (1..1)
+        [ruleReference Series]
+	indexFactor number (1..1)
+        [ruleReference IndexFactor]
+    tranche string (1..1)
+        [ruleReference Tranche]
+    cdSIndexAttachmentPoint	number (1..1)
+        [ruleReference CDSIndexAttachmentPoint]
+    cdSIndexDetachmentPoint number (1..1)
+        [ruleReference CDSIndexDetachmentPoint]
+    eventType string (1..1)
+        [ruleReference EventType]
+    eventDate date (1..1)
+        [ruleReference EventDate]
+    level string (1..1)
+        [ruleReference Level]
+	floatingRateResetFrequencyPeriodOfLeg1 string (1..1)
+		[ruleReference FloatingRateResetFrequencyPeriodOfLeg1]
+	floatingRateResetFrequencyPeriodOfLeg2 string (1..1)
+		[ruleReference FloatingRateResetFrequencyPeriodLeg2]
+	floatingRateResetFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg1]
+	floatingRateResetFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg2]
+
+	// type OtherPayment1Report:
+type OtherPayment1Report:
+    paymentType1 int (1..1)
+        [ruleReference OtherPaymentType1]
+    amount number (1..1)
+        [ruleReference OtherPaymentAmount1]
+    currency string (1..1)
+        [ruleReference OtherPaymentCurrency1]
+    date date (1..1)
+        [ruleReference OtherPaymentDate1]
+    payer string (1..1)
+        [ruleReference OtherPaymentPayer1]
+    receiver string (1..1)
+        [ruleReference OtherPaymentReceiver1]
+
+type OtherPayment3Report:
+    paymentType string (1..1)
+        [ruleReference OtherPaymentType3]
+    amount number (1..1)
+        [ruleReference OtherPaymentAmount3]
+    // currency string (1..1)
+    //     [ruleReference OtherPaymentCurrency3]
+    date date (1..1)
+        [ruleReference OtherPaymentDate3]
+    // payer string (1..1)
+    //     [ruleReference OtherPaymentPayer3]
+    // receiver string (1..1)
+    //     [ruleReference OtherPaymentReceiver3]
+
+//Eligibility Rules
+
+eligibility rule ReportableProduct <"When eligible for EMIR">
+  	[regulatoryReference ESMA EMIR article "9" paragraph "1"
+     		provision "Counterparties and CCPs shall ensure that the details of any derivative contract they have concluded and of any modification or termination of the contract are reported to a trade repository registered in accordance with Article 55 or recognised in accordance with Article 77. The details shall be reported no later than the working day following the conclusion, modification or termination of the contract."]
+  		filter when rule HasContract
+
+eligibility rule HasContract <"When eligible for EMIR">
+  	[regulatoryReference ESMA EMIR article "2" paragraph "5"
+     		provision "derivative or derivative contract means a financial instrument as set out in points (4) to (10) of Section C of Annex I to Directive 2004/39 EC as implemented by Article 38 and 39 of Regulation (EC) No 1287/2006"]
+  		extract TradeForEvent( ReportableEvent ) then
+  		extract Trade -> tradableProduct -> product -> contractualProduct exists
+
+eligibility rule ReportableEvent <"When eligible for Part45">
+  	[regulatoryReference ESMA EMIR article "9" paragraph "1"
+     		provision "Counterparties and CCPs shall ensure that the details of any derivative contract they have concluded and of any modification or termination of the contract are reported to a trade repository registered in accordance with Article 55 or recognised in accordance with Article 77. The details shall be reported no later than the working day following the conclusion, modification or termination of the contract."]
+		extract ReportableEvent -> reportableInformation -> partyInformation -> regimeInformation then
+            extract ReportingRegime -> regimeName = RegimeNameEnum -> EMIR and
+            ReportingRegime -> supervisoryBody = SupervisoryBodyEnum -> ESMA
+
+//EMIR Refit Definitions
+
+reporting rule ReportingTimestamp <"Reporting Timestamp">
+	[regulatoryReference ESMA EMIR Refit table "1" field "1"
+		provision "Date and time of the submission of the report to the trade repository."]
+		CDEReportingTimestamp
+			as "1.1 Reporting Timestamp"
+
+reporting rule ReportSubmittingEntityID <"Report Submitting entity ID ">
+	[regulatoryReference ESMA EMIR Refit table "1" field "2"
+		provision "In the case where the entity responsible for reporting has delegated the submission of the report to a third party or to the other counterparty, this entity has to be identified in this field by a unique code. Otherwise the entity responsible for reporting should be identified in this field."]
+		extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> partyRole then
+		    filter when PartyRole -> role = PartyRoleEnum -> DataSubmitter then
+            extract PartyLei(PartyRole -> partyReference -> partyId)
+	as "1.2 Report Submitting entity ID"
+
+reporting rule Counterparty1 <"Counterparty 1 (reporting counterparty)">
+	[regulatoryReference ESMA EMIR Refit table "1" field "4"
+		provision "Identifier of the counterparty to a derivative transaction who is fulfilling its reporting obligation via the report in question. In the case of an allocated derivative transaction executed by a fund manager on behalf of a fund, the fund and not the fund manager is reported as the counterparty."]
+	extract CDECounterparty1( ReportableEvent, SupervisoryBodyEnum -> ESMA )
+		as "1.4 Counterparty 1 (reporting counterparty)"
+
+reporting rule Counterparty2 <"Counterparty 2">
+	[regulatoryReference ESMA EMIR Refit table "1" dataElement "9" field "Counterparty 2"
+		provision "Indicator of whether LEI was used to identify the Counterparty 2"]
+		extract CDECounterparty2( ReportableEvent, SupervisoryBodyEnum -> ESMA )
+			as "1.9 Counterparty 2"
+		//CDE logic is returning same LEI as Cpty 1
+
+reporting rule Direction <"Direction">
+	[regulatoryReference CPMI_IOSCO CDE section "1" field "17"
+		provision "Indicator of whether the counterparty 1 is the buyer or the seller as determined at the time of the transaction."]
+	/*
+	4 alphabetic characters:
+		BYER = buyer
+		SLLR = seller
+	Populated in accordance with Article 3a
+	*/
+	//extract if CDECounterparty1() = CDEDirection1BuyerIdentifier() then "BYER" else "SLLR"
+	extract GetDirection1 (ReportableEvent)
+	as "1.17 Direction"
+
+reporting rule DirectionLeg1 <"Direction of leg 1">
+	[regulatoryReference CPMI_IOSCO CDE section "1" field "18"
+		provision "Indicator of whether the counterparty 1 is the payer or the receiver of leg 1 as determined at the time of the of the conclusion of the derivative"]
+	/*
+	4 alphabetic characters:
+		MAKE = payer
+		TAKE = receiver
+	Populated in accordance with Article 3a
+	*/
+	extract GetDirection2 (
+		ReportableEvent,
+		if IsCommoditySwapProduct( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) then 
+			CommodityLeg1( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) -> payerReceiver
+		else if IsEquity( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) then
+			TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> payerReceiver
+		else if IsFXForward( TradeForEvent(ReportableEvent) ) then
+			FXLeg1( TradeForEvent(ReportableEvent) ) -> payerReceiver
+		else if Qualify_InterestRate_Option_Swaption( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False
+      	and Qualify_InterestRate_CapFloor( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False
+		and Qualify_AssetClass_CreditDefault( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False then
+			InterestRateLeg1( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) -> payerReceiver
+	)
+	as "1.18 Direction of leg 1"
+
+reporting rule DirectionLeg2 <"Direction of leg 2">
+	[regulatoryReference CPMI_IOSCO CDE section "1" field "19"
+		provision "Indicator of whether the counterparty 1 is the payer or the receiver of leg 2 as determined at the time of the conclusion of the derivative"]
+	/*
+	4 alphabetic characters:
+		MAKE = payer
+		TAKE = receiver
+	Populated in accordance with Article 3a
+	*/
+	extract GetDirection2 (
+		ReportableEvent,
+		if IsCommoditySwapProduct( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) and IsCommodityCommodity (TradeForEvent(ReportableEvent) -> tradableProduct -> product) then 
+			CommodityLeg2( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) -> payerReceiver
+		else if IsCommoditySwapProduct( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) and TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> fixedPricePayout exists then 
+			FixedPriceLeg2( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) -> payerReceiver
+		else if IsFXForward( TradeForEvent(ReportableEvent) ) then
+			FXLeg2( TradeForEvent(ReportableEvent) ) -> payerReceiver
+		else if Qualify_InterestRate_Option_Swaption( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False
+      	and Qualify_InterestRate_CapFloor( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False
+		and Qualify_AssetClass_CreditDefault( TradeForEvent(ReportableEvent) -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False then
+			InterestRateLeg2( TradeForEvent(ReportableEvent) -> tradableProduct -> product ) -> payerReceiver
+	)
+	as "1.19 Direction of leg 2"
+
+//Begin direction functions
+//TH : Both direction functions are cross-jurisdiction. Should be placed on regulation-common-fun.
+func GetDirection1:
+	inputs:
+		event ReportableEvent (1..1)
+	output:
+		direction string (1..1)
+	
+	alias tradableProduct: TradeForEvent(event) -> tradableProduct
+
+	//TH Review -> reporting party should be the same as CDECounterparty1
+	//alias reportingParty: ExtractPartyFromRelatedPartyByRole( event -> reportableInformation -> partyInformation -> relatedParty, PartyRoleEnum -> ReportingParty )
+	alias reportingParty: CDECounterparty1( event, SupervisoryBodyEnum -> ESMA )
+	//TH Review -> buyer model is the same as reporting rule CDEDirection1BuyerIdentifier
+	alias buyer: 
+		if tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout exists then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> buyerSeller -> buyer )
+        else if IsCreditDefaultSwap( tradableProduct -> product ) then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> payerReceiver -> receiver )
+		else if IsVarianceSwap (tradableProduct -> product ) or IsVolatilitySwap (tradableProduct -> product ) then
+			ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> payerReceiver -> receiver )
+        else if IsCapFloor( tradableProduct -> product ) then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element -> payerReceiver -> payer )
+
+	alias seller:
+		if tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout exists then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> buyerSeller -> seller )
+        else if IsCreditDefaultSwap( tradableProduct -> product ) then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> payerReceiver -> payer )
+        //TH Review -> should apply to all VOL/VAR/CORR swaps. Correlation pending
+		else if IsVarianceSwap (tradableProduct -> product ) or IsVolatilitySwap (tradableProduct -> product ) then
+			ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> payerReceiver -> payer )
+        else if IsCapFloor( tradableProduct -> product ) then
+            ExtractCounterpartyByRole(
+                tradableProduct -> counterparty,
+                tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element -> payerReceiver -> receiver )
+	
+	set direction:
+		if reportingParty = PartyLei(buyer -> partyReference -> partyId) then "BYER"
+		else if reportingParty = PartyLei(seller -> partyReference -> partyId) then "SLLR"
+		else "----"
+
+func GetDirection2:
+	inputs:
+		event ReportableEvent (1..1)
+		payerReceiver PayerReceiver (1..1)
+	output:
+		direction string (1..1)
+
+	//TH Review -> reporting party should be the same as CDECounterparty1
+	alias reportingParty: CDECounterparty1( event, SupervisoryBodyEnum -> ESMA )
+	alias counterparties: TradeForEvent(event) -> tradableProduct -> counterparty
+	alias payerParty: ExtractCounterpartyByRole( counterparties, payerReceiver -> payer )
+	alias receiverParty: ExtractCounterpartyByRole( counterparties, payerReceiver -> receiver )
+
+	set direction:
+		if reportingParty = PartyLei ( payerParty -> partyReference -> partyId) then "MAKE"
+		else if reportingParty = PartyLei ( receiverParty -> partyReference -> partyId) then "TAKE"
+		else "----"
+//End direction functions
+
+reporting rule Counterparty2IdentifierType <"Counterparty 2 Identifier Source">
+	[regulatoryReference CPMI_IOSCO CDE section "2" field "8"
+		provision "Indicator of whether LEI was used to identify the Counterparty 2"]
+		return "Not Modelled"
+			as "1.8 Counterparty 2 Identifier Type"
+			//Note to self - need to fix the ReportableEvent -> originatingWorkflowStep part of the code in order for the logic to work.
+
+reporting rule UTI <"Unique Transaction Identifier as managed by LEIROC"> //do ESMA mean Trade or Transaction?
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "1" field "UTI"
+		provision "Unique Trade Identifier as referred to in Article 7 of the [ITS]."]
+	extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> tradeIdentifier
+			then filter when Identifier -> assignedIdentifier -> identifier -> scheme all = "http://www.fpml.org/coding-scheme/external/unique-transaction-identifier"
+			then extract Identifier -> assignedIdentifier
+			    max [ item -> version ]
+			    map [
+			        // if the assignedIdentifier has no version, then max by version will return empty
+			        if item exists then item -> identifier
+                    else Identifier -> assignedIdentifier -> identifier only-element
+                ]
+			as "2.1 UTI"
+
+reporting rule ReportTrackingNumber<"Report Tracking Number">
+	[regulatoryReference ESMA EMIR Refit table "2a" field "2"
+		rationale_author "IHS Markit"
+		rationale "Report Tracking Number is to be populated with the UTI assigned by the Trading Venue
+		Extract the Issuer party from the Assigned Identifier and check if is same as the Party ID under the Execution Facility (Party Role)"
+		provision "Where a derivative was executed on a trading venue, a number generated by the trading venue and unique to that execution."]
+		extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> tradeIdentifier
+			filter [ item -> issuerReference = FilterPartyRole( Trade -> partyRole,  PartyRoleEnum -> ExecutionFacility ) -> partyReference only-element ]
+			map [ item -> assignedIdentifier -> identifier ] flatten
+		as "2a.2 Report Tracking Number"
+
+reporting rule ISIN <"ISIN">
+	[regulatoryReference ESMA EMIR Refit table "2b" field "7"
+		provision "ISIN identifying the product if that product is admitted to trading or traded on a regulated market, MTF, OTF or systematic internaliser."]
+		extract TradeForEvent( ReportableEvent ) then
+			extract Trade -> tradableProduct -> product -> contractualProduct -> productIdentifier
+				then filter when ProductIdentifier -> source = ProductIdTypeEnum -> ISIN
+					then extract ProductIdentifier -> identifier
+		as "2b.7 ISIN"
+
+reporting rule ContractType <"Contract Type">
+	[regulatoryReference ESMA EMIR Refit table "2" field "10"
+		rationale_author "DRR"
+		rationale "Unless EMIR/Refit explicitly defines these categories, the industry (ISDA) definition should be used, providing that this also agrees with ISO 10962 CFI Code. Therefore, use the product qualifiers set in alignment with the ISDA Taxonomy"
+		provision "Each reported contract shall be classified according to its type.
+				CFDS = Financial contracts for difference FRAS = Forward rate agreements FUTR = Futures // N/A for CDM FORW = Forwards OPTN = Option SPDB = Spreadbet SWAP = Swap SWPT = Swaption OTHR = Other"]
+
+	extract TradeForEvent( ReportableEvent ) then
+		extract ProductForTrade( Trade )
+		then extract
+			if Qualify_InterestRate_Fra(Product->contractualProduct->economicTerms)=True
+				then "FRAS"
+			else
+				if Qualify_ForeignExchange_Spot_Forward(Product->contractualProduct->economicTerms)=True or
+					//this is going to need additional date treatments to distinguish spot vs forward per ESMA rules
+					Qualify_ForeignExchange_NDF(Product->contractualProduct->economicTerms)=True
+					//this needs to be extended to cover other types of Forwards (e.g. Commodity, Equity, Bond) once the CDM contains suitable examples
+				then "FORW"
+			else
+				if Qualify_CreditDefaultSwaption(Product->contractualProduct->economicTerms)=True or
+					Qualify_InterestRate_Option_Swaption(Product->contractualProduct->economicTerms)=True
+				then "SWPT"
+			else
+				if Qualify_InterestRate_CapFloor(Product -> contractualProduct -> economicTerms) = True or
+					Product -> contractualProduct -> economicTerms -> payout -> optionPayout only exists
+				then "OPTN"
+			else if Qualify_AssetClass_InterestRate_Swap(Product -> contractualProduct -> economicTerms) = True or
+					Qualify_AssetClass_CreditDefault(Product -> contractualProduct -> economicTerms) = True or
+					Qualify_BaseProduct_EquitySwap(Product -> contractualProduct -> economicTerms) = True or
+					Qualify_Commodity_Swap_FixedFloat(Product -> contractualProduct -> economicTerms) = True or
+					Qualify_Commodity_Swap_Basis(Product -> contractualProduct -> economicTerms) = True or
+					// Commodity will need to be refined once further product types are added to the model, possible scope for an AssetClass qualification rule
+					Qualify_ForeignExchange_Swap(Product -> contractualProduct -> economicTerms) = True or
+					Product -> contractualProduct -> economicTerms -> payout -> performancePayout only exists
+				then "SWAP"
+			else "ToDo"
+		as "2.10 Contract Type"
+
+reporting rule AssetClass <"Asset Class">
+	[regulatoryReference ESMA EMIR Refit table "2" field "11"
+		provision "COMM = Commodity and emission allowancesCRDT = CreditCURR = CurrencyEQUI = EquityINTR = Interest Rate"]
+	[regulatoryReference ESMA QandA_On_EMIR_Reporting section "TR" question "1"
+		provision "TR Question 1 [last update 24 September 2020] How should the following financial instruments be classified for reporting and other purposes under EMIR? (b) Cross-currency swaps, swaptions, Caps and Floors? (c) Total Return Swaps
+				TR Answer 1 (b) These financial instruments should be classified as interest rates, in line with current market practice. On the sections to be reported, ESMA finds that where both sections are relevant having in mind the terms of the contract being reported, both sections of reporting fields are to be reported i.e.option and interest rate for swaption, Caps and Floors, and FX and interest rate or crosscurrency swaps. The contract type (Field 1 of Table 2) should be populated with the value ST for swaption.There are two fields for the notional amount currency and one for the notional amount. To avoid that one counterparty reports the notional amount in CCY1 (Field 9 of Table 2) while the other would report in CCY2 (Field 10 of Table 2), which would create a reconciliation problem, the Field Notional Amount (Field 20 of Table 2) should be denominated in the currency reported in Notional currency 1 (Field 9 of Table 2).
+			(c) Total Return Swaps should be classified based on the underlying. For example, a Total Return Swap on an equity index should be reported with value EQ in field Asset class (Table 2 field 2), whereas a Total Return Swap on a bond or loan should be reported with value CR in field Asset class (Table 2 field 2)."]
+    extract TradeForEvent( ReportableEvent ) then
+        extract ProductForTrade( Trade )
+            then extract
+                if Qualify_AssetClass_InterestRate_Swap(Product -> contractualProduct -> economicTerms) = True or
+                    Qualify_InterestRate_Option_Swaption(Product->contractualProduct->economicTerms)=True
+                    then "INTR"
+                else if Qualify_AssetClass_CreditDefault(Product -> contractualProduct -> economicTerms) = True or
+                    Qualify_CreditDefaultSwaption(Product->contractualProduct->economicTerms)=True or
+                    UnderlierForProduct(Product) -> security -> securityType = SecurityTypeEnum -> Debt
+                    then "CRDT"
+                else if Qualify_AssetClass_Equity(UnderlierForProduct(Product)) = True
+                    then "EQUI"
+                else if Product -> contractualProduct -> economicTerms -> payout -> commodityPayout exists or
+                    UnderlierForProduct(Product) -> commodity exists
+                    then "COMM"
+                else if UnderlierForProduct(Product) -> foreignExchange exists
+                    then "CURR"
+                else "ToDo"
+        as "2.11 Asset Class"
+
+reporting rule SettlementCurrency1 <"Settlement Currency 1">
+ 	[regulatoryReference ESMA EMIR Refit table "2" field "19"
+ 		provision "Currency for the cash settlement of the transaction when applicable. For multicurrency products that do not net, the settlement currency of the leg 1. This data element is not applicable for physically settled products (eg physically settled swaptions)."]
+	extract TradeForEvent( ReportableEvent ) then
+		(
+			extract ProductForTrade( Trade )  then
+			(
+				filter when IsGenericIRS( Product ) then
+					extract InterestRateLeg1( Product ) then
+						extract
+							if InterestRatePayout -> settlementTerms -> settlementCurrency exists
+								then InterestRatePayout -> settlementTerms -> settlementCurrency
+							else InterestRatePayout -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency
+						as "2.19 Settlement Currency 1"
+			),
+			filter when IsFXForward( Trade ) then
+				(filter when Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms -> settlementCurrency exists
+					then extract Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms -> settlementCurrency
+					as "2.19 Settlement Currency 1",
+				filter when Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms is absent then
+						extract FXCurrency1( Trade ) then
+							extract NonNegativeQuantitySchedule -> unitOfAmount -> currency
+					as "2.19 Settlement Currency 1")
+		)
+
+
+reporting rule SettlementCurrency2 <"Settlement Currency 2">
+ 	[regulatoryReference ESMA EMIR Refit table "2" field "20"
+ 		provision "Currency for the cash settlement of the transaction when applicable. For multicurrency products that do not net, the settlement currency of the leg 2. This data element is not applicable for physically settled products (eg physically settled swaptions)."]
+	extract TradeForEvent( ReportableEvent ) then
+		(
+			extract ProductForTrade( Trade )  then
+			(
+				filter when IsGenericIRS( Product ) then
+				extract InterestRateLeg2( Product ) then
+					extract
+						if InterestRatePayout -> settlementTerms -> settlementCurrency exists
+							then InterestRatePayout -> settlementTerms -> settlementCurrency
+						else InterestRatePayout -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency
+					as "2.20 Settlement Currency 2"
+
+			),
+			filter when IsFXForward( Trade ) then
+				(filter when Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms -> cashSettlementTerms exists then
+					return "-"
+					as "2.20 Settlement Currency 2",
+				filter when Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms -> cashSettlementTerms is absent then
+						extract FXCurrency2( Trade ) then
+							extract NonNegativeQuantitySchedule -> unitOfAmount -> currency
+					as "2.20 Settlement Currency 2")
+		)
+
+reporting rule Cleared <"Cleared">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "31" field "Cleared"
+        provision "Indicator of whether the derivative has been cleared by a CCP."]
+    	extract if IsCleared(ReportableEvent -> originatingWorkflowStep) = True then "Y"
+		else "N"
+            as "2.31 Cleared"
+
+reporting rule ClearingTimestamp <"Clearing Timestamp">
+  	[regulatoryReference ESMA EMIR Refit table "2" dataElement "32" field "Clearing Timestamp"
+  		provision "Time and date when clearing took place. Applicable only to derivatives cleared by a CCP."]
+	extract ReportableEvent -> originatingWorkflowStep -> timestamp then
+  		filter when EventTimestamp -> qualification = EventTimestampQualificationEnum -> clearingDateTime
+  			then extract EventTimestamp -> dateTime
+		//To-Do The core CDM to be updated and the timestamp extraction logic to be revisted
+  		as "2.32 Clearing Timestamp"
+
+reporting rule ConfirmationTimestamp <"Confirmation Timestamp">
+  	[regulatoryReference ESMA EMIR Refit table "2" dataElement "28" field "Confirmation Timestamp"
+  		provision "Date and time of the confirmation, as set out in Article 12 of Commission Delegated Regulation (EU) No 149/2013. Applicable only to OTC derivative contracts not cleared by a CCP."]
+		extract if IsCleared(ReportableEvent -> originatingWorkflowStep) = False then
+		ReportableEvent -> originatingWorkflowStep -> timestamp then
+  		filter when EventTimestamp -> qualification = EventTimestampQualificationEnum -> confirmationDateTime
+  			then extract EventTimestamp -> dateTime
+  		as "2.28 Confirmation Timestamp"
+
+reporting rule Confirmed <"Confirmed">
+  	[regulatoryReference ESMA EMIR Refit table "2" dataElement "29" field "Confirmed"
+  		provision "For new reportable transactions, whether the legally binding terms of an OTC derivatives contract were documented and agreed upon (confirmed) or not (unconfirmed). If documented and agreed, whether such confirmation was done:  via a shared confirmation facility or platform, or a private/bilateral electronic system (electronic);  via a human-readable written document, such as fax, paper or manually processed e-mails (nonelectronic). Applicable only to OTC derivative contracts not cleared by a CCP."]
+	filter when IsCleared(ReportableEvent -> originatingWorkflowStep) = False then
+		CDEConfirmed 
+  		as "2.29 Confirmed"
+
+reporting rule CentralCounterparty<"Central Counterparty">
+	[regulatoryReference ESMA EMIR Refit table "2f" field "33"
+	    provision "ISO 17442 Legal Entity Identifier (LEI) 20 alphanumeric character code that is included in the LEI data as published by the Global LEI Foundation (GLEIF, www.gleif.org/)."]
+    extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> partyRole then
+		filter when PartyRole -> role = PartyRoleEnum -> ClearingOrganization then
+			extract PartyLei(PartyRole -> partyReference -> partyId)
+	as "2f.33 Central Counterparty"
+
+reporting rule MasterAgreementType <"Master Agreement type">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "34" field "Master Agreement Type"
+        provision "Reference to the master agreement type under which the counterparties concluded a derivative"]
+    extract TradeForEvent( ReportableEvent ) then
+        extract Trade -> contractDetails -> documentation then
+        filter when LegalAgreement -> legalAgreementIdentification -> agreementName -> agreementType = LegalAgreementTypeEnum -> MasterAgreement then
+         extract LegalAgreement -> legalAgreementIdentification -> agreementName then
+            extract if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> ISDAMaster then "ISDA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> ISDAFIA_CDEA then "CDEA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> EMA then "EUMA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> FBF then "FMAT"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> German then "DERV"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> CMOF then "CMOP"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> Swiss then "CHMA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> EFETElectricity then "EFMA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> EFETGas then "EFMA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> GMRA then "GMRA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> GMSLA then "GMSL"
+            else "OTHR"
+            as"2.34 Master Agreement Type"
+//      TO DO: check full list to confirm if others need code other than OTHR
+
+reporting rule OtherMasterAgreementType <"Other master agreement type">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "35" field "Other master agreement type"
+        provision "Name of the master agreement. This field shall only be completed where OTHR is reported in field 2.34."]
+	extract TradeForEvent( ReportableEvent ) then
+	    extract Trade -> contractDetails -> documentation then
+        filter when LegalAgreement -> legalAgreementIdentification -> agreementName -> agreementType = LegalAgreementTypeEnum -> MasterAgreement then
+        extract LegalAgreement -> legalAgreementIdentification -> agreementName then
+			extract if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> AFB
+				then "AFB MA for FX and Derivatives Transactions"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> CMA
+				then "Clearing MA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> IFEMA
+				then "International Foreign Exchange MA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> IFEOMA
+				then "International Foreign Exchange and Options MA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> ICOM
+				then "International Currency Options Market MA"
+            else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> JSCC
+				then "Master agreement of Japan Securities Clearing Corp"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> Bespoke
+				then "Bespoke MA, including one-off agreements for txns"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> EEIPower
+				then "EEI Master Power Purchase and Sale Agreement"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> GTMA
+				then "FOA Grid Trade Master Agreement"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> GasEDI
+				then "GasEDI Base Cntrct Short-term Sale and Pur Nat Gas"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> IETA_ERPA
+				then "Intl Emission TA Emission Reduction Purchase Agrmt"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> IETA_ETMA
+				then "Intl Emissions Trading Assoc Emissions Trading MA"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> IETA_IETMA
+				then "Intl Emissions Trading Assoc & Trading MA"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> LBMA
+				then "Intl Bullion MA Terms by the Ldn Bullion Mkt Assoc"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> LEAP
+				then "Leadership in Energy Automated Processing"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> MCPSA
+				then "CTA Master Coal Purchase and Sales Agreement"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> NAESBGas
+				then "NAESB Base Contract Sale & Purchase of Natural Gas"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> NBP
+				then "Short Term Flat NBP Trading Terms and Conditions"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> RussianDerivatives
+				then "Std Doc for Deriv txns on the Russian Fin Markets"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> RussianRepo
+				then "MA for Repurchase Agreement on the Russian Fin Mkt"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> SCoTA
+				then "globalCOAL Standard Coal Trading Agreement"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> TTF
+				then "TTF Hub Natural Gas Trading Terms and Conditions"
+			else if AgreementName -> masterAgreementType = MasterAgreementTypeEnum -> ZBT
+				then "Zeebrugge Hub Natural Gas Trading T&C"
+            else ""
+            as "2.35 Other Master Agreement Type"
+
+reporting rule MasterAgreementVersion <"Master Agreement version">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "36" field "Master Agreement version"
+        provision "Reference to the year of the master agreement relevant to the reported trade, if applicable."]
+    extract TradeForEvent( ReportableEvent ) then
+        extract Trade -> contractDetails -> documentation then
+        filter when LegalAgreement -> legalAgreementIdentification -> agreementName -> agreementType = LegalAgreementTypeEnum -> MasterAgreement then
+		extract LegalAgreement -> legalAgreementIdentification -> vintage
+        as "2.36 Master Agreement version"
+
+reporting rule ExecutionTimestamp <"Execution Timestamp">
+  	[regulatoryReference ESMA EMIR Refit table "2" dataElement "42" field "Execution Timestamp"
+  		provision "Date and time a transaction was originally executed, resulting in the generation of a new UTI. This data element remains unchanged throughout the life of theUTI. For position level reporting it should refer to the time when position was opened for the first time."]
+	CDEExecutionTimestamp
+  		as "2.42 Execution Timestamp"
+
+reporting rule EffectiveDate <"Effective Date">
+	[regulatoryReference ESMA EMIR Refit table "2c" dataElement "43" field "Effective Date"
+		provision "Unadjusted date at which obligations under the OTC derivative transaction come into effect, as included in the confirmation. If the effective date is not specified as part of the terms of the contract, the counterparties shall report in this field the date of execution of the derivative."]
+	[regulatoryReference ISDA EMIRReportingBestPractice table "2" field "26"
+ 		provision "Where an Effective Date is specified in the terms of the contract, report that date (i.e. the effective date represented on the confirmation). If an effective date is not specified in the terms of the contract, report the execution date (see best practice for Execution Timestamp)."]
+	CDEEffectiveDate
+	as "2.43 Effective Date"
+
+reporting rule ExpirationDate <"Expiration Date">
+     [regulatoryReference ESMA EMIR Refit table "2c" dataElement "44" field "Expiration Date"
+         provision "Unadjusted date at which obligations under the derivative transaction stop being effective, as included in the confirmation. Early termination does not affect this data element."]
+    extract TradeForEvent( ReportableEvent ) then
+		extract ProductForTrade( Trade )  then
+        	extract CDEExpirationDate( Product )
+	        as "2.44 Expiration Date"
+
+reporting rule FinalContractualSettlementDate <"Final Contractual Settlement Date">
+ 	[regulatoryReference ESMA EMIR Refit table "2" field "46"
+ 		provision "Unadjusted date as per the contract, by which all transfer of cash or assets should take place and the counterparties should no longer have any outstanding obligations to each other under that contract. For products that may not have a final contractual settlement date (eg American options), this data element reflects the date by which the transfer of cash or asset would take place if termination were to occur on the expiration date."]
+	extract TradeForEvent( ReportableEvent ) then
+        extract CDEFinalContractualSettlementDate( Trade )
+		    as "2.46 Final Contractual Settlement Date"
+
+reporting rule DeliveryType
+	[regulatoryReference ESMA EMIR Refit table "2" field "47"
+		provision "4 alphabetic characters: CASH = Cash PHYS = Physical OPTL = Optional for counterparty or when determined by a third party"]
+	extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> tradableProduct -> product -> contractualProduct -> economicTerms then
+			extract if
+				EconomicTerms -> payout -> optionPayout -> settlementTerms -> physicalSettlementTerms exists // this also covers IR & Credit Swaptions  but NOT Credit Options
+				then "PHYS"
+			else if
+				EconomicTerms -> payout -> optionPayout -> settlementTerms -> cashSettlementTerms exists // this also covers IR & Credit Swaptions but NOT Credit Options
+				then "CASH"
+			else if EconomicTerms -> payout -> creditDefaultPayout -> settlementTerms -> cashSettlementTerms exists
+				then "CASH"
+			else if EconomicTerms -> payout -> creditDefaultPayout -> settlementTerms -> physicalSettlementTerms exists
+				then "PHYS"
+			else if EconomicTerms -> payout -> forwardPayout -> settlementTerms -> cashSettlementTerms exists
+				then "CASH"
+			else if EconomicTerms -> payout -> forwardPayout -> settlementTerms -> physicalSettlementTerms exists
+				then "PHYS"
+            // probably put security & commodity forwards in here
+			else if (EconomicTerms -> payout -> interestRatePayout count = 2 and
+				EconomicTerms -> payout -> interestRatePayout -> settlementTerms -> cashSettlementTerms exists)
+				// Identifies the rare Interest Rate cases where a cross-Currency IRS could be non-deliverable
+				then "CASH"
+			else if EconomicTerms -> payout -> interestRatePayout count = 2 and
+				EconomicTerms -> payout -> interestRatePayout -> settlementTerms -> physicalSettlementTerms exists
+					then "PHYS"
+			else if Qualify_InterestRate_CapFloor (EconomicTerms) = True and
+				EconomicTerms -> payout -> interestRatePayout -> settlementTerms -> physicalSettlementTerms exists
+					then "PHYS"
+			else if Qualify_InterestRate_CapFloor (EconomicTerms) = True and
+				EconomicTerms -> payout -> interestRatePayout -> settlementTerms -> cashSettlementTerms exists
+				then "CASH"
+			else "ToDo"
+		as "2.47 Delivery Type"
+	//ToDo Note also we don't have Bond Forward, Equity Forward examples yet.
+	//ToDo - Credit Options are inconsistent & use settlementType - awaiting clarification on harmonisation potential before coding (and in any case, no DRR examples yet!)
+	//ToDo Commodities also likely to have other nuances?
+
+//TODO: Add Equity Swap Samples to test this part of the code
+reporting rule Price <"Price">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "48"
+  		provision "Price specified in the derivative transaction. It does not include fees, taxes or commissions. Where the price is not known when a new transaction is reported, the price is updated as it becomes available. For transactions that are part of a package, this data element contains the price of the component transaction where applicable."]
+	[regulatoryReference ESMA EMIR Refit section "4.4.7" paragraph "391"
+  		provision "ESMA proposed in the Consultation Paper certain amendments to the mechanics in which the price of a derivative contract is reported. In particular, ESMA proposed to	change the fields and their definitions to better align with the CDE guidance and clarified	that the field Price should only be populated when the information is not provided in another field (e.g. Fixed rate)."]
+	CDEPrice
+		as "2.48 Price"
+
+reporting rule PriceCurrency <"Price Currency">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "49"
+  		provision "Currency in which the price is denominated. Price currency is only applicable if price is expressed as monetary value."]
+	CDEPriceCurrency
+		as "2.49 Price Currency"
+
+reporting rule NotionalLeg1 <"Notional of Leg 1">
+ 	[regulatoryReference ESMA EMIR Refit table "2g" dataElement "55" field "Notional amount of leg 1"
+        provision "Notional amount of leg 1 as referred to in Article 5 of the [RTS]."]
+	[regulatoryReference ESMA EMIR REFIT_RTS article "5" paragraph "2"
+		rationale_author "JPM"
+		rationale "This field should hold the initial notional for leg 1 and the scheduled amounts should be reported in repeatable fields 57-59. Based on current assumption, the amount for FX is taken by sorting the currency in alphabetical order.  CDM model is not in place for Digital products"
+		provision "The initial report of a derivative contract whose notional amount varies over time shall specify the notional amount as applicable at the date of conclusion of the derivative contract and the notional amount schedule. When reporting the notional amount schedule, counterparties shall indicate: (i) the unadjusted date on which the associated notional amount becomes effective; (ii) the unadjusted end date of the notional amount; and (iii) the notional amount which becomes effective on the associated unadjusted effective date."
+]
+	extract TradeForEvent( ReportableEvent ) then
+	(
+		extract ProductForTrade( Trade )  then
+			extract InterestRateLeg1( Product ) then
+			extract CDEInterestRateNotional( InterestRatePayout )
+			    as "2.55 Notional Amount 1"
+		,
+		extract FXCurrency1( Trade ) then
+		    extract CDEFXNotional ( NonNegativeQuantitySchedule )
+		        as "2.55 Notional Amount 1"
+        ,
+        extract CDENotional( Trade )
+            as "2.55 Notional Amount 1"
+    )
+
+reporting rule NotionalCurrency1 <"Notional currency 1">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "56" field "Notional currency 1"
+			rationale_author "JPM"
+			rationale "Based on current assumption, the currency for FX is taken by sorting the currency in alphabetical order.  CDM model is not in place for Digital products"
+ 	   	provision "Where applicable: the currency in which the notional amount of leg 1 is denominated."]
+	extract TradeForEvent( ReportableEvent ) then
+    (
+        extract ProductForTrade( Trade )  then
+            extract InterestRateLeg1( Product ) then
+            extract CDEInterestRateNotionalCurrency( InterestRatePayout )
+                as "2.56 Notional Currency 1"
+        ,
+        extract FXCurrency1( Trade ) then
+            extract CDEFXNotionalCurrency ( NonNegativeQuantitySchedule )
+                as "2.56 Notional Currency 1"
+        ,
+        extract CDENotionalCurrency( Trade )
+            as "2.56 Notional Currency 1"
+    )
+
+reporting rule NotionalAmountScheduleLeg1 <"Notional Amount Schedule">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "57-59" field "Notional Amount Schedule"
+		provision "Fields 57-59 are repeatable and shall be populated in the case of derivatives involving notional amount schedules"]
+	extract TradeForEvent( ReportableEvent ) then
+		extract ProductForTrade( Trade )  then
+			extract InterestRateLeg1( Product ) then
+				extract repeatable InterestRatePayout -> priceQuantity -> quantitySchedule -> step then
+				(
+					NotionalAmountScheduleLeg1EffectiveDate,
+					NotionalAmountScheduleLeg1EndDate,
+					NotionalAmountScheduleLeg1Amount
+				)
+
+reporting rule NotionalAmountScheduleLeg1EffectiveDate <"Effective date of the notional amount of leg 1">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "57" field "Effective date of the notional amount of leg 1"
+		provision "Unadjusted date on which the associated notional amount of leg 1 becomes effective."]
+		CDENotionalAmountScheduleEffectiveDate
+		as "2.57/2.59-$ 2.57 Effective date of the notional amount of leg 1"
+
+reporting rule NotionalAmountScheduleLeg1EndDate <"End date of the notional amount of leg 1">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "58" field "End date of the notional amount of leg 1"
+		provision "Unadjusted end date of the notional amount of leg 1  (not applicable if the unadjusted end date of a given schedules period is back-to-back with the unadjusted effective date of the subsequent period)."]
+		CDENotionalAmountScheduleEndDate
+		as "2.57/2.59-$ 2.58 End date of the notional amount of leg 1"
+
+reporting rule NotionalAmountScheduleLeg1Amount <"Notional amount in effect on associated effective date of leg 1">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "59" field "Notional amount in effect on associated effective date of leg 1"
+		provision "Notional amount of leg 1 which becomes effective on the associated unadjusted effective date."]
+		CDENotionalAmountScheduleAmount
+		as "2.57/2.59-$ 2.59 Notional amount in effect on associated effective date of leg 1"
+
+reporting rule NotionalLeg2 <"Notional of Leg 2">
+    [regulatoryReference ESMA EMIR Refit table "2g" dataElement "64" field "Notional amount of leg 2"
+ 		provision "Where applicable, notional amount of leg 2 as referred to in Article 5 of the [RTS]."]
+	[regulatoryReference ESMA EMIR REFIT_RTS article "5" paragraph "2"
+		rationale_author "JPM"
+		rationale "This field should hold the initial notional for leg 1 and the scheduled amounts should be reported in repeatable fields 57-59. Based on current assumption, the amount for FX is taken by sorting the currency in alphabetical order.  CDM model is not in place for Digital products"
+		provision "The initial report of a derivative contract whose notional amount varies over time shall specify the notional amount as applicable at the date of conclusion of the derivative contract and the notional amount schedule. When reporting the notional amount schedule, counterparties shall indicate: (i) the unadjusted date on which the associated notional amount becomes effective; (ii) the unadjusted end date of the notional amount; and (iii) the notional amount which becomes effective on the associated unadjusted effective date."]
+    extract TradeForEvent( ReportableEvent ) then
+	(
+		extract ProductForTrade( Trade )  then
+			extract InterestRateLeg2( Product ) then
+			extract CDEInterestRateNotional( InterestRatePayout )
+			    as "2.64 Notional Amount 2"
+		,
+		extract FXCurrency2( Trade ) then
+		    extract CDEFXNotional( NonNegativeQuantitySchedule )
+		        as "2.64 Notional Amount 2"
+	)
+
+reporting rule NotionalCurrency2 <"Notional currency 2">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "65" field "Notional currency 2"
+		rationale_author "JPM"
+		rationale "Based on current assumption, the currency for FX is taken by sorting the currency in alphabetical order.  CDM model is not in place for Digital products"
+ 	   	provision "Where applicable: the currency in which the notional amount of leg 2 is denominated."]
+    extract TradeForEvent( ReportableEvent ) then
+	(
+		extract ProductForTrade( Trade )  then
+			extract InterestRateLeg2( Product ) then
+            extract CDEInterestRateNotionalCurrency( InterestRatePayout )
+			    as "2.65 Notional Currency 2"
+		,
+		extract FXCurrency2( Trade ) then
+		    extract CDEFXNotionalCurrency( NonNegativeQuantitySchedule )
+		        as "2.65 Notional Currency 2"
+	)
+
+// Repeatable Field modelling
+reporting rule OtherPayment1 <"Other Payment">
+    extract TradeStateForEvent( ReportableEvent ) then
+        extract repeatable TradeState -> transferHistory then
+        (
+            OtherPaymentType1,
+            OtherPaymentAmount1,
+            OtherPaymentCurrency1,
+            OtherPaymentDate1,
+            OtherPaymentPayer1,
+            OtherPaymentReceiver1
+        ) 
+
+reporting rule OtherPaymentType1 <"Other Payment Type 1">
+    [regulatoryReference ESMA EMIR Refit table "2" field "73"
+        provision "Type of Other payment amount. Option premium payment is not included as a payment type as premiums for option are reported using the option premium dedicated data element. 1 = Upfront Payment, ie the initial payment made by one of the counterparties either to bring a transaction to fair value or for any other reason that may be the cause of an off-market transaction."]
+    CDEOtherPaymentType
+ 	        as "2.73 (Type 1) Other Payment Type"
+
+reporting rule OtherPaymentAmount1 <"Other Payment Amount 1">
+    [regulatoryReference ESMA EMIR Refit table "2" field "74"
+        provision "Payment amounts with corresponding payment types to accommodate requirements of transaction descriptions from different asset classes."]
+	CDEOtherPaymentAmount
+            as "2.74 (Type 1) Other Payment Amount"
+
+reporting rule OtherPaymentCurrency1 <"Other Payment Currency 1">
+    [regulatoryReference ESMA EMIR Refit table "2" field "75"
+        provision "Currency in which Other payment amount is denominated."]
+	CDEOtherPaymentCurrency
+ 	    as "2.75 (Type 1) Other Payment Currency"
+
+reporting rule OtherPaymentDate1 <"Other Payment Date 1">
+	[regulatoryReference ESMA EMIR Refit table "2" field "76"
+		provision "Unadjusted date on which the other payment amount is paid."]
+	CDEOtherPaymentDate
+	        as "2.76 (Type 1) Other Payment Date"
+
+reporting rule OtherPaymentPayer1 <"Other Payment Date Payer 1">
+	[regulatoryReference ESMA EMIR Refit table "2" field "77"
+		provision "Identifier of the payer of Other payment amount."]
+    CDEOtherPaymentPayer
+        as "2.77 (Type 1) Other Payment Payer"
+
+reporting rule OtherPaymentReceiver1 <"Other Payment Date Receiver 1">
+	[regulatoryReference ESMA EMIR Refit table "2" field "78"
+		provision "Identifier of the receiver of Other payment amount."]
+	CDEOtherPaymentReceiver
+        as "2.78 (Type 1) Other Payment Receiver"
+
+reporting rule OtherPaymentType3 <"Other Payment Type 3">
+    [regulatoryReference ESMA EMIR Refit table "2" field "73"
+        provision "Type of Other payment amount. Option premium payment is not included as a payment type as premiums for option are reported using the option premium dedicated data element. 3 = Principal Exchange, ie Exchange of notional values for cross-currency swaps."]
+    CDEOtherPayment3 then
+        CDEOtherPaymentType3
+ 	        as "2.73 (Type 3) Other Payment Type"
+
+reporting rule OtherPaymentAmount3 <"Other Payment Amount 3">
+     [regulatoryReference ESMA EMIR Refit table "2" field "74"
+        provision "Payment amounts with corresponding payment types to accommodate requirements of transaction descriptions from different asset classes."]
+ 	CDEOtherPayment3 then
+        CDEOtherPaymentAmount3
+ 	        as "2.74 (Type 3) Other Payment Amount"
+
+reporting rule OtherPaymentDate3 <"Other Payment Date 3">
+    [regulatoryReference ESMA EMIR Refit table "2" field "76"
+		provision "Unadjusted date on which the Other payment amount is paid."]
+    CDEOtherPayment3 then
+        CDEOtherPaymentDate3
+ 	        as "2.76 (Type 3) Other Payment Date"
+// End of Repeatable Field modelling
+
+reporting rule FixedRateOfLeg1 <"Fixed rate of leg 1 or coupon">
+	//TODO: EMIR spec requires percentage to be reported as 2.25 for 2.25%, so needs a 'notation 1' version of the CDE field
+	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "79" field "Fixed rate of leg 1 or coupon"
+		provision "An indication of the fixed rate leg 1 or coupon used, where applicable."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract CDEInterestRateFixedRate ( InterestRateLeg1( Product ) )
+		as "2.79 Fixed Rate of leg 1 or coupon"
+
+reporting rule FixedRateDayCountConventionLeg1 <"Fixed rate or coupon day count convention leg 1">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "80"
+  		provision "Where applicable: day count convention (often also referred to as day count fraction or day count basis or day count method) that determines how interest payments are calculated. It is used to compute the year fraction of the calculation period, and indicates the number of days in the calculation period divided by the number of days in the year."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEDayCountConvention
+					// then ISO20022DayCountFractionFromCDM // uncomment when "as" syntax allows this
+		as "2.80 Fixed rate or coupon day count convention leg 1"
+		// Remap to the CDE, currently endpoint "as" is probiting this
+
+reporting rule FixedRatePaymentFrequencyPeriodLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "81" field "Fixed rate or coupon payment frequency period leg 1"
+ 		provision "Where applicable: time unit associated with the frequency of payments, eg day, week, month, year or term of the stream for the fixed rate of leg 1 or coupon."]
+ 	extract TradeForEvent( ReportableEvent )
+	 	then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEPaymentFrequencyPeriod
+		as "2.81 Fixed rate or coupon payment frequency period leg 1"
+
+reporting rule FixedRatePaymentFrequencyPeriodMultiplierLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "82" field "Fixed rate or coupon payment frequency period multiplier leg 1"
+ 		provision "Where applicable: number of time units (as expressed by the payment frequency period) that determines the frequency at which periodic payment dates occur for the fixed rate of leg 1  or coupon. For example, a transaction with payments occurring every two months is represented with a payment frequency period of MNTH (monthly) and a payment frequency period multiplier of 2. This data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1. If the payment frequency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEPaymentFrequencyPeriodMultiplier
+		as "2.82 Fixed rate or coupon payment frequency period multiplier leg 1"
+
+reporting rule NameOfTheFloatingRateOfLeg1 <"Name of the Floating Rate of Leg 1">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "85" field "Name of the Floating Rate of Leg 1"
+        provision "Up to 50 alphanumeric characters. Special characters are allowed if they form part of the full name of the index."]
+        extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then extract FloatingRateIndex( InterestRatePayout ) as "2.85 Name of the Floating Rate of Leg 1"
+
+//TODO: Update the samples to include Day Count Conventions on Floating legs
+reporting rule FloatingRateDayCountConventionLeg1 <"Floating rate day count convention leg 1">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "86"
+  		provision "Where applicable: day count convention (often also referred to as day count fraction or day count basis or day count method) that determines how interest payments for the floating rate of leg 1 are calculated. It is used to compute the year fraction of the calculation period, and indicates the number of days in the calculation period divided by the number of days in the year."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEDayCountConvention
+					// then ISO20022DayCountFractionFromCDM // uncomment when "as" syntax allows this
+		as "2.86 Floating rate day count convention leg 1"
+		// Remap to the CDE, currently endpoint "as" is probiting this
+
+reporting rule FloatingRatePaymentFrequencyPeriodLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "87" field "Floating rate payment frequency period of leg 1"
+ 		provision "Where applicable: time unit associated with the frequency of payments, eg day, week, month, year or term of the stream for the fixed rate of leg 1 or coupon."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEPaymentFrequencyPeriod
+		as "2.87 Floating rate payment frequency period of leg 1"
+
+reporting rule FloatingRatePaymentFrequencyPeriodMultiplierLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "88" field "Floating rate payment frequency period multiplier of leg 1"
+ 		provision "Where applicable: number of time units (as expressed by the payment frequency period) that determines the frequency at which periodic payment dates occur for the floating rate of leg 1. For example, a transaction with payments occurring every two months is represented with a payment frequency period of MNTH (monthly) and a payment frequency period  multiplier of 2. This data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1.  f the payment frequency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg1( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEPaymentFrequencyPeriodMultiplier
+		as "2.88 Floating rate payment frequency period multiplier of leg 1"
+
+reporting rule FloatingRateReferencePeriodOfLeg1TimePeriod
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "89" field "Floating rate reference period of leg 1 - time period"
+ 		provision "Time period describing the reference period for the floating rate of leg 1."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+		    then extract InterestRateLeg1( Product ) then
+ 			    (filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+					then extract InterestRatePayout -> rateSpecification -> floatingRate -> rateOption -> indexTenor -> period
+			as "2.89 Floating rate reference period of leg 1 - time period",
+			filter when InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract InterestRatePayout -> rateSpecification -> inflationRate -> rateOption -> indexTenor -> period
+			as "2.89 Floating rate reference period of leg 1 - time period")
+
+reporting rule FloatingRateReferencePeriodOfLeg1Multiplier
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "90" field "Floating rate reference period of leg 1 - multiplier"
+ 		provision "Multiplier of the time period describing the reference period for the floating rate of leg 1."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg1( Product ) then
+			(filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+					then extract InterestRatePayout -> rateSpecification -> floatingRate -> rateOption -> indexTenor -> periodMultiplier
+			as "2.90 Floating rate reference period of leg 1 - multiplier",
+			filter when InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract InterestRatePayout -> rateSpecification -> inflationRate -> rateOption -> indexTenor -> periodMultiplier
+			as "2.90 Floating rate reference period of leg 1 - multiplier")
+
+reporting rule SpreadOfLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "93" field "Spread of Leg 1"
+ 		provision "An indication of the spread of leg 1, where applicable: for OTC derivative transactions with periodic payments (eg interest rate fixed/float swaps, interest rate basis swaps, commodity swaps),  spread on the individual floating leg(s) index reference price, in the case where there is a spread on a floating leg(s).  difference between the reference prices of the two floating leg indexes."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg1( Product ) then
+			filter when InterestRatePayout -> rateSpecification -> floatingRate exists or
+				InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract CDESpread_InterestRate( InterestRatePayout )
+					then extract SpreadSchedule -> price -> amount
+			as "2.93 Spread of Leg 1"
+
+reporting rule SpreadCurrencyOfLeg1
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "94" field "Spread Currency of Leg 1"
+ 		provision "Where applicable: currency in which the spread of leg 1 is denominated. This data element is only applicable if Spread is expressed as monetary amount."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg1( Product ) then
+			filter when InterestRatePayout -> rateSpecification -> floatingRate exists or
+				InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract CDESpread_InterestRate( InterestRatePayout )
+					then extract SpreadSchedule -> price -> unitOfAmount -> currency
+			as "2.94 Spread Currency of Leg 1"
+
+reporting rule FixedRateOfLeg2 <"Fixed rate of leg 2">
+	//TODO: EMIR spec requires percentage to be reported as 2.25 for 2.25%, so needs a 'notation 1' version of the CDE field
+	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "95" field "Fixed rate of leg 2"
+		provision "An indication of the fixed rate leg 2 used, where applicable."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract CDEInterestRateFixedRate( InterestRateLeg2( Product ) )
+		as "2.95 Fixed Rate of leg 2"
+
+reporting rule FixedRateDayCountConventionLeg2 <"Fixed rate day count convention leg 2">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "96"
+  		provision "Where applicable: day count convention (often also referred to as day count fraction or day count basis or day count method) that determines how interest payments are calculated. It is used to compute the year fraction of the calculation period, and indicates the number of days in the calculation period divided by the number of days in the year."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEDayCountConvention
+					// then ISO20022DayCountFractionFromCDM // uncomment when "as" syntax allows this
+		// To-Do: Day count fraction is missing in leg2 of the sample use-case "IRS Cross Currency Fixed Fixed" - Technically CDM Object validation should fail where fixed rate is provided
+		as "2.96 Fixed rate day count convention leg 2"
+		// Remap to the CDE, currently endpoint "as" is probiting this
+
+reporting rule FixedRatePaymentFrequencyPeriodLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "97" field "Fixed rate payment frequency period leg 2"
+ 		provision "Where applicable: time unit associated with the frequency of payments, eg day, week, month, year or term of the stream for the fixed rate of leg 2."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEPaymentFrequencyPeriod
+		as "2.97 Fixed rate payment frequency period leg 2"
+
+reporting rule FixedRatePaymentFrequencyPeriodMultiplierLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "98" field "Fixed rate payment frequency period multiplier of leg 2"
+ 		provision "Where applicable: number of time units (as expressed by the payment frequency period) that  determines the frequency at which periodic payment dates occur for the fixed rate of leg  . For example, a transaction with payments occurring every two months is represented  with a payment frequency period of MNTH (monthly) and a payment frequency period multiplier of 2. This  data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1. If the payment frequency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> fixedRate exists
+					then CDEPaymentFrequencyPeriodMultiplier
+		as "2.98 Fixed rate payment frequency period multiplier of leg 2"
+
+reporting rule NameOfTheFloatingRateOfLeg2 <"Name of the Floating Rate of Leg 2">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "101" field "Name of the Floating Rate of Leg 2"
+        provision "Up to 50 alphanumeric characters. Special characters are allowed if they form part of the full name of the index."]
+        extract TradeForEvent( ReportableEvent )
+			then extract ProductForTrade( Trade )
+				then extract InterestRateLeg2( Product )
+					then extract FloatingRateIndex( InterestRatePayout ) as "2.101 Name of the Floating Rate of Leg 2"
+
+reporting rule FloatingRateDayCountConventionLeg2 <"Floating rate day count convention leg 2">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "102"
+  		provision "Where applicable: day count convention (often also referred to as day count fraction or day count basis or day count method) that determines how interest payments for the floating rate of leg 2 are calculated. It is used to compute the year fraction of the calculation period, and indicates the number of days in the calculation period divided by the number of days in the year."]
+	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEDayCountConvention
+					// then ISO20022DayCountFractionFromCDM // uncomment when "as" syntax allows this
+		as "2.102 Floating rate day count convention leg 2"
+		// Remap to the CDE, currently endpoint "as" is probiting this
+
+reporting rule FloatingRatePaymentFrequencyPeriodLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "103" field "Floating rate payment frequency period of leg 2"
+ 		provision "Where applicable: time unit associated with the frequency of payments, eg day, week, month, year or term of the stream for the fixed rate of leg 1 or coupon."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEPaymentFrequencyPeriod
+		as "2.103 Floating rate payment frequency period of leg 2"
+
+reporting rule FloatingRatePaymentFrequencyPeriodMultiplierLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "104" field "Floating rate payment frequency period multiplier of leg 2"
+ 		provision "Where applicable: number of time units (as expressed by the payment frequency period) that determines the frequency at which periodic payment dates occur for the floating rate of  eg 2. For example, a transaction with payments occurring every two months is represented with a payment frequency period of MNTH (monthly) and a payment frequency period multiplier of 2. This data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1. If the payment  requency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+ 	extract TradeForEvent( ReportableEvent )
+		then extract ProductForTrade( Trade )
+			then extract InterestRateLeg2( Product )
+				then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+			 or InterestRatePayout -> rateSpecification -> inflationRate exists
+					then CDEPaymentFrequencyPeriodMultiplier
+		as "2.104 Floating rate payment frequency period multiplier of leg 2"
+
+reporting rule FloatingRateReferencePeriodOfLeg2TimePeriod
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "105" field "Floating rate reference period of leg 1 - time period"
+ 		provision "Time period describing the reference period for the floating rate of leg 2."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg2( Product ) then
+			(filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+					then extract InterestRatePayout -> rateSpecification -> floatingRate -> rateOption -> indexTenor -> period
+			as "2.105 Floating rate reference period of leg 2 - time period",
+			filter when InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract InterestRatePayout -> rateSpecification -> inflationRate -> rateOption -> indexTenor -> period
+			as "2.105 Floating rate reference period of leg 2 - time period")
+
+reporting rule FloatingRateReferencePeriodOfLeg2Multiplier
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "106" field "Floating rate reference period of leg 2 - multiplier"
+ 		provision "Multiplier of the time period describing the reference period for the floating rate of leg 2."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg2( Product ) then
+			(filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+					then extract InterestRatePayout -> rateSpecification -> floatingRate -> rateOption -> indexTenor -> periodMultiplier
+			as "2.106 Floating rate reference period of leg 2 - multiplier",
+			filter when InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract InterestRatePayout -> rateSpecification -> inflationRate -> rateOption -> indexTenor -> periodMultiplier
+			as "2.106 Floating rate reference period of leg 2 - multiplier")
+
+reporting rule SpreadOfLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "109" field "Spread of Leg 2"
+ 		provision "An indication of the spread of leg 2, where applicable: for OTC derivative transactions with periodic payments (eg interest rate fixed/float swaps, interest rate basis swaps, commodity swaps),  spread on the individual floating leg(s) index reference price, in the case where there is a spread on a floating leg(s).  difference between the reference prices of the two floating leg indexes."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg2( Product ) then
+			filter when InterestRatePayout -> rateSpecification -> floatingRate exists or
+			InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract CDESpread_InterestRate( InterestRatePayout )
+					then extract SpreadSchedule -> price -> amount
+			as "2.109 Spread of Leg 2"
+
+reporting rule SpreadCurrencyOfLeg2
+ 	[regulatoryReference ESMA EMIR Refit table "2h" dataElement "110" field "Spread Currency of Leg 2"
+ 		provision "Where applicable: currency in which the spread of leg 2 is denominated. This data element is only applicable if Spread is expressed as monetary amount."]
+ 	extract TradeForEvent( ReportableEvent )
+ 	    then extract ProductForTrade( Trade )
+		then extract InterestRateLeg2( Product ) then
+ 			filter when InterestRatePayout -> rateSpecification -> floatingRate exists or
+			 InterestRatePayout -> rateSpecification -> inflationRate exists
+ 				then extract CDESpread_InterestRate( InterestRatePayout )
+					then extract SpreadSchedule -> price -> unitOfAmount -> currency
+			as "2.110 Spread Currency of Leg 2"
+
+reporting rule ExchangeRate <"Exchange Rate 1">
+	[regulatoryReference ESMA EMIR Refit table "2" field "113"
+		provision "Exchange rate between the two different currencies specified in the derivative transaction agreed by the counterparties at the inception of the transaction, expressed as the rate of exchange from converting the unit currency into the quoted currency."]
+	CDEExchangeRate then
+		extract PriceSchedule -> amount
+			as "2.113 Exchange Rate 1"
+
+reporting rule ExchangeRateBasis <"Exchange Rate Basis">
+	[regulatoryReference ESMA EMIR Refit table "2i" dataElement "115" field "Exchange Rate Basis"
+		provision "Currency pair and order in which the exchange rate is denominated, expressed as unit currency/quoted currency."]
+		CDEExchangeRate then
+			CDEExchangeRateBasis
+			as "2.115 Exchange Rate Basis"
+
+reporting rule OptionType <"Option Type">
+	[regulatoryReference ESMA EMIR Refit table "2" field "132"
+	provision "Indication as to whether the derivative contract is a call (right to purchase a specific underlying asset) or a put (right to sell a specific underlying asset) or whether it cannot be determined whether it is a call or a put at the time of execution of the derivative contract.
+			In case of swaptions it shall be:
+				- Put, in case of receiver swaption, in which the buyer has the right to enter into a swap as a fixed-rate receiver.
+				-Call, in case of payer swaption, in which the buyer has the right to enter into a swap as a fixed-rate payer.
+			In case of Caps and Floors it shall be:
+				-Put, in case of a Floor.
+				-Call, in case of a Cap"]
+         extract TradeForEvent( ReportableEvent ) then
+		 	extract ProductForTrade( Trade )  then
+				UPIOptionType
+	    	as "2.132 Option type"
+		// ToDo - UPI Option type enhancement for Swaptions
+
+reporting rule OptionStyle <"Option Style">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "133" field "Option Style"
+         provision "Indicates whether the option may be exercised only at a fixed date (European), a series of pre-specified dates (Bermudan) or at any time during the life of the contract (American)."]
+    [regulatoryReference ISDA EMIRReportingBestPractice table "2" field "79"
+        provision "For Caps and Floors, populated with E(European). Reasoning for CapFloors to be reported as E is that such products would report field 2.1  (Contract Type) as OP and therefore it is required to populate the Option exercise style. While a CapFloor would not have an exercise style, there is no option to report Other. Therefore, best practice is be to report as European E."]
+    extract TradeForEvent( ReportableEvent ) then
+    extract Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout then
+        (extract Payout -> optionPayout -> exerciseTerms -> optionStyle then
+            extract
+                if OptionStyle -> americanExercise exists
+                    then "AMER"
+                else if OptionStyle -> europeanExercise exists
+                    then "EURO"
+                else if OptionStyle -> bermudaExercise exists
+                    then "BERM"
+                else ""
+                as "2.133 Option Style",
+        extract Payout -> interestRatePayout -> rateSpecification -> floatingRate then
+            extract
+                if FloatingRateSpecification -> capRateSchedule exists or FloatingRateSpecification -> floorRateSchedule exists
+                    then "EURO"
+                else ""
+                as "2.133 Option Style"
+        )
+
+reporting rule StrikePrice <"Strike Price">
+ 	[regulatoryReference ESMA EMIR Refit table "2" field "137"
+ 		provision "Strike price in effect between the unadjusted effective date and unadjusted end date inclusive."]
+	CDEStrikePrice
+		then extract PriceSchedule -> amount
+		as "2.137 Strike Price"
+
+reporting rule StrikePriceCurrency <"Strike Price Currency">
+	[regulatoryReference ESMA EMIR Refit table "2" field "138"
+ 		provision "For equity options, commodity options, and similar products, currency in which the strike price is denominated. For foreign exchange options: Currency pair and order in which the strike price is expressed. It is expressed as unit currency/quoted currency."]
+	CDEStrikePriceCurrency
+		as "2.138 Strike Price Currency"
+
+reporting rule OptionPremiumAmount <"Option Premium Amount">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "139"
+  		provision "For options and swaptions of all asset classes, monetary amount paid by the option buyer. This data element is not applicable if the instrument is not an option or does not embed any optionality."]
+	CDEOptionPremiumAmount
+		as "2.139 Option Premium Amount"
+
+reporting rule OptionPremiumCurrency <"Option Premium Currency">
+  	[regulatoryReference ESMA EMIR Refit table "2" field "140"
+  		provision "For options and swaptions of all asset classes, currency in which the option premium amount is denominated. This data element is not applicable if the instrument is not an option or does not embed any optionality"]
+	CDEOptionPremiumCurrency
+		as "2.140 Option Premium Currency"
+
+reporting rule OptionPremiumPaymentDate <"Option Premium Payment Date">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "141" field "Option premium payment date"
+        provision "ISO 8601 date in the UTC format YYYY-MM-DD."]
+        CDEOptionPremiumPaymentDate
+    		as "2.141 Option Premium Payment Date"
+
+reporting rule Series <"Series">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "145" field "Series"
+        provision "The series number of the composition of the index if applicable."]
+    extract TradeForEvent( ReportableEvent )
+        then extract if Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout exists
+         then Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> generalTerms -> indexReferenceInformation -> indexSeries
+        as "2.145 Series"
+
+reporting rule IndexFactor <"Index Factor">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "147" field "Index Factor"
+		provision "The factor to apply to the Notional (Field 2.55) to adjust it to all the previous credit events in that Index series."]
+	extract TradeForEvent( ReportableEvent ) then
+		filter when IsCreditDefaultSwapIndex( Trade ) then
+			extract Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> generalTerms -> indexReferenceInformation -> indexFactor
+		as "2.147 Index factor"
+
+reporting rule Tranche <"Tranche">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "148" field "Tranche"
+        provision "Indication whether a derivative contract is tranched."]
+    extract TradeForEvent( ReportableEvent )
+		then extract if
+			Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout exists then
+				Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout
+			else if Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout -> underlier -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout exists then
+				Trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout -> underlier -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout
+		then
+        	extract if CreditDefaultPayout -> generalTerms -> indexReferenceInformation -> tranche exists
+        		then "TRUE"
+				else if CreditDefaultPayout -> generalTerms -> basketReferenceInformation -> tranche exists
+        		then "TRUE"
+				else "FALSE"
+        as "2.148 Tranche"
+
+reporting rule CDSIndexAttachmentPoint <"CDS Index Attachment Point">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "149" field "CDS Index Attachment Point"
+        provision "Defined lower point at which the level of losses in the underlying portfolio reduces the notional of a tranche. For example, the notional in a tranche with an attachment point of 3% will be reduced after 3% of losses in the portfolio have occurred. This data element is not applicable if the transaction is not a CDS tranche transaction (index or custom basket)."]
+    CDECDSIndexAttachmentPoint
+        as "2.149 CDS Index Attachment Point"
+
+reporting rule CDSIndexDetachmentPoint <"CDS index detachment point">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "150" field "CDS Index Detachment Point"
+        provision "Defined point beyond which losses in the underlying portfolio no longer reduce the notional of a tranche. For example, the notional in a tranche with an attachment point of 3% and a detachment point of 6% will be reduced after there have been 3% of losses in the portfolio. 6% losses in the portfolio deplete the notional of the tranche. This data element is not applicable if the transaction is not a CDS tranche transaction (index or custom basket)."]
+	CDECDSIndexDetachmentPoint
+        as "2.150 CDS Index Detachment Point"
+
+reporting rule EventType<"Event Type">
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "152" field "Event Type"
+		provision " Trade: Conclusion of a derivative or renegotiation of its terms that does not result in change of a counterparty  Step-in: An event, where part or entirety of the derivative is transferred to a counterparty 2 (and reported as a new derivative) and the existing derivative is either terminated or its notional is modified.  PTRR: Post-trade risk reduction exercise  Early termination: Termination of a derivative, at a trade or position level  Clearing: Clearing as defined in Article 2(3) of Regulation (EU) No 648/2012  Exercise: The exercise of an option or a swaption by one counterparty of the transaction, fully or partially.  Allocation: Allocation event, where an existing derivative is allocated to different counterparties and reported as new derivatives with reduced notional amounts.   Corporate event: A corporate action on equity underlying that impacts the derivatives on that equity  Inclusion in position: Inclusion of CCP-cleared derivative or CFD into a position, where an existing derivative is terminated and either a new position is created or the notional of an existing position is modified. Update - Update of an outstanding derivative performed during the transition period in order to ensure its conformity with the amended reporting requirements"]
+		extract ReportableEvent -> originatingWorkflowStep -> businessEvent then
+			extract
+		if Qualify_Novation(BusinessEvent) = True or Qualify_PartialNovation(BusinessEvent) = True then "NOVA"
+        else if Qualify_Termination(BusinessEvent) = True then "ETRM"
+        else if Qualify_ClearedTrade(BusinessEvent) = True then "CLRG"
+        else if Qualify_Allocation(BusinessEvent) = True then "ALOC"
+        else if Qualify_Compression(BusinessEvent) = True then "COMP"
+        else if Qualify_Exercise(BusinessEvent) = True then "EXER"
+        else if Qualify_StockSplit(BusinessEvent) = True then "CORP"
+        else if
+            Qualify_ContractFormation(BusinessEvent) = True or
+            Qualify_PartialTermination(BusinessEvent) = True
+                then "TRAD"
+        else "ToDo"
+		as "2.152 Event Type"
+/*To-do Event Types
+=================
+CREV = Credit event
+INCP = Inclusion in position
+UPDT = Update*/
+
+reporting rule EventDate <"Event Date">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "153" field "Event date"
+        provision "Date on which the reportable event relating to the derivative contract and captured by the report took place or, in case of a modification when the modification become effective"]
+    extract ReportableEvent -> originatingWorkflowStep -> businessEvent -> eventDate
+        //    if ReportableEvent -> originatingWorkflowStep -> businessEvent -> eventQualifier = "ContractFormation" then //Todo to be expanded for event qualifier
+
+            	/*ReportableEvent -> originatingWorkflowStep -> businessEvent -> after -> trade -> tradeDate
+		   else
+		   		ReportableEvent -> originatingWorkflowStep -> businessEvent -> after -> trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> effectiveDate -> adjustableDate -> unadjustedDate */
+            as "2.153 Event Date"
+
+reporting rule Level <"Level">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "154" field "Level"
+        provision "Indication whether the report is done at trade or position level. Position level report can be used only as a supplement to trade level reporting to report posttrade events and only if individual trades in fungible products have been replaced by the position."]
+     extract TradeForEvent( ReportableEvent )
+		then extract "TCTN" //To-Do Will need logic change for ETD and CFD
+            as "2.154 Level"
+
+
+reporting rule FloatingRateResetFrequencyPeriodOfLeg1 <"Floating rate reset frequency period of leg 1">
+    [regulatoryReference ESMA EMIR Refit table "2" dataElement "91" field "Floating rate reset frequency period of leg 1"
+        rationale "This is not a CDE field, but common between CFTC and EMIR. This field should be populated for Interest Rate products only under EMIR."
+		rationale_author "DRR Peer Review Group - 27 April 2022 and 12 May 2022"
+		provision "Where applicable: time unit associated with the frequency of payments resets, e.g. day, week, month, year or term of the stream for the floating rate of leg 1."]
+    extract TradeForEvent( ReportableEvent )
+        then extract ProductForTrade( Trade )  then
+            (
+                filter when IsSwaption (Product) then
+                    extract UnderlierForProduct (Product) then extract InterestRateLeg1 (Product),
+				extract InterestRateLeg1 (Product)
+            )
+        then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+                or InterestRatePayout -> rateSpecification -> inflationRate exists
+        then extract InterestRatePayout -> resetDates -> resetFrequency then extract ResetFrequencyPeriod( ResetFrequency )
+                //extract ResetFrequency -> period
+        	as  "2.91 Floating rate reset frequency period of Leg 1"
+
+reporting rule FloatingRateResetFrequencyPeriodLeg2 <"Floating rate reset frequency period of leg 2">
+	 [regulatoryReference ESMA EMIR Refit table "2" dataElement "107" field "Floating rate reset frequency period of leg 2"
+        rationale "This is not a CDE field, but common between CFTC and EMIR. This field should be populated for Interest Rate products only under EMIR."
+		rationale_author "DRR Peer Review Group - 27 April 2022 and 12 May 2022"
+		provision "Where applicable: time unit associated with the frequency of payments resets, e.g. day, week, month, year or term of the stream for the floating rate of leg 2."]
+	extract TradeForEvent( ReportableEvent )
+        then extract ProductForTrade( Trade )  then
+            (
+                filter when IsSwaption( Product ) then
+                    extract UnderlierForProduct( Product ) then extract InterestRateLeg2( Product ),
+				filter when IsCreditSwaption( Product ) then
+                    extract UnderlierForProduct( Product ) then extract InterestRateLeg2( Product ),
+                extract InterestRateLeg2( Product )
+            )
+            then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+                or InterestRatePayout -> rateSpecification -> inflationRate exists
+            then extract InterestRatePayout -> resetDates -> resetFrequency then extract ResetFrequencyPeriod( ResetFrequency )
+				//extract ResetFrequency -> period
+    			as  "2.107 Floating rate reset frequency period of Leg 2"
+
+reporting rule FloatingRateResetFrequencyPeriodMultiplierLeg1
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "92" field "Floating rate reset frequency multiplier of leg 1"
+		rationale "This is not a CDE field, but common between CFTC and EMIR. This field should be populated for Interest Rate products only under EMIR."
+        rationale_author "DRR Peer Review Group - 27 April 2022 and 12 May 2022"
+        provision "Where applicable: number of time units (as expressed by the payment frequency period) that determines the frequency at which periodic payment resets dates occur for the floating rate of leg 1. For example, a transaction with payments occurring every two months is represented with a payment frequency period of MNTH (monthly) and a payment frequency period multiplier of 2. This data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1. If the payment frequency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+	extract TradeForEvent( ReportableEvent )
+        then extract ProductForTrade( Trade )  then
+            (
+                filter when IsSwaption( Product ) then
+                    extract UnderlierForProduct( Product ) then extract InterestRateLeg1( Product ),
+                extract InterestRateLeg1( Product )
+            )
+            then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+                or InterestRatePayout -> rateSpecification -> inflationRate exists
+            then extract InterestRatePayout -> resetDates -> resetFrequency then
+                extract ResetFrequency -> periodMultiplier
+        as "2.92 Floating rate reset frequency multiplier of leg 1"
+
+reporting rule FloatingRateResetFrequencyPeriodMultiplierLeg2
+	[regulatoryReference ESMA EMIR Refit table "2" dataElement "108" field "Floating rate reset frequency multiplier of leg 2"
+		rationale "This is not a CDE field, but common between CFTC and EMIR. This field should be populated for Interest Rate products only under EMIR."
+        rationale_author "DRR Peer Review Group - 27 April 2022 and 12 May 2022"
+        provision "Where applicable: number of time units (as expressed by the payment frequency period) that determines the frequency at which periodic payment resets dates occur for the floating rate of leg 2. For example, a transaction with payments occurring every two months is represented with a payment frequency period of MNTH (monthly) and a payment frequency period multiplier of 2. This data element is not applicable if the payment frequency period is ADHO. If payment frequency period is TERM, then the payment frequency period multiplier is 1. If the payment frequency is intraday, then the payment frequency period is DAIL and the payment frequency multiplier is 0."]
+	extract TradeForEvent( ReportableEvent )
+        then extract ProductForTrade( Trade )  then
+            (
+                filter when IsSwaption( Product ) then
+                    extract UnderlierForProduct( Product ) then extract InterestRateLeg2( Product ),
+				filter when IsCreditSwaption( Product ) then
+                    extract UnderlierForProduct( Product ) then extract InterestRateLeg2( Product ),
+                extract InterestRateLeg2( Product )
+            )
+            then filter when InterestRatePayout -> rateSpecification -> floatingRate exists
+                or InterestRatePayout -> rateSpecification -> inflationRate exists
+            then extract InterestRatePayout -> resetDates -> resetFrequency then
+                extract ResetFrequency -> periodMultiplier
+        as "2.108 Floating rate reset frequency multiplier of leg 2"

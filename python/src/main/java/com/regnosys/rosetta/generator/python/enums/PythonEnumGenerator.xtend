@@ -8,19 +8,43 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-
+import com.regnosys.rosetta.rosetta.RosettaModel
+import com.google.inject.Inject
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 
 class PythonEnumGenerator {
 
     @Inject extension PythonModelObjectBoilerPlate
-
+	
+	@Inject
+	PythonModelGeneratorUtil utils;
+	
     static final String FILENAME = 'Enums.py'
 
     def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
         val result = new HashMap
         if(rosettaEnums.size>0){
-        	val enums = rosettaEnums.sortBy[name].generateEnums(version).replaceTabsWithSpaces
-        	result.put(FILENAME,enums)
+        	for(RosettaEnumeration enum: rosettaEnums){
+        		val tr = enum.eContainer as RosettaModel
+				val namespace = tr.name
+				try{
+					val enums = enum.generateEnums(version).replaceTabsWithSpaces
+        		
+	        		val all = 
+	        		'''
+	        		from enum import Enum
+	        		
+	        		all = ['«enum.name»']
+	  
+	        		'''
+	        		result.put(namespace+"."+enum.name, all +enums)
+				}
+				catch(Exception ex){
+					println ('PythonFilesGeneratorTest::Error in... ' + enum.name )	
+					
+				}			
+        	}
+        	
         }
         
         return result;
@@ -37,17 +61,14 @@ class PythonEnumGenerator {
         return enumValues.sortBy[name];
     }
 
-    private def generateEnums(List<RosettaEnumeration> enums, String version){
+    private def generateEnums(RosettaEnumeration enume, String version){
 
 	    '''
-	    from enum import Enum
-
-	    «FOR e : enums SEPARATOR "\n"»
-	    «val allEnumValues = allEnumsValues(e)»
-	    class «e.name»(Enum):
-	        «IF e.definition!==null»
+	    «val allEnumValues = allEnumsValues(enume)»
+	    class «enume.name»(Enum):
+	        «IF enume.definition!==null»
 	        """
-	        «e.definition»
+	        «enume.definition»
 	        """
 	        «ENDIF»
 	        «IF allEnumValues.size()===0»
@@ -62,7 +83,6 @@ class PythonEnumGenerator {
 	        «ENDIF»
 	    	«ENDFOR»
 	    	«ENDIF»
-	    «ENDFOR»
 	    '''
 	}
 }

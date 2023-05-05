@@ -49,7 +49,28 @@ class RosettaExtensionsTest {
 		Foo.update_forward_refs()
 		'''
 		
-		assertTrue(python.toString.contains(expected))
+		val expectedBaz=
+		'''
+		class Baz(BaseDataClass):
+		    pass
+		'''
+		
+		val expectedBar=
+		'''
+		class Bar(Baz):
+		    pass
+		'''
+		
+		val expectedFoo=
+		'''
+		class Foo(Bar):
+		    pass
+		'''
+		
+		assertTrue(python.toString.contains(expectedBaz))
+		assertTrue(python.toString.contains(expectedBar))	
+		assertTrue(python.toString.contains(expectedFoo))
+		
 	}
 	
 	
@@ -67,33 +88,40 @@ class RosettaExtensionsTest {
 			enum Baz extends Bar:
 				baz
 		'''.generatePython
-
 		
-		val expected=
+		val expectedBar=
 		'''
 		class Bar(Enum):
 		    BAR = "BAR"
 		    FOO_0 = "FOO_0"
 		    FOO_1 = "FOO_1"
+		'''
 		
+		val expectedBaz=
+		'''
 		class Baz(Enum):
 		    BAR = "BAR"
 		    BAZ = "BAZ"
 		    FOO_0 = "FOO_0"
 		    FOO_1 = "FOO_1"
+		'''
 		
+		val expectedFoo=
+		'''
 		class Foo(Enum):
 		    FOO_0 = "FOO_0"
 		    FOO_1 = "FOO_1"
 		'''
 		
-		assertTrue(python.get("Enums.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expectedBar))
+		assertTrue(python.toString.contains(expectedBaz))
+		assertTrue(python.toString.contains(expectedFoo))
 	}
 	
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 }

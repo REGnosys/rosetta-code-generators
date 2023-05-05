@@ -46,17 +46,21 @@ import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.FilterOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
+import com.regnosys.rosetta.rosetta.RosettaModel
+import java.util.Collection
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 
 class PythonModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
     @Inject extension PythonMetaFieldGenerator
-
-    static final String CLASSES_FILENAME = 'Types.py'
-    static final String META_FILENAME = 'Metatypes.py'
     
-    var importedFromConditions = new ArrayList<String>()
+    @Inject
+	PythonModelGeneratorUtil utils;
+
+    
+    var List<String> importsFound = newArrayList
     var if_cond_blocks = new ArrayList<String>()
 
     static def toPythonBasicType(String typename) {
@@ -118,7 +122,7 @@ class PythonModelObjectGenerator {
     }
 
     def Map<String, ? extends CharSequence> generate(
-        Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, HashMap<String, List<String>> importsVariables
+        Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, Collection<? extends RosettaModel> models
     ) {
         val result = new HashMap
 		
@@ -128,22 +132,42 @@ class PythonModelObjectGenerator {
                 .toSet
 		 
 		if (rosettaClasses.size() > 0) {
-			val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version, importsVariables).replaceTabsWithSpaces
-        	result.put(CLASSES_FILENAME, classes)
+			for(Data type: rosettaClasses){
+				val tr = type.eContainer as RosettaModel
+				val namespace = tr.name
+				try{
+					val classes = type.generateClasses(version, models).replaceTabsWithSpaces
+					result.put(namespace+"."+type.name, utils.createImports(type.name) + classes)
+								
+				}
+				catch(Exception ex){
+					println ('PythonFilesGeneratorTest::Error in... ' + type.name)	
+				}		
+				
+			}
+			
 		}
         
 		if (metaTypes.size > 0) {
 			val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-        	result.put(META_FILENAME, metaFields)
+        	//result.put(META_FILENAME, metaFields)
 		}
         result;
     }
     
     def boolean checkBasicType(ExpandedAttribute attr) {
-	    val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool')
+	    val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool', 'number')
 	    try {
 	        val attrType = attr.toRawType.toString()
 	        return types.contains(attrType)
+	    } catch (Exception ex) {
+	        return false
+	    }
+	 }
+	 def boolean checkBasicType(String attr) {
+	    val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool','number')
+	    try {
+	        return types.contains(attr)
 	    } catch (Exception ex) {
 	        return false
 	    }
@@ -168,36 +192,36 @@ class PythonModelObjectGenerator {
 	 */
 	 // TODO remove Date implementation in beginning
 	 // TODO removed one-of condition due to limitations after instantiation of objects
-   private def generateClasses(List<Data> rosettaClasses, Set<Data> superTypes, String version, HashMap<String,List<String>> importsVariables) {
-	    val sortedRosettaClasses = sortClassesByHierarchy(rosettaClasses)
+   private def generateClasses(Data rosettaClass, String version, Collection<? extends RosettaModel> models) {
 	    var List<String> enumImports = newArrayList
 	    var List<String> dataImports = newArrayList
 	    var List<String> superTypeImports = newArrayList
 	    var List<String> classDefinitions = newArrayList
 	    var List<String> updateForwardRefs = newArrayList
 	    var List<String> importFromConditions = newArrayList
-	
+	    var superType = rosettaClass.superType
+
+		importsFound = getImportsFromAttributes(rosettaClass)
 	    // Iterate through sorted Rosetta classes
-	    for (Data rosettaClass : sortedRosettaClasses) {
-	        try {
-	            enumImports += getEnumImportsForClass(rosettaClass, importsVariables)
-	            dataImports += getDataImportsForClass(rosettaClass, importsVariables)
+	        /*try {
+	            enumImports += getEnumImportsForClass(rosettaClass)
+	            dataImports += getDataImportsForClass(rosettaClass)
 	        } catch (Exception ex) {
 	        }
-	
+			
 	        // Add super type imports
 	        if (rosettaClass.superType !== null && importsVariables.containsKey(rosettaClass.superType.name)) {
 	            superTypeImports.add('''from «importsVariables.get(rosettaClass.superType.name).get(0)».«rosettaClass.superType.name» import «rosettaClass.superType.name»''')
 	        }
-	
+			*/
 	        // Generate class definition
-	        val classDefinition = generateClassDefinition(rosettaClass, superTypes)
-	        classDefinitions.add(classDefinition)
-	        importFromConditions += getImportedFromConditions(rosettaClass, importsVariables)
+        val classDefinition = generateClassDefinition(rosettaClass)
+        classDefinitions.add(classDefinition)
+	        //importFromConditions += getImportedFromConditions(rosettaClass, importsVariables)
 	
 	        // Add update forward references
-	        updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
-	    }
+        updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
+	    
 	
 	    // Remove duplicates
 	    enumImports = enumImports.toSet().toList()
@@ -205,13 +229,11 @@ class PythonModelObjectGenerator {
 	
 	    // Return generated classes
 	    return '''
-	«FOR enumImport : enumImports SEPARATOR "\n"»«enumImport»«ENDFOR»
-	«FOR superTypeImport : superTypeImports SEPARATOR "\n"»«superTypeImport»«ENDFOR»
+	«IF superType!==null»from «(superType.eContainer as RosettaModel).name».«superType.name» import «superType.name»«ENDIF»
 	
-	«FOR classDefinition : classDefinitions SEPARATOR "\n"»«classDefinition»«ENDFOR»
+	«FOR classDef : classDefinitions SEPARATOR "\n"»«classDefinition»«ENDFOR»
 	
-	«FOR dataImport : dataImports SEPARATOR "\n"»«dataImport»«ENDFOR»
-	«FOR conditionImport : importFromConditions SEPARATOR "\n"»«conditionImport»«ENDFOR»
+	«FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
 	
 	«FOR updateForwardRef : updateForwardRefs SEPARATOR "\n"»«updateForwardRef»«ENDFOR»
 	'''
@@ -226,23 +248,52 @@ class PythonModelObjectGenerator {
 	        .filter[importsVariables.get(it.toRawType.toString).get(1)==='ENUM']
 	        .map[it.toRawType]
 	        .toSet().toList()
-	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	        .map[attribute | '''from «».«attribute» import «attribute»''']
 	}
 	
-	private def getDataImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
-	    return rosettaClass.allExpandedAttributes
+	private def getImportsFromConditions(Data rosettaClass) {
+	    val filteredAttributes = rosettaClass.allExpandedAttributes
 	        .filter[enclosingType == rosettaClass.name]
 	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
 	        .filter[!checkBasicType(it)]
-	        .filter[importsVariables.get(it.toRawType.toString).get(1)==='DATA']
-	        .map[it.toRawType]
-	        .toSet().toList()
-	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
+	
+	    val imports = newArrayList
+	    for (attribute : filteredAttributes) {
+	        val originalIt = attribute
+	        val model = attribute.type.model
+	        val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
+	        imports.add(importStatement)
+	    }
+	
+	    return imports
 	}
 	
-	private def generateClassDefinition(Data rosettaClass, Set<Data> superTypes) {
+	private def getImportsFromAttributes(Data rosettaClass) {
+	    val filteredAttributes = rosettaClass.allExpandedAttributes
+	        .filter[enclosingType == rosettaClass.name]
+	        .filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
+	        .filter[!checkBasicType(it)]
+	
+	    val imports = newArrayList
+	    for (attribute : filteredAttributes) {
+	        val originalIt = attribute
+	        val model = attribute.type.model
+	        if(model!==null){
+	        	 val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
+	        	imports.add(importStatement)
+	        }
+	       
+	    }
+	
+	    // Remove duplicates by converting the list to a set and back to a list
+	    return imports.toSet.toList
+	}
+
+
+	
+	private def generateClassDefinition(Data rosettaClass) {
 	    return '''
-		class «rosettaClass.name»«IF rosettaClass.superType === null && !superTypes.contains(rosettaClass)»«ENDIF»«IF rosettaClass.superType !== null && superTypes.contains(rosettaClass)»(«rosettaClass.superType.name»):«ELSEIF rosettaClass.superType !== null»(«rosettaClass.superType.name»):«ELSE»(BaseDataClass):«ENDIF»
+		class «rosettaClass.name»«IF rosettaClass.superType === null»«ENDIF»«IF rosettaClass.superType !== null»(«rosettaClass.superType.name»):«ELSE»(BaseDataClass):«ENDIF»
 		    «IF rosettaClass.definition !== null»
 		    """
 		    «rosettaClass.definition»
@@ -252,13 +303,7 @@ class PythonModelObjectGenerator {
 		    «generateConditions(rosettaClass)»
 		'''
 	}
-	
-	private def getImportedFromConditions(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
-	    return importedFromConditions
-	        .filter[importsVariables.containsKey(it)]
-	        .toSet().toList()
-	        .map[attribute | '''from «importsVariables.get(attribute).get(0)».«attribute» import «attribute»''']
-	}	
+		
 		
         
 
@@ -280,7 +325,6 @@ class PythonModelObjectGenerator {
     /* ***                   BEGIN condition generation                   *** */    
     /* ********************************************************************** */
     private def generateConditions(Data cls) {
-    	importedFromConditions.clear()
         var n_condition = 0;
         var res = '';
         for (Condition cond : cls.conditions) {
@@ -343,9 +387,10 @@ class PythonModelObjectGenerator {
         '''
     }
     
-    def addImportsFromConditions(String value){
-    	if(!importedFromConditions.contains(value)){
-    		importedFromConditions.add(value)
+    def addImportsFromConditions(String variable, String namespace){
+    	val import = '''from «namespace».«variable» import «variable»'''
+    	if(!importsFound.contains(import)){
+    		importsFound.add(import)
     	}
     }
 
@@ -374,28 +419,38 @@ class PythonModelObjectGenerator {
             }
             RosettaFeatureCall: {
                 var right = switch (expr.feature) {
-                    Attribute: expr.feature.name
-                    RosettaMetaType: expr.feature.name
+                    Attribute: {
+                    	expr.feature.name                   	
+                		
+                    }
+                    RosettaMetaType: {
+                    	expr.feature.name                  	
+                    }
                     RosettaEnumValue:{
                     	val rosettaValue = expr.feature as RosettaEnumValue
                     	val value = EnumHelper.convertValues(rosettaValue)
+                    	
+                    	val symbol = (expr.receiver as RosettaSymbolReference).symbol
+                		val model = symbol.eContainer as RosettaModel
+                		addImportsFromConditions(symbol.name, model.name)
+                		
                     	value
                     } 
                     //TODO: RosettaFeature: '''.Select(x => x.«feature.name.toFirstUpper»)'''
-                    RosettaFeature: expr.feature.name
+                    RosettaFeature:{
+                    	expr.feature.name
+                    } 
                     default:
                         throw new UnsupportedOperationException("Unsupported expression type of " + expr.feature.eClass.name)
                 }
+                                           
                 if(right=="None")
                 	right="NONE"
-                val receiver = generateExpression(expr.receiver, iflvl)
-                
+                var receiver = generateExpression(expr.receiver, iflvl)                
                 if(receiver===null){
-                	addImportsFromConditions(right.toString)
                 	'''«right»'''
                 }
-                else{
-                	addImportsFromConditions(receiver.toString)
+                else{                            	
                 	'''«receiver».«right»'''
                 }
                 	
@@ -507,12 +562,10 @@ class PythonModelObjectGenerator {
     def String symbolReference(RosettaSymbolReference expr, int iflvl){
     	val s = expr.symbol
     	switch (s)  {
-    		Data: {
-            	addImportsFromConditions(s.name.toString)
+    		Data: {   			            		
                 '''«s.name»'''
             }
             Attribute: {
-            	addImportsFromConditions(s.name.toString)
                 '''self.«s.name»'''
             }
             //ShortcutDeclaration: {
@@ -521,7 +574,6 @@ class PythonModelObjectGenerator {
             
             //RosettaEnumeration: '''«call».«call.name»'''
             RosettaEnumeration: {
-            	addImportsFromConditions(s.name.toString)
             	'''«s.name»'''
             }
             RosettaCallableWithArgs: {
@@ -534,8 +586,7 @@ class PythonModelObjectGenerator {
     }
     
     def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl){
-        addImportsFromConditions(s.name.toString)
-
+    	addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)
         var args = '''«FOR arg : expr.args SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»'''
         '''«s.name»(«args»)'''
         

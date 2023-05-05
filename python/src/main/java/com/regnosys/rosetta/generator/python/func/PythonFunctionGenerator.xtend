@@ -6,9 +6,14 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
 import java.util.Map
+import com.regnosys.rosetta.rosetta.RosettaModel
+import com.google.inject.Inject
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 
 class  PythonFunctionGenerator {
-
+	
+	@Inject
+	PythonModelGeneratorUtil utils;
 	
 	static final String FUNCTIONS_FILENAME = 'Funcs.py'
 	
@@ -18,11 +23,18 @@ class  PythonFunctionGenerator {
 		
 		
 		if(rosettaFunctions.size()>0){
-			
-			
-			
-			val funcs = rosettaFunctions.sortBy[name].generateFunctions(version)
-			result.put(FUNCTIONS_FILENAME, funcs)	
+			for(Function func: rosettaFunctions){
+				val tr = func.eContainer as RosettaModel
+				val namespace = tr.name
+				try{
+					val funcs = func.generateFunctions(version)				
+					result.put(namespace+"."+func.name, utils.createImports(func.name) + funcs)
+				}
+				catch(Exception ex){
+					println ('PythonFilesGeneratorTest::Error in... ' + func.name )	
+				}		
+			}
+				
 		}
 		
 		result;
@@ -30,14 +42,11 @@ class  PythonFunctionGenerator {
 		
 	}
 	
-	private def generateFunctions(List<Function> rosettaFunctions,String version) {
+	private def generateFunctions(Function function,String version) {
 		
 		'''
-		«FOR function : rosettaFunctions SEPARATOR "\n"»
 		def «function.name»«generatesInputs(function)»:
 			«generatesBody(function)»
-		
-		«ENDFOR»
 		'''
 		
     }

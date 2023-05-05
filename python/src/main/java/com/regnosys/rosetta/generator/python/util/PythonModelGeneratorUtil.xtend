@@ -40,32 +40,7 @@ class PythonModelGeneratorUtil {
 		«ENDIF»
 		'''
 		
-	def Map<String, ? extends CharSequence> createImports(List<Data> classes, List<RosettaEnumeration> enums, List<Function> functions, HashMap<String, List<String>> importsVariables){
-		
-		val result = new HashMap
-		val List<String> classesNames = classes.map[name]
-		val List<String> enumsNames = enums.map[name]
-		val List<String> functionsNames = functions.map[name]
-		
-		
-		val unitedList = new ArrayList<String>();
-		
-		unitedList.addAll(classesNames)
-		unitedList.addAll(enumsNames)
-		unitedList.addAll(functionsNames)
-		
-		
-		
-		val all = unitedList.map["'"+it+"'"]
-		/*var simpleNameSpace = "";
-		try{
-			val fullNameSpace = importsVariables.get(unitedList.get(0)).get(0)
-			simpleNameSpace = fullNameSpace.split("\\.").get(0)
-		}catch(Exception ex){
-			simpleNameSpace = null;
-		}*/
-		
-		// «IF simpleNameSpace!==null»from «simpleNameSpace».utils import *«ENDIF»
+	def String createImports(String name){			
 		val imports=
 		'''
 		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
@@ -77,15 +52,13 @@ class PythonModelGeneratorUtil {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from rosetta.runtime.utils import *
+		from build.resources.runtime.src.rosetta.runtime.utils import *
 		
-		__all__ = «all»
+		__all__ = [«"'"+name+"'"»]
 		
 		'''
 		
-		result.put('Imports.py', imports)
-		
-		result
+		imports
 		
 		
 		

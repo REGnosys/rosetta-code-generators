@@ -110,7 +110,7 @@ class DataRuleGeneratorTest {
 		'''
 		
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expected))
 	}
 
 
@@ -127,8 +127,8 @@ class DataRuleGeneratorTest {
 					bidPrice number (0..1)
 					offerPrice number (0..1)
 		'''.generatePython
-
-		val expected=
+		
+		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
@@ -142,17 +142,18 @@ class DataRuleGeneratorTest {
 		            return True
 		        
 		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
+		'''
 		
+		val expectedQuotePrice=
+		'''
 		class QuotePrice(BaseDataClass):
 		    bidPrice: Optional[Decimal] = Field(None, description="")
 		    offerPrice: Optional[Decimal] = Field(None, description="")
-		
-		
-		Quote.update_forward_refs()
-		QuotePrice.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expectedQuote))
+		assertTrue(python.toString.contains(expectedQuotePrice))
+		
 	}
 
 	@Test
@@ -176,7 +177,7 @@ class DataRuleGeneratorTest {
 		'''.generatePython
 
 		
-		val expected=
+		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
@@ -190,17 +191,18 @@ class DataRuleGeneratorTest {
 		            return True
 		        
 		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
-		
+		'''
+		val expectedQuotePrice=
+		'''
 		class QuotePrice(BaseDataClass):
 		    price1: Optional[Decimal] = Field(None, description="")
 		    price2: Optional[Decimal] = Field(None, description="")
 		    price3: Optional[Decimal] = Field(None, description="")
-		
-		
-		Quote.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expectedQuote))
+		assertTrue(python.toString.contains(expectedQuotePrice))
+		
 	}
 
 	@Test
@@ -216,8 +218,9 @@ class DataRuleGeneratorTest {
 					bidPrice number (0..1)
 		'''.generatePython
 
+	
 		
-		val expected=
+		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
 		    quotePrice: Optional[QuotePrice] = Field(None, description="")
@@ -231,17 +234,17 @@ class DataRuleGeneratorTest {
 		            return True
 		        
 		        return if_cond_fn(((self.quotePrice) is not None), _then_fn0, _else_fn0)
-		
-		class QuotePrice(BaseDataClass):
-		    bidPrice: Optional[Decimal] = Field(None, description="")
-		
-		
-		Quote.update_forward_refs()
-		QuotePrice.update_forward_refs()
 		'''
 		
+		val expectedQuotePrice=
+		'''
+		class QuotePrice(BaseDataClass):
+		    bidPrice: Optional[Decimal] = Field(None, description="")
+		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expectedQuote))
+		assertTrue(python.toString.contains(expectedQuotePrice))
+		
 	}
 	
 	@Test
@@ -261,12 +264,12 @@ class DataRuleGeneratorTest {
 						then Foo( price ) = 5.0
 		'''.generatePython
 
-		val expectedFunc=
+		val expectedFoo=
 		'''
 		def Foo(price=None):
 			pass
 		'''
-		val expectedType='''
+		val expectedQuote='''
 		class Quote(BaseDataClass):
 		    price: Optional[Decimal] = Field(None, description="")
 		    
@@ -279,14 +282,11 @@ class DataRuleGeneratorTest {
 		            return True
 		        
 		        return if_cond_fn(((self.price) is not None), _then_fn0, _else_fn0)
-		
-		
-		Quote.update_forward_refs()
 		'''
 		
 		
-		assertTrue(python.get("Types.py").toString.contains(expectedType))
-		assertTrue(python.get("Funcs.py").toString.contains(expectedFunc))
+		assertTrue(python.toString.contains(expectedQuote))
+		assertTrue(python.toString.contains(expectedFoo))
 		
 	}
 	
@@ -308,7 +308,8 @@ class DataRuleGeneratorTest {
 						else True
 		'''.generatePython
 
-		val expected1=
+		
+		val expectedQuoute=
 		'''
 		class Quote(BaseDataClass):
 		    price: Optional[Decimal] = Field(None, description="")
@@ -322,13 +323,17 @@ class DataRuleGeneratorTest {
 		            return False
 		        
 		        return if_cond_fn(((self.price) is not None), _then_fn0, _else_fn0)
+		'''
 		
-		
-		Quote.update_forward_refs()
+		val expectedFoo=
+		'''
+		def Foo(price=None):
+			pass
 		'''
 		
 		
-		assertTrue(python.toString.contains(expected1))
+		assertTrue(python.toString.contains(expectedFoo))
+		assertTrue(python.toString.contains(expectedQuoute))
 	}
 	
 	@Test
@@ -399,7 +404,7 @@ class DataRuleGeneratorTest {
 		Coin.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.toString.contains(expected))
 	}
 	
 	@Test
@@ -483,7 +488,7 @@ class DataRuleGeneratorTest {
 					y exists
 		'''.generatePython
 
-		val expected=
+		val expectedFoo=
 		'''
 		class Foo(BaseDataClass):
 		    x: Optional[str] = Field(None, description="")
@@ -492,20 +497,21 @@ class DataRuleGeneratorTest {
 		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.x) is not None)
+		'''
 		
+		val expectedBar=
+		'''
 		class Bar(Foo):
 		    z: Optional[str] = Field(None, description="")
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.y) is not None)
-		
-		
-		Foo.update_forward_refs()
-		Bar.update_forward_refs()
 		'''
 		
-		assertTrue(python.toString.contains(expected))
+		assertTrue(python.toString.contains(expectedFoo))
+		assertTrue(python.toString.contains(expectedBar))
+		
 	}
 	
 	
@@ -525,8 +531,8 @@ class DataRuleGeneratorTest {
 				condition:
 					y exists
 		'''.generatePython
-
-		val expected=
+		
+		val expectedFoo=
 		'''
 		class Foo(BaseDataClass):
 		    x: Optional[str] = Field(None, description="")
@@ -535,27 +541,27 @@ class DataRuleGeneratorTest {
 		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.x) is not None)
+		'''
 		
+		val expectedBar=
+		'''
 		class Bar(Foo):
 		    z: Optional[str] = Field(None, description="")
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
 		        return ((self.y) is not None)
-		
-		
-		Foo.update_forward_refs()
-		Bar.update_forward_refs()
 		'''
 		
-		assertTrue(python.toString.contains(expected))
+		assertTrue(python.toString.contains(expectedFoo))
+		assertTrue(python.toString.contains(expectedBar))	
 	}
 		
 	
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 

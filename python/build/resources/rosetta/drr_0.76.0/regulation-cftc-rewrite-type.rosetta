@@ -1,0 +1,1531 @@
+namespace drr.regulation.cftc.rewrite
+version "0.76.0"
+
+import drr.regulation.common.*
+import drr.regulation.cftc.tr.*
+import cdm.event.common.*
+
+type CFTCPart43TransactionReport:
+    [rootType]
+    cleared string (1..1)
+        [ruleReference Cleared]
+    counterparty1 string (1..1)
+        [ruleReference Counterparty1]
+    counterparty2 string (1..1)
+        [ruleReference Counterparty2]
+    counterparty2IdentifierSource string (1..1)
+        [ruleReference Counterparty2IdentifierSource]
+    submitterIdentifier string (1..1)
+        [ruleReference SubmitterIdentifier]
+    customBasketIndicator boolean (1..1)
+        [ruleReference CustomBasketIndicator]
+    actionType string (1..1)
+        [ruleReference ActionType]
+    eventType string (0..1)
+        [ruleReference EventType]
+    amendmentIndicator string (0..1)
+        [ruleReference AmendmentIndicator]
+    eventTimestamp zonedDateTime (1..1)
+        [ruleReference EventTimestamp]
+    notionalAmountLeg1 number (0..1)
+        [ruleReference NotionalAmountLeg1]
+    notionalAmountLeg2 number (0..1)
+        [ruleReference NotionalAmountLeg2]
+    notionalCurrencyLeg1 string (0..1)
+        [ruleReference NotionalCurrencyLeg1]
+    notionalCurrencyLeg2 string (0..1)
+        [ruleReference NotionalCurrencyLeg2]
+    notionalAmountScheduleLeg1 NotionalAmountScheduleLeg1Report (0..*)
+        [ruleReference NotionalAmountScheduleLeg1]
+    notionalAmountScheduleLeg2 NotionalAmountScheduleLeg2Report (0..*)
+        [ruleReference NotionalAmountScheduleLeg2]
+    callAmount number (0..1)
+        [ruleReference CallAmount]
+    callCurrency string (0..1)
+        [ruleReference CallCurrency]
+    putAmount number (0..1)
+        [ruleReference PutAmount]
+    putCurrency string (0..1)
+        [ruleReference PutCurrency]
+    notionalQuantityLeg1 number (0..1)
+        [ruleReference NotionalQuantityLeg1]
+    notionalQuantityLeg2 number (0..1)
+        [ruleReference NotionalQuantityLeg2]
+    quantityFrequencyLeg1 string (0..1)
+        [ruleReference QuantityFrequencyLeg1]
+    quantityFrequencyLeg2 string (0..1)
+        [ruleReference QuantityFrequencyLeg2]
+    quantityFrequencyMultiplierLeg1 int (0..1)
+        [ruleReference QuantityFrequencyMultiplierLeg1]
+    quantityFrequencyMultiplierLeg2 int (0..1)
+        [ruleReference QuantityFrequencyMultiplierLeg2]
+    quantityUnitOfMeasureLeg1 string (0..1)
+        [ruleReference QuantityUnitOfMeasureLeg1]
+    quantityUnitOfMeasureLeg2 string (0..1)
+        [ruleReference QuantityUnitOfMeasureLeg2]
+    totalNotionalQuantityLeg1 number (0..1)
+        [ruleReference TotalNotionalQuantityLeg1]
+    totalNotionalQuantityLeg2 number (0..1)
+        [ruleReference TotalNotionalQuantityLeg2]
+    packageIndicator boolean (1..1)
+        [ruleReference PackageIndicator]
+    packageTransactionPrice PackageTransactionPriceReport (0..*)
+        [ruleReference PackageTransactionPrice]
+    packageTransactionSpreadLeg1 PackageTransactionSpreadLeg1Report (0..*)
+        [ruleReference PackageTransactionSpreadLeg1]
+    packageTransactionSpreadLeg2 PackageTransactionSpreadLeg2Report (0..*)
+        [ruleReference PackageTransactionSpreadLeg2]
+    fixedRateDayCountConventionLeg1 string (0..1)
+        [ruleReference FixedRateDayCountConventionLeg1]
+    fixedRateDayCountConventionLeg2 string (0..1)
+        [ruleReference FixedRateDayCountConventionLeg2]
+    floatingRateDayCountConventionLeg1 string (0..1)
+        [ruleReference FloatingRateDayCountConventionLeg1]
+    floatingRateDayCountConventionLeg2 string (0..1)
+        [ruleReference FloatingRateDayCountConventionLeg2]
+    floatingRateResetFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodLeg1]
+    floatingRateResetFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodLeg2]
+    floatingRateResetFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg1]
+    floatingRateResetFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg2]
+    otherPayment OtherPaymentReport (0..*)
+        [ruleReference OtherPayment]
+    fixedRatePaymentFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg1]
+    fixedRatePaymentFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg2]
+    floatingRatePaymentFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg1]
+    floatingRatePaymentFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg2]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg1]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg2]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg1]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg2]
+    exchangeRateLeg1 number (0..1)
+        [ruleReference ExchangeRateLeg1]
+    exchangeRateBasis string (0..1)
+        [ruleReference ExchangeRateBasis]
+    fixedRateLeg1 number (0..1)
+        [ruleReference FixedRateLeg1]
+    fixedRateLeg2 number (0..1)
+        [ruleReference FixedRateLeg2]
+    postPricedSwapIndicator boolean (1..1)
+        [ruleReference PostPricedSwapIndicator]
+    price number (0..1)
+        [ruleReference Price]
+    priceCurrency string (0..1)
+        [ruleReference PriceCurrency]
+    priceNotation string (0..1)
+        [ruleReference PriceNotation]
+    priceUnitOfMeasure string (0..1)
+        [ruleReference PriceUnitOfMeasure]
+    spreadLeg1 number (0..1)
+        [ruleReference SpreadLeg1]
+    spreadLeg2 number (0..1)
+        [ruleReference SpreadLeg2]
+    spreadCurrencyLeg1 string (0..1)
+        [ruleReference SpreadCurrencyLeg1]
+    spreadCurrencyLeg2 string (0..1)
+        [ruleReference SpreadCurrencyLeg2]
+    spreadNotationLeg1 string (0..1)
+        [ruleReference SpreadNotationLeg1]
+    spreadNotationLeg2 string (0..1)
+        [ruleReference SpreadNotationLeg2]
+    strikePrice number (0..1)
+        [ruleReference StrikePrice]
+    strikePriceCurrency string (0..1)
+        [ruleReference StrikePriceCurrency]
+    strikePriceNotation string (0..1)
+        [ruleReference StrikePriceNotation]
+    optionPremiumAmount number (0..1)
+        [ruleReference OptionPremiumAmount]
+    optionPremiumCurrency string (0..1)
+        [ruleReference OptionPremiumCurrency]
+    firstExerciseDate date (0..1)
+        [ruleReference FirstExerciseDate]
+    indexFactor number (0..1)
+        [ruleReference IndexFactor]
+    embeddedOptionType string (0..1)
+        [ruleReference EmbeddedOptionType]
+    settlementCurrencyLeg1 string (0..1)
+        [ruleReference SettlementCurrencyLeg1]
+    settlementCurrencyLeg2 string (0..1)
+        [ruleReference SettlementCurrencyLeg2]
+    settlementLocationLeg1 string (0..1)
+        [ruleReference SettlementLocationLeg1]
+    settlementLocationLeg2 string (0..1)
+        [ruleReference SettlementLocationLeg2]
+	nonStandardizedTermIndicator boolean (0..1)
+        [ruleReference NonStandardizedTermIndicator]
+    blockTradeElectionIndicator boolean (1..1)
+        [ruleReference BlockTradeElectionIndicator]
+    effectiveDate date (1..1)
+        [ruleReference EffectiveDate]
+    expirationDate date (1..1)
+        [ruleReference ExpirationDate]
+    executionTimestamp zonedDateTime (1..1)
+        [ruleReference ExecutionTimestamp]
+    reportingTimestamp zonedDateTime (1..1)
+        [ruleReference ReportingTimestamp]
+    platformIdentifier string (0..1)
+        [ruleReference PlatformIdentifier]
+    primeBrokerageTransactionIndicator boolean (0..1)
+        [ruleReference PrimeBrokerageTransactionIndicator]
+    uniqueSwapIdentifier string (0..1)
+        [ruleReference UniqueSwapIdentifier]
+    uniqueTransactionIdentifier string (0..1)
+        [ruleReference UniqueTransactionIdentifier]
+    cftcGuidebook CFTCGuidebookPart43 (1..1)
+
+//Events category validation logic
+    condition EventTypeCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "27" validationRule "Transaction"
+      provision "C, for valid Action type and Event type Combination, see table in Appendix F."]
+        if actionType = "NEWT" then eventType any = ["TRAD", "NOVA", "COMP", "EXER", "CORP"]
+        else if actionType = "MODI" then eventType any = ["TRAD", "NOVA", "COMP", "CREV", "CORP", "UPDT"]
+        else if actionType = "TERM" then eventType any = ["NOVA", "COMP", "ETRM", "CLRG", "EXER", "CLAL", "CREV", "CORP"]
+        else actionType any = ["CORR", "EROR", "REVI", "VALU", "MARU", "PRTO"] and eventType is absent
+
+    condition AmendmentIndicatorCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "28" validationRule "Transaction"
+      provision "C if [Action type] = MODI, else {blank}"]
+        if actionType = "MODI" then amendmentIndicator exists
+        else amendmentIndicator is absent
+
+    /*condition EventTimestampCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "30" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, the value shall be equal to or later than the value in [Execution timestamp]"]*/
+       
+//Notional amounts and quantities category validation logic
+    condition NotionalAmountCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "31" validationRule "Transaction"
+        provision "M, if UPI.[Instrument type] = Option, the value shall match the value in Call amount or Put amount"]
+        if cftcGuidebook -> optionStyle exists then
+        (
+            (if notionalAmountLeg1 exists then notionalAmountLeg1 any = [callAmount, putAmount]) and
+            (if notionalAmountLeg2 exists then notionalAmountLeg1 any = [callAmount, putAmount])
+        )
+
+    condition NotionalCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "32" validationRule "Transaction"
+      provision "M, if UPI.[Instrument type] = Option, the value shall match the value in Call Currency or Put Currency"]
+        if cftcGuidebook -> optionStyle exists then
+            (
+                (if notionalCurrencyLeg1 exists then notionalCurrencyLeg1 any =[callCurrency, putCurrency]) and 
+                (if notionalCurrencyLeg2 exists then notionalCurrencyLeg2 any =[callCurrency, putCurrency])
+            )
+    
+    condition NotionalAmountScheduleCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "33" validationRule "Transaction"
+      rationale "Not modelled until UPI exists in Part 45."
+      provision "Transaction-IR: C if UPI.[Notional schedule] <> Constant, else {blank}"]
+        True and True
+    
+    condition CallAmountCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "36" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}"]
+        if cftcGuidebook -> optionStyle exists then callAmount exists
+        else callAmount is absent
+
+    condition CallCurrencyCondition:
+        [docReference CFTC Part43 appendix "1" dataElement "37" validationRule "Transaction"
+        provision "C if [Call amount] is populated, else {blank}"]
+            if callAmount exists then callCurrency exists
+            else callCurrency is absent
+
+    condition PutAmountCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "38" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}"]
+        if cftcGuidebook -> optionStyle exists then putAmount exists
+        else putAmount is absent
+    
+    condition PutCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "39" validationRule "Transaction"
+      provision "C if [Put amount] is populated, else {blank}"]
+        if putAmount exists then putCurrency exists
+        else putCurrency is absent
+
+    condition NotionalQuantityCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "40" validationRule "Transaction"
+      provision "Transaction-CO: Optional"]
+      if cftcGuidebook -> assetClass <> "COMM" then notionalQuantityLeg1 is absent and notionalQuantityLeg2 is absent
+    
+    condition QuantityFrequencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "41" validationRule "Transaction"
+      provision "Transaction-CO: C if [Notional quantity] is populated, else {blank}"]
+      if cftcGuidebook -> assetClass = "COMM" then 
+            (
+                (if notionalQuantityLeg1 exists then quantityFrequencyLeg1 exists) and
+                (if notionalQuantityLeg1 is absent then quantityFrequencyLeg1 is absent) and
+                (if notionalQuantityLeg2 exists then quantityFrequencyLeg2 exists) and
+                (if notionalQuantityLeg2 is absent then quantityFrequencyLeg2 is absent)
+            )
+        else quantityFrequencyLeg1 is absent and quantityFrequencyLeg2 is absent 
+
+    condition QuantityFrequencyMultiplierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "42" validationRule "Transaction"
+        provision "Transaction-CO: C if [Quantity frequency] <> ONDE or ADHO, else {blank}"]
+         if cftcGuidebook -> assetClass = "COMM" then 
+            (
+                (if quantityFrequencyLeg1 exists and quantityFrequencyLeg1 any <> ["ONDE", "ADHO"] then quantityFrequencyMultiplierLeg1 exists
+                else quantityFrequencyMultiplierLeg1 is absent) and
+                (if quantityFrequencyLeg2 exists and quantityFrequencyLeg2 any <> ["ONDE", "ADHO"] then quantityFrequencyMultiplierLeg2 exists
+                else quantityFrequencyMultiplierLeg2 is absent)      
+            )
+        else quantityFrequencyMultiplierLeg1 is absent and quantityFrequencyMultiplierLeg2 is absent
+
+    condition QuantityUnitOfMeasureCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "43" validationRule "Transaction"
+      provision "Transaction-EQ/CO: Mandatory"]
+        if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then quantityUnitOfMeasureLeg1 exists or quantityUnitOfMeasureLeg2 exists
+        else quantityUnitOfMeasureLeg1 is absent and quantityUnitOfMeasureLeg2 is absent
+
+    condition TotalNotionalQuantityCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "44" validationRule "Transaction"
+      provision "Transaction-EQ/CO: Mandatory"]
+        if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then totalNotionalQuantityLeg1 exists or totalNotionalQuantityLeg2 exists 
+        else totalNotionalQuantityLeg1 is absent and totalNotionalQuantityLeg2 is absent 
+    
+//Packages category validation logic
+    condition PackageTransactionPriceCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "47" validationRule "Transaction"
+      provision "C if [Package indicator] = True and [Package transaction spread] is not populated, else {blank}"]
+        if (packageIndicator = True and packageTransactionSpreadLeg1 is absent and packageTransactionSpreadLeg2 is absent) then packageTransactionPrice exists
+        else packageTransactionPrice is absent
+    
+    condition PackageTransactionSpreadCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "50" validationRule "Transaction"
+      provision "C if [Package indicator] = True and [Package transaction price] is not populated, else {blank}"]
+      if packageIndicator = True and packageTransactionPrice is absent then packageTransactionSpreadLeg1 exists and packageTransactionSpreadLeg2 exists
+      else packageTransactionSpreadLeg1 is absent and packageTransactionSpreadLeg2 is absent
+
+//Payments category validation logic
+    condition DayCountConventionCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "53" validationRule "Transaction"
+      provision "Transaction-CR/IR: M
+                Transaction-FX: O
+                Transaction-CO/EQ: C if [Payment frequency period] is populated, else {blank}"]
+    if cftcGuidebook -> assetClass any = ["CRDT", "INTR"] then 
+        (fixedRateDayCountConventionLeg1 exists or floatingRateDayCountConventionLeg1 exists) and
+        (fixedRateDayCountConventionLeg2 exists or floatingRateDayCountConventionLeg2 exists)
+    else if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then 
+        (
+            (if fixedRatePaymentFrequencyPeriodLeg1 exists then fixedRateDayCountConventionLeg1 exists
+            else if floatingRatePaymentFrequencyPeriodLeg1 exists then floatingRateDayCountConventionLeg1 exists
+            else fixedRateDayCountConventionLeg1 is absent and floatingRateDayCountConventionLeg1 is absent) and
+            (if fixedRatePaymentFrequencyPeriodLeg2 exists then fixedRateDayCountConventionLeg2 exists
+            else if floatingRatePaymentFrequencyPeriodLeg2 exists then floatingRateDayCountConventionLeg2 exists
+            else fixedRateDayCountConventionLeg2 is absent and floatingRateDayCountConventionLeg2 is absent)
+        )
+    
+    condition FloatingRateResetFrequencyPeriodCond:
+    [docReference CFTC Part43 appendix "1" dataElement "55" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR/FX/EQ/CO: O
+                Transaction - IR: C if UPI.[Instrument type] = Swap and UPI.[Underlying asset/contract type]  Fixed - Fixed, else {blank}.
+                When populated with EXPI, [Floating rate reset frequency period multiplier] must be 1."]
+        True and True
+
+    condition FloatingRateResetFrequencyPeriodMultiplierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "56" validationRule "Transaction"
+      provision "C if [Floating rate reset frequency period] <> ADHO, else {blank}"]
+        (if floatingRateResetFrequencyPeriodLeg1 exists and floatingRateResetFrequencyPeriodLeg1 <> "ADHO" then floatingRateResetFrequencyPeriodMultiplierLeg1 exists
+        else floatingRateResetFrequencyPeriodMultiplierLeg1 is absent) and
+        (if floatingRateResetFrequencyPeriodLeg2 exists and floatingRateResetFrequencyPeriodLeg2 <> "ADHO" then floatingRateResetFrequencyPeriodMultiplierLeg2 exists
+        else floatingRateResetFrequencyPeriodMultiplierLeg2 is absent)
+
+    condition OtherPaymentTypeCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "57" validationRule "Transaction"
+      provision "Transaction - CR: C, at least one is required: ([Fixed rate] or [Spread] or [Other payment type] = UFRO. Allowable values UWIN and PEXH are optional and independent of the above condition.
+                  Transaction  IR/FX/EQ/CO - O."]
+        if cftcGuidebook -> assetClass = "CRDT" then
+        (
+            if fixedRateLeg1 is absent and fixedRateLeg2 is absent and spreadLeg1 is absent and spreadLeg2 is absent then otherPayment -> paymentType any = "UFRO"
+        )
+
+    condition PaymentFrequencyPeriodCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "63" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: M
+                Transaction - IR: C if UPI.[Instrument type] = Swap, else {blank}, When populated with EXPI, [Payment frequency period multiplier] must be 1.
+                Transaction - EQ/CO: O."]
+        True and True
+    
+    condition PaymentFrequencyPeriodMultiplierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "64" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Payment frequency period] <> ADHO, else {blank}"]
+        if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] then
+            (
+                (if fixedRatePaymentFrequencyPeriodLeg1 exists and fixedRatePaymentFrequencyPeriodLeg1 <> "ADHO" then fixedRatePaymentFrequencyPeriodMultiplierLeg1 exists
+                else if floatingRatePaymentFrequencyPeriodLeg1 exists and floatingRatePaymentFrequencyPeriodLeg1 <> "ADHO" then floatingRatePaymentFrequencyPeriodMultiplierLeg1 exists
+                else fixedRatePaymentFrequencyPeriodMultiplierLeg1 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg1 is absent) and 
+                (if fixedRatePaymentFrequencyPeriodLeg2 exists and fixedRatePaymentFrequencyPeriodLeg2 <> "ADHO" then fixedRatePaymentFrequencyPeriodMultiplierLeg2 exists
+                else if floatingRatePaymentFrequencyPeriodLeg2 exists and floatingRatePaymentFrequencyPeriodLeg2 <> "ADHO" then floatingRatePaymentFrequencyPeriodMultiplierLeg2 exists
+                else fixedRatePaymentFrequencyPeriodMultiplierLeg2 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg2 is absent)
+            )
+        else fixedRatePaymentFrequencyPeriodMultiplierLeg1 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg1 is absent and
+        fixedRatePaymentFrequencyPeriodMultiplierLeg2 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg2 is absent
+
+//Prices category validation logic
+    condition ExchangeRateCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "65" validationRule "Transaction"
+      provision "Transaction - FX: Mandatory"]
+        if cftcGuidebook -> assetClass = "CURR" then exchangeRateLeg1 exists
+        else exchangeRateLeg1 is absent
+    
+    condition ExchangeRateBasisCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "66" validationRule "Transaction"
+      provision "Transaction - FX: Mandatory"]
+        if cftcGuidebook -> assetClass = "CURR" then exchangeRateBasis exists
+        else exchangeRateBasis is absent
+
+    condition FixedRateCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "67" validationRule "Transaction"
+      provision "Transaction - CR: C if [Spread] is not populated and [Other payment type] <> UFRO, and [Post-priced swap indicator] = False, and UPI.[Instrument           type] <> Option, else {blank}.
+                Transaction - IR: C if [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                Transaction - CO: C if [Price] or [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}."]
+        if cftcGuidebook -> assetClass = "CRDT" and spreadLeg1 is absent and spreadLeg2 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else if cftcGuidebook -> assetClass = "INTR" and (spreadLeg1 is absent and spreadLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else if cftcGuidebook -> assetClass = "COMM" and ((price is absent or (spreadLeg1 is absent and spreadLeg2 is absent)) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else fixedRateLeg1 is absent and fixedRateLeg2 is absent
+
+    condition PriceCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "69" validationRule "Transaction"
+      provision "Transaction - EQ: C if [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                 Transaction - CO: C if ([Fixed rate] or [Spread] is not populated) and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}."]
+        if cftcGuidebook -> assetClass = "EQUI" and spreadLeg1 is absent and spreadLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then price exists
+        else if cftcGuidebook -> assetClass = "COMM" and ((fixedRateLeg1 is absent and fixedRateLeg2 is absent) or (spreadLeg1 is absent and spreadLeg2 is absent)) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then price exists
+        else price is absent
+    
+    condition PriceCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "70" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price notation] = 1, else {blank}."]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and priceNotation = "1" then priceCurrency exists
+        else priceCurrency is absent
+
+    condition PriceNotationCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "71" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price] is populated, else {blank}."]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and price exists then priceNotation exists
+        else priceNotation is absent
+    
+    condition PriceUnitOfMesureCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "72" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price] is populated, else {blank}"]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and price exists then priceUnitOfMeasure exists
+        else priceUnitOfMeasure is absent
+        
+    condition SpreadCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "73" validationRule "Transaction"
+      provision "Transaction - CR: C if [Fixed rate] is not populated and [Other payment type] <> UFRO, and [Post-priced swap indicator] = False, and           UPI.[Instrument type] <> Option, else {blank}
+                Transaction - IR: C if [Fixed rate] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                Transaction - EQ: C if [Price] is not populated, and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.Abs
+                Transaction - CO: C if [Price] or [Fixed rate] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}"]
+        //TH first proposal - review pending
+        if cftcGuidebook -> assetClass = "CRDT" then  
+            (if fixedRateLeg1 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if fixedRateLeg2 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg2 exists)
+        else if cftcGuidebook -> assetClass = "INTR" then 
+            (if fixedRateLeg1 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if fixedRateLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg2 exists)
+        else if cftcGuidebook -> assetClass = "EQUI" and (price is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then spreadLeg1 exists or spreadLeg2 exists
+        else if cftcGuidebook -> assetClass = "COMM" then
+            (if (price is absent or fixedRateLeg1 is absent) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if (price is absent or fixedRateLeg2 is absent) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then  spreadLeg2 exists)
+        else spreadLeg1 is absent and spreadLeg2 is absent
+
+    condition SpreadCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "74" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Spread notation] = 1, else {blank}"]
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadNotationLeg1 = "1" then spreadCurrencyLeg1 exists
+         else spreadCurrencyLeg1 is absent) and 
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadNotationLeg2 = "1" then spreadCurrencyLeg2 exists
+        else spreadCurrencyLeg2 is absent)
+     
+    condition SpreadNotationCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "75" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Spread] is populated, else {blank}"]
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadLeg1 exists then spreadNotationLeg1 exists
+        else spreadNotationLeg1 is absent) and 
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadLeg2 exists then spreadNotationLeg2 exists
+        else spreadNotationLeg2 is absent)
+    
+    condition StrikePriceCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "76" validationRule "Transaction"
+      provision "C if [Post-priced swap indicator] = False and UPI.[Instrument type] = Option, else {blank}."]
+        if postPricedSwapIndicator = False and cftcGuidebook -> optionStyle exists then strikePrice exists
+        else strikePrice is absent
+
+    condition StrikePriceCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "77" validationRule "Transaction"
+      provision "C if [Strike price notation] = 1, else {blank}"]
+        if strikePriceNotation = "1" then strikePriceCurrency exists
+        else strikePriceCurrency is absent
+
+    condition StrikePriceNotationCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "78" validationRule "Transaction"
+      provision "C if [Strike price] is populated, else {blank}"]
+        if strikePrice exists then strikePriceNotation exists
+        else strikePriceNotation is absent
+
+    condition OptionPremiumAmountCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "79" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}."]
+        if cftcGuidebook -> optionStyle exists then optionPremiumAmount exists
+        else optionPremiumAmount is absent
+
+    condition OptionPremiumCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "80" validationRule "Transaction"
+      provision "C if [Option premium amount] > 0, else {blank}"]
+        if optionPremiumAmount > 0 then optionPremiumCurrency exists
+        else optionPremiumCurrency is absent
+
+    condition FirstExerciseDateCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "82" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}."]
+        if cftcGuidebook -> optionStyle exists then firstExerciseDate exists
+        else firstExerciseDate is absent
+
+//Product category validation logic
+    condition IndexFactorCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "85" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: C if UPI.[Underlying asset/contract type] = Index or Index tranche, else {blank}"]
+        True and True
+
+    condition SettlementCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "89" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "C if UPI.[Delivery type] = Cash, else {blank}"]
+        True and True
+
+//Transaction Related category validation logic    
+    condition NonStandardizedTermIndicatorCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "92" validationRule "Transaction"
+      provision "C if [Cleared] = N; NR if [Cleared] = Y or I"]
+        if cleared = "N" then nonStandardizedTermIndicator exists
+        else if cleared = "I" or cleared = "Y" then nonStandardizedTermIndicator is absent
+
+    /*condition ExpirationDateCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "95" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, when populated, the value shall be equal to or later than the value in [Effective date]"]*/
+
+    /*condition ReportingTimestampCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "97" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, the value shall be equal to or later than the value in [Execution timestamp]"]*/  
+
+    condition PlatformIdentifierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "98" validationRule "Transaction"
+      provision "C if [Cleared] = N or I; NR if [Cleared] = Y"] 
+        if cleared = "N" or cleared = "I" then platformIdentifier exists
+        else if cleared = "Y" then platformIdentifier is absent
+
+    condition PrimeBrokerageTransactionIndicatorCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "99" validationRule "Transaction"
+      provision "C if [Cleared] = N or I; NR if [Cleared] = Y"] 
+        if cleared = "N" or cleared = "I" then primeBrokerageTransactionIndicator exists
+        else if cleared = "Y" then primeBrokerageTransactionIndicator is absent
+
+    condition UniqueSwapIdentifierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "102" validationRule "Transaction"
+      provision "C if [Unique transaction identifier (UTI)] is not populated, else {blank}"] 
+        if uniqueTransactionIdentifier is absent then uniqueSwapIdentifier exists
+        else uniqueSwapIdentifier is absent
+
+    condition UniqueTransactionIdentifierCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "103" validationRule "Transaction"
+      provision "C if [Unique swap identifier (USI)] is not populated, else {blank}"] 
+        if uniqueSwapIdentifier is absent then uniqueTransactionIdentifier exists
+        else uniqueTransactionIdentifier is absent
+
+
+type CFTCGuidebookPart43 :
+    optionType string (0..1)
+        [ruleReference OptionType]
+    optionStyle string (0..1)
+        [ruleReference OptionStyle]
+    assetClass string (1..1)
+        [ruleReference AssetClass]
+    clearable boolean (1..1)
+       [ruleReference MandatoryClearable]
+    eventTimestamp zonedDateTime (1..1)
+        [ruleReference EventTimestampDemonstration]
+    maturityDateOfTheUnderlier date (0..1)
+        [ruleReference MaturityDateOfTheUnderlier]
+    sefOrDcmIndicator boolean (1..1)
+        [ruleReference SefOrDcmIndicator]
+    sefOrDcmAnonymousExecutionIndicator boolean (1..1)
+        [ruleReference SefOrDcmAnonymousExecutionIndicator]
+    messageType string (1..1)
+        [ruleReference MessageTypeRealTime]
+    sdMspIndicatorParty1 string (1..1)
+        [ruleReference SdMspIndicatorParty1]
+    sdMspIndicatorParty2 string (1..1)
+        [ruleReference SdMspIndicatorParty2]
+    physicalCommodityIndicator string (1..1)
+        [ruleReference PhysicalCommodityIndicator]
+
+type CFTCPart45TransactionReport:
+    [rootType]
+    cleared string (1..1)
+        [ruleReference Cleared]
+    centralCounterparty string (0..1)
+        [ruleReference CentralCounterparty]
+    clearingAccountOrigin string (0..1)
+        [ruleReference ClearingAccountOrigin]
+    clearingMember string (0..1)
+        [ruleReference ClearingMember]
+    clearingSwapUSIs ClearingSwapUSIsReport (0..*)
+        [ruleReference ClearingSwapUSIs]
+    clearingSwapUTIs ClearingSwapUTIsReport (0..*)
+        [ruleReference ClearingSwapUTIs]
+    originalSwapUSI string (0..1)
+        [ruleReference OriginalSwapUSI]
+    originalSwapUTI string (0..1)
+        [ruleReference OriginalSwapUTI]
+    originalSwapSDRIdentifier string (0..1)
+        [ruleReference OriginalSwapSDRIdentifier]
+    clearingReceiptTimestamp zonedDateTime (0..1)
+        [ruleReference ClearingReceiptTimestamp]
+    //TH WiP -> defined as repeatable field in spec
+    clearingExceptionsAndExemptionsCounterparty1 ClearingExceptionsAndExemptionsCounterparty1Report (0..*)
+        [ruleReference ClearingExceptionsAndExemptionsCounterparty1]
+    clearingExceptionsAndExemptionsCounterparty2 ClearingExceptionsAndExemptionsCounterparty2Report (0..*)
+        [ruleReference ClearingExceptionsAndExemptionsCounterparty2]
+    //End TH WiP
+    counterparty1 string (1..1)
+        [ruleReference Counterparty1]
+    counterparty2 string (1..1)
+        [ruleReference Counterparty2]
+    counterparty2IdentifierSource string (1..1)
+        [ruleReference Counterparty2IdentifierSource]
+    counterparty1FinancialEntityIndicator boolean (0..1)
+        [ruleReference Counterparty1FinancialEntityIndicator]
+    counterparty2FinancialEntityIndicator boolean (1..1)
+        [ruleReference Counterparty2FinancialEntityIndicator]
+    buyerIdentifier string (0..1)
+        [ruleReference BuyerIdentifier]
+    sellerIdentifier string (0..1)
+        [ruleReference SellerIdentifier]
+    payerIdentifierLeg1 string (0..1)
+        [ruleReference PayerIdentifierLeg1]
+    payerIdentifierLeg2 string (0..1)
+        [ruleReference PayerIdentifierLeg2]
+    receiverIdentifierLeg1 string (0..1)
+        [ruleReference ReceiverIdentifierLeg1]
+    receiverIdentifierLeg2 string (0..1)
+        [ruleReference ReceiverIdentifierLeg2]
+    submitterIdentifier string (1..1)
+        [ruleReference SubmitterIdentifier]
+    counterparty1FederalEntityIndicator boolean (1..1)
+        [ruleReference Counterparty1FederalEntityIndicator]
+    counterparty2FederalEntityIndicator boolean (1..1)
+        [ruleReference Counterparty2FederalEntityIndicator]
+    customBasketIndicator boolean (1..1)
+        [ruleReference CustomBasketIndicator]
+    actionType string (1..1)
+        [ruleReference ActionType]
+    eventType string (0..1)
+        [ruleReference EventType]
+    amendmentIndicator string (0..1)
+        [ruleReference AmendmentIndicator]
+    eventIdentifier string (0..1)
+        [ruleReference EventIdentifier]
+    eventTimestamp zonedDateTime (1..1)
+        [ruleReference EventTimestamp]
+    notionalAmountLeg1 number (0..1)
+        [ruleReference NotionalAmountLeg1]
+    notionalAmountLeg2 number (0..1)
+        [ruleReference NotionalAmountLeg2]
+    notionalCurrencyLeg1 string (0..1)
+        [ruleReference NotionalCurrencyLeg1]
+    notionalCurrencyLeg2 string (0..1)
+        [ruleReference NotionalCurrencyLeg2]
+    notionalAmountScheduleLeg1 NotionalAmountScheduleLeg1Report (0..*)
+        [ruleReference NotionalAmountScheduleLeg1]
+    notionalAmountScheduleLeg2 NotionalAmountScheduleLeg2Report (0..*)
+        [ruleReference NotionalAmountScheduleLeg2]
+    callAmount number (0..1)
+        [ruleReference CallAmount]
+    callCurrency string (0..1)
+        [ruleReference CallCurrency]
+    putAmount number (0..1)
+        [ruleReference PutAmount]
+    putCurrency string (0..1)
+        [ruleReference PutCurrency]
+    notionalQuantityLeg1 number (0..1)
+        [ruleReference NotionalQuantityLeg1]
+    notionalQuantityLeg2 number (0..1)
+        [ruleReference NotionalQuantityLeg2]
+    quantityFrequencyLeg1 string (0..1)
+        [ruleReference QuantityFrequencyLeg1]
+    quantityFrequencyLeg2 string (0..1)
+        [ruleReference QuantityFrequencyLeg2]
+    quantityFrequencyMultiplierLeg1 int (0..1)
+        [ruleReference QuantityFrequencyMultiplierLeg1]
+    quantityFrequencyMultiplierLeg2 int (0..1)
+        [ruleReference QuantityFrequencyMultiplierLeg2]
+    quantityUnitOfMeasureLeg1 string (0..1)
+        [ruleReference QuantityUnitOfMeasureLeg1]
+    quantityUnitOfMeasureLeg2 string (0..1)
+        [ruleReference QuantityUnitOfMeasureLeg2]
+    totalNotionalQuantityLeg1 number (0..1)
+        [ruleReference TotalNotionalQuantityLeg1]
+    totalNotionalQuantityLeg2 number (0..1)
+        [ruleReference TotalNotionalQuantityLeg2]
+    packageIndicator boolean (1..1)
+        [ruleReference PackageIndicator]
+    packageIdentifier string (0..1)
+        [ruleReference PackageIdentifier]
+    packageTransactionPrice PackageTransactionPriceReport (0..*)    
+        [ruleReference PackageTransactionPrice]
+    packageTransactionSpreadLeg1 PackageTransactionSpreadLeg1Report (0..*)      
+        [ruleReference PackageTransactionSpreadLeg1]
+    packageTransactionSpreadLeg2 PackageTransactionSpreadLeg2Report (0..*)      
+        [ruleReference PackageTransactionSpreadLeg2]
+    fixedRateDayCountConventionLeg1 string (0..1)
+        [ruleReference FixedRateDayCountConventionLeg1]
+    fixedRateDayCountConventionLeg2 string (0..1)
+        [ruleReference FixedRateDayCountConventionLeg2]
+    floatingRateDayCountConventionLeg1 string (0..1)
+        [ruleReference FloatingRateDayCountConventionLeg1]
+    floatingRateDayCountConventionLeg2 string (0..1)
+        [ruleReference FloatingRateDayCountConventionLeg2]
+    fixingDateLeg1 date (0..1)
+        [ruleReference FixingDateLeg1]
+	fixingDateLeg2 date (0..1)
+        [ruleReference FixingDateLeg2]
+    floatingRateResetFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodLeg1]
+    floatingRateResetFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodLeg2]
+    floatingRateResetFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg1]
+    floatingRateResetFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FloatingRateResetFrequencyPeriodMultiplierLeg2]
+    otherPayment OtherPaymentReport (0..*)
+        [ruleReference OtherPayment]
+    fixedRatePaymentFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg1]
+    fixedRatePaymentFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodLeg2]
+    floatingRatePaymentFrequencyPeriodLeg1 string (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg1]
+    floatingRatePaymentFrequencyPeriodLeg2 string (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodLeg2]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg1]
+    fixedRatePaymentFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FixedRatePaymentFrequencyPeriodMultiplierLeg2]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg1 int (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg1]
+    floatingRatePaymentFrequencyPeriodMultiplierLeg2 int (0..1)
+        [ruleReference FloatingRatePaymentFrequencyPeriodMultiplierLeg2]
+    exchangeRateLeg1 number (0..1)
+        [ruleReference ExchangeRateLeg1]
+    exchangeRateBasis string (0..1)
+        [ruleReference ExchangeRateBasis]
+    fixedRateLeg1 number (0..1)
+        [ruleReference FixedRateLeg1]
+    fixedRateLeg2 number (0..1)
+        [ruleReference FixedRateLeg2]
+    postPricedSwapIndicator boolean (1..1)
+        [ruleReference PostPricedSwapIndicator]
+    price number (0..1)
+        [ruleReference Price]
+    priceCurrency string (0..1)
+        [ruleReference PriceCurrency]
+    priceNotation string (0..1)
+        [ruleReference PriceNotation]
+    priceUnitOfMeasure string (0..1)
+        [ruleReference PriceUnitOfMeasure]
+    spreadLeg1 number (0..1)
+        [ruleReference SpreadLeg1]
+    spreadLeg2 number (0..1)
+        [ruleReference SpreadLeg2]
+    spreadCurrencyLeg1 string (0..1)
+        [ruleReference SpreadCurrencyLeg1]
+    spreadCurrencyLeg2 string (0..1)
+        [ruleReference SpreadCurrencyLeg2]
+    spreadNotationLeg1 string (0..1)
+        [ruleReference SpreadNotationLeg1]
+    spreadNotationLeg2 string (0..1)
+        [ruleReference SpreadNotationLeg2]
+    strikePrice number (0..1)
+        [ruleReference StrikePrice]
+    strikePriceCurrency string (0..1)
+        [ruleReference StrikePriceCurrency]
+    strikePriceNotation string (0..1)
+        [ruleReference StrikePriceNotation]
+    optionPremiumAmount number (0..1)
+        [ruleReference OptionPremiumAmount]
+    optionPremiumCurrency string (0..1)
+        [ruleReference OptionPremiumCurrency]
+    optionPremiumPaymentDate date (0..1)
+        [ruleReference OptionPremiumPaymentDate]
+    firstExerciseDate date (0..1)
+        [ruleReference FirstExerciseDate]
+    cDSIndexAttachmentPoint number (0..1)
+        [ruleReference CDSIndexAttachmentPoint]
+    cDSIndexDetachmentPoint number (0..1)
+        [ruleReference CDSIndexDetachmentPoint]
+    indexFactor number (0..1)
+        [ruleReference IndexFactor]
+    embeddedOptionType string (0..1)
+        [ruleReference EmbeddedOptionType]
+    uniqueProductIdentifier string (0..1)
+        [ruleReference UniqueProductIdentifier]
+    finalContractualSettlementDate date (1..1)
+        [ruleReference FinalContractualSettlementDate]
+    settlementCurrencyLeg1 string (0..1)
+        [ruleReference SettlementCurrencyLeg1]
+    settlementCurrencyLeg2 string (0..1)
+        [ruleReference SettlementCurrencyLeg2]
+    settlementLocationLeg1 string (0..1)
+        [ruleReference SettlementLocationLeg1]
+    settlementLocationLeg2 string (0..1)
+        [ruleReference SettlementLocationLeg2]
+	allocationIndicator string (1..1)
+        [ruleReference AllocationIndicator]
+    nonStandardizedTermIndicator boolean (0..1)
+        [ruleReference NonStandardizedTermIndicator]
+    blockTradeElectionIndicator boolean (1..1)
+        [ruleReference BlockTradeElectionIndicator]
+    effectiveDate date (1..1)
+        [ruleReference EffectiveDate]
+    expirationDate date (1..1)
+        [ruleReference ExpirationDate]
+    executionTimestamp zonedDateTime (1..1)
+        [ruleReference ExecutionTimestamp]
+    reportingTimestamp zonedDateTime (1..1)
+        [ruleReference ReportingTimestamp]
+    platformIdentifier string (0..1)
+        [ruleReference PlatformIdentifier]
+    primeBrokerageTransactionIndicator boolean (0..1)
+        [ruleReference PrimeBrokerageTransactionIndicator]
+    priorUSI string (0..1)
+        [ruleReference PriorUSI]
+    priorUTI string (0..1)
+        [ruleReference PriorUTI]
+    uniqueSwapIdentifier string (0..1)
+        [ruleReference UniqueSwapIdentifier]
+    uniqueTransactionIdentifier string (0..1)
+        [ruleReference UniqueTransactionIdentifier]
+    jurisdiction string (1..1)
+        [ruleReference Jurisdiction]
+    newSDRIdentifier string (0..1)
+        [ruleReference NewSDRIdentifier]
+    initialMarginCollateralPortfolioCode string (1..1)
+        [ruleReference InitialMarginCollateralPortfolioCode]
+    variationMarginCollateralPortfolioCode string (1..1)
+        [ruleReference VariationMarginCollateralPortfolioCode]
+    cftcGuidebook CFTCGuidebookPart45 (1..1)
+
+
+//Clearing category validation logic
+    condition CentralCounterpartyCondition:
+        [docReference CFTC Part45 appendix "1" dataElement "2" validationRule "Transaction"
+		provision "C if [Cleared] = Y, When populated, the value shall match the value in [Counterparty 1 (reporting counterparty)];NR if [Cleared] = N or I"]
+        if cleared="Y" and centralCounterparty exists then centralCounterparty = counterparty1
+        else if cleared="I" or cleared="N" then centralCounterparty is absent
+
+    condition ClearingAcountOriginCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "3" validationRule "Transaction"
+		provision "C if [Cleared] = Y; NR if [Cleared] = N or I"]
+        if cleared="Y" then clearingAccountOrigin exists
+        else if cleared="I" or cleared="N" then clearingAccountOrigin is absent
+
+    condition ClearerMemberCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "4" validationRule "Transaction"
+		provision "C if [Cleared] = Y; NR if [Cleared] = N or I"]
+        if cleared="Y" then clearingMember exists
+        else if cleared="I" or cleared="N" then clearingMember is absent
+
+    condition ClearingSwapUSICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "5" validationRule "Transaction"
+    	provision "C if ([Cleared] = Y or ([Cleared] = I and [Action type] = TERM)) and [Event type] = CLRG and [Clearing swap UTIs] is not populated, else {blank}; NR if [Cleared] = N"]
+        if (cleared="Y" or (cleared = "I" and actionType = "TERM")) and eventType = "CLRG" then
+            (
+                if clearingSwapUSIs is absent then clearingSwapUTIs exists
+                else if clearingSwapUSIs exists then clearingSwapUTIs is absent
+            )
+        else clearingSwapUSIs is absent
+
+    condition ClearingSwapUTICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "6" validationRule "Transaction"
+    	provision "C if ([Cleared] = Y or ([Cleared] = I and [Action type] = TERM)) and [Event type] = CLRG and [Clearing swap USIs] is not populated, else {blank}; NR if [Cleared] = N"]
+        if (cleared="Y" or (cleared = "I" and actionType = "TERM")) and eventType = "CLRG" then
+            (
+                if clearingSwapUTIs is absent then clearingSwapUSIs exists
+                else if clearingSwapUTIs exists then clearingSwapUSIs is absent
+            )
+        else clearingSwapUTIs is absent
+
+    condition OriginalSwapUSICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "7" validationRule "Transaction"
+    provision "C if ([Cleared] = Y and [Action type] = NEWT and [Event type] = CLRG) and [Original Swap UTI] is not populated, else {blank}; NR if [Cleared] = N or I"]
+        if cleared = "Y" and actionType = "NEWT" and eventType = "CLRG" then
+            (
+                if originalSwapUSI is absent then originalSwapUTI exists
+                else if originalSwapUSI exists then originalSwapUTI is absent
+            )
+        else originalSwapUSI is absent
+
+    condition OriginalSwapUTICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "8" validationRule "Transaction"
+    provision "C if ([Cleared] = Y and [Action type] = NEWT and [Event type] = CLRG) and [Original Swap USI] is not populated, else {blank}; NR if [Cleared] = N or I"]
+        if cleared = "Y" and actionType = "NEWT" and eventType = "CLRG" then
+            (
+                if originalSwapUTI is absent then originalSwapUSI exists
+                else if originalSwapUTI exists then originalSwapUSI is absent
+            )
+        else originalSwapUTI is absent
+
+    condition OriginalSwapSDRidentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "9" validationRule "Transaction"
+    provision "C if ([Cleared] = Y or ([Cleared] = I [Action type] = TERM)) and [Event type] = CLRG, else {blank}; NR if [Cleared] = N"]
+        if (cleared = "Y" or (cleared="I" and actionType = "TERM")) and eventType = "CLRG" then
+            originalSwapSDRIdentifier exists
+        else originalSwapSDRIdentifier is absent
+
+    condition ClearingReceiptTimestampCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "10" validationRule "Transaction"
+    provision "C if ([Cleared] = Y or ([Cleared] = I and [Action type] = TERM)) and [Event type] = 'CLRG', else {blank}; NR if [Cleared] = N"]
+        if cleared="Y" or (cleared = "I" and actionType = "TERM") and eventType = "CLRG" then
+            clearingReceiptTimestamp exists
+        else clearingReceiptTimestamp is absent
+
+    condition ClearingExceptionsAndExemptions1Condition:
+    [docReference CFTC Part45 appendix "1" dataElement "11" validationRule "Transaction"
+      provision "O if [Cleared] = N; NR if [Cleared] = Y or I"]
+        if cleared="Y" or cleared="I" then clearingExceptionsAndExemptionsCounterparty1 is absent
+
+    condition ClearingExceptionsAndExemptions2Condition:
+    [docReference CFTC Part45 appendix "1" dataElement "12" validationRule "Transaction"
+      provision "O if [Cleared] = N; NR if [Cleared] = Y or I"]
+        if cleared="Y" or cleared="I" then clearingExceptionsAndExemptionsCounterparty2 is absent
+
+//Counterparty category validation logic
+    condition Counterparty1FinancialEntityIndicatorCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "16" validationRule "Transaction"
+      provision "C if [Cleared] = N or I; NR if [Cleared] = Y"]
+        if cleared="N" or cleared="I" then counterparty1FinancialEntityIndicator exists
+        else if cleared="Y" then counterparty1FinancialEntityIndicator is absent
+
+    condition BuyerIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "18" validationRule "Transaction"
+      provision "C if [Payer identifier] and [Receiver identifier] are not populated, else {blank}; 
+      When populated, the value shall match the value in [Counterparty 1 (reporting counterparty)] or [Counterparty 2]"]
+        if (payerIdentifierLeg1 is absent and payerIdentifierLeg2 is absent) and (receiverIdentifierLeg1 is absent and receiverIdentifierLeg2 is absent) then (buyerIdentifier exists and (buyerIdentifier = counterparty1 or  buyerIdentifier = counterparty2))
+        else buyerIdentifier is absent
+
+    condition SellerIdentifierCondition:
+     [docReference CFTC Part45 appendix "1" dataElement "19" validationRule "Transaction"
+      provision "C if [Payer identifier] and [Receiver identifier] are not populated, else {blank};
+      When populated, the value shall match the value in [Counterparty 1 (reporting counterparty)] or [Counterparty 2]"]
+        if (payerIdentifierLeg1 is absent and payerIdentifierLeg2 is absent) and 
+           (receiverIdentifierLeg1 is absent and receiverIdentifierLeg2 is absent) then
+            (sellerIdentifier exists and (sellerIdentifier = counterparty1 or sellerIdentifier = counterparty2))
+        else sellerIdentifier is absent
+
+    condition PayerIdentifierCondition:
+      [docReference CFTC Part45 appendix "1" dataElement "20" validationRule "Transaction"
+      provision "C if [Buyer identifier] and [Seller identifier] are not populated, else {blank};
+      When populated, the value shall match the value in [Counterparty 1 (reporting counterparty)] or [Counterparty 2]"]
+        if buyerIdentifier is absent and sellerIdentifier is absent then
+            (
+                (if payerIdentifierLeg1 exists then payerIdentifierLeg1 any = [counterparty1, counterparty2]) and
+                (if payerIdentifierLeg2 exists then payerIdentifierLeg2 any = [counterparty1, counterparty2])
+            )
+        else payerIdentifierLeg1 is absent and payerIdentifierLeg2 is absent
+
+    condition ReceiverIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "21" validationRule "Transaction"
+      provision "C if [Buyer identifier] and [Seller identifier] are not populated, else {blank};
+      When populated, the value shall match the value in [Counterparty 1 (reporting counterparty)] or [Counterparty 2]"]
+        if buyerIdentifier is absent and sellerIdentifier is absent then
+            (
+                (if receiverIdentifierLeg1 exists then receiverIdentifierLeg1 any = [counterparty1,  counterparty2]) and
+                (if receiverIdentifierLeg2 exists then receiverIdentifierLeg2 any = [counterparty1,  counterparty2])
+            )
+        else receiverIdentifierLeg1 is absent and receiverIdentifierLeg2 is absent
+ 
+//Events category validation logic
+    condition EventTypeCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "27" validationRule "Transaction"
+      provision "C, for valid Action type and Event type Combination, see table in Appendix F."]
+        if actionType = "NEWT" then eventType any = ["TRAD", "NOVA", "COMP", "CLRG", "EXER", "ALOC", "CLAL", "PTNG", "CORP"]
+        else if actionType = "MODI" then eventType any = ["TRAD", "NOVA", "COMP", "EXER", "ALOC", "CREV", "CORP", "UPDT"]
+        else if actionType = "TERM" then eventType any = ["NOVA", "COMP", "ETRM", "CLRG", "EXER", "ALOC", "CLAL", "CREV", "CORP"]
+        else if actionType = "PRTO" then eventType = "PTNG"
+        else actionType any = ["CORR", "EROR", "REVI", "VALU", "MARU"] and eventType is absent
+
+    condition AmendmentIndicatorCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "28" validationRule "Transaction"
+      provision "C if [Action type] = MODI, else {blank}"]
+        if actionType = "MODI" then amendmentIndicator exists
+        else amendmentIndicator is absent
+
+    condition EventIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "29" validationRule "Transaction"
+      provision "C if [Event type] = COMP or CREV, else {blank}"]
+        if eventType any = ["COMP", "CREV"] then eventIdentifier exists
+        else eventIdentifier is absent
+
+    /*condition EventTimestampCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "30" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, the value shall be equal to or later than the value in [Execution timestamp]"]*/
+       
+//Notional amounts and quantities category validation logic
+    condition NotionalAmountCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "31" validationRule "Transaction"
+        provision "M, if UPI.[Instrument type] = Option, the value shall match the value in Call amount or Put amount"]
+        if cftcGuidebook -> optionStyle exists then
+        (
+            (if notionalAmountLeg1 exists then notionalAmountLeg1 any = [callAmount, putAmount]) and
+            (if notionalAmountLeg2 exists then notionalAmountLeg1 any = [callAmount, putAmount])
+        )
+
+    condition NotionalCurrencyCondition:
+    [docReference CFTC Part43 appendix "1" dataElement "32" validationRule "Transaction"
+      provision "M, if UPI.[Instrument type] = Option, the value shall match the value in Call Currency or Put Currency"]
+        if cftcGuidebook -> optionStyle exists then
+            (
+                (if notionalCurrencyLeg1 exists then notionalCurrencyLeg1 any =[callCurrency, putCurrency]) and 
+                (if notionalCurrencyLeg2 exists then notionalCurrencyLeg2 any =[callCurrency, putCurrency])
+            )
+    
+    condition NotionalAmountScheduleCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "33" validationRule "Transaction"
+      rationale "Not modelled until UPI exists in Part 45."
+      provision "Transaction-IR: C if UPI.[Notional schedule] <> Constant, else {blank}"]
+        True and True
+    
+    condition CallAmountCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "36" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}"]
+        if cftcGuidebook -> optionStyle exists then callAmount exists
+        else callAmount is absent
+
+    condition CallCurrencyCondition:
+        [docReference CFTC Part45 appendix "1" dataElement "37" validationRule "Transaction"
+        provision "C if [Call amount] is populated, else {blank}"]
+            if callAmount exists then callCurrency exists
+            else callCurrency is absent
+
+    condition PutAmountCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "38" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}"]
+        if cftcGuidebook -> optionStyle exists then putAmount exists
+        else putAmount is absent
+    
+    condition PutCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "39" validationRule "Transaction"
+      provision "C if [Put amount] is populated, else {blank}"]
+        if putAmount exists then putCurrency exists
+        else putCurrency is absent
+
+    condition NotionalQuantityCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "40" validationRule "Transaction"
+      provision "Transaction-CO: Optional"]
+      if cftcGuidebook -> assetClass <> "COMM" then notionalQuantityLeg1 is absent and notionalQuantityLeg2 is absent
+    
+    condition QuantityFrequencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "41" validationRule "Transaction"
+      provision "Transaction-CO: C if [Notional quantity] is populated, else {blank}"]
+      if cftcGuidebook -> assetClass = "COMM" then 
+            (
+                (if notionalQuantityLeg1 exists then quantityFrequencyLeg1 exists) and
+                (if notionalQuantityLeg1 is absent then quantityFrequencyLeg1 is absent) and
+                (if notionalQuantityLeg2 exists then quantityFrequencyLeg2 exists) and
+                (if notionalQuantityLeg2 is absent then quantityFrequencyLeg2 is absent)
+            )
+        else quantityFrequencyLeg1 is absent and quantityFrequencyLeg2 is absent 
+
+    condition QuantityFrequencyMultiplierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "42" validationRule "Transaction"
+        provision "Transaction-CO: C if [Quantity frequency] <> ONDE or ADHO, else {blank}"]
+         if cftcGuidebook -> assetClass = "COMM" then 
+            (
+                (if quantityFrequencyLeg1 exists and quantityFrequencyLeg1 any <> ["ONDE", "ADHO"] then quantityFrequencyMultiplierLeg1 exists
+                else quantityFrequencyMultiplierLeg1 is absent) and
+                (if quantityFrequencyLeg2 exists and quantityFrequencyLeg2 any <> ["ONDE", "ADHO"] then quantityFrequencyMultiplierLeg2 exists
+                else quantityFrequencyMultiplierLeg2 is absent)      
+            )
+        else quantityFrequencyMultiplierLeg1 is absent and quantityFrequencyMultiplierLeg2 is absent
+
+    condition QuantityUnitOfMeasureCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "43" validationRule "Transaction"
+      provision "Transaction-EQ/CO: Mandatory"]
+        if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then quantityUnitOfMeasureLeg1 exists or quantityUnitOfMeasureLeg2 exists
+        else quantityUnitOfMeasureLeg1 is absent and quantityUnitOfMeasureLeg2 is absent
+
+    condition TotalNotionalQuantityCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "44" validationRule "Transaction"
+      provision "Transaction-EQ/CO: Mandatory"]
+        if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then totalNotionalQuantityLeg1 exists or totalNotionalQuantityLeg2 exists 
+        else totalNotionalQuantityLeg1 is absent and totalNotionalQuantityLeg2 is absent 
+    
+//Packages category validation logic
+    condition PackageIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "46" validationRule "Transaction"
+      provision "C if [Package indicator] = True, else {blank}"]
+        if packageIndicator = True then packageIdentifier exists
+        else packageIdentifier is absent
+
+    condition PackageTransactionPriceCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "47" validationRule "Transaction"
+      provision "C if [Package indicator] = True and [Package transaction spread] is not populated, else {blank}"]
+        if (packageIndicator = True and packageTransactionSpreadLeg1 is absent and packageTransactionSpreadLeg2 is absent) then packageTransactionPrice exists
+        else packageTransactionPrice is absent
+    
+    condition PackageTransactionSpreadCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "50" validationRule "Transaction"
+      provision "C if [Package indicator] = True and [Package transaction price] is not populated, else {blank}"]
+      if packageIndicator = True and packageTransactionPrice is absent then packageTransactionSpreadLeg1 exists and packageTransactionSpreadLeg2 exists
+      else packageTransactionSpreadLeg1 is absent and packageTransactionSpreadLeg2 is absent
+
+//Payments category validation logic
+    condition DayCountConventionCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "53" validationRule "Transaction"
+      provision "Transaction-CR/IR: M
+                Transaction-FX: O
+                Transaction-CO/EQ: C if [Payment frequency period] is populated, else {blank}"]
+    if cftcGuidebook -> assetClass any = ["CRDT", "INTR"] then 
+        (fixedRateDayCountConventionLeg1 exists or floatingRateDayCountConventionLeg1 exists) and
+        (fixedRateDayCountConventionLeg2 exists or floatingRateDayCountConventionLeg2 exists)
+    else if cftcGuidebook -> assetClass any = ["COMM", "EQUI"] then 
+        (
+            (if fixedRatePaymentFrequencyPeriodLeg1 exists then fixedRateDayCountConventionLeg1 exists
+            else if floatingRatePaymentFrequencyPeriodLeg1 exists then floatingRateDayCountConventionLeg1 exists
+            else fixedRateDayCountConventionLeg1 is absent and floatingRateDayCountConventionLeg1 is absent) and
+            (if fixedRatePaymentFrequencyPeriodLeg2 exists then fixedRateDayCountConventionLeg2 exists
+            else if floatingRatePaymentFrequencyPeriodLeg2 exists then floatingRateDayCountConventionLeg2 exists
+            else fixedRateDayCountConventionLeg2 is absent and floatingRateDayCountConventionLeg2 is absent)
+        )
+    
+    condition FixingDateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "54" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR/IR/EQ/CO: O
+                Transaction - FX: C if (UPI.[Instrument type] = Forward or Option) and UPI.[Delivery type] = Cash, else {blank}."]
+        True and True
+    
+    condition FloatingRateResetFrequencyPeriodCond:
+    [docReference CFTC Part45 appendix "1" dataElement "55" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR/FX/EQ/CO: O
+                Transaction - IR: C if UPI.[Instrument type] = Swap and UPI.[Underlying asset/contract type]  Fixed - Fixed, else {blank}.
+                When populated with EXPI, [Floating rate reset frequency period multiplier] must be 1."]
+        True and True
+
+    condition FloatingRateResetFrequencyPeriodMultiplierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "56" validationRule "Transaction"
+      provision "C if [Floating rate reset frequency period] <> ADHO, else {blank}"]
+        (if floatingRateResetFrequencyPeriodLeg1 exists and floatingRateResetFrequencyPeriodLeg1 <> "ADHO" then floatingRateResetFrequencyPeriodMultiplierLeg1 exists
+        else floatingRateResetFrequencyPeriodMultiplierLeg1 is absent) and
+        (if floatingRateResetFrequencyPeriodLeg2 exists and floatingRateResetFrequencyPeriodLeg2 <> "ADHO" then floatingRateResetFrequencyPeriodMultiplierLeg2 exists
+        else floatingRateResetFrequencyPeriodMultiplierLeg2 is absent)
+
+    condition OtherPaymentTypeCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "57" validationRule "Transaction"
+      provision "Transaction - CR: C, at least one is required: ([Fixed rate] or [Spread] or [Other payment type] = UFRO. Allowable values UWIN and PEXH are optional and independent of the above condition.
+                  Transaction  IR/FX/EQ/CO - O."]
+        if cftcGuidebook -> assetClass = "CRDT" then
+        (
+            if fixedRateLeg1 is absent and fixedRateLeg2 is absent and spreadLeg1 is absent and spreadLeg2 is absent then otherPayment -> paymentType any = "UFRO"
+        )
+
+    condition PaymentFrequencyPeriodCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "63" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: M
+                Transaction - IR: C if UPI.[Instrument type] = Swap, else {blank}, When populated with EXPI, [Payment frequency period multiplier] must be 1.
+                Transaction - EQ/CO: O."]
+        True and True
+    
+    condition PaymentFrequencyPeriodMultiplierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "64" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Payment frequency period] <> ADHO, else {blank}"]
+        if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] then
+            (
+                (if fixedRatePaymentFrequencyPeriodLeg1 exists and fixedRatePaymentFrequencyPeriodLeg1 <> "ADHO" then fixedRatePaymentFrequencyPeriodMultiplierLeg1 exists
+                else if floatingRatePaymentFrequencyPeriodLeg1 exists and floatingRatePaymentFrequencyPeriodLeg1 <> "ADHO" then floatingRatePaymentFrequencyPeriodMultiplierLeg1 exists
+                else fixedRatePaymentFrequencyPeriodMultiplierLeg1 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg1 is absent) and 
+                (if fixedRatePaymentFrequencyPeriodLeg2 exists and fixedRatePaymentFrequencyPeriodLeg2 <> "ADHO" then fixedRatePaymentFrequencyPeriodMultiplierLeg2 exists
+                else if floatingRatePaymentFrequencyPeriodLeg2 exists and floatingRatePaymentFrequencyPeriodLeg2 <> "ADHO" then floatingRatePaymentFrequencyPeriodMultiplierLeg2 exists
+                else fixedRatePaymentFrequencyPeriodMultiplierLeg2 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg2 is absent)
+            )
+        else fixedRatePaymentFrequencyPeriodMultiplierLeg1 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg1 is absent and
+        fixedRatePaymentFrequencyPeriodMultiplierLeg2 is absent and floatingRatePaymentFrequencyPeriodMultiplierLeg2 is absent
+
+//Prices category validation logic
+    condition ExchangeRateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "65" validationRule "Transaction"
+      provision "Transaction - FX: Mandatory"]
+        if cftcGuidebook -> assetClass = "CURR" then exchangeRateLeg1 exists
+        else exchangeRateLeg1 is absent
+    
+    condition ExchangeRateBasisCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "66" validationRule "Transaction"
+      provision "Transaction - FX: Mandatory"]
+        if cftcGuidebook -> assetClass = "CURR" then exchangeRateBasis exists
+        else exchangeRateBasis is absent
+
+    condition FixedRateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "67" validationRule "Transaction"
+      provision "Transaction - CR: C if [Spread] is not populated and [Other payment type] <> UFRO, and [Post-priced swap indicator] = False, and UPI.[Instrument           type] <> Option, else {blank}.
+                Transaction - IR: C if [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                Transaction - CO: C if [Price] or [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}."]
+        if cftcGuidebook -> assetClass = "CRDT" and spreadLeg1 is absent and spreadLeg2 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else if cftcGuidebook -> assetClass = "INTR" and (spreadLeg1 is absent and spreadLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else if cftcGuidebook -> assetClass = "COMM" and ((price is absent or (spreadLeg1 is absent and spreadLeg2 is absent)) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then fixedRateLeg1 exists or fixedRateLeg2 exists
+        else fixedRateLeg1 is absent and fixedRateLeg2 is absent
+
+    condition PriceCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "69" validationRule "Transaction"
+      provision "Transaction - EQ: C if [Spread] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                 Transaction - CO: C if ([Fixed rate] or [Spread] is not populated) and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}."]
+        if cftcGuidebook -> assetClass = "EQUI" and spreadLeg1 is absent and spreadLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then price exists
+        else if cftcGuidebook -> assetClass = "COMM" and ((fixedRateLeg1 is absent and fixedRateLeg2 is absent) or (spreadLeg1 is absent and spreadLeg2 is absent)) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then price exists
+        else price is absent
+    
+    condition PriceCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "70" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price notation] = 1, else {blank}."]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and priceNotation = "1" then priceCurrency exists
+        else priceCurrency is absent
+
+    condition PriceNotationCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "71" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price] is populated, else {blank}."]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and price exists then priceNotation exists
+        else priceNotation is absent
+    
+    condition PriceUnitOfMesureCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "72" validationRule "Transaction"
+      provision "Transaction - EQ/CO: C if [Price] is populated, else {blank}"]
+        if cftcGuidebook -> assetClass any = ["EQUI", "COMM"] and price exists then priceUnitOfMeasure exists
+        else priceUnitOfMeasure is absent
+        
+    condition SpreadCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "73" validationRule "Transaction"
+      provision "Transaction - CR: C if [Fixed rate] is not populated and [Other payment type] <> UFRO, and [Post-priced swap indicator] = False, and           UPI.[Instrument type] <> Option, else {blank}
+                Transaction - IR: C if [Fixed rate] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.
+                Transaction - EQ: C if [Price] is not populated, and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}.Abs
+                Transaction - CO: C if [Price] or [Fixed rate] is not populated and [Post-priced swap indicator] = False, and UPI.[Instrument type] <> Option, else {blank}"]
+        //TH first proposal - review pending
+        if cftcGuidebook -> assetClass = "CRDT" then  
+            (if fixedRateLeg1 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if fixedRateLeg2 is absent and otherPayment -> paymentType any <> "UFRO" and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg2 exists)
+        else if cftcGuidebook -> assetClass = "INTR" then 
+            (if fixedRateLeg1 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if fixedRateLeg2 is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg2 exists)
+        else if cftcGuidebook -> assetClass = "EQUI" and (price is absent and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent) then spreadLeg1 exists or spreadLeg2 exists
+        else if cftcGuidebook -> assetClass = "COMM" then
+            (if (price is absent or fixedRateLeg1 is absent) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then spreadLeg1 exists) and 
+            (if (price is absent or fixedRateLeg2 is absent) and postPricedSwapIndicator = False and cftcGuidebook -> optionStyle is absent then  spreadLeg2 exists)
+        else spreadLeg1 is absent and spreadLeg2 is absent
+
+    condition SpreadCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "74" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Spread notation] = 1, else {blank}"]
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadNotationLeg1 = "1" then spreadCurrencyLeg1 exists
+         else spreadCurrencyLeg1 is absent) and 
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadNotationLeg2 = "1" then spreadCurrencyLeg2 exists
+        else spreadCurrencyLeg2 is absent)
+     
+    condition SpreadNotationCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "75" validationRule "Transaction"
+      provision "Transaction - CR/IR/EQ/CO: C if [Spread] is populated, else {blank}"]
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadLeg1 exists then spreadNotationLeg1 exists
+        else spreadNotationLeg1 is absent) and 
+        (if cftcGuidebook -> assetClass any = ["CRDT", "INTR", "EQUI", "COMM"] and spreadLeg2 exists then spreadNotationLeg2 exists
+        else spreadNotationLeg2 is absent)
+    
+    condition StrikePriceCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "76" validationRule "Transaction"
+      provision "C if [Post-priced swap indicator] = False and UPI.[Instrument type] = Option, else {blank}."]
+        if postPricedSwapIndicator = False and cftcGuidebook -> optionStyle exists then strikePrice exists
+        else strikePrice is absent
+
+    condition StrikePriceCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "77" validationRule "Transaction"
+      provision "C if [Strike price notation] = 1, else {blank}"]
+        if strikePriceNotation = "1" then strikePriceCurrency exists
+        else strikePriceCurrency is absent
+
+    condition StrikePriceNotationCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "78" validationRule "Transaction"
+      provision "C if [Strike price] is populated, else {blank}"]
+        if strikePrice exists then strikePriceNotation exists
+        else strikePriceNotation is absent
+
+    condition OptionPremiumAmountCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "79" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}."]
+        if cftcGuidebook -> optionStyle exists then optionPremiumAmount exists
+        else optionPremiumAmount is absent
+
+    condition OptionPremiumCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "80" validationRule "Transaction"
+      provision "C if [Option premium amount] > 0, else {blank}"]
+        if optionPremiumAmount > 0 then optionPremiumCurrency exists
+        else optionPremiumCurrency is absent
+
+    condition OptionPremiumPaymentDateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "81" validationRule "Transaction"
+      provision "C if [Option premium amount] > 0, else {blank}"]
+        if optionPremiumAmount > 0 then optionPremiumPaymentDate exists
+        else optionPremiumPaymentDate is absent
+    
+    condition FirstExerciseDateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "82" validationRule "Transaction"
+      provision "C if UPI.[Instrument type] = Option, else {blank}."]
+        if cftcGuidebook -> optionStyle exists then firstExerciseDate exists
+        else firstExerciseDate is absent
+
+//Product category validation logic
+    condition CDSIndexAttachmentPointCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "83" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: C if UPI.[Underlying asset/contract type] = Index tranche, else {blank};
+                When populated, the value shall be less than the value in [CDS index detachment point]"]
+        True and True
+    
+    condition CDSIndexDetachmentPointCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "84" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: C if UPI.[Underlying asset/contract type] = Index tranche, else {blank};
+                When populated, the value shall be greater than the value in [CDS index attachment point]"]
+        True and True
+    
+    condition IndexFactorCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "85" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "Transaction - CR: C if UPI.[Underlying asset/contract type] = Index or Index tranche, else {blank}"]
+        True and True
+
+    /*condition FinalContractualSettlementDateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "88" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, When populated, the value shall be equal to or later than the value in [Expiration date]."]*/
+
+    condition SettlementCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "89" validationRule "Transaction"
+      rationale "Not modelled until UPI is available."
+      provision "C if UPI.[Delivery type] = Cash, else {blank}"]
+        True and True
+
+//Transaction Related category validation logic    
+    condition NonStandardizedTermIndicatorCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "92" validationRule "Transaction"
+      provision "C if [Cleared] = N; NR if [Cleared] = Y or I"]
+        if cleared = "N" then nonStandardizedTermIndicator exists
+        else if cleared = "I" or cleared = "Y" then nonStandardizedTermIndicator is absent
+
+    /*condition ExpirationDateCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "95" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, when populated, the value shall be equal to or later than the value in [Effective date]"]*/
+
+    /*condition ReportingTimestampCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "97" validationRule "Transaction"
+      rationale "Within the design of the CDM model this condition can't be modelled."
+      provision "M, the value shall be equal to or later than the value in [Execution timestamp]"]*/  
+
+    condition PlatformIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "98" validationRule "Transaction"
+      provision "C if [Cleared] = N or I; NR if [Cleared] = Y"] 
+        if cleared = "N" or cleared = "I" then platformIdentifier exists
+        else if cleared = "Y" then platformIdentifier is absent
+
+    condition PrimeBrokerageTransactionIndicatorCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "99" validationRule "Transaction"
+      provision "C if [Cleared] = N or I; NR if [Cleared] = Y"] 
+        if cleared = "N" or cleared = "I" then primeBrokerageTransactionIndicator exists
+        else if cleared = "Y" then primeBrokerageTransactionIndicator is absent
+    
+    condition PriorUSICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "100" validationRule "Transaction"
+      provision "C if [Action type] = NEWT and ([Event type] = NOVA or CLRG or EXER or ALOC or CLAL) and [Prior UTI (for one-to-one and one-to-many relations between transactions)] is not populated, else {blank}"] 
+        if actionType = "NEWT" and eventType any = ["NOVA", "CLRG", "EXER", "ALOC", "CLAL"] and priorUTI is absent then priorUSI exists
+        else priorUSI is absent
+
+    condition PriorUTICondition:
+    [docReference CFTC Part45 appendix "1" dataElement "101" validationRule "Transaction"
+      provision "C if [Action type] = NEWT and ([Event type] = NOVA or CLRG or EXER or ALOC or CLAL) and [Prior USI (for one-to-one and one-to-many relations between transactions)] is not populated, else {blank}"] 
+        if actionType = "NEWT" and eventType any = ["NOVA", "CLRG", "EXER", "ALOC", "CLAL"] and priorUSI is absent then priorUTI exists
+        else priorUTI is absent
+
+    condition UniqueSwapIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "102" validationRule "Transaction"
+      provision "C if [Unique transaction identifier (UTI)] is not populated, else {blank}"] 
+        if uniqueTransactionIdentifier is absent then uniqueSwapIdentifier exists
+        else uniqueSwapIdentifier is absent
+
+    condition UniqueTransactionIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "103" validationRule "Transaction"
+      provision "C if [Unique swap identifier (USI)] is not populated, else {blank}"] 
+        if uniqueSwapIdentifier is absent then uniqueTransactionIdentifier exists
+        else uniqueTransactionIdentifier is absent
+
+//Transfer category validation logic
+    condition NewSDRIdentifierCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "105" validationRule "Transaction"
+      provision "C if [Event type] = PTNG, else {blank}"] 
+        if eventType = "PTNG" exists then newSDRIdentifier exists
+        else newSDRIdentifier is absent
+
+type ClearingSwapUSIsReport:
+    identifier string (1..1)
+        [ruleReference ClearingSwapUSI]
+
+type ClearingSwapUTIsReport:
+    identifier string (1..1)
+        [ruleReference ClearingSwapUTI]
+
+type ClearingExceptionsAndExemptionsCounterparty1Report:
+    value string (1..1)
+        [ruleReference ClearingExceptionsAndExemptionsCounterparty1Extraction]
+
+type ClearingExceptionsAndExemptionsCounterparty2Report:
+    value string (1..1)
+        [ruleReference ClearingExceptionsAndExemptionsCounterparty2Extraction]
+
+type NotionalAmountScheduleLeg1Report:
+    amount number (1..1)
+        [ruleReference NotionalAmountScheduleLeg1Amount]
+    effectiveDate date (1..1)
+        [ruleReference NotionalAmountScheduleLeg1EffectiveDate]
+//    endDate string (1..1)
+//        [ruleReference NotionalAmountScheduleLeg1EndDate]
+
+type NotionalAmountScheduleLeg2Report:
+    amount number (1..1)
+        [ruleReference NotionalAmountScheduleLeg2Amount]
+    effectiveDate date (1..1)
+        [ruleReference NotionalAmountScheduleLeg2EffectiveDate]
+//    endDate string (1..1)
+//        [ruleReference NotionalAmountScheduleLeg2EndDate]
+
+type OtherPaymentReport:
+    paymentType string (1..1)
+        [ruleReference OtherPaymentType]
+    amount number (1..1)
+        [ruleReference OtherPaymentAmount]
+    currency string (1..1)
+        [ruleReference OtherPaymentCurrency]
+    date date (1..1)
+        [ruleReference OtherPaymentDate]
+    payer string (1..1)
+        [ruleReference OtherPaymentPayer]
+    receiver string (1..1)
+        [ruleReference OtherPaymentReceiver]
+
+type PackageTransactionPriceReport:
+    packageTransactionPrice number (1..1)
+        [ruleReference PackageTransactionPriceAmount]
+    packageTransactionPriceCurrency string (0..1)
+        [ruleReference PackageTransactionPriceCurrency]
+    packageTransactionPriceNotation string (1..1)
+        [ruleReference PackageTransactionPriceNotation]
+
+    condition PackageTransactionPriceCurrencyCondition:
+    [docReference CFTC Part45 appendix "1" dataElement "48" validationRule "Transaction"
+      provision "C if [Package transaction price notation] = 1, else {blank}"]
+        if packageTransactionPriceNotation = "1" then packageTransactionPriceCurrency exists
+        else packageTransactionPriceCurrency is absent
+
+type PackageTransactionSpreadLeg1Report:
+    amount number (1..1)
+        [ruleReference PackageTransactionSpreadLeg1Amount]
+    currency string (0..1)
+        [ruleReference PackageTransactionSpreadLeg1Currency]
+    notation int (1..1)
+        [ruleReference PackageTransactionSpreadLeg1Notation]
+    
+    condition PackageTransactionSpreadCurrencyLeg1Condition:
+    [docReference CFTC Part45 appendix "1" dataElement "51" validationRule "Transaction"
+      provision "C if [Package transaction spread notation] = '1', else {blank}"]
+        if notation = 1 then currency exists 
+        else currency is absent
+
+type PackageTransactionSpreadLeg2Report:
+    amount number (1..1)
+        [ruleReference PackageTransactionSpreadLeg2Amount]
+    currency string (0..1)
+        [ruleReference PackageTransactionSpreadLeg2Currency]
+    notation int (1..1)
+        [ruleReference PackageTransactionSpreadLeg2Notation]
+
+    condition PackageTransactionSpreadCurrencyLeg2Condition:
+    [docReference CFTC Part45 appendix "1" dataElement "51" validationRule "Transaction"
+      provision "C if [Package transaction spread notation] = '1', else {blank}"]
+        if notation = 1 then currency exists 
+        else currency is absent
+
+type CFTCGuidebookPart45:
+    optionType string (0..1)
+        [ruleReference OptionType]
+    optionStyle string (0..1)
+        [ruleReference OptionStyle]
+    assetClass string (1..1)
+        [ruleReference AssetClass]
+    clearable boolean (1..1)
+       [ruleReference MandatoryClearable]
+    eventTimestamp zonedDateTime (1..1)
+        [ruleReference EventTimestampDemonstration]
+    maturityDateOfTheUnderlier date (0..1)
+        [ruleReference MaturityDateOfTheUnderlier]
+    largeNotionalOffFacilitySwapElectionIndicator boolean (1..1)
+        [ruleReference LargeNotionalOffFacilitySwapElectionIndicator]
+    sefOrDcmIndicator boolean (1..1)
+        [ruleReference SefOrDcmIndicator]
+    sefOrDcmAnonymousExecutionIndicator boolean (1..1)
+        [ruleReference SefOrDcmAnonymousExecutionIndicator]
+    settlementType string (0..1)
+        [ruleReference SettlementType]
+    messageType string (1..1)
+        [ruleReference MessageTypeTradeState]
+    sdMspIndicatorParty1 string (1..1)
+        [ruleReference SdMspIndicatorParty1]
+    sdMspIndicatorParty2 string (1..1)
+        [ruleReference SdMspIndicatorParty2]
+    physicalCommodityIndicator string (1..1)
+        [ruleReference PhysicalCommodityIndicator]
+
+eligibility rule ReportableProduct <"When eligible for Part45">
+	[regulatoryReference CFTC Part45 section "45.3(a)"
+   		provision "Swaps executed on or pursuant to the rules of a swap execution facility or designated contract market. For each swap executed on or pursuant to the rules of a swap execution facility or designated contract market, the swap execution facility or designated contract market shall report required swap creation data electronically to a swap data repository in the manner provided in  45.13(a) not later than the end of the next business day following the execution date."]
+		filter when rule HasContract
+
+eligibility rule HasContract <"When eligible for Part45">
+	[regulatoryReference CFTC Part45 section "45.3"
+   		provision "add text here"]
+		extract TradeForEvent( ReportableEvent ) then
+		extract Trade -> tradableProduct -> product -> contractualProduct exists
+
+eligibility rule ReportableEvent <"When eligible for Part45">
+	[regulatoryReference CFTC Part45 section "45.3(b)"
+        rationale "The logic does not distinguish which reportableInformation should be reported by filtering on regulatorApplicability. In addition reportableEvent logic should include if the event falls under the CFTC jurisdiction according to the reportable information component."
+        rationale_author "DRR Peer Review Group - 20/05/22"
+   		provision "For each off-facility swap, the reporting counterparty shall report required swap creation data electronically to a swap data repository as provided by paragraph (b)(1) or (2) of this section, as applicable.
+            (1) If the reporting counterparty is a swap dealer, major swap participant, or derivatives clearing organization, the reporting counterparty shall report required swap creation data electronically to a swap data repository in the manner provided in  45.13(a) not later than the end of the next business day following the execution date.
+            (2) If the reporting counterparty is a non-SD/MSP/DCO counterparty, the reporting counterparty shall report required swap creation data electronically to a swap data repository in the manner provided in  45.13(a) not later than the end of the second business day following the execution date. "]
+		filter when ReportableEvent -> originatingWorkflowStep exists
+        //and ReportableEvent -> reportableInformation -> regulatorApplicability -> supervisoryBody any = SupervisoryBodyEnum -> CFTC
+
+//CFTC field logic

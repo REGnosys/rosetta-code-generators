@@ -45,8 +45,8 @@ class PythonObjectGenerationTest {
                         or (intValue2 exists and intValue1 exists and intValue1 exists)
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
-
-        val expected =
+        
+        val expectedA=
         '''
         class A(BaseDataClass):
             a0: Optional[int] = Field(None, description="")
@@ -55,7 +55,10 @@ class PythonObjectGenerationTest {
             @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
+        '''
         
+        val expectedB=
+        '''
         class B(BaseDataClass):
             aValue: A = Field(..., description="")
             intValue1: Optional[int] = Field(None, description="")
@@ -84,12 +87,9 @@ class PythonObjectGenerationTest {
                     return True
                 
                 return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
-        
-        
-        A.update_forward_refs()
-        B.update_forward_refs()
         '''
-        assertTrue(python.toString.contains(expected))
+        assertTrue(python.toString.contains(expectedA))
+        assertTrue(python.toString.contains(expectedB))
     }
     
     
@@ -112,10 +112,9 @@ class PythonObjectGenerationTest {
 	        TestEnumValue1 <"Test enum value 1">
 	        TestEnumValue2 <"Test enum value 2">
         '''.generatePython
-       
-        
-        
-        val expectedType = 
+                 
+          
+          val expectedTestType = 
             '''
            class TestType(BaseDataClass):
                """
@@ -141,7 +140,9 @@ class PythonObjectGenerationTest {
                """
                Test TestType2
                """
-           
+            '''
+            val expectedTestType2 = 
+            '''
            class TestType2(BaseDataClass):
                testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
                """
@@ -159,13 +160,9 @@ class PythonObjectGenerationTest {
                """
                Test date
                """
-           
-           
-           TestType.update_forward_refs()
-           TestType2.update_forward_refs()
             '''
             
-          val expectedEnum = 
+          val expectedTestEnum = 
             '''
            class TestEnum(Enum):
                """
@@ -180,8 +177,9 @@ class PythonObjectGenerationTest {
                Test enum value 2
                """
             '''
-        assertTrue(python.toString.contains(expectedType))
-        assertTrue(python.toString.contains(expectedEnum))
+        assertTrue(python.toString.contains(expectedTestType))
+        assertTrue(python.toString.contains(expectedTestType2))
+        assertTrue(python.toString.contains(expectedTestEnum))
         
     }
     
@@ -245,7 +243,52 @@ class PythonObjectGenerationTest {
            UnitType.update_forward_refs()
            Quantity.update_forward_refs()
             '''
-        assertTrue(python.toString.contains(expected))
+        
+        val expectedMeasureBase=
+        '''
+        class MeasureBase(BaseDataClass):
+            """
+            Provides an abstract base class shared by Price and Quantity.
+            """
+            amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
+            """
+            Specifies an amount to be qualified and used in a Price or Quantity definition.
+            """
+            unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
+            """
+            Qualifies the unit by which the amount is measured.
+            """
+        '''
+        val expectedUnitType=
+        '''
+        class UnitType(BaseDataClass):
+            """
+            Defines the unit to be used for price, quantity, or other purposes
+            """
+            currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+            """
+            Defines the currency to be used as a unit for a price, quantity, or other purpose.
+            """
+        '''
+        val expectedQuantity=
+        '''
+        class Quantity(MeasureBase):
+            """
+            Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
+            """
+            multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
+            """
+            Defines the number to be multiplied by the amount to derive a total quantity.
+            """
+            multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
+            """
+            Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
+            """
+        '''
+        assertTrue(python.toString.contains(expectedMeasureBase))
+        assertTrue(python.toString.contains(expectedUnitType))
+        assertTrue(python.toString.contains(expectedQuantity))
+        
     }
 
     @Test
@@ -265,7 +308,7 @@ class PythonObjectGenerationTest {
         '''.generatePython
 
 
-        val types = python.get('Types.py').toString
+        val types = python.toString
         val expected =
         '''
         class TestType3(BaseDataClass):
@@ -307,7 +350,51 @@ class PythonObjectGenerationTest {
         TestType2.update_forward_refs()
         TestType.update_forward_refs()
         '''
-        assertTrue(types.contains(expected))        
+        
+        val expectedTestType=
+        '''
+        class TestType(TestType2):
+            TestTypeValue1: str = Field(..., description="Test string")
+            """
+            Test string
+            """
+            TestTypeValue2: Optional[int] = Field(None, description="Test int")
+            """
+            Test int
+            """
+        '''
+        val expectedTestType2=
+        '''
+        class TestType2(TestType3):
+            TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
+            """
+            Test number
+            """
+            TestType2Value2: List[date] = Field([], description="Test date")
+            """
+            Test date
+            """
+        '''
+        val expectedTestType3=
+        '''
+        class TestType3(BaseDataClass):
+            TestType3Value1: Optional[str] = Field(None, description="Test string")
+            """
+            Test string
+            """
+            TestType4Value2: List[int] = Field([], description="Test int")
+            """
+            Test int
+            """
+            @rosetta_condition
+            def cardinality_TestType4Value2(self):
+                return check_cardinality(self.TestType4Value2, 1, None)
+        '''
+        
+        assertTrue(types.contains(expectedTestType))   
+        assertTrue(types.contains(expectedTestType2))                
+        assertTrue(types.contains(expectedTestType3))        
+             
     }
 
 
@@ -323,7 +410,7 @@ class PythonObjectGenerationTest {
     	            		required choice field1, field2
     	        '''.generatePython
 
-            val types = python.get('Types.py').toString
+            val types = python.toString
 
             val expected =
             '''
@@ -374,7 +461,7 @@ class PythonObjectGenerationTest {
     	            				then field3 > 0
     	        '''.generatePython
 
-            val types = python.get('Types.py').toString
+            val types = python.toString
 
             val expected =
             '''
@@ -443,8 +530,8 @@ class PythonObjectGenerationTest {
                         or (intValue2 exists and intValue1 exists and intValue1 exists)
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
-
-        val expected =
+        
+        val expectedA=
         '''
         class A(BaseDataClass):
             a0: Optional[int] = Field(None, description="")
@@ -453,7 +540,10 @@ class PythonObjectGenerationTest {
             @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
+        '''
         
+        val expectedB=
+        '''
         class B(BaseDataClass):
             aValue: A = Field(..., description="")
             intValue1: Optional[int] = Field(None, description="")
@@ -489,18 +579,16 @@ class PythonObjectGenerationTest {
                     return True
                 
                 return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
-        
-        
-        A.update_forward_refs()
-        B.update_forward_refs()
         '''
-        assertTrue(python.get('Types.py').toString.contains(expected))
+        
+        assertTrue(python.toString.contains(expectedA))
+        assertTrue(python.toString.contains(expectedB))
     }
     
     
     def generatePython(CharSequence model) {
          val eResource = model.parseRosetta.eResource
-         generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+         generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     }
 	
 }

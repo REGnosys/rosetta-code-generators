@@ -63,14 +63,41 @@ class RosettaObjectInheritanceGeneratorTest {
 		D.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		val expectedA=
+		'''
+		class A(BaseDataClass):
+		    aa: Optional[str] = Field(None, description="")
+		'''
+		
+		val expectedB=
+		'''
+		class B(A):
+		    bb: Optional[str] = Field(None, description="")
+		'''
+		
+		val expectedC=
+		'''
+		class C(B):
+		    cc: Optional[str] = Field(None, description="")
+		'''
+		
+		val expectedD=
+		'''
+		class D(C):
+		    dd: Optional[str] = Field(None, description="")
+		'''
+		
+		assertTrue(python.toString.contains(expectedA))
+		assertTrue(python.toString.contains(expectedB))
+		assertTrue(python.toString.contains(expectedC))
+		assertTrue(python.toString.contains(expectedD))
 	}
 
 	
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosettaWithNoErrors.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 }

@@ -63,7 +63,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 
 	}
 
@@ -87,7 +87,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 
 	}
 
@@ -111,7 +111,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 	}
 
 	@Test
@@ -134,7 +134,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 	}
 
 	@Test
@@ -178,7 +178,7 @@ class ModelObjectGeneratorTest {
 		Tester.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Tester").toString.contains(expected))
 	}
 
 
@@ -288,7 +288,7 @@ class ModelObjectGeneratorTest {
 		AttributeGlobalKeyTest.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.AttributeGlobalKeyTest").toString.contains(expected))
 	}
 
 	@Test
@@ -324,22 +324,67 @@ class ModelObjectGeneratorTest {
 		'''.generatePython
 
 		
-		val expected=
+		val expectedB=
 		'''
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		from __future__ import annotations
+		from typing import List, Optional
+		from datetime import date
+		from datetime import time
+		from datetime import datetime
+		from decimal import Decimal
+		from pydantic import Field
+		from build.resources.runtime.src.rosetta.runtime.utils import *
+		
+		__all__ = ['B']
+		
+		
 		class B(BaseDataClass):
 		    pass
+		'''
+		
+		val expectedC = 
+		'''
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		from __future__ import annotations
+		from typing import List, Optional
+		from datetime import date
+		from datetime import time
+		from datetime import datetime
+		from decimal import Decimal
+		from pydantic import Field
+		from build.resources.runtime.src.rosetta.runtime.utils import *
+		
+		__all__ = ['C']
+		
 		
 		class C(BaseDataClass):
 		    list: List[int] = Field([], description="")
 		    one: Optional[int] = Field(None, description="")
 		
-		class D(BaseDataClass):
-		    s: List[str] = Field([], description="")
-		    @rosetta_condition
-		    def cardinality_s(self):
-		        return check_cardinality(self.s, 1, None)
 		
-		    
+		C.update_forward_refs()
+		'''
+		
+		val expectedA = 
+		'''
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		from __future__ import annotations
+		from typing import List, Optional
+		from datetime import date
+		from datetime import time
+		from datetime import datetime
+		from decimal import Decimal
+		from pydantic import Field
+		from build.resources.runtime.src.rosetta.runtime.utils import *
+		
+		__all__ = ['A']
+		
+		from com.rosetta.test.model.B import B
+		
 		class A(B):
 		    c: List[C] = Field([], description="")
 		    @rosetta_condition
@@ -347,14 +392,43 @@ class ModelObjectGeneratorTest {
 		        return check_cardinality(self.c, 1, None)
 		    
 		
+		from com.rosetta.test.model.C import C
 		
-		B.update_forward_refs()
-		C.update_forward_refs()
-		D.update_forward_refs()
 		A.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		val expectedD = 
+		'''
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		from __future__ import annotations
+		from typing import List, Optional
+		from datetime import date
+		from datetime import time
+		from datetime import datetime
+		from decimal import Decimal
+		from pydantic import Field
+		from build.resources.runtime.src.rosetta.runtime.utils import *
+		
+		__all__ = ['D']
+		
+		
+		class D(BaseDataClass):
+		    s: List[str] = Field([], description="")
+		    @rosetta_condition
+		    def cardinality_s(self):
+		        return check_cardinality(self.s, 1, None)
+		    
+		
+		
+		D.update_forward_refs()
+		'''
+		
+		assertTrue(python.get("com.rosetta.test.model.A").toString.contains(expectedA))
+		assertTrue(python.get("com.rosetta.test.model.B").toString.contains(expectedB))
+		assertTrue(python.get("com.rosetta.test.model.C").toString.contains(expectedC))
+		assertTrue(python.get("com.rosetta.test.model.D").toString.contains(expectedD))
+			
 	}
 
 	@Test
@@ -367,24 +441,22 @@ class ModelObjectGeneratorTest {
 			type Bar extends Foo:
 				a string (0..1)
 		'''.generatePython
-
-		
-		
-		val expected=
+	
+		val expectedFoo=
 		'''
 		class Foo(BaseDataClass):
 		    a: Optional[str] = Field(None, description="")
 		    b: Optional[str] = Field(None, description="")
-		
-		class Bar(Foo):
-		    a: Optional[str] = Field(None, description="")
-		
-		
-		Foo.update_forward_refs()
-		Bar.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		val expectedBar = 
+		'''
+		class Bar(Foo):
+		    a: Optional[str] = Field(None, description="")
+		'''
+		
+		assertTrue(python.get("com.rosetta.test.model.Foo").toString.contains(expectedFoo))
+		assertTrue(python.get("com.rosetta.test.model.Bar").toString.contains(expectedBar))
 	}
 
 	@Test
@@ -404,7 +476,7 @@ class ModelObjectGeneratorTest {
 		Foo.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		assertTrue(python.get("com.rosetta.test.model.Foo").toString.contains(expected))
 	}
 
 	@Test
@@ -430,7 +502,21 @@ class ModelObjectGeneratorTest {
 		Bar.update_forward_refs()
 		'''
 		
-		assertTrue(python.get("Types.py").toString.contains(expected))
+		val expectedFoo=
+		'''
+		class Foo(BaseDataClass):
+		    attr: Optional[str] = Field(None, description="")
+		
+		'''
+		
+		val expectedBar=
+		'''
+		class Bar(Foo):
+		    pass
+		'''
+		
+		assertTrue(python.toString.contains(expectedFoo))
+		assertTrue(python.toString.contains(expectedBar))
 	}
 	
 	@Test
@@ -498,8 +584,8 @@ class ModelObjectGeneratorTest {
                         or (intValue2 exists and intValue1 exists and intValue1 exists)
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
-
-        val expected =
+        
+        val expectedA=
         '''
         class A(BaseDataClass):
             a0: Optional[int] = Field(None, description="")
@@ -508,7 +594,10 @@ class ModelObjectGeneratorTest {
             @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
+        '''
         
+        val expectedB=
+        '''
         class B(BaseDataClass):
             aValue: A = Field(..., description="")
             intValue1: Optional[int] = Field(None, description="")
@@ -537,12 +626,9 @@ class ModelObjectGeneratorTest {
                     return True
                 
                 return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
-        
-        
-        A.update_forward_refs()
-        B.update_forward_refs()
         '''
-        assertTrue(python.get("Types.py").toString.contains(expected))
+        assertTrue(python.toString.contains(expectedA))
+        assertTrue(python.toString.contains(expectedB))
     }
     
     
@@ -616,8 +702,59 @@ class ModelObjectGeneratorTest {
            TestType.update_forward_refs()
            TestType2.update_forward_refs()
             '''
+           
+          val expectedTestType=
+          '''
+          class TestType(BaseDataClass):
+              """
+              Test type description.
+              """
+              testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
+              """
+              Optional test enum
+              """
+              testTypeValue1: str = Field(..., description="Test string")
+              """
+              Test string
+              """
+              testTypeValue2: Optional[str] = Field(None, description="Test optional string")
+              """
+              Test optional string
+              """
+              testTypeValue3: List[str] = Field([], description="Test string list")
+              """
+              Test string list
+              """
+              testTypeValue4: TestType2 = Field(..., description="Test TestType2")
+              """
+              Test TestType2
+              """
+          '''
+          val expectedTestType2=
+          '''
+          class TestType2(BaseDataClass):
+              testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
+              """
+              Optional test enum
+              """
+              testType2Value1: List[Decimal] = Field([], description="Test number list")
+              """
+              Test number list
+              """
+              @rosetta_condition
+              def cardinality_testType2Value1(self):
+                  return check_cardinality(self.testType2Value1, 1, None)
+              
+              testType2Value2: Optional[date] = Field(None, description="Test date")
+              """
+              Test date
+              """
+          
+          '''
             
-            assertTrue(python.get("Types.py").toString.contains(expected))
+          assertTrue(python.toString.contains(expectedTestType))
+          assertTrue(python.toString.contains(expectedTestType2))
+           
     }        
 
     
@@ -637,51 +774,55 @@ class ModelObjectGeneratorTest {
 	    	multiplier number (0..1) <"Defines the number to be multiplied by the amount to derive a total quantity.">
 	    	multiplierUnit UnitType (0..1) <"Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).">
         '''.generatePython
-
+          
+        val expectedMeasureBase =
+        '''
+        class MeasureBase(BaseDataClass):
+            """
+            Provides an abstract base class shared by Price and Quantity.
+            """
+            amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
+            """
+            Specifies an amount to be qualified and used in a Price or Quantity definition.
+            """
+            unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
+            """
+            Qualifies the unit by which the amount is measured.
+            """
+        '''
         
-        val expected = 
-            '''
-           class MeasureBase(BaseDataClass):
-               """
-               Provides an abstract base class shared by Price and Quantity.
-               """
-               amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
-               """
-               Specifies an amount to be qualified and used in a Price or Quantity definition.
-               """
-               unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
-               """
-               Qualifies the unit by which the amount is measured.
-               """
-           
-           class UnitType(BaseDataClass):
-               """
-               Defines the unit to be used for price, quantity, or other purposes
-               """
-               currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
-               """
-               Defines the currency to be used as a unit for a price, quantity, or other purpose.
-               """
-           
-           class Quantity(MeasureBase):
-               """
-               Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
-               """
-               multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
-               """
-               Defines the number to be multiplied by the amount to derive a total quantity.
-               """
-               multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
-               """
-               Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
-               """
-           
-           
-           MeasureBase.update_forward_refs()
-           UnitType.update_forward_refs()
-           Quantity.update_forward_refs()
-            '''
-        assertTrue(python.get("Types.py").toString.contains(expected))
+        val expectedUnitType =
+        '''
+        class UnitType(BaseDataClass):
+            """
+            Defines the unit to be used for price, quantity, or other purposes
+            """
+            currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+            """
+            Defines the currency to be used as a unit for a price, quantity, or other purpose.
+            """
+        '''
+        
+        val expectedQuantity =
+        '''
+        class Quantity(MeasureBase):
+            """
+            Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
+            """
+            multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
+            """
+            Defines the number to be multiplied by the amount to derive a total quantity.
+            """
+            multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
+            """
+            Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
+            """
+        '''
+            
+        assertTrue(python.get("com.rosetta.test.model.MeasureBase").toString.contains(expectedMeasureBase))
+        assertTrue(python.get("com.rosetta.test.model.UnitType").toString.contains(expectedUnitType))
+        assertTrue(python.get("com.rosetta.test.model.Quantity").toString.contains(expectedQuantity))
+        
     }
 
     @Test
@@ -699,10 +840,32 @@ class ModelObjectGeneratorTest {
             TestType3Value1 string (0..1) <"Test string">
             TestType4Value2 int (1..*) <"Test int">
         '''.generatePython
-
-
-        val types = python.get('Types.py').toString
-        val expected =
+       
+        val expectedTestType =
+        '''
+        class TestType(TestType2):
+            TestTypeValue1: str = Field(..., description="Test string")
+            """
+            Test string
+            """
+            TestTypeValue2: Optional[int] = Field(None, description="Test int")
+            """
+            Test int
+            """
+        '''
+        val expectedTestType2 =
+        '''
+        class TestType2(TestType3):
+            TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
+            """
+            Test number
+            """
+            TestType2Value2: List[date] = Field([], description="Test date")
+            """
+            Test date
+            """
+        '''
+        val expectedTestType3 =
         '''
         class TestType3(BaseDataClass):
             TestType3Value1: Optional[str] = Field(None, description="Test string")
@@ -716,34 +879,11 @@ class ModelObjectGeneratorTest {
             @rosetta_condition
             def cardinality_TestType4Value2(self):
                 return check_cardinality(self.TestType4Value2, 1, None)
-        
-            
-        class TestType2(TestType3):
-            TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
-            """
-            Test number
-            """
-            TestType2Value2: List[date] = Field([], description="Test date")
-            """
-            Test date
-            """
-        
-        class TestType(TestType2):
-            TestTypeValue1: str = Field(..., description="Test string")
-            """
-            Test string
-            """
-            TestTypeValue2: Optional[int] = Field(None, description="Test int")
-            """
-            Test int
-            """
-        
-        
-        TestType3.update_forward_refs()
-        TestType2.update_forward_refs()
-        TestType.update_forward_refs()
         '''
-        assertTrue(types.contains(expected))        
+        
+        assertTrue(python.toString.contains(expectedTestType)) 
+        assertTrue(python.toString.contains(expectedTestType2)) 
+        assertTrue(python.toString.contains(expectedTestType3))        
     }
 
 
@@ -759,7 +899,7 @@ class ModelObjectGeneratorTest {
     	            		required choice field1, field2
     	        '''.generatePython
 
-            val types = python.get('Types.py').toString
+            val types = python.get('com.rosetta.test.model.TestType').toString
 
             val expected =
             '''
@@ -810,7 +950,6 @@ class ModelObjectGeneratorTest {
     	            				then field3 > 0
     	        '''.generatePython
 
-            val types = python.get('Types.py').toString
 
             val expected =
             '''
@@ -851,7 +990,7 @@ class ModelObjectGeneratorTest {
             
             TestType.update_forward_refs()
             '''
-            assertTrue(types.contains(expected))
+            assertTrue(python.toString.contains(expected))
         }
         
 	
@@ -880,7 +1019,8 @@ class ModelObjectGeneratorTest {
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
 
-        val expected =
+        
+        val expectedA=
         '''
         class A(BaseDataClass):
             a0: Optional[int] = Field(None, description="")
@@ -889,7 +1029,10 @@ class ModelObjectGeneratorTest {
             @rosetta_condition
             def condition_0_(self):
                 return self.check_one_of_constraint('a0', 'a1', necessity=True)
+        '''
         
+        val expectedB=
+        '''
         class B(BaseDataClass):
             aValue: A = Field(..., description="")
             intValue1: Optional[int] = Field(None, description="")
@@ -925,19 +1068,16 @@ class ModelObjectGeneratorTest {
                     return True
                 
                 return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
-        
-        
-        A.update_forward_refs()
-        B.update_forward_refs()
         '''
-        assertTrue(python.get('Types.py').toString.contains(expected))
+        assertTrue(python.toString.contains(expectedA))
+        assertTrue(python.toString.contains(expectedB))
     }
 	
 	
 	
 	def generatePython(CharSequence model) {
     	val eResource = model.parseRosetta.eResource
-    	generator.afterGenerateTest(eResource.contents.filter(RosettaModel).toList)
+    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
     	
     }
 }

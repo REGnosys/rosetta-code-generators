@@ -1,0 +1,1522 @@
+namespace drr.regulation.common
+version "0.76.0"
+
+import cdm.base.*
+import cdm.base.datetime.*
+import cdm.base.math.*
+import cdm.base.staticdata.asset.common.*
+import cdm.base.staticdata.asset.rates.*
+import cdm.base.staticdata.identifier.*
+import cdm.base.staticdata.party.*
+
+import cdm.observable.asset.*
+
+import cdm.product.asset.*
+import cdm.product.common.schedule.*
+import cdm.product.common.settlement.*
+import cdm.product.qualification.*
+import cdm.product.template.*
+
+import cdm.event.common.*
+import cdm.event.workflow.*
+import cdm.event.position.*
+import cdm.event.qualification.*
+
+import cdm.legalagreement.csa.*
+
+segment rationale
+segment rationale_author
+segment structured_provision
+
+segment article
+segment whereas
+segment annex
+segment table
+segment section
+segment field
+segment paragraph
+segment question
+segment dataElement
+segment appendix
+segment footnote
+
+//TH Review
+segment validationRule
+
+annotation enrichment:
+annotation decomposition:
+
+// body Organisation ISDA <"Since 1985, the International Swaps and Derivatives Association has worked to make the global derivatives markets safer and more efficient">
+
+body Organisation ISO <"The International Organization for Standardization is an international standard-setting body composed of representatives from various national standards organizations. Founded on 23 February 1947, the organization promotes worldwide proprietary, industrial, and commercial standards.">
+
+corpus ReportingStandard "ISO 20022" ISO_20022
+	<"ISO 20022 is a multi part International Standard prepared by ISO Technical Committee TC68 Financial Services.">
+
+corpus BestPractice "3Mar2020" EMIRReportingBestPractice
+	<"The EMIR Reporting Best Practices cover 87 data points across 61 reporting fields, including both over-the-counter and exchange-traded derivatives, and were developed to improve the accuracy and efficiency of trade reporting and to reduce compliance costs. The best practices are available to all market participants to access and implement.  The EMIR Reporting Best Practices is a cross-trade association initiative developed jointly by the European Fund and Asset Management Association (EFAMA), European Venues and Intermediaries Association (EVIA), Futures Industry Association (FIA), German Investment Funds Association (BVI), Global Foreign Exchange Division (GFXD), International Swaps and Derivatives Association, Inc. (ISDA) and Investment Association (IA).">
+
+// Utility Rules
+
+func TradeStateForEvent:
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: reportableTradeState TradeState (0..1)
+    set reportableTradeState:
+		if reportableEvent -> reportableTrade exists then
+			reportableEvent -> reportableTrade
+		else reportableEvent -> originatingWorkflowStep -> businessEvent -> after only-element
+
+func TradeForEvent:
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: reportableTrade Trade (0..1)
+    set reportableTrade: TradeStateForEvent( reportableEvent ) -> trade
+
+func BeforeTradeForEvent:
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: reportableTrade Trade (0..1)
+    alias businessEvent: reportableEvent -> originatingWorkflowStep -> businessEvent
+	alias afterTradeUTI:
+	    TradeForEvent (reportableEvent) -> tradeIdentifier -> assignedIdentifier
+	        filter [ item -> identifierType = TradeIdentifierTypeEnum -> UniqueTransactionIdentifier ]
+	        map [ item -> identifier ]
+	        only-element
+	set reportableTrade:
+        //TH Review -> work around extracting the specific before trade
+        if Qualify_Compression(businessEvent) = True then
+            BeforeTradeByUTI (reportableEvent, afterTradeUTI)
+        else
+            businessEvent -> instruction -> before -> trade only-element
+
+func ProductForTrade: <"Extracts the product from a trade.">
+    inputs: trade Trade (1..1)
+    output: product Product (0..1)
+    set product: trade -> tradableProduct -> product
+
+func Counterparties: <"Extracts the two counterparties from a trade.">
+    inputs: trade Trade (1..1)
+    output: counterparties Party (0..2)
+    add counterparties: trade -> tradableProduct -> counterparty -> partyReference
+
+func UnderlierForProduct: <"Extracts the underlier product.">
+	// If no wildcards can be defined, should revise how the payout selection logic for the underlying product needs to be implemented
+	inputs: product Product (1..1)
+	output: underlierProduct Product (1..1)
+	set underlierProduct:
+		if IsSwaption( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> underlier
+		else if IsCreditSwaption( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> underlier
+		else if product -> contractualProduct -> economicTerms -> payout -> optionPayout/* -> underlier -> foreignExchange */ exists then
+			product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element  -> underlier
+		else if product -> contractualProduct -> economicTerms -> payout -> forwardPayout/*-> underlier -> foreignExchange */ exists then
+			product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> underlier
+		/*else if product -> contractualProduct -> economicTerms -> payout -> equityPayout exists then
+			product -> contractualProduct -> economicTerms -> payout -> equityPayout only-element -> underlier*/
+		else if product -> contractualProduct -> economicTerms -> payout -> performancePayout exists then
+			product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> underlier
+
+func SingleTradeLot: <"Extracts a single trade lot from a trade, or returns null if the trade lot attribute is not unique.">
+	inputs: trade Trade (1..1)
+	output: singleTradeLot TradeLot (0..1)
+	set singleTradeLot: trade -> tradableProduct -> tradeLot only-element
+
+func IsFixedInterestRate: <"Returns true if Price has priceType of InterestRate, with no spreadType specified.">
+    inputs: price PriceSchedule (1..1)
+    output: result boolean (1..1)
+    set result:
+        price -> priceExpression -> priceType = PriceTypeEnum -> InterestRate
+            and price -> priceExpression -> spreadType is absent
+
+func IsInterestRateSpread: <"Returns true if Price has priceType of InterestRate, and a spreadType of Spread.">
+    inputs: price PriceSchedule (1..1)
+    output: result boolean (1..1)
+    set result:
+        price -> priceExpression -> priceType = PriceTypeEnum -> InterestRate
+            and price -> priceExpression -> spreadType = SpreadTypeEnum -> Spread
+
+func Contract_Price: <"Price">
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: prices PriceSchedule (0..*) // TH review - cardinality
+    alias trade: TradeForEvent( reportableEvent )
+    add prices:
+        SingleTradeLot( trade ) -> priceQuantity -> price
+
+func Contract_StrikePrice: <"Strike Price">
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: prices PriceSchedule (0..*) // TH review - cardinality
+    alias trade: TradeForEvent( reportableEvent )
+    alias product: ProductForTrade( trade )
+    add prices:
+        // For interest rate swaptions, the Strike corresponds to the fixed rate of the underlying swap
+        if IsSwaption( product ) then
+            UnderlierForProduct( product ) -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> rateSpecification -> fixedRate -> rateSchedule -> price
+        else if IsOption( product ) and product -> contractualProduct -> economicTerms -> payout -> optionPayout -> exerciseTerms -> strike -> strikePrice exists then
+            product -> contractualProduct -> economicTerms -> payout -> optionPayout -> exerciseTerms -> strike -> strikePrice
+        else if IsOption( product ) and product -> contractualProduct -> economicTerms -> payout -> optionPayout -> exerciseTerms -> strike -> strikeReference exists then
+            product -> contractualProduct -> economicTerms -> payout -> optionPayout -> exerciseTerms -> strike -> strikeReference -> rateSchedule -> price
+        else if IsCap( product ) then
+            product -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> rateSpecification -> floatingRate -> capRateSchedule -> price
+        else if IsFloor( product ) then
+            product -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> rateSpecification -> floatingRate -> floorRateSchedule -> price
+		else if IsVarianceSwap( product ) then
+			if product -> contractualProduct -> economicTerms -> payout -> performancePayout -> returnTerms -> varianceReturnTerms -> volatilityStrikePrice exists
+				then product -> contractualProduct -> economicTerms -> payout -> performancePayout -> returnTerms -> varianceReturnTerms -> volatilityStrikePrice
+		else if IsVolatilitySwap ( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> performancePayout -> returnTerms -> volatilityReturnTerms -> volatilityStrikePrice
+        // TH Review -> eq2perf update revision. OSTTRA/BNPP bilateral session -> as per CFTC specification, vol/var prices should report as strike price.
+        else if IsEquitySwap( trade ) then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> Variance or item -> priceExpression -> priceType = PriceTypeEnum -> Volatility ]
+
+func Contract_Price_Monetary: <"Monetary Price">
+    inputs: reportableEvent ReportableEvent (1..1)
+    output: prices PriceSchedule (0..*) // TH review - cardinality
+    alias trade: TradeForEvent( reportableEvent )
+    add prices:
+    	// AssetPrice, CashPrice, or Interest as price types for getting the Price value
+		// Equity Swaps
+		if IsEquitySwap( trade ) then
+			trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+				filter [
+				    item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                        or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                        // TH Review -> Pending interpretation review
+                        /*or item -> priceExpression -> priceType = PriceTypeEnum -> Variance
+                        or item -> priceExpression -> priceType = PriceTypeEnum -> Volatility*/ ]
+		// Equity Forwards
+		else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> underlier -> security -> securityType = SecurityTypeEnum -> Equity then
+			trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+				filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+				    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice ]
+		// Bond Swaps
+		else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> underlier -> security -> securityType = SecurityTypeEnum -> Debt then
+			trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+				filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+				    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice ]
+		// Bond Forwards
+		else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> underlier -> security -> securityType = SecurityTypeEnum -> Debt then
+			trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+				filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+				    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice ]
+		// Commodity Swaps
+		else if IsCommoditySwap( trade ) then
+			FixedPriceLeg2( ProductForTrade( trade ) ) -> fixedPrice -> price
+
+func Package_Contract_Price_Monetary: <"Package Monetary Price">
+    inputs: trade Trade (1..1)
+    output: prices PriceSchedule (0..*) // TH review - cardinality
+    add prices:
+        // AssetPrice, CashPrice, or Interest as price types for getting the Price value
+        // Equity Swaps
+        if IsEquitySwap( trade ) then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate
+                    //TH Review -> Pending interpretation review
+                    /*or item -> priceExpression -> priceType = PriceTypeEnum -> Variance
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> Volatility*/ ]
+        // Equity Forwards
+        else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> underlier-> security -> securityType = SecurityTypeEnum -> Equity then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate ]
+        // Bond Swaps
+        else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and  trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> underlier -> security -> securityType = SecurityTypeEnum -> Debt then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice ]
+        // Bond Forwards
+        else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout exists
+                and (trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout exists
+                    or trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> cashflow exists)
+                and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> underlier -> security -> securityType = SecurityTypeEnum -> Debt then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate ]
+        // Commodity Swaps
+        else if IsCommoditySwap( trade ) then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate ]
+        // Interest Swaps
+        /*else if trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> interestRatePayout count = 2 then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate ]*/
+		else if Qualify_AssetClass_InterestRate_Swap(trade -> tradableProduct -> product -> contractualProduct -> economicTerms) = True then
+            trade -> tradableProduct -> tradeLot -> priceQuantity -> price
+                filter [ item -> priceExpression -> priceType = PriceTypeEnum -> AssetPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> CashPrice
+                    or item -> priceExpression -> priceType = PriceTypeEnum -> InterestRate ]
+        // 2022/03/11 -> Close issue-100 -> control with issue-164
+
+func IsEquitySwap:
+	inputs: trade Trade (1..1)
+	output: result boolean (1..1)
+	set result:
+	    Qualify_BaseProduct_EquitySwap( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = True
+
+func IsCommoditySwap:
+	inputs: trade Trade (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_Commodity_Swap_FixedFloat( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = True
+		or Qualify_Commodity_Swap_Basis( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = True
+
+func IsCommoditySwapProduct:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_Commodity_Swap_FixedFloat( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_Commodity_Swap_Basis( product -> contractualProduct -> economicTerms ) = True
+
+func FloatingRateIndex:
+    inputs: interestRatePayout InterestRatePayout (1..1)
+    output: floatingRateIndex FloatingRateIndexEnum (0..1)
+    set floatingRateIndex:
+        if interestRatePayout -> rateSpecification -> floatingRate exists then
+            interestRatePayout -> rateSpecification -> floatingRate -> rateOption -> floatingRateIndex
+		else if interestRatePayout -> rateSpecification -> inflationRate exists then
+            interestRatePayout -> rateSpecification -> inflationRate -> rateOption -> floatingRateIndex
+
+//DRR Product Qualification -> Input Type is "Product"
+func IsInflationRateBasis:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_BaseProduct_Inflation( product -> contractualProduct -> economicTerms ) = True
+		and Qualify_BaseProduct_CrossCurrency(  product -> contractualProduct -> economicTerms  ) = False
+		and Qualify_SubProduct_Basis( product -> contractualProduct -> economicTerms ) = True
+
+func IsInterestRateCrossCurrency:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_BaseProduct_CrossCurrency( product -> contractualProduct -> economicTerms ) = True
+
+func IsInterestRateCrossCurrencyBasis:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+ 		Qualify_SubProduct_Basis( product -> contractualProduct -> economicTerms ) = True
+	 	and Qualify_BaseProduct_CrossCurrency( product -> contractualProduct -> economicTerms ) = True
+
+func IsInterestRateFixedFloatSingleCurrency:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_SubProduct_FixedFloat( product -> contractualProduct -> economicTerms ) = True
+		and Qualify_BaseProduct_CrossCurrency( product -> contractualProduct -> economicTerms ) = False
+
+func IsInterestRateFixedFixed:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_SubProduct_FixedFixed( product -> contractualProduct -> economicTerms ) = True
+		and Qualify_BaseProduct_CrossCurrency( product -> contractualProduct -> economicTerms ) = False
+
+func IsInterestRateBasis:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_SubProduct_Basis( product -> contractualProduct -> economicTerms ) = True
+		and Qualify_BaseProduct_CrossCurrency( product -> contractualProduct -> economicTerms ) = False
+
+func IsGenericIRS:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		product -> contractualProduct -> economicTerms -> payout -> interestRatePayout count = 2
+
+func IsOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+  		product -> contractualProduct -> economicTerms -> payout -> optionPayout exists
+
+func IsCommodityCommodity:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		product -> contractualProduct -> economicTerms -> payout -> commodityPayout count = 2
+
+func IsSwaption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_InterestRate_Option_Swaption( product -> contractualProduct -> economicTerms ) = True or
+		Qualify_CreditDefaultSwaption ( product -> contractualProduct -> economicTerms ) = True
+
+func IsCapFloor:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_InterestRate_CapFloor( product -> contractualProduct -> economicTerms ) = True
+	
+//TH Review -> ISFXForward rename func
+func IsFXForward:
+	inputs: trade Trade (1..1)
+	output: result boolean (1..1)
+	set result:
+		trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> underlier -> foreignExchange exists
+
+func IsFXOption:
+	inputs: trade Trade (1..1)
+	output: result boolean (1..1)
+	set result:
+    	trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> optionPayout -> underlier -> foreignExchange exists
+
+func IsFXPerformance:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		product -> contractualProduct -> economicTerms -> payout -> performancePayout -> observationTerms-> observable -> currencyPair exists
+
+func IsEquity:
+    inputs: product Product (1..1)
+    output: result boolean (1..1)
+    set result:
+        Qualify_AssetClass_Equity( product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> underlier ) = True or Qualify_AssetClass_Equity(product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> underlier) = True
+
+func IsCreditSwaption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_CreditDefaultSwaption ( product -> contractualProduct -> economicTerms) = True
+
+func IsCommodity:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+  		product -> contractualProduct -> economicTerms -> payout -> commodityPayout exists
+/*
+func IsNotInterestRateOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		//TH Review -> qualify this is asset class IR = True -> bond options?
+		//Qualify_AssetClass_InterestRate_Swap(product -> contractualProduct -> economicTerms ) = True
+		//and 
+		Qualify_InterestRate_Option_Swaption( product -> contractualProduct -> economicTerms ) = False
+      	and Qualify_InterestRate_CapFloor( product -> contractualProduct -> economicTerms ) = False
+*/
+
+func IsCreditDefaultSwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_AssetClass_CreditDefault( product -> contractualProduct -> economicTerms ) = True
+
+func IsCreditDefaultSwapIndex:
+	inputs: trade Trade (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_CreditDefaultSwap_Index( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = True
+		or Qualify_CreditDefaultSwap_IndexTranche( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = True
+
+func IsPutOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+    	IsOption( product )
+		and ( product -> contractualProduct -> economicTerms -> payout -> optionPayout -> optionType all = OptionTypeEnum -> Put
+			or product -> contractualProduct -> economicTerms -> payout -> optionPayout -> optionType all = OptionTypeEnum -> Receiver )
+
+func IsCallOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		IsOption( product )
+		and ( product -> contractualProduct -> economicTerms -> payout -> optionPayout -> optionType all = OptionTypeEnum -> Call
+			or product -> contractualProduct -> economicTerms -> payout -> optionPayout -> optionType all = OptionTypeEnum -> Payer )
+
+func IsCap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_InterestRate_CapFloor( product -> contractualProduct -> economicTerms ) = True
+		and product -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> rateSpecification -> floatingRate -> capRateSchedule exists
+
+func IsFloor:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_InterestRate_CapFloor( product -> contractualProduct -> economicTerms ) = True
+		and product -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> rateSpecification -> floatingRate -> floorRateSchedule exists
+
+func IsCommodityOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+	    Qualify_Commodity_Option( product -> contractualProduct -> economicTerms ) = True
+
+func IsEquityOption:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+	    Qualify_EquityOption_PriceReturnBasicPerformance_SingleName( product -> contractualProduct -> economicTerms ) = True or
+	    Qualify_EquityOption_PriceReturnBasicPerformance_Index( product -> contractualProduct -> economicTerms ) = True or
+		Qualify_EquityOption_PriceReturnBasicPerformance_Basket( product -> contractualProduct -> economicTerms ) = True
+
+func IsVarianceSwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_EquitySwap_ParameterReturnVariance_SingleName ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnVariance_Index ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnVariance_Basket ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnDispersion ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_ForeignExchange_ParameterReturnVariance ( product -> contractualProduct -> economicTerms ) = True
+
+func IsVolatilitySwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_EquitySwap_ParameterReturnVolatility_SingleName ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnVolatility_Index ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnVolatility_Basket ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_ForeignExchange_ParameterReturnVolatility ( product -> contractualProduct -> economicTerms ) = True
+
+func IsDividendSwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_EquitySwap_ParameterReturnDividend_SingleName ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnDividend_Index ( product -> contractualProduct -> economicTerms ) = True
+		or Qualify_EquitySwap_ParameterReturnDividend_Basket ( product -> contractualProduct -> economicTerms ) = True
+		//or Qualify_ForeignExchange_ParameterReturnDividend ( product -> contractualProduct -> economicTerms ) = True
+
+func IsFixedFloatZeroCouponSwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		Qualify_InterestRate_IRSwap_FixedFloat_ZeroCoupon ( product -> contractualProduct -> economicTerms ) = True
+			or Qualify_InterestRate_InflationSwap_FixedFloat_ZeroCoupon ( product -> contractualProduct -> economicTerms ) = True
+
+func IsNotFixedFloatZeroCouponSwap:
+	inputs: product Product (1..1)
+	output: result boolean (1..1)
+	set result:
+		IsGenericIRS (product) = True and
+		Qualify_InterestRate_IRSwap_FixedFloat_ZeroCoupon ( product -> contractualProduct -> economicTerms ) = False
+			and Qualify_InterestRate_InflationSwap_FixedFloat_ZeroCoupon ( product -> contractualProduct -> economicTerms ) = False
+
+//End product qualification logic
+
+//Utility - Interest rate leg ordering
+//Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0
+//EMIR best practice positioned in regulation-common as it is used across global jurisdictions
+
+func InterestRateLeg1:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	set interestRateLeg1:
+		if IsInterestRateFixedFloatSingleCurrency( product ) then
+			InterestRateLeg1FixedFloatSingleCurrency( product )
+		else if IsInterestRateCrossCurrency( product ) then
+			InterestRateLeg1CrossCurrency( product )
+		else if IsInterestRateFixedFixed( product ) then
+			InterestRateLeg1FixedFixed( product )
+		else if IsInterestRateBasis( product ) then
+			InterestRateLeg1Basis( product )
+		else if IsCapFloor( product ) then
+			InterestRateLeg1CapFloor( product )
+
+func InterestRateLeg2:
+    [regulatoryReference ISDA EMIRReportingBestPractice
+        table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg2 InterestRatePayout (0..1)
+	set interestRateLeg2:
+		if IsCommodity( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element
+		else if IsEquity( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element
+		else if IsCreditDefaultSwap( product ) then
+			product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element
+		else if IsInterestRateFixedFloatSingleCurrency( product ) then
+			InterestRateLeg2FixedFloatSingleCurrency( product )
+		else if IsInterestRateCrossCurrency( product ) then
+			InterestRateLeg2CrossCurrency( product )
+		else if IsInterestRateFixedFixed( product ) then
+			InterestRateLeg2FixedFixed( product )
+    	else if IsInterestRateBasis( product ) then
+    		InterestRateLeg2Basis( product )
+
+func InterestRateLeg1CrossCurrency:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg1:
+        if interestRatePayouts -> priceQuantity -> quantitySchedule exists then
+            interestRatePayouts
+                min [ item -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency ]
+        else if interestRatePayouts -> priceQuantity -> quantityReference exists then
+            interestRatePayouts
+                min [ item -> priceQuantity -> quantityReference -> quantitySchedule -> unitOfAmount -> currency ]
+
+func InterestRateLeg2CrossCurrency:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+ 	inputs: product Product (1..1)
+	output: interestRateLeg2 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg2:
+ 		if interestRatePayouts -> priceQuantity -> quantitySchedule exists then
+ 			interestRatePayouts
+				max [ item -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency ]
+		else if interestRatePayouts -> priceQuantity -> quantityReference exists then
+			interestRatePayouts
+				max [ item -> priceQuantity -> quantityReference -> quantitySchedule -> unitOfAmount -> currency ]
+
+func InterestRateLeg1FixedFloatSingleCurrency:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	set interestRateLeg1:
+        product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+            filter [ item -> rateSpecification -> fixedRate exists ]
+            only-element
+
+func InterestRateLeg2FixedFloatSingleCurrency:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+ 	inputs: product Product (1..1)
+	output: interestRateLeg2 InterestRatePayout (0..1)
+	set interestRateLeg2:
+		product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+ 			filter [ item -> rateSpecification -> floatingRate exists or item -> rateSpecification -> inflationRate exists ]
+			only-element
+
+func InterestRateLeg1FixedFixed:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg1:
+        if interestRatePayouts -> rateSpecification -> fixedRate distinct count = 1 then
+            interestRatePayouts
+                min [ CalculationPeriodToDays( item ) ]
+        else if interestRatePayouts -> rateSpecification -> fixedRate distinct count > 1 then
+            interestRatePayouts
+                max [ item -> rateSpecification -> fixedRate -> rateSchedule -> price -> amount ]
+
+func InterestRateLeg2FixedFixed:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+ 	inputs: product Product (1..1)
+	output: interestRateLeg2 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg2:
+		if interestRatePayouts -> rateSpecification -> fixedRate distinct count = 1 then
+			interestRatePayouts
+				max [ CalculationPeriodToDays( item ) ]
+		else if interestRatePayouts -> rateSpecification -> fixedRate distinct count > 1 then
+			interestRatePayouts
+				min [ item -> rateSpecification -> fixedRate -> rateSchedule -> price -> amount ]
+
+func InterestRateLeg1CapFloor:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	set interestRateLeg1:
+        product -> contractualProduct -> economicTerms -> payout -> interestRatePayout only-element
+
+func InterestRateLeg1Basis:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+ 	inputs: product Product (1..1)
+	output: interestRateLeg1 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg1:
+        if interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule is absent
+                or interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule distinct count = 1 then
+            interestRatePayouts
+                min [ ResetFrequencyPeriodToDays( item ) ]
+        else if interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule -> price -> amount distinct count > 1 then
+            interestRatePayouts
+                max [ item -> rateSpecification -> floatingRate -> spreadSchedule -> price -> amount ]
+
+func InterestRateLeg2Basis:
+ 	[regulatoryReference ISDA EMIRReportingBestPractice
+ 		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+ 	inputs: product Product (1..1)
+	output: interestRateLeg2 InterestRatePayout (0..1)
+	alias interestRatePayouts: product -> contractualProduct -> economicTerms -> payout -> interestRatePayout
+	set interestRateLeg2:
+		if interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule is absent
+				or interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule distinct count = 1 then
+			interestRatePayouts
+				max [ ResetFrequencyPeriodToDays( item ) ]
+		else if interestRatePayouts -> rateSpecification -> floatingRate -> spreadSchedule -> price -> amount distinct count > 1 then
+			interestRatePayouts
+				min [ item -> rateSpecification -> floatingRate -> spreadSchedule -> price -> amount ]
+
+func ResetFrequencyPeriod:
+	inputs: resetFrequency ResetFrequency (1..1)
+	output: period string (0..1)
+	set period:
+	    if resetFrequency -> period = PeriodExtendedEnum->D then "DAIL"
+        else if resetFrequency -> period = PeriodExtendedEnum->W then "WEEK"
+        else if resetFrequency -> period = PeriodExtendedEnum->M then "MNTH"
+        else if resetFrequency -> period = PeriodExtendedEnum->Y then "YEAR"
+        else if resetFrequency -> period = PeriodExtendedEnum->T then "EXPI"
+
+func ResetFrequencyPeriodToDays:
+	inputs: interestRatePayout InterestRatePayout (1..1)
+	output: result int (1..1)
+	alias resetDates: interestRatePayout -> resetDates
+	set result:
+		PeriodCalculation(
+			resetDates -> resetFrequency -> period,
+			resetDates -> resetFrequency -> periodMultiplier,
+			resetDates -> calculationPeriodDatesReference -> effectiveDate -> adjustableDate -> unadjustedDate,
+			resetDates -> calculationPeriodDatesReference -> terminationDate -> adjustableDate -> unadjustedDate
+		)
+
+func CalculationPeriodToDays:
+	inputs: interestRatePayout InterestRatePayout (1..1)
+	output: result int (1..1)
+	alias calculationPeriodDates: interestRatePayout -> calculationPeriodDates
+	set result:
+		PeriodCalculation(
+			calculationPeriodDates -> calculationPeriodFrequency -> period,
+			calculationPeriodDates -> calculationPeriodFrequency -> periodMultiplier,
+			calculationPeriodDates -> effectiveDate -> adjustableDate -> unadjustedDate,
+			calculationPeriodDates -> terminationDate -> adjustableDate -> unadjustedDate
+		)
+
+func CalculationPeriodToDaysCommodities:
+	inputs: commodityPayout CommodityPayout (1..1)
+	output: result int (1..1)
+	alias calculationPeriodDates: commodityPayout -> calculationPeriodDates
+	set result:
+		PeriodCalculation(
+				calculationPeriodDates -> calculationPeriodFrequency -> period,
+				calculationPeriodDates -> calculationPeriodFrequency -> periodMultiplier,
+				calculationPeriodDates -> effectiveDate -> adjustableDate -> unadjustedDate,
+				calculationPeriodDates -> terminationDate -> adjustableDate -> unadjustedDate
+		)
+
+//TH review -> temp / calculation not needed (Harry at nov1w)...how do we make sure the period representation is correct. *** To be discussed with Regnosys ***
+func PeriodCalculation:
+	inputs:
+		period PeriodExtendedEnum (1..1)
+		periodMultiplier int (1..1)
+		effectiveDate date (1..1)
+		terminationDate date (1..1)
+	output:
+		result int (1..1)
+	set result:
+		if period = PeriodExtendedEnum -> D then periodMultiplier
+		else if period = PeriodExtendedEnum -> W then periodMultiplier * 7
+		else if period = PeriodExtendedEnum -> M then periodMultiplier * 30 //30-31
+		else if period = PeriodExtendedEnum -> Y then periodMultiplier * 365 // leap years
+		else if period = PeriodExtendedEnum -> T or period = PeriodExtendedEnum -> C then periodMultiplier * DateDifference (effectiveDate, terminationDate)
+		//else if period = PeriodExtendedEnum -> C then periodMultiplier * DateDifference (effectiveDate, terminationDate)
+
+func GetCommodityKey:
+	inputs: commodityPayout CommodityPayout (1..1)
+	output: key string (0..1)
+	// needs Java function
+
+func CommodityLeg1:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: commodityLeg1 CommodityPayout (0..1)
+	alias commodityPayouts: product ->  contractualProduct -> economicTerms -> payout -> commodityPayout
+	set commodityLeg1:
+		if IsCommodityCommodity( product ) then
+			CommodityCommodityLeg1( commodityPayouts ) // moved to separate func due to nested if/else code gen issue
+		else if IsCommodity( product ) then
+			commodityPayouts only-element
+
+func CommodityCommodityLeg1:
+	inputs: commodityPayouts CommodityPayout (0..*)
+	output: commodityLeg1 CommodityPayout (0..1)
+
+	set commodityLeg1:
+		if commodityPayouts map [ GetCommodityKey( item ) ] exists
+			then commodityPayouts min [ GetCommodityKey( item ) ]
+		else if commodityPayouts -> priceQuantity -> resolvedQuantity -> amount distinct count = 1 then
+			commodityPayouts
+				min [ CalculationPeriodToDaysCommodities( item ) ]
+		else
+			commodityPayouts
+				max [ item -> priceQuantity -> quantitySchedule -> amount ]
+
+func CommodityLeg2:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+		table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: product Product (1..1)
+	output: commodityLeg2 CommodityPayout (0..1)
+	alias commodityPayouts: product ->  contractualProduct -> economicTerms -> payout -> commodityPayout
+	set commodityLeg2:
+	    if IsCommodityCommodity( product ) then
+	        CommodityCommodityLeg2( commodityPayouts ) // moved to separate func due to nested if/else code gen issue
+
+ func CommodityCommodityLeg2:
+  	inputs: commodityPayouts CommodityPayout (0..*)
+  	output: commodityLeg2 CommodityPayout (0..1)
+  	set commodityLeg2:
+		if commodityPayouts map [ GetCommodityKey( item ) ] exists
+			then commodityPayouts max [ GetCommodityKey( item ) ]
+  		else if commodityPayouts -> priceQuantity -> resolvedQuantity -> amount distinct count = 1 then
+            commodityPayouts
+                max [ CalculationPeriodToDaysCommodities( item ) ]
+        else
+            commodityPayouts
+                min [ item -> priceQuantity -> quantitySchedule -> amount ]
+
+func FixedPriceLeg2:
+	inputs: 
+		product Product (1..1)
+	output: 
+		fixedPrice FixedPricePayout (0..1) // TH review - cardinality
+	
+	set fixedPrice:
+	    if IsCommodity( product ) and product -> contractualProduct -> economicTerms -> payout -> fixedPricePayout exists then
+	        product -> contractualProduct -> economicTerms -> payout -> fixedPricePayout only-element
+
+//*** Proposal for deprecation on EMIR REFIT: FXCurrency1/2 can be swap with FXLeg1/2. Already deprecated in CFTC ***
+func FXCurrency1:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+        table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+		inputs: trade Trade (1..1)
+		output: quantity NonNegativeQuantitySchedule (0..1)
+		set quantity:
+			if IsFXForward( trade ) or IsFXOption( trade ) then
+				SingleTradeLot( trade ) -> priceQuantity -> quantity
+					filter [ item -> unitOfAmount -> currency exists ]
+					min [ item -> unitOfAmount -> currency ]
+
+func FXCurrency2:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+        table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+		inputs: trade Trade (1..1)
+		output: quantity NonNegativeQuantitySchedule (0..1)
+		set quantity:
+			if IsFXForward( trade ) or IsFXOption( trade ) then
+				SingleTradeLot( trade ) -> priceQuantity -> quantity
+					filter [ item -> unitOfAmount -> currency exists ]
+					max [ item -> unitOfAmount -> currency ]
+
+func FXLeg1:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+        table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: trade Trade (1..1)
+	output: fxLeg1 Cashflow (0..1)
+	set fxLeg1:
+		if IsFXForward( trade ) or IsFXOption( trade ) then
+			[
+				UnderlierForProduct(trade -> tradableProduct -> product) -> foreignExchange -> exchangedCurrency1,
+				UnderlierForProduct(trade -> tradableProduct -> product) -> foreignExchange -> exchangedCurrency2
+			]
+			min [ item -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency ]
+
+func FXLeg2:
+	[regulatoryReference ISDA EMIRReportingBestPractice
+        table "ESMA reporting best practices matrix March 2020" provision "Best Practice For Leg 1 / Leg 2 Determination and population of Counterparty Side for EMIR RTS 2.0"]
+	inputs: trade Trade (1..1)
+	output: fxLeg2 Cashflow (0..1)
+	set fxLeg2:
+		if IsFXForward( trade ) or IsFXOption( trade ) then
+			[
+				UnderlierForProduct(trade -> tradableProduct -> product) -> foreignExchange -> exchangedCurrency1,
+				UnderlierForProduct(trade -> tradableProduct -> product) -> foreignExchange -> exchangedCurrency2
+			]
+			max [ item -> priceQuantity -> quantitySchedule -> unitOfAmount -> currency ]
+
+/*
+TH Review -> Not used anymore
+func FxPayoutFlatten:
+	inputs:
+		exchangedCurrency1 Cashflow (1..1)
+		exchangedCurrency2 Cashflow (1..1)
+	output:
+		result Cashflow (1..2)
+
+	add result: exchangedCurrency1
+	add result: exchangedCurrency2
+*/
+
+func CommodityQuantity: <"Commodity Notional Quantity">
+    inputs: commodityPayout CommodityPayout (1..1)
+    output: quantity number (0..1)
+    set quantity:
+	    if commodityPayout -> priceQuantity -> quantitySchedule -> amount exists then
+	        commodityPayout -> priceQuantity -> quantitySchedule -> amount
+
+func CommodityFixedPriceQuantity:
+	inputs:
+		tradeLot TradeLot (1..1)
+	output: fixedLegPriceQuantity PriceQuantity (0..1)
+	set fixedLegPriceQuantity:
+		tradeLot -> priceQuantity
+		filter [item -> observable is absent] only-element
+
+func QuantityFrequency:
+	inputs:
+		calculationPeriodDates CalculationPeriodDates (1..1)
+		priceQuantity PriceQuantity (1..1)
+	output: period string (0..1)
+	set period:
+        if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->D
+                then "DAIL"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->W
+                then "WEEK"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->M
+                then "MNTH"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->Y
+                then "YEAR"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->T
+                then "EXPI"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->C
+            and calculationPeriodDates -> calculationPeriodFrequency -> period = PeriodExtendedEnum->D
+                then "DAIL"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->C
+            and calculationPeriodDates -> calculationPeriodFrequency -> period = PeriodExtendedEnum->W
+                then "WEEK"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->C
+            and calculationPeriodDates -> calculationPeriodFrequency -> period = PeriodExtendedEnum->M
+                then "MNTH"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->C
+            and calculationPeriodDates -> calculationPeriodFrequency -> period = PeriodExtendedEnum->Y
+                then "YEAR"
+        else if priceQuantity -> quantity -> frequency -> period only-element = PeriodExtendedEnum->C
+            and calculationPeriodDates -> calculationPeriodFrequency -> period = PeriodExtendedEnum->T
+                then "EXPI"
+
+func CommodityFrequencyMultiplier: <"Commodity Quantity Frequency Multiplier">
+    inputs: commodityPayout CommodityPayout (1..1)
+    output: periodMultiplier int (0..1)
+    set periodMultiplier:
+        if commodityPayout -> priceQuantity -> quantitySchedule exists then
+            commodityPayout -> priceQuantity -> quantitySchedule -> frequency -> periodMultiplier
+
+func PartyLei: <"Returns a single Party LEI from a list of party identifiers">
+	inputs: partyIdentifier PartyIdentifier (1..*)
+	output: partyLei string (0..1)
+	set partyLei:
+		partyIdentifier
+			filter [item -> identifierType = PartyIdentifierTypeEnum -> LEI]
+			map [item -> identifier] distinct only-element
+
+//TH Review -> CFTC global Party Resolution proposal
+
+func PartyLeiAndPersonByRoles: <"Returns a concatenated Party LEI and Person Id, or a Party LEI, from a Party.">
+	inputs: party Party (1..1)
+			partyInformation PartyInformation (1..*)
+			roles NaturalPersonRoleEnum (0..*)
+	output: partyPersonLei string (0..1)
+	alias partyLei:
+		if party -> partyId -> identifierType any = PartyIdentifierTypeEnum -> LEI exists then
+			PartyLei(party->partyId)
+	alias personId:
+		partyInformation
+		filter [ item -> partyReference = party ]
+		map [item -> relatedPerson] flatten
+		filter [ roles contains item -> role ]
+		map [item -> personReference -> personId -> identifier] flatten only-element
+	set partyPersonLei:
+		if personId exists then
+			partyLei + personId
+		else
+			partyLei
+
+func ExtractReportingParty: <"Extracts the reporting party for a supervisory body (e.g. CFTC).">
+    inputs:
+        partyInformation PartyInformation (0..*)
+        supervisoryBody SupervisoryBodyEnum (1..1)
+    output:
+        reportingParty Party (0..1)
+
+    alias reportingPartyFromRegimeInformation:
+        partyInformation
+            filter [ ExtractReportingRegime( item -> regimeInformation, supervisoryBody, ReportingRoleEnum -> ReportingParty ) exists ]
+            map [ item -> partyReference ]
+            distinct only-element
+
+    set reportingParty:
+        if reportingPartyFromRegimeInformation exists then
+            reportingPartyFromRegimeInformation
+        else
+            ExtractPartyFromRelatedPartyByRole( partyInformation -> relatedParty, PartyRoleEnum -> ReportingParty )
+
+func ExtractCounterparty: <"Extracts the counterparty for the provided supervisory body (e.g. CFTC).">
+    inputs:
+        partyInformation PartyInformation (0..*)
+        supervisoryBody SupervisoryBodyEnum (1..1)
+        tradeCounterparties Party (2..2)
+    output:
+        counterparty Party (0..1)
+
+    alias counterpartyFromRegimeInformation:
+        partyInformation
+            filter [ ExtractReportingRegime( item -> regimeInformation, supervisoryBody, ReportingRoleEnum -> Counterparty ) exists ]
+            map [ item -> partyReference ]
+            distinct only-element
+
+    alias counterpartyFromRelatedParty:
+        ExtractPartyFromRelatedPartyByRole( partyInformation -> relatedParty, PartyRoleEnum -> Counterparty )
+
+    set counterparty:
+        if counterpartyFromRegimeInformation exists then
+            counterpartyFromRegimeInformation
+        else if counterpartyFromRelatedParty exists then
+            counterpartyFromRelatedParty
+        else
+            // extract trade counterparty that is not the reporting party
+            tradeCounterparties
+                filter [ item <> ExtractReportingParty( partyInformation, supervisoryBody ) ]
+                only-element
+
+func ExtractReportingRegime: <"Extracts the reporting regime that contains the provided supervisory body  (e.g. CFTC) and reporting role (e.g. ReportingParty).">
+    inputs:
+        regimes ReportingRegime (0..*)
+        supervisoryBody SupervisoryBodyEnum (1..1)
+        reportingRole ReportingRoleEnum (1..1)
+    output:
+        regime ReportingRegime (0..1)
+
+    set regime:
+        regimes
+            filter [ item -> supervisoryBody = supervisoryBody and item -> reportingRole = reportingRole ]
+            only-element
+
+func ExtractSubmitterIdentifier:
+    inputs: partyInformation PartyInformation (0..*)
+	  		supervisoryBodyEnum SupervisoryBodyEnum (1..1)
+    output: partyId string (0..1)
+	// filter to DataSubmitter
+    alias dataSubmitter: FilterRelatedPartyByRole( partyInformation -> relatedParty, PartyRoleEnum -> DataSubmitter ) -> partyReference distinct 
+		filter [ item -> partyId -> identifierType contains PartyIdentifierTypeEnum -> LEI ]
+		only-element
+    // filter to ReportingParty
+    alias reportingParty: ExtractReportingParty( partyInformation , supervisoryBodyEnum )
+    // choose DataSubmitter or ReportingParty
+	alias submitterParty:
+        if dataSubmitter exists then dataSubmitter
+        else if reportingParty exists then reportingParty
+    // extract LEI
+	set partyId: PartyLei (submitterParty -> partyId)
+
+func ExtractPartyFromRelatedPartyByRole:
+    inputs:
+        relatedParties RelatedParty (0..*)
+        partyRole PartyRoleEnum (1..1)
+    output:
+        party Party (0..1)
+
+    set party:
+        FilterRelatedPartyByRole( relatedParties, partyRole ) -> partyReference distinct only-element
+
+func SettlementTermsLeg1:
+    inputs: product Product (1..1)
+    output: settlementTerms SettlementTerms (0..1)
+    set settlementTerms:
+        // Interest Rates
+        if product -> contractualProduct -> economicTerms -> payout -> interestRatePayout -> settlementTerms exists then
+            InterestRateLeg1( product ) -> settlementTerms
+        // Equities
+		//Th Review -> apply EQ leg ordering
+        else if product -> contractualProduct -> economicTerms -> payout -> performancePayout -> settlementTerms exists then
+            product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> settlementTerms
+        // Forwards
+        else if product -> contractualProduct -> economicTerms -> payout -> forwardPayout -> settlementTerms exists then
+            product -> contractualProduct -> economicTerms -> payout -> forwardPayout only-element -> settlementTerms
+        // Commodities
+        else if CommodityLeg1( product ) -> settlementTerms exists then
+            CommodityLeg1( product ) -> settlementTerms
+        // Credits
+        else if product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> settlementTerms exists then
+            product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> settlementTerms
+        /*else if product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> generalTerms exists then
+            product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout -> generalTerms*/
+        // Options
+        else if product -> contractualProduct -> economicTerms -> payout -> optionPayout -> settlementTerms exists then
+            product -> contractualProduct -> economicTerms -> payout -> optionPayout only-element -> settlementTerms
+
+func SettlementTermsLeg2:
+    inputs: product Product (1..1)
+    output: settlementTerms SettlementTerms (0..1) // TH review - cardinality
+    set settlementTerms:
+        // Interest Rates (also covers Equities and Credits)
+        if InterestRateLeg2( product ) -> settlementTerms exists then
+            InterestRateLeg2( product ) -> settlementTerms
+        // Commodities
+        else if IsCommodity (product ) = True then
+            if IsCommodityCommodity( product ) then
+                CommodityLeg2( product ) -> settlementTerms
+            else
+                FixedPriceLeg2( product ) -> settlementTerms
+
+func IsCleared:
+	inputs:
+		originatingWorkflowStep WorkflowStep (1..1)
+	output:
+		result boolean (1..1)
+	set result:
+		originatingWorkflowStep -> workflowState -> workflowStatus = WorkflowStatusEnum -> Cleared or Qualify_ClearedTrade(originatingWorkflowStep -> businessEvent) = True
+
+func IsPriceMonetary:
+	inputs:
+		price PriceSchedule (1..1)
+	output:
+		result boolean (1..1)
+ 	set result:
+		price -> unitOfAmount -> currency exists
+ 		and
+		(
+		 	price -> perUnitOfAmount -> currency is absent // Hence not a rate
+		 	or price -> perUnitOfAmount -> currency <> price -> unitOfAmount -> currency // Hence a currency Pair
+		)
+
+func IsOtherPayment:
+	inputs:
+		transferState TransferState (1..1)
+	output:
+		result boolean (1..1)
+	alias transferExpression : transferState -> transfer -> transferExpression
+	set result:
+		transferExpression -> priceTransfer = FeeTypeEnum -> Upfront
+        or transferExpression -> priceTransfer = FeeTypeEnum -> Termination
+		or transferExpression -> priceTransfer = FeeTypeEnum -> PartialTermination
+        or transferExpression -> scheduledTransfer -> transferType = TransferTypeEnum -> PrincipalPayment
+
+func CNHToCNY:
+    inputs:
+        currency string (1..1)
+    output:
+        result string (1..1)
+    set result:
+        if currency = "CNH" then "CNY"
+        else currency
+		
+func MaxTerminationDate:
+	inputs:
+		date1 AdjustableDate (0..1)
+		date2 AdjustableDate (0..1)
+	output:
+		date date (0..1)
+
+	set date:
+		if date1 -> unadjustedDate > date2 -> unadjustedDate then date1 -> unadjustedDate else date2 -> unadjustedDate
+
+func CapacityUnitToISO20022UnitOfMeasure:
+	inputs:
+        capacityUnit CapacityUnitEnum (1..1)
+    output:
+        result string (1..1)
+    set result:
+        if capacityUnit = CapacityUnitEnum -> ALW then "ALOW" else
+		if capacityUnit = CapacityUnitEnum -> BBL then "BARL" else
+		if capacityUnit = CapacityUnitEnum -> BCF then "BCUF" else
+		if capacityUnit = CapacityUnitEnum -> BDFT then "BDFT" else
+		if capacityUnit = CapacityUnitEnum -> BSH then "BUSL" else
+		if capacityUnit = CapacityUnitEnum -> BTU then "BRTU" else
+		if capacityUnit = CapacityUnitEnum -> CBM then "CBME" else
+		if capacityUnit = CapacityUnitEnum -> CER then "CEER" else
+		if capacityUnit = CapacityUnitEnum -> CRT then "CLRT" else
+		if capacityUnit = CapacityUnitEnum -> DAG then "----" else
+		if capacityUnit = CapacityUnitEnum -> DAY then "DAYS" else
+		if capacityUnit = CapacityUnitEnum -> DMTU then "DMET" else
+		if capacityUnit = CapacityUnitEnum -> DTH then "----" else
+		if capacityUnit = CapacityUnitEnum -> ENVCRD then "ENVC" else
+		if capacityUnit = CapacityUnitEnum -> ENVOFST then "ENVO" else
+		if capacityUnit = CapacityUnitEnum -> FEU then "----" else
+		if capacityUnit = CapacityUnitEnum -> G then "GRAM" else
+		if capacityUnit = CapacityUnitEnum -> GBCWT then "HUWG" else
+		if capacityUnit = CapacityUnitEnum -> GBGAL then "GBGA" else
+		if capacityUnit = CapacityUnitEnum -> GBT then "GBTN" else
+		if capacityUnit = CapacityUnitEnum -> GJ then "----" else
+		if capacityUnit = CapacityUnitEnum -> GW then "----" else
+		if capacityUnit = CapacityUnitEnum -> GWH then "GWHO" else
+		if capacityUnit = CapacityUnitEnum -> HL then "----" else
+		if capacityUnit = CapacityUnitEnum -> INGOT then "----" else
+		if capacityUnit = CapacityUnitEnum -> KG then "KILO" else
+		if capacityUnit = CapacityUnitEnum -> KL then "" else
+		if capacityUnit = CapacityUnitEnum -> KW then "----" else
+		if capacityUnit = CapacityUnitEnum -> KWDC then "KWDC" else
+		if capacityUnit = CapacityUnitEnum -> KWH then "KWHO" else
+		if capacityUnit = CapacityUnitEnum -> KWHC then "KWHC" else
+		if capacityUnit = CapacityUnitEnum -> KWMINC then "KMOC" else
+		if capacityUnit = CapacityUnitEnum -> KWMC then "KWMC" else
+		if capacityUnit = CapacityUnitEnum -> KWYC then "KWYC" else
+		if capacityUnit = CapacityUnitEnum -> L then "LITR" else
+		if capacityUnit = CapacityUnitEnum -> LB then "PUND" else
+		if capacityUnit = CapacityUnitEnum -> MB then "---" else
+		if capacityUnit = CapacityUnitEnum -> MBF then "---" else
+		if capacityUnit = CapacityUnitEnum -> MJ then "---" else
+		if capacityUnit = CapacityUnitEnum -> MMBF then "---" else
+		if capacityUnit = CapacityUnitEnum -> MMBBL then "MIBA" else
+		if capacityUnit = CapacityUnitEnum -> MMBTU then "MBTU" else
+		if capacityUnit = CapacityUnitEnum -> MSF then "----" else
+		if capacityUnit = CapacityUnitEnum -> MT then "TONE" else
+		if capacityUnit = CapacityUnitEnum -> MW then "----" else
+		if capacityUnit = CapacityUnitEnum -> MWDC then "MWDC" else
+		if capacityUnit = CapacityUnitEnum -> MWH then "MWHO" else
+		if capacityUnit = CapacityUnitEnum -> MWHC then "MWHC" else
+		if capacityUnit = CapacityUnitEnum -> MWMC then "MMOC" else
+		if capacityUnit = CapacityUnitEnum -> MWMINC then "MWMC" else
+		if capacityUnit = CapacityUnitEnum -> MWYC then "MWYC" else
+		if capacityUnit = CapacityUnitEnum -> OZT then "OZTR" else
+		if capacityUnit = CapacityUnitEnum -> TEU then "----" else
+		if capacityUnit = CapacityUnitEnum -> THERM then "THMS" else
+		if capacityUnit = CapacityUnitEnum -> USCWT then "UCWT" else
+		if capacityUnit = CapacityUnitEnum -> USGAL then "USGA" else
+		if capacityUnit = CapacityUnitEnum -> UST then "USTN"
+
+func WeatherUnitToISO20022UnitOfMeasure:
+	inputs:
+        weatherUnit WeatherUnitEnum (1..1)
+    output:
+        result string (1..1)
+    set result:
+        if weatherUnit = WeatherUnitEnum -> CDD then "CDDA" else
+		if weatherUnit = WeatherUnitEnum -> CPD then "CPDA" else
+		if weatherUnit = WeatherUnitEnum -> HDD then "HDDA"
+
+func FinancialUnitToISO20022UnitOfMeasure:
+	inputs:
+        financialUnit FinancialUnitEnum (1..1)
+    output:
+        result string (1..1)
+    set result:
+        if financialUnit = FinancialUnitEnum -> Contract then "----" else
+		if financialUnit = FinancialUnitEnum -> ContractualProduct then "ACCY" else
+		if financialUnit = FinancialUnitEnum -> IndexUnit then "IPNT" else
+		if financialUnit = FinancialUnitEnum -> LogNormalVolatility then "----" else
+		if financialUnit = FinancialUnitEnum -> Share then "SHAS" else
+		if financialUnit = FinancialUnitEnum -> ValuePerDay then "----" else
+		if financialUnit = FinancialUnitEnum -> ValuePerPercent then "----"
+
+ func Create_ReportableEventFromInstruction: <"Creates a Reportable Event from an originatingWorkflowStep containing an instruction, and reportableInformation.">
+	inputs:
+        originatingWorkflowStep WorkflowStep (1..1)
+		reportableInformation ReportableInformation (1..1)
+	output:
+		reportableEvent ReportableEvent (0..1)
+
+    set reportableEvent->originatingWorkflowStep: <"Translate originatingWorkflowStep instruction to event, if necessary.">
+        if originatingWorkflowStep -> businessEvent is absent and originatingWorkflowStep -> proposedEvent exists then
+            Create_AcceptedWorkflowStepFromInstruction( originatingWorkflowStep )
+        else originatingWorkflowStep
+
+    set reportableEvent->reportableInformation: <"Add reportableInformation">
+		reportableInformation
+
+ func Create_ReportableEvents: <"Creates a list of Reportable Events from a single workflow step by following steps: Pre-enrich, filter eligible trades, then decompose.">
+	inputs:
+		workflowStep WorkflowStep (1..1)
+        reportingRegime RegulatoryRegimeEnum (1..1)
+	output:
+		reportableEventsOut ReportableEvent (0..*)
+
+    alias workflowStepEvent: <"Translate WorkflowStep instruction to event, if necessary.">
+        if workflowStep -> businessEvent is absent and workflowStep -> proposedEvent exists then
+            Create_AcceptedWorkflowStepFromInstruction( workflowStep )
+        else workflowStep
+
+	alias enrichedWorkflowStep: <"Enriches a workflowStep with all additional information required for reporting of the transaction (e.g. LEI)">
+		PreEnrich( workflowStepEvent )
+
+	alias eligibleTradeStates: <"Filter to eligible trades">
+		enrichedWorkflowStep -> businessEvent -> after
+			filter [ IsEligible( item, enrichedWorkflowStep, reportingRegime ) ]
+
+	add reportableEventsOut: <"Create a list of reportable Events that have been decomposed where required, and contain reportable information.">
+		ReportableEvents( eligibleTradeStates, enrichedWorkflowStep, reportingRegime )
+
+func IsEligible: <"Determine if trade is eligible for reporting."> //functional implementation of the eligibility rules
+	inputs:
+		tradeState TradeState (1..1)
+		enrichedWorkflowStep WorkflowStep (1..1)
+        reportingRegime RegulatoryRegimeEnum (1..1)
+	output:
+		isEligible boolean (1..1)
+
+	set isEligible: True
+
+func ReportableEvents: <"For each eligible trade, create a ReportableEvent.">
+	inputs:
+		eligibleTradeStates TradeState (0..*)
+		enrichedWorkflowStep WorkflowStep (1..1)
+        reportingRegime RegulatoryRegimeEnum (1..1)
+	output:
+		reportableEvents ReportableEvent (0..*)
+
+	add reportableEvents:
+		eligibleTradeStates
+			map [ Create_ReportableEvent(item, enrichedWorkflowStep,reportingRegime)]
+
+func Create_ReportableEvent: <"Create Create_CftcReportableEvent.">
+    inputs:
+        tradeState TradeState (1..1)
+        enrichedWorkflowStep WorkflowStep (1..1)
+        reportingRegime RegulatoryRegimeEnum (1..1)
+    output:
+        reportableEvent ReportableEvent (1..1)
+
+    set reportableEvent -> originatingWorkflowStep: enrichedWorkflowStep
+    set reportableEvent -> reportableTrade: tradeState
+    set reportableEvent -> reportableInformation: PostEnrich( tradeState,enrichedWorkflowStep,reportingRegime)
+
+func PreEnrich: <"Enrich LEI, PersonID etc"> //custom implementation looking up internal/external ref data
+    inputs:
+        workflowStep WorkflowStep (1..1)
+    output:
+        enrichedWorkflowStep WorkflowStep (1..1)
+
+    set enrichedWorkflowStep: workflowStep
+
+func PostEnrich: <"Enrich jurisdictional eligibility determination etc"> //custom implementation looking up reportable information, either as a pass through or looking up internal/external ref data
+    inputs:
+        tradeState TradeState (1..1)
+        enrichedWorkflowStep WorkflowStep (1..1)
+        reportingRegime RegulatoryRegimeEnum (1..1)
+    output:
+        reportableInformation ReportableInformation (1..1)
+
+func ClearingExceptionsAndExemptions:
+    inputs: clearingException ClearingException (1..1)
+    output: clearingExceptionReason string (1..1)
+    set clearingExceptionReason: 
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> ENDU then "ENDU" else
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> AFFL then "AFFL" else
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> SMBK then "SMBK" else
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> COOP then "COOP" else
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> NOAL then "NOAL" else
+        if clearingException -> clearingExceptionReason = ClearingExceptionReasonEnum -> OTHR then "OTHR"
+
+//TH REVIEW: work in progress, waiting for business event qualifying functions
+func IsActionTypeTerm:
+    inputs:
+        reportableEvent ReportableEvent (1..1)
+    output:
+        isActionTypeTerm boolean(1..1)
+    set isActionTypeTerm:
+		if Qualify_Termination(reportableEvent -> originatingWorkflowStep -> businessEvent) = True or reportableEvent -> reportableTrade -> state -> positionState = PositionStatusEnum -> Closed //or reportableEvent -> reportableTrade -> state -> positionState = PositionStatusEnum -> Executed
+		then True
+        /*if reportableEvent -> originatingWorkflowStep -> businessEvent -> instruction -> primitiveInstruction -> quantityChange exists and
+            reportableEvent -> originatingWorkflowStep -> businessEvent ->instruction -> primitiveInstruction -> quantityChange -> direction any = QuantityChangeDirectionEnum -> Replace and
+            reportableEvent -> originatingWorkflowStep -> businessEvent ->instruction -> primitiveInstruction -> quantityChange -> change -> quantity -> amount any = 0 then True
+        else if reportableEvent -> originatingWorkflowStep -> businessEvent -> exists and QuantityDecreasedToZero (reportableEvent -> originatingWorkflowStep -> businessEvent) = True then True*/
+        else False
+
+//TH REVIEW: function needed in clearing reporting rules 
+func IntendedToClear:
+    inputs:
+        reportableEvent ReportableEvent (1..1)
+    output:
+        isIntendedToClear boolean(1..1)
+    set isIntendedToClear:
+        if reportableEvent -> originatingWorkflowStep -> nextEvent -> intent = EventIntentEnum -> Clearing then True
+        else False
+
+func IsActionTypeMODI:
+	inputs:
+        reportableEvent ReportableEvent (1..1)
+    output:
+        result boolean (1..1)
+    set result:
+        if reportableEvent -> originatingWorkflowStep -> action = ActionEnum -> Correct and reportableEvent -> originatingWorkflowStep -> businessEvent -> instruction -> primitiveInstruction -> quantityChange exists then True
+		else if Qualify_Increase (reportableEvent -> originatingWorkflowStep -> businessEvent) = True or (reportableEvent -> originatingWorkflowStep -> businessEvent -> instruction -> primitiveInstruction -> quantityChange exists and reportableEvent -> originatingWorkflowStep -> businessEvent ->instruction -> primitiveInstruction -> quantityChange -> direction any = QuantityChangeDirectionEnum -> Decrease) then True
+		else if (Qualify_Novation(reportableEvent -> originatingWorkflowStep -> businessEvent) = True or Qualify_PartialNovation(reportableEvent -> originatingWorkflowStep -> businessEvent) = True) and reportableEvent -> reportableTrade -> state is absent then True
+		else if Qualify_Exercise(reportableEvent -> originatingWorkflowStep -> businessEvent) = True and reportableEvent -> reportableTrade -> state is absent then True
+		else if Qualify_CashTransfer(reportableEvent -> originatingWorkflowStep -> businessEvent) = True and reportableEvent -> reportableTrade -> state is absent then True
+		else False
+
+//TH REVIEW function needed in the validation of clearing fields
+func IsActionTypeNEWT:
+    inputs:
+        reportableEvent ReportableEvent (1..1)
+    output:
+        isActionTypeNewt boolean(1..1)
+    set isActionTypeNewt:
+        if (reportableEvent -> originatingWorkflowStep -> action = ActionEnum -> New and reportableEvent -> originatingWorkflowStep -> businessEvent only exists) or reportableEvent -> reportableTrade -> state -> positionState = PositionStatusEnum -> Executed or reportableEvent -> reportableTrade -> state is absent then True
+        else False
+
+func BeforeTradeByUTI:
+	inputs:
+		reportableEvent ReportableEvent (1..1)
+		afterTradeUTI string (1..1)
+	output:
+		trade Trade (1..1)
+	set trade:
+		reportableEvent -> originatingWorkflowStep -> businessEvent -> instruction -> before -> trade
+		filter [ item -> tradeIdentifier -> assignedIdentifier -> identifier any = afterTradeUTI] only-element
+		//filter [ item -> trade -> tradeIdentifier -> assignedIdentifier filter [ item -> identifierType = TradeIdentifierTypeEnum -> UniqueTransactionIdentifier ] map [item -> identifier] = afterTradeUTI] only-element
+
+func GetProductQualifier:
+	inputs:
+	    productTaxonomy ProductTaxonomy (0..*)
+	output:
+	    qualifier string (0..1)
+	set qualifier:
+	    productTaxonomy
+	        map [item -> productQualifier]
+	        only-element
+
+func ExtractPayerIdentifierLeg1:
+	inputs: trade Trade(1..1)
+			partyInformation PartyInformation(1..*)
+	output: leiAndPerson string (0..1)
+	alias counterparty:
+            if IsCommoditySwapProduct( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    CommodityLeg1( trade -> tradableProduct -> product ) -> payerReceiver -> payer )
+            else if IsEquity( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> payerReceiver -> payer )
+            else if IsFXForward( trade ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FXLeg1( trade ) -> payerReceiver -> payer )
+            else if Qualify_InterestRate_Option_Swaption( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and Qualify_InterestRate_CapFloor( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout is absent then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    InterestRateLeg1( trade -> tradableProduct -> product ) -> payerReceiver -> payer )
+    set leiAndPerson:
+		PartyLeiAndPersonByRoles(counterparty -> partyReference, partyInformation, [NaturalPersonRoleEnum->Buyer, NaturalPersonRoleEnum->Seller])
+
+func ExtractPayerIdentifierLeg2:
+	inputs: trade Trade(1..1)
+			partyInformation PartyInformation(1..*)
+	output: leiAndPerson string (0..1)
+	alias counterparty:
+            if IsCommoditySwapProduct( trade -> tradableProduct -> product )
+                    and IsCommodityCommodity( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    CommodityLeg2( trade -> tradableProduct -> product ) -> payerReceiver -> payer )
+            else if IsCommoditySwapProduct( trade -> tradableProduct -> product )
+                    and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> fixedPricePayout exists then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FixedPriceLeg2(  trade -> tradableProduct -> product ) -> payerReceiver -> payer )
+            else if IsFXForward( trade ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FXLeg2( trade ) -> payerReceiver -> payer )
+            else if Qualify_InterestRate_Option_Swaption( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and Qualify_InterestRate_CapFloor( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout is absent then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    InterestRateLeg2( trade -> tradableProduct -> product ) -> payerReceiver -> payer )
+    set leiAndPerson:
+		PartyLeiAndPersonByRoles(counterparty -> partyReference, partyInformation, [NaturalPersonRoleEnum->Buyer, NaturalPersonRoleEnum->Seller])
+
+func ExtractReceiverIdentifierLeg1:
+	inputs: trade Trade(1..1)
+			partyInformation PartyInformation(1..*)
+	output: leiAndPerson string (0..1)
+	alias counterparty:
+            if IsCommoditySwapProduct( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    CommodityLeg1( trade -> tradableProduct -> product ) -> payerReceiver -> receiver )
+            else if IsEquity( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> performancePayout only-element -> payerReceiver -> receiver )
+            else if IsFXForward( trade ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FXLeg1( trade ) -> payerReceiver -> receiver )
+            else if Qualify_InterestRate_Option_Swaption( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and Qualify_InterestRate_CapFloor( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    InterestRateLeg1( trade -> tradableProduct -> product ) -> payerReceiver -> receiver )
+    set leiAndPerson:
+		PartyLeiAndPersonByRoles(counterparty -> partyReference, partyInformation, [NaturalPersonRoleEnum->Buyer, NaturalPersonRoleEnum->Seller])
+
+func ExtractReceiverIdentifierLeg2:
+	inputs: trade Trade(1..1)
+			partyInformation PartyInformation(1..*)
+	output: leiAndPerson string (0..1)
+	alias counterparty:
+            if IsCommoditySwapProduct( trade -> tradableProduct -> product )
+                    and IsCommodityCommodity( trade -> tradableProduct -> product ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    CommodityLeg2( trade -> tradableProduct -> product ) -> payerReceiver -> receiver )
+            else if IsCommoditySwapProduct( trade -> tradableProduct -> product )
+                    and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> fixedPricePayout exists then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FixedPriceLeg2(  trade -> tradableProduct -> product ) -> payerReceiver -> receiver )
+            else if IsFXForward( trade ) then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    FXLeg2( trade ) -> payerReceiver -> receiver )
+            else if Qualify_InterestRate_Option_Swaption( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and Qualify_InterestRate_CapFloor( trade -> tradableProduct -> product -> contractualProduct -> economicTerms ) = False and trade -> tradableProduct -> product -> contractualProduct -> economicTerms -> payout -> creditDefaultPayout is absent then
+                ExtractCounterpartyByRole(
+                    trade -> tradableProduct -> counterparty,
+                    InterestRateLeg2( trade -> tradableProduct -> product ) -> payerReceiver -> receiver )
+    set leiAndPerson:
+		PartyLeiAndPersonByRoles(counterparty -> partyReference, partyInformation, [NaturalPersonRoleEnum->Buyer, NaturalPersonRoleEnum->Seller])
+
+func CommodityObservablePriceQuantity:
+	inputs:
+		tradeLot TradeLot (1..1)
+		commodityPayout CommodityPayout (1..1)
+
+	output:
+		priceQuantity PriceQuantity (1..1)
+
+    alias priceQuantityWithMatchingObservable:
+        tradeLot -> priceQuantity
+        filter [ item -> observable -> commodity = commodityPayout -> underlier -> commodity] only-element
+
+    alias priceQuantityWithMatchingKey:
+        tradeLot -> priceQuantity
+        filter [ GetQuantityKeys( item ) contains GetQuantityReference( commodityPayout -> priceQuantity ) ]
+        only-element
+
+	set priceQuantity:
+		if priceQuantityWithMatchingObservable exists then
+            priceQuantityWithMatchingObservable
+        else
+            priceQuantityWithMatchingKey
+
+func GetQuantityKeys: <"Extract key from each quantity.">
+    inputs:
+        priceQuantity PriceQuantity (0..1)
+    output:
+        keyValues string (0..*)
+
+func GetQuantityReference: <"Extract reference from quantity.">
+    inputs:
+        resolvablePriceQuantity ResolvablePriceQuantity (0..1)
+    output:
+        referenceValue string (0..1)
