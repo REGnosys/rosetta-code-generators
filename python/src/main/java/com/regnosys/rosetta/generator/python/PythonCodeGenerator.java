@@ -70,7 +70,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	              
 	              if(!m.getName().equals(previousNamespace.get())) {
 	                  previousNamespace.set(m.getName());
-	                  System.out.println("PythonFilesGeneratorTest::processing... " + m.getName());
+	                  System.out.println("PythonCodeGenerator::afterGenerate ... processing module: " + m.getName());
 	              }
 
 	              result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));

@@ -1,6 +1,0 @@
-setuptools>=6.2
-pylint
-pycodestyle
-yapf
-pytest
-pydantic

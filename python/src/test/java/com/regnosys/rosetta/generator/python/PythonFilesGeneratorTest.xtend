@@ -79,7 +79,7 @@ class PythonFilesGeneratorTest {
 			val fileReader    = new FileReader(iniFileName)
 			iniConfig.read(fileReader)
 			
-		    val resourcesPath    = iniConfig.getSection('paths').getProperty ('resources').toString () 
+//		    val resourcesPath    = iniConfig.getSection('paths').getProperty ('resources').toString () 
 			val dslPath          = iniConfig.getSection('paths').getProperty ('dslPath').toString ()
 			// pythonTgtPath is the target directory for the generated python
 		    val pythonTgtPath    = iniConfig.getSection('paths').getProperty ('pythonTgtPath').toString ()
@@ -91,30 +91,22 @@ class PythonFilesGeneratorTest {
 		    // Create a resource set and add the common Rosetta models to it
 		    println ('PythonFilesGeneratorTest::generatePython ... get resource set')
 		    val resourceSet = resourceSetProvider.get  
-            parse(ModelHelper.commonTestTypes, resourceSet)
+           	parse(ModelHelper.commonTestTypes, resourceSet)
 		    resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
 		    resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
 		
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    val dirs = new File(dslPath)
 			dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sortBy[ it.getName ].forEach [file |
-			  val content = new String(Files.readAllBytes(file.toPath))
-			  parse(content, resourceSet)
+				println ('PythonFilesGeneratorTest::generatePython ... reading file: ' + file.name)
+			  	val content = new String(Files.readAllBytes(file.toPath))
+			  	parse(content, resourceSet)
 			]
-			
-			dirs.listFiles.forEach [file |
-			  val content = new String(Files.readAllBytes(file.toPath))
-			  parse(content, resourceSet)
-			]
-
-
 		    
-		    val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
+		    val rosettaModels  = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
 			val generatedFiles = generator.afterGenerate(rosettaModels)
 			
-			writeFiles(generatedFiles)
-
+			writeFiles(pythonTgtPath, generatedFiles)
 			
 		    //Arrays.sort(listFiles)
 		    println ('PythonFilesGeneratorTest::generatePython ... found ' + rosettaModels.length.toString () + ' rosetta files in: ' + dslPath)					
@@ -139,7 +131,7 @@ class PythonFilesGeneratorTest {
 		}
 	}
 	
-	def writeFiles(Map<String, ? extends CharSequence> generatedFiles){
+	def writeFiles(String pythonTgtPath, Map<String, ? extends CharSequence> generatedFiles){
 		// Assuming 'generatedFiles' is a HashMap<String, CharSequence>
 		for (entry : generatedFiles.entrySet) {
 		  val key = entry.key
@@ -147,9 +139,9 @@ class PythonFilesGeneratorTest {
 		
 		  // Split the key into its components and replace '.' with the file separator
 		  val filePathComponents = key.split("\\.").toList
-		  val fileName = filePathComponents.last
-		  val outputPath = "build" + File.separator + "src" + File.separator + filePathComponents.take(filePathComponents.size - 1).join(File.separator)
-		  val outputDir = new File(outputPath)
+		  val fileName   = filePathComponents.last
+		  val outputPath = pythonTgtPath + File.separator + filePathComponents.take(filePathComponents.size - 1).join(File.separator)
+		  val outputDir  = new File(outputPath)
 		
 		  // Create the directory structure if it doesn't exist
 		  if (!outputDir.exists) {
@@ -157,8 +149,8 @@ class PythonFilesGeneratorTest {
 		   }
 		   // Create __init__.py files in each subdirectory starting from the second element of the key
 	       var parentDir = outputDir
-	       var stop = false
-	       while (parentDir != null && parentDir.getParent.contains(File.separator) && !stop) {
+	       var stop      = false
+	       while (parentDir !== null && parentDir.getParent.contains(File.separator) && !stop) {
 	           new File(parentDir, "__init__.py").createNewFile()
 	           parentDir = parentDir.getParentFile
 	           // Stop at the first element of the key (e.g., "cdm" folder)
@@ -175,13 +167,13 @@ class PythonFilesGeneratorTest {
 		}
 		
 		// Copy all files from build/runtime/src/rosetta/runtime to the first sublevel
-		  val sourceDir = new File("build/resources/runtime/src/rosetta/runtime")
+/*		  val sourceDir = new File("build/resources/runtime/src/rosetta/runtime")
 	      if (sourceDir.exists && sourceDir.isDirectory) {
 	        sourceDir.listFiles.forEach [
 	          file |
-	            Files.copy(file.toPath, new File("build/src/cdm", file.getName).toPath, StandardCopyOption.REPLACE_EXISTING)
+	            Files.copy(file.toPath, new File(pythonTgtPath + File.separator + "cdm", file.getName).toPath, StandardCopyOption.REPLACE_EXISTING)
 	        ]
-	      }
+	      } */
 	}
     
     /*

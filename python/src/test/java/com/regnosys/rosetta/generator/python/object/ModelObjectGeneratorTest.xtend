@@ -335,7 +335,7 @@ class ModelObjectGeneratorTest {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from build.resources.runtime.src.rosetta.runtime.utils import *
+		from rosetta.runtime.utils import *
 		
 		__all__ = ['B']
 		
@@ -355,7 +355,7 @@ class ModelObjectGeneratorTest {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from build.resources.runtime.src.rosetta.runtime.utils import *
+		from rosetta.runtime.utils import *
 		
 		__all__ = ['C']
 		
@@ -379,7 +379,7 @@ class ModelObjectGeneratorTest {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from build.resources.runtime.src.rosetta.runtime.utils import *
+		from rosetta.runtime.utils import *
 		
 		__all__ = ['A']
 		
@@ -408,7 +408,7 @@ class ModelObjectGeneratorTest {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from build.resources.runtime.src.rosetta.runtime.utils import *
+		from rosetta.runtime.utils import *
 		
 		__all__ = ['D']
 		

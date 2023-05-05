@@ -52,7 +52,7 @@ class PythonModelGeneratorUtil {
 		from datetime import datetime
 		from decimal import Decimal
 		from pydantic import Field
-		from build.resources.runtime.src.rosetta.runtime.utils import *
+		from rosetta.runtime.utils import *
 		
 		__all__ = [«"'"+name+"'"»]
 		
