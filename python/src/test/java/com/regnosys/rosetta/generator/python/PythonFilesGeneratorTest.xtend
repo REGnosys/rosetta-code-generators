@@ -1,45 +1,42 @@
 package com.regnosys.rosetta.generator.python
 
-import com.google.inject.Inject
-import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.tests.RosettaInjectorProvider
-import com.regnosys.rosetta.tests.util.ModelHelper
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.nio.charset.StandardCharsets
 import java.util.Collections
 import java.util.Arrays
 import java.util.Map
 import java.util.Scanner
+import java.util.HashMap
+import java.util.ArrayList
+import java.util.List
+import java.io.IOException
+import static java.nio.file.StandardCopyOption.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.lang.reflect.Array
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.ResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
+import org.eclipse.xtext.resource.XtextResourceSet
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+import com.google.inject.Inject
+import com.google.inject.Provider
+import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaRootElement
-import java.util.HashMap
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import java.util.ArrayList
-import java.util.List
 import com.regnosys.rosetta.rosetta.simple.Function
+import com.regnosys.rosetta.tests.RosettaInjectorProvider
+import com.regnosys.rosetta.tests.util.ModelHelper
 import org.apache.commons.io.FileUtils
-import java.io.IOException
 import org.apache.commons.configuration2.INIConfiguration
-import static java.nio.file.StandardCopyOption.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.lang.reflect.Array
-import org.junit.jupiter.api.Disabled
-import com.google.inject.Provider
-import org.eclipse.xtext.resource.XtextResourceSet
-import static org.junit.jupiter.api.Assertions.*
-import java.nio.charset.StandardCharsets
-import java.nio.file.StandardCopyOption
 
 /*
  * Test Principal
