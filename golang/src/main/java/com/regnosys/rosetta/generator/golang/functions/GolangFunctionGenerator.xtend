@@ -82,7 +82,7 @@ class GolangFunctionGenerator {
 	}
 	
 	private def toRawType(Attribute input) {
-		input.type.name.toGOType	
+		input.typeCall.type.name.toGOType	
 	}
 	
 	

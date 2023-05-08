@@ -22,7 +22,7 @@ class DamlMetaFieldGenerator {
 		
 		data MetaFields = MetaFields with
 		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
-		      «type.name.toFirstLower» : Optional «type.type.name.toDamlType»
+		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
@@ -31,7 +31,7 @@ class DamlMetaFieldGenerator {
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
-		      «type.name.toFirstLower» : Optional «type.type.name.toDamlType»
+		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text

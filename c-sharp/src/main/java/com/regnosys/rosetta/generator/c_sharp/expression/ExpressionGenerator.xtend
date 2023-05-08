@@ -6,7 +6,6 @@ import com.regnosys.rosetta.generator.c_sharp.util.CSharpNames
 import com.regnosys.rosetta.generator.c_sharp.util.CSharpType
 import com.regnosys.rosetta.generator.util.RosettaFunctionExtensions
 import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaBigDecimalLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
@@ -49,6 +48,8 @@ import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ExistsModifier
 import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
+import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
+import com.regnosys.rosetta.rosetta.TypeCall
 
 class ExpressionGenerator {
 
@@ -104,7 +105,7 @@ class ExpressionGenerator {
             RosettaReference: {
 				reference(expr, params, isLast)
 			}
-            RosettaBigDecimalLiteral: {
+            RosettaNumberLiteral: {
                 '''Convert.ToDecimal(«expr.value»)'''
             }
             RosettaBooleanLiteral: {
@@ -160,7 +161,7 @@ class ExpressionGenerator {
                 '''«callable.name».Evaluate(«args(expr, params)»)'''
             }
             RosettaExternalFunction: 
-            	'''(new «factory.create(callable.model).toCSharpType(callable as RosettaCallableWithArgs)»().Execute(«args(expr, params)»))'''
+            	'''(new «factory.create().toCSharpType(callable as RosettaCallableWithArgs)»().Execute(«args(expr, params)»))'''
             default:
                 throw new UnsupportedOperationException("Unsupported callable with args type of " + expr.eClass.name)
         }
@@ -552,7 +553,7 @@ class ExpressionGenerator {
         if (attribute.card.isIsMany) {
             '''.«attribute.propertyName»«IF isLast && attribute.isMetaType && autoValue».EmptyIfNull().Select(«attribute.name.toFirstLower» => «attribute.name.toFirstLower».Value)«ENDIF»'''
         } else {
-            val memberCall = '''«IF attribute.override»(«attribute.type.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.propertyName»'''
+            val memberCall = '''«IF attribute.override»(«attribute.typeCall.toCSharpType») «ENDIF»«IF !(attribute.card.eContainer instanceof Attribute)»«attribute.attributeTypeVariableName»«ENDIF».«attribute.propertyName»'''
             if (!attribute.isMetaType || !autoValue) {
                 '''«memberCall»'''
             } else {// FieldWithMeta
@@ -561,18 +562,21 @@ class ExpressionGenerator {
         }
     }
 
+	private def CSharpType toCSharpType(TypeCall typeCall) {
+        typeCall.type.toCSharpType
+    }
     private def CSharpType toCSharpType(RosettaType rosType) {
         val model = rosType.model
         if (model === null)
             throw new IllegalArgumentException('''Can not create type reference. «rosType.eClass?.name» «rosType.name» is not attached to a «RosettaModel.simpleName»''')
-        factory.create(model).toCSharpType(rosType)
+        factory.create().toCSharpType(rosType)
     }
 
     private def csharpNames(Attribute attr) {
         val model = EcoreUtil2.getContainerOfType(attr, RosettaModel)
         if (model === null)
             throw new IllegalArgumentException('''Can not create type reference. «attr.eClass?.name» «attr.name» is not attached to a «RosettaModel.simpleName»''')
-        factory.create(model)
+        factory.create()
     }
 
     def CSharpType metaClass(Attribute attribute) {
@@ -580,9 +584,9 @@ class ExpressionGenerator {
         val name = if (attribute.annotations.exists [ a |
                 a.annotation?.name == "metadata" && a.attribute?.name == "reference"
             ])
-                "ReferenceWithMeta" + attribute.type.name.toFirstUpper
+                "ReferenceWithMeta" + attribute.typeCall.type.name.toFirstUpper
             else
-                "FieldWithMeta" + attribute.type.name.toFirstUpper
+                "FieldWithMeta" + attribute.typeCall.type.name.toFirstUpper
         return names.toMetaType(attribute, name)
     }
 
@@ -598,7 +602,7 @@ class ExpressionGenerator {
     
     private def typeName(Attribute attribute)
         // TODO: Handle Meta types
-        '''«attribute.type.toCSharpType»'''
+        '''«attribute.typeCall.type.toCSharpType»'''
 
     private def attributeTypeVariableName(Attribute attribute)
          '''«(attribute.eContainer as Data).toCSharpType.simpleName.toFirstLower»'''

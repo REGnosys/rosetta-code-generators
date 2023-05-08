@@ -12,7 +12,7 @@ import com.regnosys.rosetta.generator.daml.enums.DamlEnumGenerator;
 import com.regnosys.rosetta.generator.daml.functions.DamlFunctionGenerator;
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectGenerator;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -36,7 +36,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
+	public Map<String, ? extends CharSequence> generate(RootPackage packages, List<RosettaRootElement> elements,
 			String version) {
 		return Collections.emptyMap();
 	}

@@ -1,8 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp.util
 
 import com.google.common.base.Splitter
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
 import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 
@@ -26,12 +24,6 @@ class CSharpTranslator {
 				'decimal'
 			case 'boolean':
 				'bool'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'string'
-			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'string'
-			case RCalculationType.CALCULATION.calculationType:
-				'string'
 
 //			Ensure we rename MetaFields data members to avoid name clashes with the enclosing namespace.
 			case 'MetaFields':

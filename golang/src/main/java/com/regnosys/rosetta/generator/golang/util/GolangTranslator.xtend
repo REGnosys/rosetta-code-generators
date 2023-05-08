@@ -1,8 +1,5 @@
 package com.regnosys.rosetta.generator.golang.util
 
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
-
 class GolangTranslator {
 				
 	static def toGOBasicType(String typename) {
@@ -24,12 +21,6 @@ class GolangTranslator {
 				'float64'
 			case 'boolean':
 				'bool'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'string'
-			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'string'
-			case RCalculationType.CALCULATION.calculationType:
-				'string'
 		}
 	}
 
