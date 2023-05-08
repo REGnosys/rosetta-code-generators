@@ -1,7 +1,5 @@
 package com.regnosys.rosetta.generator.scala.util
 
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
 import com.regnosys.rosetta.generator.object.ExpandedType
 
 class ScalaTranslator {
@@ -24,12 +22,6 @@ class ScalaTranslator {
 				'scala.math.BigDecimal'
 			case 'boolean':
 				'Boolean'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'String'
-			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'String'
-			case RCalculationType.CALCULATION.calculationType:
-				'String'
 		}
 	}
 

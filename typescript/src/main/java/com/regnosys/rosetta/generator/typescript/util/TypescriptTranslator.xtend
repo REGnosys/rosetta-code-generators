@@ -1,8 +1,5 @@
 package com.regnosys.rosetta.generator.typescript.util
 
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
-
 class TypescriptTranslator {
 				
 	static def toTSBasicType(String typename) {
@@ -25,12 +22,6 @@ class TypescriptTranslator {
 				'number'
 			case 'boolean':
 				'boolean'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'string'
-			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'string'
-			case RCalculationType.CALCULATION.calculationType:
-				'string'
 		}
 	}
 
