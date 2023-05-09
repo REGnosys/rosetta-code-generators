@@ -97,15 +97,24 @@ class PythonFilesGeneratorTest {
 		
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    val dirs = new File(dslPath)
-			dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sortBy[ it.getName ].forEach [file |
-				LOGGER.info ("generatePython ... reading file: {}", file.name)
+			val files = dirs.listFiles.filter[it.getName.endsWith(".rosetta")]
+			files.forEach [file |
+				println ('PythonFilesGeneratorTest::generatePython ... reading file: ' + file.name)
 			  	val content = new String(Files.readAllBytes(file.toPath))
 			  	parse(content, resourceSet)
 			]
+			files.forEach [file |
+				println ('PythonFilesGeneratorTest::generatePython ... reading file: ' + file.name)
+			  	val content = new String(Files.readAllBytes(file.toPath))
+			  	parse(content,URI.createURI("def_"+file.toPath), resourceSet)
+			]
 		    
-		    val rosettaModels  = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+		    val rosettaModels  = resourceSet.resources.filter[it.getURI().toString.contains("def_")].map[contents.filter(RosettaModel)].flatten.toList
 			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), dslPath)					
 			val generatedFiles = generator.afterGenerate(rosettaModels)
+			
+			deleteFolderContent("build/src")
+			
 			writeFiles(pythonTgtPath, generatedFiles)
 			createProjectToml(tomlTemplatePath, cdmVersion, tomlTargetPath)
 			LOGGER.info ("generatePython ... done")
@@ -126,6 +135,19 @@ class PythonFilesGeneratorTest {
 	    	e.printStackTrace ()
 		}
 	}
+	
+	def static deleteFolderContent(String folderPath) {
+        val folder = new File(folderPath)
+        if (folder.exists() && folder.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(folder)
+            } catch (IOException e) {
+                System.err.println("Failed to delete folder content: " + e.message)
+            }
+        } else {
+            System.err.println("Folder does not exist or is not a directory")
+        }
+    }
 	
 	def writeFiles(String pythonTgtPath, Map<String, ? extends CharSequence> generatedFiles){
 		// Assuming 'generatedFiles' is a HashMap<String, CharSequence>
