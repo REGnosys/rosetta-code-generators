@@ -86,7 +86,7 @@ class PythonModelObjectGenerator {
              basicType = type.name.toFirstUpper
              
         if(basicType==null)
-        println ('PythonFilesGeneratorTest::Error processing... ' + attribute.name + " in " + c.name + " class")
+        	println ('PythonFilesGeneratorTest::Error processing... ' + attribute.name + " in " + c.name + " class")
       	if (attribute.hasMetas) {
 			var helper_class = "Attribute";
      		var is_ref = false;
