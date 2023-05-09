@@ -79,11 +79,14 @@ class PythonModelObjectGenerator {
         }
     }
 
-     static def toPythonType(ExpandedAttribute attribute) {
+     static def toPythonType(Data c, ExpandedAttribute attribute) {
     	val type = attribute.type;
          var basicType = toPythonBasicType(type.name);
         if (basicType === null)
              basicType = type.name.toFirstUpper
+             
+        if(basicType==null)
+        println ('PythonFilesGeneratorTest::Error processing... ' + attribute.name + " in " + c.name + " class")
       	if (attribute.hasMetas) {
 			var helper_class = "Attribute";
      		var is_ref = false;
@@ -202,24 +205,9 @@ class PythonModelObjectGenerator {
 	    var superType = rosettaClass.superType
 
 		importsFound = getImportsFromAttributes(rosettaClass)
-	    // Iterate through sorted Rosetta classes
-	        /*try {
-	            enumImports += getEnumImportsForClass(rosettaClass)
-	            dataImports += getDataImportsForClass(rosettaClass)
-	        } catch (Exception ex) {
-	        }
-			
-	        // Add super type imports
-	        if (rosettaClass.superType !== null && importsVariables.containsKey(rosettaClass.superType.name)) {
-	            superTypeImports.add('''from «importsVariables.get(rosettaClass.superType.name).get(0)».«rosettaClass.superType.name» import «rosettaClass.superType.name»''')
-	        }
-			*/
-	        // Generate class definition
+	    
         val classDefinition = generateClassDefinition(rosettaClass)
-        classDefinitions.add(classDefinition)
-	        //importFromConditions += getImportedFromConditions(rosettaClass, importsVariables)
-	
-	        // Add update forward references
+        classDefinitions.add(classDefinition)      
         updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
 	    
 	
@@ -231,7 +219,7 @@ class PythonModelObjectGenerator {
 	    return '''
 	«IF superType!==null»from «(superType.eContainer as RosettaModel).name».«superType.name» import «superType.name»«ENDIF»
 	
-	«FOR classDef : classDefinitions SEPARATOR "\n"»«classDefinition»«ENDFOR»
+	«classDefinition»
 	
 	«FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
 	
@@ -644,14 +632,14 @@ class PythonModelObjectGenerator {
      private def generateExpandedAttribute(Data c, ExpandedAttribute attribute) {
 		var att = ""
 		if (attribute.sup > 1 || attribute.unbound) {
-			att += "List[" + toPythonType(attribute) + "]"
+			att += "List[" + toPythonType(c, attribute) + "]"
 		}
 		else {
  			if (attribute.inf == 0) { // edge case (0..0) will come here
-				att += "Optional[" + toPythonType(attribute) + "]"	
+				att += "Optional[" + toPythonType(c, attribute) + "]"	
 			}
 			else {
-				att += toPythonType(attribute) // cardinality (1..1)
+				att += toPythonType(c, attribute) // cardinality (1..1)
 			}
 		}
 

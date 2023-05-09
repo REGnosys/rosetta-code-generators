@@ -136,6 +136,79 @@ class PythonFilesGeneratorTest {
 		}
 	}
 	
+	@Test
+    def void generatePythonOneParse() {
+		// the process 
+		// 1) get directory information from the ini file
+		// 2) loop through each of the rosetta dsl definitions
+		//    - delete any existing directory and create a new one
+		//    - produce new python from the dsl definitions 
+		// 3) produce toml and version files
+		// 4) loop through the directory structure to add an empty __init__.py file
+		
+		try {
+			val iniFileName   = new File("build/pythonCDMGenerator.ini")
+			if(!iniFileName.exists()){
+				println ('PythonFilesGeneratorTest::generatePython ... start ... no ini file detected')
+				return
+			}
+			LOGGER.info("generatePython ... reading ini file: {}", iniFileName)
+			
+			val iniConfig     = new INIConfiguration()
+			val fileReader    = new FileReader(iniFileName)
+			iniConfig.read(fileReader)
+			
+			val dslPath          = iniConfig.getSection('paths').getProperty ('dslPath').toString ()
+			// pythonTgtPath is the target directory for the generated python
+		    val pythonTgtPath    = iniConfig.getSection('paths').getProperty ('pythonTgtPath').toString ()
+		    val tomlTemplatePath = iniConfig.getSection('paths').getProperty ('tomlTemplatePath').toString ()
+		    val tomlTargetPath   = iniConfig.getSection('paths').getProperty ('tomlTargetPath').toString ()
+			// get the version of CDM that will be generated
+			val cdmVersion       = iniConfig.getSection('CDM').getProperty ('version').toString ()
+	
+		    // Create a resource set and add the common Rosetta models to it
+			LOGGER.info("generatePython ... get resource set")
+		    val resourceSet = resourceSetProvider.get  
+           	parse(ModelHelper.commonTestTypes, resourceSet)
+		    resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
+		    resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
+		
+		    // Get a list of all the DSL input files and filter out non-Rosetta files
+		    val dirs = new File(dslPath)
+			val files = dirs.listFiles.filter[it.getName.endsWith(".rosetta")]
+			files.forEach [file |
+				println ('PythonFilesGeneratorTest::generatePython ... reading file: ' + file.name)
+			  	val content = new String(Files.readAllBytes(file.toPath))
+			  	parse(content, resourceSet)
+			]
+		    
+		    val rosettaModels  = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), dslPath)					
+			val generatedFiles = generator.afterGenerate(rosettaModels)
+			
+			deleteFolderContent("build/src")
+			
+			writeFiles(pythonTgtPath, generatedFiles)
+			createProjectToml(tomlTemplatePath, cdmVersion, tomlTargetPath)
+			LOGGER.info ("generatePython ... done")
+		} 
+	    catch (IOException ioE) {
+	    	println ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
+	    	println (ioE.toString ())
+	    	ioE.printStackTrace ()
+	    }
+	    catch (ClassCastException ccE) {
+	    	println ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
+	    	println (ccE.toString ())
+	    	ccE.printStackTrace ()
+	    }
+	    catch(Exception e) {
+	    	println ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
+	    	println (e.toString ())
+	    	e.printStackTrace ()
+		}
+	}
+	
 	def static deleteFolderContent(String folderPath) {
         val folder = new File(folderPath)
         if (folder.exists() && folder.isDirectory()) {
