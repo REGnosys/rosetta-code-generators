@@ -48,6 +48,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 		return Collections.emptyMap();
 	}
 	
+	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
 		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
 		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
