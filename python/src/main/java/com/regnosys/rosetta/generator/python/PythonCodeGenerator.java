@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
@@ -25,6 +28,7 @@ import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
 
 
 public class PythonCodeGenerator extends AbstractExternalGenerator {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
 	
 	@Inject
 	PythonModelObjectGenerator pojoGenerator;
@@ -45,7 +49,8 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	}
 	
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-	    String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
 
 	    Map<String, CharSequence> result = new HashMap<>();
 	    AtomicReference<String> previousNamespace = new AtomicReference<>("");
@@ -70,21 +75,13 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	              
 	              if(!m.getName().equals(previousNamespace.get())) {
 	                  previousNamespace.set(m.getName());
-	                  System.out.println("PythonCodeGenerator::afterGenerate ... processing module: " + m.getName());
+	                  LOGGER.info("processing module: {}", m.getName());
 	              }
 
 	              result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
 	              result.putAll(enumGenerator.generate(rosettaEnums, version));
 	              result.putAll(funcGenerator.generate(rosettaFunctions, version));
 	          });
-
 	    return result;
 	}
-
-
-
-
-	
-	
-
 }

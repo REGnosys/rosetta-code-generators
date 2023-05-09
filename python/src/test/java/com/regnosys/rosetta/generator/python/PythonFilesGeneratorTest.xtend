@@ -37,6 +37,7 @@ import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.apache.commons.io.FileUtils
 import org.apache.commons.configuration2.INIConfiguration
+import org.slf4j.LoggerFactory;
 
 /*
  * Test Principal
@@ -44,6 +45,8 @@ import org.apache.commons.configuration2.INIConfiguration
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class PythonFilesGeneratorTest {
+
+	static val LOGGER = LoggerFactory.getLogger(PythonFilesGeneratorTest);
 
     @Inject PythonCodeGenerator generator
 
@@ -71,12 +74,12 @@ class PythonFilesGeneratorTest {
 				println ('PythonFilesGeneratorTest::generatePython ... start ... no ini file detected')
 				return
 			}
-			println ('PythonFilesGeneratorTest::generatePython ... start ... reading ini file:' + iniFileName)
+			LOGGER.info("generatePython ... reading ini file: {}", iniFileName)
+			
 			val iniConfig     = new INIConfiguration()
 			val fileReader    = new FileReader(iniFileName)
 			iniConfig.read(fileReader)
 			
-//		    val resourcesPath    = iniConfig.getSection('paths').getProperty ('resources').toString () 
 			val dslPath          = iniConfig.getSection('paths').getProperty ('dslPath').toString ()
 			// pythonTgtPath is the target directory for the generated python
 		    val pythonTgtPath    = iniConfig.getSection('paths').getProperty ('pythonTgtPath').toString ()
@@ -86,7 +89,7 @@ class PythonFilesGeneratorTest {
 			val cdmVersion       = iniConfig.getSection('CDM').getProperty ('version').toString ()
 	
 		    // Create a resource set and add the common Rosetta models to it
-		    println ('PythonFilesGeneratorTest::generatePython ... get resource set')
+			LOGGER.info("generatePython ... get resource set")
 		    val resourceSet = resourceSetProvider.get  
            	parse(ModelHelper.commonTestTypes, resourceSet)
 		    resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
@@ -95,21 +98,17 @@ class PythonFilesGeneratorTest {
 		    // Get a list of all the DSL input files and filter out non-Rosetta files
 		    val dirs = new File(dslPath)
 			dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sortBy[ it.getName ].forEach [file |
-				println ('PythonFilesGeneratorTest::generatePython ... reading file: ' + file.name)
+				LOGGER.info ("generatePython ... reading file: {}", file.name)
 			  	val content = new String(Files.readAllBytes(file.toPath))
 			  	parse(content, resourceSet)
 			]
 		    
 		    val rosettaModels  = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), dslPath)					
 			val generatedFiles = generator.afterGenerate(rosettaModels)
-			
 			writeFiles(pythonTgtPath, generatedFiles)
-			
-		    //Arrays.sort(listFiles)
-		    println ('PythonFilesGeneratorTest::generatePython ... found ' + rosettaModels.length.toString () + ' rosetta files in: ' + dslPath)					
-			  	
-	        createProjectToml(tomlTemplatePath, cdmVersion, tomlTargetPath)
-			println ('PythonFilesGeneratorTest::generatePython ... done')
+			createProjectToml(tomlTemplatePath, cdmVersion, tomlTargetPath)
+			LOGGER.info ("generatePython ... done")
 		} 
 	    catch (IOException ioE) {
 	    	println ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
@@ -131,7 +130,7 @@ class PythonFilesGeneratorTest {
 	def writeFiles(String pythonTgtPath, Map<String, ? extends CharSequence> generatedFiles){
 		// Assuming 'generatedFiles' is a HashMap<String, CharSequence>
 		for (entry : generatedFiles.entrySet) {
-		  val key = entry.key
+		  val key   = entry.key
 		  val value = entry.value.toString
 		
 		  // Split the key into its components and replace '.' with the file separator
@@ -163,14 +162,6 @@ class PythonFilesGeneratorTest {
 		  Files.write(outputFile.toPath, value.getBytes(StandardCharsets.UTF_8))
 		}
 		
-		// Copy all files from build/runtime/src/rosetta/runtime to the first sublevel
-/*		  val sourceDir = new File("build/resources/runtime/src/rosetta/runtime")
-	      if (sourceDir.exists && sourceDir.isDirectory) {
-	        sourceDir.listFiles.forEach [
-	          file |
-	            Files.copy(file.toPath, new File(pythonTgtPath + File.separator + "cdm", file.getName).toPath, StandardCopyOption.REPLACE_EXISTING)
-	        ]
-	      } */
 	}
     
     /*
