@@ -40,7 +40,7 @@ class LoadRosettaModelsTest {
 		
 		assertEquals(86, rosettaFileContents.size)
 		
-		// re-parse, and it all works
+		// parse once
 		val rosettaModels = rosettaFileContents
 			.map[parse(it, resourceSet)]
 		
@@ -61,11 +61,11 @@ class LoadRosettaModelsTest {
 		
 		assertEquals(86, rosettaFileContents.size)
 		
-		// commenting out this line, means that TradeLot.priceQuantity attribute type is not resolved
+		// parse once....
 		rosettaFileContents
 			.forEach[parse(it, resourceSet)]
 		
-		// re-parse, and it all works
+		// then re-parse, and it all works
 		val rosettaModels = rosettaFileContents
 			.map[parse(it, resourceSet)]
 		
