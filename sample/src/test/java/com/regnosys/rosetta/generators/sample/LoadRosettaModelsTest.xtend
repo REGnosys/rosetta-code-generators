@@ -56,7 +56,7 @@ class LoadRosettaModelsTest {
 		
 		val resourceSet = resourceSetProvider.get
 		
-		// Load resources using  getResource
+		// Load resources using getResource (TODO check Path.toString() works on Windows)
 		val resources = rosettaFilePaths
 			.map[resourceSet.getResource(URI.createURI(it.toString()), true)]
 					
