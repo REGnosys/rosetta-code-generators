@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
@@ -10,15 +9,14 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.List
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import com.regnosys.rosetta.generators.test.TestUtil
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -26,18 +24,15 @@ class CSharpModelObjectGeneratorTest {
 
     @Inject
     extension ModelHelper
+    
+    @Inject
+    extension TestUtil
 
     @Inject
-    CSharp8CodeGenerator generator8;
+    CSharp8CodeGenerator generator8
 
     @Inject
-    CSharp9CodeGenerator generator9;
-
-    @Inject
-    extension ParseHelper<RosettaModel>
-
-    @Inject
-    Provider<XtextResourceSet> resourceSetProvider;
+    CSharp9CodeGenerator generator9
 
     protected def boolean containsCdmVersionAttribute(String c_sharp) {
         c_sharp.contains('[assembly: Rosetta.Lib.Attributes.CdmVersion("test")]')
@@ -132,19 +127,12 @@ class CSharpModelObjectGeneratorTest {
     @Test
     @Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
-
-        val dirs = newArrayList(
-            ('rosetta-cdm/src/main/rosetta'),
-            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
-        );
-
-        val resourceSet = resourceSetProvider.get   
-
-        dirs.map[toFile(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
-            map[Files.readAllBytes(toPath)].map[new String(it)]
-        ].forEach[parse(resourceSet)]
-
-        val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+        val dirs = #[
+            '../../../finos/common-domain-model/rosetta-source/src/main/rosetta',
+            '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
+        ]
+		
+        val rosettaModels = dirs.parseAllRosettaFiles
         
         generateCdm(generator8, "NetStandard.2.1", rosettaModels)
         generateCdm(generator9, "Net.5.0", rosettaModels)
