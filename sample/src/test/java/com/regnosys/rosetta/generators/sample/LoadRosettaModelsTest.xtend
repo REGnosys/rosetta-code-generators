@@ -7,7 +7,6 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import java.io.File
 import java.nio.file.Files
-import java.util.List
 import org.eclipse.emf.common.util.URI
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
