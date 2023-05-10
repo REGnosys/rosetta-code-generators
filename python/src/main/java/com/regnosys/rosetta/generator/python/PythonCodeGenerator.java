@@ -53,36 +53,41 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
 		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
 
-	    Map<String, CharSequence> result = new HashMap<>();
-	    AtomicReference<String> previousNamespace = new AtomicReference<>("");
-	    models.stream()
-	          .sorted(Comparator.comparing(RosettaModel::getName, String.CASE_INSENSITIVE_ORDER)) // Sort models by name, case-insensitive
-	          .forEach(m -> {
-	              List<Data> rosettaClasses = m.getElements().stream()
-	                      .filter(e -> e instanceof Data)
-	                      .map(Data.class::cast).collect(Collectors.toList());
+		Map<String, CharSequence> result = new HashMap<>();
+		AtomicReference<String> previousNamespace = new AtomicReference<>("");
+		models.stream()
+			  .sorted(Comparator.comparing(RosettaModel::getName, String.CASE_INSENSITIVE_ORDER)) // Sort models by name, case-insensitive
+			  .forEach(m -> {
+				  List<Data> rosettaClasses = m.getElements().stream()
+						  .filter(e -> e instanceof Data)
+						  .map(Data.class::cast).collect(Collectors.toList());
 
-	              List<RosettaMetaType> metaTypes = m.getElements().stream()
-	                      .filter(RosettaMetaType.class::isInstance)
-	                      .map(RosettaMetaType.class::cast).collect(Collectors.toList());
+				  List<RosettaMetaType> metaTypes = m.getElements().stream()
+						  .filter(RosettaMetaType.class::isInstance)
+						  .map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
-	              List<RosettaEnumeration> rosettaEnums = m.getElements().stream()
-	                      .filter(RosettaEnumeration.class::isInstance)
-	                      .map(RosettaEnumeration.class::cast).collect(Collectors.toList());
+				  List<RosettaEnumeration> rosettaEnums = m.getElements().stream()
+						  .filter(RosettaEnumeration.class::isInstance)
+						  .map(RosettaEnumeration.class::cast).collect(Collectors.toList());
 
-	              List<Function> rosettaFunctions = m.getElements().stream()
-	                      .filter(t -> Function.class.isInstance(t))
-	                      .map(Function.class::cast).collect(Collectors.toList());
-	              
-	              if(!m.getName().equals(previousNamespace.get())) {
-	                  previousNamespace.set(m.getName());
-	                  LOGGER.info("processing module: {}", m.getName());
-	              }
+				  List<Function> rosettaFunctions = m.getElements().stream()
+						  .filter(t -> Function.class.isInstance(t))
+						  .map(Function.class::cast).collect(Collectors.toList());
+				
+				if(!m.getName().equals(previousNamespace.get())) {
+					previousNamespace.set(m.getName());
+					LOGGER.info("processing module: {}", m.getName());
+				}
 
-	              result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
-	              result.putAll(enumGenerator.generate(rosettaEnums, version));
-	              result.putAll(funcGenerator.generate(rosettaFunctions, version));
-	          });
-	    return result;
+				try {
+					result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
+				} catch (Exception e) {
+					System.out.println ("Exception caught when generating objects");
+					e.printStackTrace();
+				}
+				result.putAll(enumGenerator.generate(rosettaEnums, version));
+				result.putAll(funcGenerator.generate(rosettaFunctions, version));
+			});
+		return result;
 	}
 }

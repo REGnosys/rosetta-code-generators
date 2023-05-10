@@ -60,3 +60,4 @@ build/resources/runtime/build
 build/resources/runtime/src/rosetta.runtime.egg-info
 build/testenv
 build/pyproject.toml
+build/src-one-pass/
