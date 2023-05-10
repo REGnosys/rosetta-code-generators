@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import java.util.List
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -27,7 +28,7 @@ class LoadRosettaModelsTest {
 	Provider<XtextResourceSet> resourceSetProvider;
 	
 	@Test
-	def void shouldLoadRosettaModelsWithParseHelper() {
+	def void shouldLoadRosettaModelsWithParseHelper_SingleParse() {
 		val rosettaFilePaths = getRosettaFilePaths()
 		
 		val resourceSet = resourceSetProvider.get
@@ -35,6 +36,28 @@ class LoadRosettaModelsTest {
 		// read file contents, so they can be parsed
 		val rosettaFileContents = rosettaFilePaths
 			.map[new String(Files.readAllBytes(it))]
+			.toList
+		
+		assertEquals(86, rosettaFileContents.size)
+		
+		// re-parse, and it all works
+		val rosettaModels = rosettaFileContents
+			.map[parse(it, resourceSet)]
+		
+		// assert TradeLot / PriceQuantity
+		assertTradeLotAttributes(rosettaModels, null)
+	}
+	
+	@Test
+	def void shouldLoadRosettaModelsWithParseHelper_DoubleParse() {
+		val rosettaFilePaths = getRosettaFilePaths()
+		
+		val resourceSet = resourceSetProvider.get
+		
+		// read file contents, so they can be parsed
+		val rosettaFileContents = rosettaFilePaths
+			.map[new String(Files.readAllBytes(it))]
+			.toList
 		
 		assertEquals(86, rosettaFileContents.size)
 		
@@ -47,7 +70,7 @@ class LoadRosettaModelsTest {
 			.map[parse(it, resourceSet)]
 		
 		// assert TradeLot / PriceQuantity
-		assertTradeLotAttributes(rosettaModels)
+		assertTradeLotAttributes(rosettaModels, "PriceQuantity")
 	}
 	
 	@Test
@@ -59,6 +82,7 @@ class LoadRosettaModelsTest {
 		// Load resources using getResource (TODO check Path.toString() works on Windows)
 		val resources = rosettaFilePaths
 			.map[resourceSet.getResource(URI.createURI(it.toString()), true)]
+			.toList
 					
 		assertEquals(86, resources.size)
 		
@@ -67,10 +91,11 @@ class LoadRosettaModelsTest {
 			.toList
 		
 		// assert TradeLot / PriceQuantity
-		assertTradeLotAttributes(rosettaModels)
+		assertTradeLotAttributes(rosettaModels, "PriceQuantity")
 	}
 	
 	private def getRosettaFilePaths() {
+		// TODO write test with local rosetta
 		val cdmPath = new File("../../../finos/common-domain-model/rosetta-source/src/main/rosetta")
 		
 		return newArrayList(cdmPath)
@@ -79,7 +104,7 @@ class LoadRosettaModelsTest {
 			.map[toPath]
 	}
 	
-	private def void assertTradeLotAttributes(Iterable<RosettaModel> rosettaModels) {
+	private def void assertTradeLotAttributes(List<RosettaModel> rosettaModels, String expectedType) {
 		val tradeLot = rosettaModels
 			.map[elements]
 			.flatten
@@ -96,6 +121,6 @@ class LoadRosettaModelsTest {
 		println(pqAttr)
 		
 		println(pqAttr.type.name)
-		assertEquals("PriceQuantity", pqAttr.type.name)
+		assertEquals(expectedType, pqAttr.type.name)
 	}
 }
