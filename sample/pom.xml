@@ -27,6 +27,10 @@
 			<artifactId>com.regnosys.rosetta.lib</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.tests</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>test-helper</artifactId>
 			<version>${project.version}</version>
