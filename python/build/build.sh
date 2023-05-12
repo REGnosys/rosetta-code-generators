@@ -37,9 +37,6 @@ $PYEXE -m pip install -e resources/runtime || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: resources/runtime || processError
 $PYEXE -m pip install -e . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
-# rm -f typing_extensions-*.whl
-# rm -f pydantic-*.whl
-
 echo ""
 echo ""
 echo "***************************************************************************"

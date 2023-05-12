@@ -1,5 +1,6 @@
 package com.regnosys.rosetta.generator.python;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,7 +51,10 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	
 	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+
+//		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+		String version   = "3.3.2";
+
 		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
 
 		Map<String, CharSequence> result = new HashMap<>();
@@ -81,13 +85,17 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
 				try {
 					result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
+					result.putAll(enumGenerator.generate(rosettaEnums, version));
+					result.putAll(funcGenerator.generate(rosettaFunctions, version));
 				} catch (Exception e) {
-					System.out.println ("Exception caught when generating objects");
+					System.out.println ("Exception while generating python");
 					e.printStackTrace();
 				}
-				result.putAll(enumGenerator.generate(rosettaEnums, version));
-				result.putAll(funcGenerator.generate(rosettaFunctions, version));
 			});
+		String namespace = "cdm";
+		result.put(utils.toPyFileName (namespace, "__init__"), utils.createTopLevelInitFile(version));
+		result.put(utils.toPyFileName (namespace, "version"), utils.createVersionFile (version));
+		result.put("pyproject.toml", utils.createPYProjectTomlFile(version));
 		return result;
 	}
 }

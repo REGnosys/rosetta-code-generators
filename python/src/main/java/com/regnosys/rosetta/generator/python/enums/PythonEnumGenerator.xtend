@@ -21,30 +21,20 @@ class PythonEnumGenerator {
 
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
-		if(rosettaEnums.size>0){
-			for(RosettaEnumeration enum: rosettaEnums){
-				val tr = enum.eContainer as RosettaModel
-				val namespace = tr.name
-				try{
-					val enums = enum.generateEnums(version).replaceTabsWithSpaces
-				
-					val all = 
-					'''
-					from enum import Enum
-					
-					all = ['«enum.name»']
-					  
-					'''
-					result.put(utils.toPyFileName(namespace, enum.name), all +enums)
-				}
-				catch(Exception ex){
-					println ('PythonFilesGeneratorTest::Error in... ' + enum.name )	
-					
-				}			
-			}
-			
-		}
+		for(RosettaEnumeration enum: rosettaEnums){
+			val tr = enum.eContainer as RosettaModel
+			val namespace = tr.name
+			val enums = enum.generateEnums(version).replaceTabsWithSpaces
 		
+			val all = 
+			'''
+			from enum import Enum
+			
+			all = ['«enum.name»']
+			  
+			'''
+			result.put(utils.toPyFileName(namespace, enum.name), all +enums)
+		}
 		return result;
 	}
 

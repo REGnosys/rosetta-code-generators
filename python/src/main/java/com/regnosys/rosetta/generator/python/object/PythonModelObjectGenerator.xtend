@@ -131,13 +131,10 @@ class PythonModelObjectGenerator {
 				.map[allSuperTypes].flatten
 				.toSet
  */		 
-		if (rosettaClasses.size() > 0) {
-			for(Data type: rosettaClasses){
-				val tr = type.eContainer as RosettaModel
-				val namespace = tr.name
-				val classes = type.generateClasses(version, models).replaceTabsWithSpaces
-				result.put(utils.toPyFileName(namespace, type.name), utils.createImports(type.name) + classes)
-			}
+		for(Data type: rosettaClasses){
+			val model   = type.eContainer as RosettaModel
+			val classes = type.generateClasses(version, models).replaceTabsWithSpaces
+			result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
 		}
 		
 /*		if (metaTypes.size > 0) {

@@ -14,29 +14,45 @@ class  PythonFunctionGenerator {
 	
 	@Inject
 	PythonModelGeneratorUtil utils;
-		
+	
+	static final String FUNCTIONS_FILENAME = 'Funcs.py'
+	
 	def Map<String, ? extends CharSequence> generate(List<Function> rosettaFunctions, String version) {
 		val result = new HashMap
 		if(rosettaFunctions.size()>0){
+			val funcs = rosettaFunctions.sortBy[name].generateFunctions(version)
+			result.put(FUNCTIONS_FILENAME, funcs)	
+		}
+/*		if(rosettaFunctions.size()>0){
 			for(Function func: rosettaFunctions){
 				val tr = func.eContainer as RosettaModel
 				val namespace = tr.name
 				try{
 					val funcs = func.generateFunctions(version)				
-					result.put(utils.toPyFileName(namespace, func.name), utils.createImports(func.name) + funcs)
+					result.put(utils.toPyFileName(namespace, func.name), 
+						utils.createImports(func.name) + funcs)
 				}
 				catch(Exception ex){
 					println ('PythonFilesGeneratorTest::Error in... ' + func.name )	
 				}		
-			}
-				
-		}
+			} 
+		}*/
 		
-		result;
+		return result
 	}
 	
-	private def generateFunctions(Function function,String version) {
+	private def generateFunctions(List<Function> rosettaFunctions,String version) {
 		
+		'''
+		«FOR function : rosettaFunctions SEPARATOR "\n"»
+		def «function.name»«generatesInputs(function)»:
+			«generatesBody(function)»
+		
+		«ENDFOR»
+		'''
+		
+    }
+	private def generateFunctions(Function function,String version) {
 		'''
 		def «function.name»«generatesInputs(function)»:
 			«generatesBody(function)»
@@ -44,14 +60,10 @@ class  PythonFunctionGenerator {
 		
     }
     private def generatesBody(Function function) {
-			'''
-			pass
-			'''
-
+		'''
+		pass
+		'''
 	}
-	
-	
-	
 	private def generatesInputs(Function function) {
 		
 		val inputs = orderInputs(function.inputs)
@@ -69,7 +81,6 @@ class  PythonFunctionGenerator {
 		result+=")"
 		'''«result»'''
 	}
-	
 	private def List<Attribute> orderInputs(List<Attribute> inputs){
 		val orderedInputs = new ArrayList<Attribute>();
 		
@@ -82,10 +93,5 @@ class  PythonFunctionGenerator {
 				orderedInputs.add(input)
 		}
 		orderedInputs
-		
-		
 	}
-	
-
-	
 }
