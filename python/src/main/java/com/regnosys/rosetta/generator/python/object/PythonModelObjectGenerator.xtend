@@ -127,32 +127,26 @@ class PythonModelObjectGenerator {
 	) throws Exception {
 		val result = new HashMap
 		
-/*		val superTypes = rosettaClasses
-				.map[superType]
-				.map[allSuperTypes].flatten
-				.toSet
- */		 
 		for(Data type: rosettaClasses){
 			val model   = type.eContainer as RosettaModel
 			val classes = type.generateClasses(version, models).replaceTabsWithSpaces
 			result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
 		}
 		
-/*		if (metaTypes.size > 0) {
-			val metaFields = rosettaClasses.sortBy[name].generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-			//result.put(META_FILENAME, metaFields)
-		} */
 		result;
 	}
 	
 	def boolean checkBasicType(ExpandedAttribute attr) {
 		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool', 'number')
-		try {
-			val attrType = attr.toRawType.toString()
-			return types.contains(attrType)
-		} catch (Exception ex) {
-			return false
+		if(attr!==null){	
+			if(attr.toRawType!==null)
+				return types.contains(attr.toRawType.toString())	
+			else
+				return false
 		}
+		else{
+			return false
+		} 
 	 }
 	 def boolean checkBasicType(String attr) {
 		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool','number')
@@ -163,20 +157,6 @@ class PythonModelObjectGenerator {
 		}
 	 }
 
-
-	
-/*	private def sortClassesByHierarchy(List<Data> rosettaClasses) {
-		val sortedClasses = newArrayList
-	
-		while (!rosettaClasses.isEmpty) {
-			val independentClasses = rosettaClasses.filter[c | c.superType === null || !rosettaClasses.contains(c.superType)].toList
-			sortedClasses.addAll(independentClasses)
-			rosettaClasses.removeAll(independentClasses)
-		}
-	
-		return sortedClasses
-	} */
-
 	/**
 	 * Generate the classes
 	 */
@@ -185,10 +165,8 @@ class PythonModelObjectGenerator {
    private def generateClasses(Data rosettaClass, String version, Collection<? extends RosettaModel> models) {
 		var List<String> enumImports = newArrayList
 		var List<String> dataImports = newArrayList
-//		var List<String> superTypeImports = newArrayList
 		var List<String> classDefinitions = newArrayList
 		var List<String> updateForwardRefs = newArrayList
-//		var List<String> importFromConditions = newArrayList
 		var superType = rosettaClass.superType
 		importsFound = getImportsFromAttributes(rosettaClass)
 		
@@ -213,35 +191,6 @@ class PythonModelObjectGenerator {
 	'''
 	}
 	
-	
-/*	private def getEnumImportsForClass(Data rosettaClass, HashMap<String, List<String>> importsVariables) {
-		return rosettaClass.allExpandedAttributes
-			.filter[enclosingType == rosettaClass.name]
-			.filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
-			.filter[!checkBasicType(it)]
-			.filter[importsVariables.get(it.toRawType.toString).get(1)==='ENUM']
-			.map[it.toRawType]
-			.toSet().toList()
-			.map[attribute | '''from «».«attribute» import «attribute»''']
-	}
-	
-	private def getImportsFromConditions(Data rosettaClass) {
-		val filteredAttributes = rosettaClass.allExpandedAttributes
-			.filter[enclosingType == rosettaClass.name]
-			.filter[(it.name!=="reference") && (it.name!=="meta") && (it.name!=="scheme")]
-			.filter[!checkBasicType(it)]
-	
-		val imports = newArrayList
-		for (attribute : filteredAttributes) {
-			val originalIt = attribute
-			val model = attribute.type.model
-			val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
-			imports.add(importStatement)
-		}
-	
-		return imports
-	}
- */	
 	private def getImportsFromAttributes(Data rosettaClass) {
 		val filteredAttributes = rosettaClass.allExpandedAttributes
 			.filter[enclosingType == rosettaClass.name]
@@ -278,11 +227,6 @@ class PythonModelObjectGenerator {
 		'''
 	}
 		
-		
-		
-
-	
-	
 	def boolean isConstraintCondition(Condition cond) {
 		return cond.isOneOf || cond.isChoice
 	}
@@ -341,14 +285,6 @@ class PythonModelObjectGenerator {
 			   
 	}
 
-	/*private def generateExpressionCondition(Data cls, Condition c) {
-		if_cond_blocks = new ArrayList<String>()
-		var expr = generateExpression(c.expression, 0)
-		return 
-		'''	«FOR arg : if_cond_blocks SEPARATOR '\n'»«arg»«ENDFOR»
-	return «expr»
-		'''
-	}*/
 	private def generateExpressionCondition(Data cls, Condition c) {
 		if_cond_blocks = new ArrayList<String>()
 		var expr = generateExpression(c.expression, 0)
@@ -670,18 +606,7 @@ class PythonModelObjectGenerator {
 		
 		«ENDIF»
 		'''
-		
-
-		/* 
-		'''
-		«attrName»: «att» = Field(None,description = "«attribute.definition»")
-		«IF attribute.definition!==null»
-		"""
-		«attribute.definition»
-		"""
-		«ENDIF»
-		'''
-		*/
+				
 	}
 
 	

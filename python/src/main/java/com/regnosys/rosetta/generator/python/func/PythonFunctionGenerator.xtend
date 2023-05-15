@@ -36,18 +36,7 @@ class  PythonFunctionGenerator {
 		
 		return result
 	}
-	
-	private def generateFunctions(List<Function> rosettaFunctions,String version) {
-		
-		'''
-		«FOR function : rosettaFunctions SEPARATOR "\n"»
-		def «function.name»«generatesInputs(function)»:
-			«generatesBody(function)»
-		
-		«ENDFOR»
-		'''
-		
-    }
+
 	private def generateFunctions(Function function,String version) {
 		'''
 		def «function.name»«generatesInputs(function)»:
