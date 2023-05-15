@@ -49,6 +49,7 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 
 class PythonModelObjectGenerator {
 
@@ -559,7 +560,10 @@ class PythonModelObjectGenerator {
 	}
 	
 	def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl){
-		addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)
+		if(s instanceof FunctionImpl)
+			addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name+"."+"functions")
+		else
+			addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)
 		var args = '''«FOR arg : expr.args SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»'''
 		'''«s.name»(«args»)'''
 		
