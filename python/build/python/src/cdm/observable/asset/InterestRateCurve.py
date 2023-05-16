@@ -1,0 +1,22 @@
+# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+from __future__ import annotations
+from typing import List, Optional
+from datetime import date
+from datetime import time
+from datetime import datetime
+from decimal import Decimal
+from pydantic import Field
+from rosetta.runtime.utils import *
+
+__all__ = ['InterestRateCurve']
+
+
+class InterestRateCurve(BaseDataClass):
+  floatingRateIndex: AttributeWithMeta[FloatingRateIndexEnum] | FloatingRateIndexEnum = Field(..., description="")
+  tenor: Period = Field(..., description="")
+
+from cdm.base.staticdata.asset.rates.FloatingRateIndexEnum import FloatingRateIndexEnum
+from cdm.base.datetime.Period import Period
+
+InterestRateCurve.update_forward_refs()

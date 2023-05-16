@@ -8,6 +8,9 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import java.util.ArrayList
 import java.util.Map
 import java.util.HashMap
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class PythonModelGeneratorUtil {
     
@@ -62,5 +65,37 @@ class PythonModelGeneratorUtil {
 		
 		
 		
+	}
+	def String toPyFileName(String namespace, String fileName) {
+		'''src/«namespace.replace(".", "/")»/«fileName».py''';
+	}
+	def String toPyFunctionFileName(String namespace, String fileName) {
+		'''src/«namespace.replace(".", "/")»/functions/«fileName».py''';
+	}
+	
+	def String createTopLevelInitFile (String version) {
+		return "from .version import __version__"
+	}
+	def String createVersionFile (String version) {
+		val versionComma	 = version.replace ('.', ',')
+		return "version = ("+versionComma+",0)\n"+
+		 	   "version_str = '"+version+"-0'\n"+
+		 	   "__version__ = '"+versionComma+"'\n"+
+		 	   "__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'"		 	
+	}
+	def String createPYProjectTomlFile (String version) {
+		return "[build-system]\n" + 
+			   "requires = [\"setuptools>=62.0\"]\n" +
+			   "build-backend = \"setuptools.build_meta\"\n\n" +
+			   "[project]\n" + 
+			   "name = \"python-cdm\"\n" + 
+			   "version = \"" + version + "\"\n" + 
+			   "requires-python = \">= 3.10\"\n" +
+			   "dependencies = [\n" + 
+			   "   \"pydantic\",\n" +
+			   "   \"rosetta.runtime\"\n" +
+			   "]\n" +
+			   "[tool.setuptools.packages.find]\n" +
+			   "where = [\"src\"]"
 	}
 }

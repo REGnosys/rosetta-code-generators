@@ -50,13 +50,15 @@ __pycache__
 build/.pyenv/
 .pytest_cache/
 # project
-build/build/
+build/python/build/
 python_cdm.egg-info
-build/src/cdm/*
-!build/src/cdm/utils.py
-build/python_cdm-*-py3-none-any.whl
-build/rosetta.runtime-*-py3-none-any.whl
-build/resources/runtime/build
-build/resources/runtime/src/rosetta.runtime.egg-info
+build/runtime/build
+build/testenv/
 build/testenv
-build/pyproject.toml
+build/runtime/src/rosetta/runtime
+build/runtime/src/rosetta_runtime.egg-info
+build/runtime/src/rosetta.runtime.egg-info/dependency_links.txt
+build/runtime/src/rosetta.runtime.egg-info/PKG-INFO
+build/runtime/src/rosetta.runtime.egg-info/requires.txt
+build/runtime/src/rosetta.runtime.egg-info/SOURCES.txt
+build/runtime/src/rosetta.runtime.egg-info/top_level.txt

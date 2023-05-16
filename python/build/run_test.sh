@@ -14,14 +14,14 @@ ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') 
 rm *.whl
 rm -rf testenv
 
-./build.sh
+./build_python_cdm.sh
 
 $PYEXE -m venv --clear testenv
 source testenv/$ACDIR/activate
 
 $PYEXE -m pip install pytest
-$PYEXE -m pip install rosetta.runtime-1.0.0-py3-none-any.whl
-$PYEXE -m pip install python_cdm-3.3.2-py3-none-any.whl
+$PYEXE -m pip install runtime/rosetta_runtime-1.0.0-py3-none-any.whl
+$PYEXE -m pip install python/python_cdm-3.3.2-py3-none-any.whl
 
 $PYEXE test/serialization/test_party.py
 $PYEXE test/serialization/test_trade_state_product_3_2_2.py

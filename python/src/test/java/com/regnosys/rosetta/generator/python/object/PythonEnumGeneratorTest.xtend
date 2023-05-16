@@ -35,25 +35,25 @@ class PythonEnumGeneratorTest {
         val enums = python.toString
         val expected = '''
         class TestEnum(Enum):
-            """
-            Test enum description.
-            """
-            TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
-            """
-            Test enum value 1
-            """
-            TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
-            """
-            Test enum value 2
-            """
-            TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
-            """
-            Test enum value 3
-            """
-            _1 = "1"
-            """
-            Rolls on the 1st day of the month.
-            """
+          """
+          Test enum description.
+          """
+          TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
+          """
+          Test enum value 1
+          """
+          TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
+          """
+          Test enum value 2
+          """
+          TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
+          """
+          Test enum value 3
+          """
+          _1 = "1"
+          """
+          Rolls on the 1st day of the month.
+          """
         '''
         assertTrue(enums.contains(expected))
     }
