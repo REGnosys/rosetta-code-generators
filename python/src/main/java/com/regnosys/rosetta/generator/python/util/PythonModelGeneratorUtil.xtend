@@ -67,10 +67,10 @@ class PythonModelGeneratorUtil {
 		
 	}
 	def String toPyFileName(String namespace, String fileName) {
-		'''«namespace.replace(".", "/")»/«fileName».py''';
+		'''src/«namespace.replace(".", "/")»/«fileName».py''';
 	}
 	def String toPyFunctionFileName(String namespace, String fileName) {
-		'''«namespace.replace(".", "/")»/functions/«fileName».py''';
+		'''src/«namespace.replace(".", "/")»/functions/«fileName».py''';
 	}
 	
 	def String createTopLevelInitFile (String version) {

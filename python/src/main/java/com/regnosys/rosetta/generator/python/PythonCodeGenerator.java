@@ -1,6 +1,5 @@
 package com.regnosys.rosetta.generator.python;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,9 +53,8 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
 
-//		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
-		String version   = "3.3.2";
-
+		String versionFromModels = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
+		final String version     = (versionFromModels.equals ("${project.version}")) ? "3.3.2" : versionFromModels;
 		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
 
 		Map<String, CharSequence> result = new HashMap<>();

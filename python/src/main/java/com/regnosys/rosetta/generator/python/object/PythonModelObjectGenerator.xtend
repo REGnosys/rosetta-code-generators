@@ -39,6 +39,7 @@ import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
+import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 import com.regnosys.rosetta.types.RCalculationType
 import com.regnosys.rosetta.types.RQualifiedType
 import java.util.ArrayList
@@ -49,13 +50,12 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 
 class PythonModelObjectGenerator {
 
 	@Inject extension RosettaExtensions
 	@Inject extension PythonModelObjectBoilerPlate
-	@Inject extension PythonMetaFieldGenerator
+	
 	
 	@Inject
 	PythonModelGeneratorUtil utils;
@@ -497,7 +497,7 @@ class PythonModelObjectGenerator {
 	
 	def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl){
 		if(s instanceof FunctionImpl)
-			addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name+"."+"functions")
+			addImportsFromConditions(s.getName (), (s.eContainer as RosettaModel).name+"."+"functions")
 		else
 			addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)
 		var args = '''«FOR arg : expr.args SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»'''
