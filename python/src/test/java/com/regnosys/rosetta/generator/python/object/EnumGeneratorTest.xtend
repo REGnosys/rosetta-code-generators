@@ -94,12 +94,7 @@ class EnumGeneratorTest {
 	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
 	        '''.generatePython
 
-<<<<<<< HEAD
-        val enums = python.get('com.rosetta.test.model.TestEnum').toString
-       
-        
-=======
->>>>>>> 575e05cc4923dc33fdc85e4ad4557929f9a8cbaa
+
         val expected = '''
         class TestEnum(Enum):
           """

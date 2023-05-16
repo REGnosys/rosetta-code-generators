@@ -402,53 +402,6 @@ class PythonObjectGenerationTest {
 	    	multiplierUnit UnitType (0..1) <"Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).">
         '''.generatePython
 
-<<<<<<< HEAD
-        
-        val expected = 
-           '''
-           class MeasureBase(BaseDataClass):
-               """
-               Provides an abstract base class shared by Price and Quantity.
-               """
-               amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
-               """
-               Specifies an amount to be qualified and used in a Price or Quantity definition.
-               """
-               unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
-               """
-               Qualifies the unit by which the amount is measured.
-               """
-           
-           class UnitType(BaseDataClass):
-               """
-               Defines the unit to be used for price, quantity, or other purposes
-               """
-               currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
-               """
-               Defines the currency to be used as a unit for a price, quantity, or other purpose.
-               """
-           
-           class Quantity(MeasureBase):
-               """
-               Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
-               """
-               multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
-               """
-               Defines the number to be multiplied by the amount to derive a total quantity.
-               """
-               multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
-               """
-               Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
-               """
-           
-           
-           MeasureBase.update_forward_refs()
-           UnitType.update_forward_refs()
-           Quantity.update_forward_refs()
-            '''
-        
-=======
->>>>>>> 575e05cc4923dc33fdc85e4ad4557929f9a8cbaa
         val expectedMeasureBase=
         '''
         class MeasureBase(BaseDataClass):
