@@ -183,6 +183,208 @@ class PythonObjectGenerationTest {
         
     }
     
+    @Test 
+    def void shouldGenerateTypes2() {
+    	val python = '''
+    	type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
+			capacityUnit CapacityUnitEnum (0..1) <"Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.">
+			weatherUnit WeatherUnitEnum (0..1) <"Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.">
+			financialUnit FinancialUnitEnum (0..1) <"Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.">
+			currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
+			[metadata scheme]
+
+		condition UnitType: <"Requires that a unit type must be set.">
+			one-of
+		'''.generatePython
+
+		val expectedTestType = 
+		'''
+		class UnitType(BaseDataClass):
+		    """
+		    Defines the unit to be used for price, quantity, or other purposes
+		    """
+		    capacityUnit: Optional[null] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
+		    """
+		    currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		    """
+		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		    """
+		    financialUnit: Optional[null] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
+		    """
+		    Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
+		    """
+		    weatherUnit: Optional[null] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
+		    """
+		    
+		    @rosetta_condition
+		    def condition_0_UnitType(self):
+		        """
+		        Requires that a unit type must be set.
+		        """
+		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
+		'''
+		assertTrue(python.toString.contains(expectedTestType))
+    	
+    }
+    
+    @Test
+    def void shouldGenerateTypes3() {
+    	val python = 
+    	'''
+    	type PortfolioState: <"State-full representation of a Portfolio that describes all the positions held at a given time, in various states which can be either traded, settled, etc., with lineage information to the previous state">
+    		[metadata key]
+    	
+    		positions Position (0..*) <"The list of positions, each containing a Quantity and a Product.">
+    		lineage Lineage (1..1) <"Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.">
+    	
+    		condition Initialisation: <"When the PortfolioState is the starting state of the Portfolio, as identified by a Null state in the Lineage, Positions must be empty and the reference to the latest Event is also empty. This is how a Portfolio gets initialised.">
+    			if lineage -> portfolioStateReference is absent
+    			then positions is absent
+    				and lineage -> eventReference is absent
+    	'''.generatePython
+    	val expectedTestType = 
+    	'''
+    	class PortfolioState(BaseDataClass):
+    	    """
+    	    State-full representation of a Portfolio that describes all the positions held at a given time, in various states which can be either traded, settled, etc., with lineage information to the previous state
+    	    """
+    	    lineage: null = Field(..., description="Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.")
+    	    """
+    	    Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.
+    	    """
+    	    positions: List[null] = Field([], description="The list of positions, each containing a Quantity and a Product.")
+    	    """
+    	    The list of positions, each containing a Quantity and a Product.
+    	    """
+    	    
+    	    @rosetta_condition
+    	    def condition_0_Initialisation(self):
+    	        """
+    	        When the PortfolioState is the starting state of the Portfolio, as identified by a Null state in the Lineage, Positions must be empty and the reference to the latest Event is also empty. This is how a Portfolio gets initialised.
+    	        """
+    	        def _then_fn0():
+    	            return (((self.positions) is None) and ((self.lineage.) is None))
+    	        
+    	        def _else_fn0():
+    	            return True
+    	        
+    	        return if_cond_fn(((self.lineage.) is None), _then_fn0, _else_fn0)
+    	'''
+    	assertTrue(python.toString.contains(expectedTestType))
+    	
+    }
+    
+    @Test
+    def void shouldGenerateTypes4() {
+    	val python = 
+    	'''
+    	type AssignedIdentifier: <"A class to specify the identifier value and its associated version.">
+    	
+    		identifier string (1..1) <"The identifier value.">
+    			[metadata scheme]
+    		identifierType TradeIdentifierTypeEnum (0..1) <"The enumerated classification of the identifier.">
+    		version int (0..1) <"The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.">
+    	
+    	type Identifier: <"A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it.">
+    		[metadata key]
+    	
+    		issuerReference Party (0..1) <"The identifier issuer, when specified by reference to a party specified as part of the transaction.">
+    			[metadata reference]
+    		issuer string (0..1) <"The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).">
+    			[metadata scheme]
+    		assignedIdentifier AssignedIdentifier (1..*) <"The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.">
+    	
+    		condition IssuerChoice: <"The identifier issuer is specified either explicitly or by reference to one of the parties.">
+    			required choice issuerReference, issuer
+    	
+    	type IdentifiedList: <"Attaches an identifier to a collection of objects, when those objects themselves can each be represented by an identifier. One use case is the representation of package transactions, where each component is a separate trade with its own identifier, and those trades are linked together as a package with its own identifier. The data type has been named generically rather than referring to 'packages' as it may have a number of other uses.">
+    		[metadata key]
+    	
+    		listId Identifier (1..1) <"The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.">
+    		componentId Identifier (2..*) <"Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.">
+    		price Price (0..1) <"The price of the package.">
+    	'''.generatePython
+    	val expectedType1 = 
+    	'''
+    	class AssignedIdentifier(BaseDataClass):
+    	    """
+    	    A class to specify the identifier value and its associated version.
+    	    """
+    	    identifier: AttributeWithMeta[str] | str = Field(..., description="The identifier value.")
+    	    """
+    	    The identifier value.
+    	    """
+    	    identifierType: Optional[null] = Field(None, description="The enumerated classification of the identifier.")
+    	    """
+    	    The enumerated classification of the identifier.
+    	    """
+    	    version: Optional[int] = Field(None, description="The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.")
+    	    """
+    	    The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.
+    	    """
+    	'''
+    	val expectedType2 = 
+    	'''
+    	class Identifier(BaseDataClass):
+    	    """
+    	    A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it.
+    	    """
+    	    assignedIdentifier: List[AssignedIdentifier] = Field([], description="The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.")
+    	    """
+    	    The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.
+    	    """
+    	    @rosetta_condition
+    	    def cardinality_assignedIdentifier(self):
+    	        return check_cardinality(self.assignedIdentifier, 1, None)
+    	    
+    	    issuer: Optional[AttributeWithMeta[str] | str] = Field(None, description="The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).")
+    	    """
+    	    The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).
+    	    """
+    	    issuerReference: Optional[AttributeWithReference | null] = Field(None, description="The identifier issuer, when specified by reference to a party specified as part of the transaction.")
+    	    """
+    	    The identifier issuer, when specified by reference to a party specified as part of the transaction.
+    	    """
+    	    
+    	    @rosetta_condition
+    	    def condition_0_IssuerChoice(self):
+    	        """
+    	        The identifier issuer is specified either explicitly or by reference to one of the parties.
+    	        """
+    	        return self.check_one_of_constraint('issuerReference', 'issuer', necessity=True)
+    	'''
+    	val expectedType3 = 
+    	'''
+    	class IdentifiedList(BaseDataClass):
+    	    """
+    	    Attaches an identifier to a collection of objects, when those objects themselves can each be represented by an identifier. One use case is the representation of package transactions, where each component is a separate trade with its own identifier, and those trades are linked together as a package with its own identifier. The data type has been named generically rather than referring to 'packages' as it may have a number of other uses.
+    	    """
+    	    componentId: List[Identifier] = Field([], description="Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.")
+    	    """
+    	    Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.
+    	    """
+    	    @rosetta_condition
+    	    def cardinality_componentId(self):
+    	        return check_cardinality(self.componentId, 2, None)
+    	    
+    	    listId: Identifier = Field(..., description="The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.")
+    	    """
+    	    The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.
+    	    """
+    	    price: Optional[null] = Field(None, description="The price of the package.")
+    	    """
+    	    The price of the package.
+    	    """
+    	'''
+    	assertTrue(python.toString.contains(expectedType1))
+    	assertTrue(python.toString.contains(expectedType2))
+    	assertTrue(python.toString.contains(expectedType3))
+    	
+    }
     
     
     @Test
@@ -202,7 +404,7 @@ class PythonObjectGenerationTest {
 
         
         val expected = 
-            '''
+           '''
            class MeasureBase(BaseDataClass):
                """
                Provides an abstract base class shared by Price and Quantity.
@@ -584,6 +786,8 @@ class PythonObjectGenerationTest {
         assertTrue(python.toString.contains(expectedA))
         assertTrue(python.toString.contains(expectedB))
     }
+    
+    
     
     
     def generatePython(CharSequence model) {
