@@ -6,7 +6,10 @@ class ScalaTranslator {
 				
 	static def toScalaBasicType(String typename) {
 		switch typename {
-			case 'string':
+			case 'string',				
+			case 'calculation',				
+			case 'productType',				
+			case 'eventType':
 				'String'
 			case 'int':
 				'Int'

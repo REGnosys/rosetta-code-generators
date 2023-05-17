@@ -157,6 +157,63 @@ class GolangModelObjectGeneratorTest {
 
 	}	
 	
+    @Test
+    def void shouldGenerateCalculationType() {
+        val golang = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateGolang
+
+		val types = golang.get('org_isda_cdm/types.go').toString
+        
+        assertEquals('''
+	        package org_isda_cdm
+	        
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import "time"
+	        import . "org_isda_cdm_metafields";
+	          
+	        
+	        type Foo struct {
+	          Attr string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
+    
+    @Test
+    def void shouldGenerateProductAndEventType() {
+        val golang = '''
+			type Foo:
+			     productAttr productType (0..1)
+			     eventAttr eventType (0..1)
+        '''.generateGolang
+
+		val types = golang.get('org_isda_cdm/types.go').toString
+        
+        assertEquals('''
+	        package org_isda_cdm
+	        
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import "time"
+	        import . "org_isda_cdm_metafields";
+	          
+	        
+	        type Foo struct {
+	          EventAttr string;
+	          ProductAttr string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
 	
 	@Test	
 	def void shouldGenerateMetaTypes() {
