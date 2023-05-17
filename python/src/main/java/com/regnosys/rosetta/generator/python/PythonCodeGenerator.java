@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
-import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
-import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
-import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
+import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
+import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
+import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
 
 

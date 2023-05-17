@@ -2,26 +2,17 @@ package com.regnosys.rosetta.generator.python
 
 import com.google.inject.Inject
 import com.google.inject.Provider
-import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.rosetta.RosettaRootElement
-import com.regnosys.rosetta.rosetta.simple.Data
-import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import java.io.File
 import java.io.FileReader
-import java.io.FileWriter
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Map
 import java.util.Properties
-import org.apache.commons.configuration2.INIConfiguration
 import org.apache.commons.io.FileUtils
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader
 import org.eclipse.emf.common.util.URI
@@ -32,7 +23,6 @@ import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 import org.slf4j.LoggerFactory
-
 
 /*
  * Test Principal

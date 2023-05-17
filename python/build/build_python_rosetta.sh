@@ -4,23 +4,12 @@ function processError() {
   echo ""
   echo "***************************************************************************"
   echo "*                                                                         *"
-  echo "*                          PYTHON TESTS FAILED!                           *"
+  echo "*                         INITIALISATION FAILED!                          *"
   echo "*                                                                         *"
   echo "***************************************************************************"
   echo ""
   exit 1
 }
-
-echo ""
-echo ""
-echo "***************************************************************************"
-echo "*                                                                         *"
-echo "*                              PYTHON TESTS!!!                            *"
-echo "*                                                                         *"
-echo "*                       test the python-cdm package!                      *"
-echo "*                                                                         *"
-echo "***************************************************************************"
-echo ""
 
 type -P python > /dev/null && PYEXE=python || PYEXE=python3
 if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1; then
@@ -30,27 +19,31 @@ if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1;
 fi
 
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $MYPATH
-
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
-
-# It is assumed, that the build.sh script has been run (it installs the cdm package
-# in the local virtual environment)
+cd $MYPATH
+$PYEXE -m venv --clear .pyenv || processError
 source .pyenv/$ACDIR/activate || processError
-
-# navigate to the folder containing pytests
-cd test || processError
-
-# run all pytests
-$PYEXE -m pytest || processError
-
+$PYEXE -m pip install --upgrade pip || processError
+$PYEXE -m pip install setuptools>=62.0 || processError
+$PYEXE -m pip install pylint || processError
+$PYEXE -m pip install pycodestyle || processError
+$PYEXE -m pip install yapf || processError
+$PYEXE -m pip install pydantic || processError
+$PYEXE -m pip install jsonpickle || processError
+$PYEXE -m pip install ./runtime/rosetta_runtime-1.0.0-py3-none-any.whl || processError
+cd python
+rm -rf build
+rm python_cdm-3.3.2-py3-none-any.whl
+$PYEXE -m pip install -e . || processError
+$PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 echo ""
 echo ""
 echo "***************************************************************************"
 echo "*                                                                         *"
 echo "*                                 SUCCESS!!!                              *"
 echo "*                                                                         *"
-echo "*                   Finished testing python-cdm module!                   *"
+echo "*Finished installing dependencies and building/installing the cdm package!*"
 echo "*                                                                         *"
 echo "***************************************************************************"
 echo ""
+

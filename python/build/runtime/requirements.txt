@@ -1,0 +1,6 @@
+setuptools>=62.0
+pylint
+pycodestyle
+yapf
+pydantic
+jsonpickle

@@ -14,8 +14,6 @@ ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') 
 rm *.whl
 rm -rf testenv
 
-./build_python_cdm.sh
-
 $PYEXE -m venv --clear testenv
 source testenv/$ACDIR/activate
 

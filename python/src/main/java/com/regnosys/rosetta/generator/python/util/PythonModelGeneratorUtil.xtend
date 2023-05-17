@@ -1,14 +1,6 @@
 package com.regnosys.rosetta.generator.python.util
 
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import java.util.List
-import com.regnosys.rosetta.rosetta.simple.Data
-import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.simple.Function
-import java.util.ArrayList
-import java.util.Map
-import java.util.HashMap
-import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -37,7 +29,7 @@ class PythonModelGeneratorUtil {
 		# «definition»
 		#
 		 «FOR attribute : attributes»
-		# @param «attribute.name» «attribute.definition»
+		 # @param «attribute.name» «attribute.definition»
 		 «ENDFOR»
 		#
 		«ENDIF»
@@ -93,7 +85,7 @@ class PythonModelGeneratorUtil {
 			   "requires-python = \">= 3.10\"\n" +
 			   "dependencies = [\n" + 
 			   "   \"pydantic\",\n" +
-			   "   \"rosetta.runtime\"\n" +
+			   "   \"rosetta.runtime==1.0.0\"\n" +
 			   "]\n" +
 			   "[tool.setuptools.packages.find]\n" +
 			   "where = [\"src\"]"
