@@ -128,7 +128,7 @@ class EnumGeneratorTest {
 			Unconfirmed
 		'''.generatePython
 
-		//val enums = python.get('com.rosetta.test.model.ConfirmationStatusEnum').toString
+		
 		val expected = '''
 		class ConfirmationStatusEnum(Enum):
 		  """
@@ -151,7 +151,6 @@ class EnumGeneratorTest {
      		Netted <"The transfer has been netted into a separate Transfer.">
 			'''.generatePython
 		
-		System.out.println(python)
 		val expected = 
 		'''
 		class TransferStatusEnum(Enum):
@@ -196,7 +195,7 @@ class EnumGeneratorTest {
     		ValuePerPercent <"Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.">
     		Weight <"Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.">
     	'''.generatePython
-		System.out.println(python)
+		
    		val expected = 
    		'''
    		class FinancialUnitEnum(Enum):

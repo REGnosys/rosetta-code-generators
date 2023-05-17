@@ -271,7 +271,6 @@ class PythonObjectGenerationTest {
 			one-of
 		'''.generatePython
 		
-		System.out.println(python)
 		val expectedTestType = 
 		'''
 		class UnitType(BaseDataClass):
@@ -351,7 +350,6 @@ class PythonObjectGenerationTest {
     		condition: one-of
     	'''.generatePython
     	
-    	System.out.println(python)
     	
     	val expectedTestType1 = 
     	'''
@@ -635,7 +633,6 @@ class PythonObjectGenerationTest {
     		value number (0..1) <"Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.">
     		unit UnitType (0..1) <"Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).">
     	'''.generatePython
-    	System.out.println(python)
     	
     	val expectedTestType1 = 
     	'''
@@ -790,8 +787,6 @@ class PythonObjectGenerationTest {
     	            		else field4 > 0
     	        '''.generatePython
 
-            System.out.println(python)
-
             val expected =
             '''
             
@@ -845,7 +840,6 @@ class PythonObjectGenerationTest {
 				startDate <= endDate
 		'''.generatePython
 		
-		System.out.println(python)
 		val expectedCondition = 
 		'''
 		class DateRange(BaseDataClass):
