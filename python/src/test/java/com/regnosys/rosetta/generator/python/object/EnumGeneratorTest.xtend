@@ -127,17 +127,17 @@ class EnumGeneratorTest {
 			Confirmed
 			Unconfirmed
 		'''.generatePython
-	
-		val enums = python.get('com.rosetta.test.model.ConfirmationStatusEnum').toString
+
+		//val enums = python.get('com.rosetta.test.model.ConfirmationStatusEnum').toString
 		val expected = '''
 		class ConfirmationStatusEnum(Enum):
-		    """
-		    Enumeration for the different types of confirmation status.
-		    """
-		    CONFIRMED = "CONFIRMED"
-		    UNCONFIRMED = "UNCONFIRMED"
+		  """
+		  Enumeration for the different types of confirmation status.
+		  """
+		  CONFIRMED = "CONFIRMED"
+		  UNCONFIRMED = "UNCONFIRMED"
 		'''
-		assertTrue(enums.contains(expected))
+		assertTrue(python.toString.contains(expected))
     }
     
     @Test
@@ -150,35 +150,36 @@ class EnumGeneratorTest {
      		Settled <"The transfer has been settled.">
      		Netted <"The transfer has been netted into a separate Transfer.">
 			'''.generatePython
-		val enums = python.get('com.rosetta.test.model.TransferStatusEnum').toString
+		
+		System.out.println(python)
 		val expected = 
 		'''
 		class TransferStatusEnum(Enum):
-		    """
-		    The enumeration values to specify the transfer status.
-		    """
-		    DISPUTED = "DISPUTED"
-		    """
-		    The transfer is disputed.
-		    """
-		    INSTRUCTED = "INSTRUCTED"
-		    """
-		    The transfer has been instructed.
-		    """
-		    NETTED = "NETTED"
-		    """
-		    The transfer has been netted into a separate Transfer.
-		    """
-		    PENDING = "PENDING"
-		    """
-		    The transfer is pending instruction.
-		    """
-		    SETTLED = "SETTLED"
-		    """
-		    The transfer has been settled.
-		    """
+		  """
+		  The enumeration values to specify the transfer status.
+		  """
+		  DISPUTED = "DISPUTED"
+		  """
+		  The transfer is disputed.
+		  """
+		  INSTRUCTED = "INSTRUCTED"
+		  """
+		  The transfer has been instructed.
+		  """
+		  NETTED = "NETTED"
+		  """
+		  The transfer has been netted into a separate Transfer.
+		  """
+		  PENDING = "PENDING"
+		  """
+		  The transfer is pending instruction.
+		  """
+		  SETTLED = "SETTLED"
+		  """
+		  The transfer has been settled.
+		  """
 		'''
-		assertTrue(enums.contains(expected))
+		assertTrue(python.toString.contains(expected))
 	}
     
     @Test
@@ -195,47 +196,47 @@ class EnumGeneratorTest {
     		ValuePerPercent <"Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.">
     		Weight <"Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.">
     	'''.generatePython
-    	val enums = python.get('com.rosetta.test.model.FinancialUnitEnum').toString
+		System.out.println(python)
    		val expected = 
    		'''
    		class FinancialUnitEnum(Enum):
-   		    """
-   		    Provides enumerated values for financial units, generally used in the context of defining quantities for securities.
-   		    """
-   		    CONTRACT = "CONTRACT"
-   		    """
-   		    Denotes financial contracts, such as listed futures and options.
-   		    """
-   		    CONTRACTUAL_PRODUCT = "CONTRACTUAL_PRODUCT"
-   		    """
-   		    Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.
-   		    """
-   		    INDEX_UNIT = "INDEX_UNIT"
-   		    """
-   		    Denotes a price expressed in index points, e.g. for a stock index.
-   		    """
-   		    LOG_NORMAL_VOLATILITY = "LOG_NORMAL_VOLATILITY"
-   		    """
-   		    Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.
-   		    """
-   		    SHARE = "SHARE"
-   		    """
-   		    Denotes the number of units of financial stock shares.
-   		    """
-   		    VALUE_PER_DAY = "VALUE_PER_DAY"
-   		    """
-   		    Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.
-   		    """
-   		    VALUE_PER_PERCENT = "VALUE_PER_PERCENT"
-   		    """
-   		    Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.
-   		    """
-   		    WEIGHT = "WEIGHT"
-   		    """
-   		    Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
-   		    """
+   		  """
+   		  Provides enumerated values for financial units, generally used in the context of defining quantities for securities.
+   		  """
+   		  CONTRACT = "CONTRACT"
+   		  """
+   		  Denotes financial contracts, such as listed futures and options.
+   		  """
+   		  CONTRACTUAL_PRODUCT = "CONTRACTUAL_PRODUCT"
+   		  """
+   		  Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.
+   		  """
+   		  INDEX_UNIT = "INDEX_UNIT"
+   		  """
+   		  Denotes a price expressed in index points, e.g. for a stock index.
+   		  """
+   		  LOG_NORMAL_VOLATILITY = "LOG_NORMAL_VOLATILITY"
+   		  """
+   		  Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.
+   		  """
+   		  SHARE = "SHARE"
+   		  """
+   		  Denotes the number of units of financial stock shares.
+   		  """
+   		  VALUE_PER_DAY = "VALUE_PER_DAY"
+   		  """
+   		  Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.
+   		  """
+   		  VALUE_PER_PERCENT = "VALUE_PER_PERCENT"
+   		  """
+   		  Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.
+   		  """
+   		  WEIGHT = "WEIGHT"
+   		  """
+   		  Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
+   		  """
    		'''
-   		assertTrue(enums.contains(expected))
+   		assertTrue(python.toString.contains(expected))
    		
     	
     }

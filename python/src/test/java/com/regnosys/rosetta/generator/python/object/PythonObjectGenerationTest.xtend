@@ -94,7 +94,7 @@ class PythonObjectGenerationTest {
     
     
     @Test
-    def void shouldGenerateTypes() {
+    def void shouldGenerateTypes1() {
         val python = '''
 	    type TestType: <"Test type description.">
 	        testTypeValue1 string (1..1) <"Test string">
@@ -186,6 +186,80 @@ class PythonObjectGenerationTest {
     @Test 
     def void shouldGenerateTypes2() {
     	val python = '''
+    	enum CapacityUnitEnum: <"Provides enumerated values for capacity units, generally used in the context of defining quantities for commodities.">
+    		ALW <"Denotes Allowances as standard unit.">
+    		BBL <"Denotes a Barrel as a standard unit.">
+    		BCF <"Denotes Billion Cubic Feet as a standard unit.">
+    		BDFT <"Denotes Board Feet as a standard unit.">
+    		BSH <"Denotes a Bushel as a standard unit of weight (48 lb or 21.7725 kg).">
+    		BTU <"Denotes British Thermal Units as a standard unit.">
+    		CBM <"Denotes Cubic Meters as a standard unit.">
+    		CER <"Denotes Certified Emissions Reduction as a standard unit.">
+    		CRT <"Denotes Climate Reserve Tonnes as a standard unit.">
+    		DAG <"Denotes 10 grams as a standard unit used in precious metals contracts (e.g MCX).">
+    		DAY <"Denotes a single day as a standard unit used in time charter trades.">
+    		DMTU <"Denotes Dry Metric Ton (Tonne) Units - Consists of a metric ton of mass excluding moisture.">
+    		DTH <"Denotes a Dekatherm as a standard unit.">
+    		ENVCRD <"Denotes Environmental Credit as a standard unit.">
+    		ENVOFST <"Denotes Environmental Offset as a standard unit.">
+    		FEU <"Denotes a 40 ft. Equivalent Unit container as a standard unit.">
+    		G <"Denotes a Gram as a standard unit.">
+    		GBCWT <"Denotes a GB Hundredweight unit as standard unit.">
+    		GBGAL <"Denotes a GB Gallon unit as standard unit.">
+    		GBT <"Denotes a GB Ton as a standard unit.">
+    		GJ <"Denotes a Gigajoule as a standard unit.">
+    		GW <"Denotes a Gigawatt as a standard unit.">
+    		GWH <"Denotes a Gigawatt-hour as a standard unit.">
+    		HL <"Denotes a Hectolitre as a standard unit.">
+    		INGOT <"Denotes an Ingot as a standard unit.">
+    		KG <"Denotes a Kilogram as a standard unit.">
+    		KL <"Denotes a Kilolitre as a standard unit.">
+    		KW <"Denotes a Kilowatt as a standard unit.">
+    		KWDC <"Denotes a Kilowatt Day Capacity as a standard unit.">
+    		KWH <"Denotes a Kilowatt-hour as a standard unit.">
+    		KWHC <"Denotes a Kilowatt Hours Capacity as a standard unit.">
+    		KWMC <"Denotes a Kilowatt Month Capacity as a standard unit.">
+    		KWMINC <"Denotes a Kilowatt Minute Capacity as a standard unit.">
+    		KWYC <"Denotes a Kilowatt Year Capacity as a standard unit.">
+    		L <"Denotes a Litre as a standard unit.">
+    		LB <"Denotes a Pound as a standard unit.">
+    		MB <"Denotes a Thousand Barrels as a standard unit.">
+    		MBF <"Denotes a Thousand board feet, which are used in contracts on forestry underlyers as a standard unit.">
+    		MJ <"Denotes a Megajoule as a standard unit.">
+    		MMBF <"Denotes a Million board feet, which are used in contracts on forestry underlyers as a standard unit.">
+    		MMBBL <"Denotes a Million Barrels as a standard unit.">
+    		MMBTU <"Denotes a Million British Thermal Units as a standard unit.">
+    		MSF <"Denotes a Thousand square feet as a standard unit.">
+    		MT <"Denotes a Metric Ton as a standard unit.">
+    		MW <"Denotes a Megawatt as a standard unit.">
+    		MWDC <"Denotes a Megawatt Day Capacity as a standard unit.">
+    		MWH <"Denotes a Megawatt-hour as a standard unit.">
+    		MWHC <"Denotes a Megawatt Hours Capacity as a standard unit.">
+    		MWMC <"Denotes a Megawatt Month Capacity as a standard unit.">
+    		MWMINC <"Denotes a Megawatt Minute Capacity as a standard unit.">
+    		MWYC <"Denotes a Megawatt Year Capacity as a standard unit.">
+    		OZT <"Denotes a Troy Ounce as a standard unit.">
+    		TEU <"Denotes a 20 ft. Equivalent Unit container as a standard unit.">
+    		THERM <"Denotes a Thermal Unit as a standard unit.">
+    		USCWT <"Denotes US Hundredweight unit as a standard unit.">
+    		USGAL <"Denotes a US Gallon unit as a standard unit.">
+    		UST <"Denotes a US Ton as a standard unit.">
+    	
+    	enum WeatherUnitEnum: <"Provides enumerated values for weather units, generally used in the context of defining quantities for commodities.">
+    		CDD <"Denotes Cooling Degree Days as a standard unit.">
+    		CPD <"Denotes Critical Precipitation Day as a standard unit.">
+    		HDD <"Heating Degree Day as a standard unit.">
+    	
+    	enum FinancialUnitEnum: <"Provides enumerated values for financial units, generally used in the context of defining quantities for securities.">
+    		Contract <"Denotes financial contracts, such as listed futures and options.">
+    		ContractualProduct <"Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.">
+    		IndexUnit <"Denotes a price expressed in index points, e.g. for a stock index.">
+    		LogNormalVolatility <"Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.">
+    		Share <"Denotes the number of units of financial stock shares.">
+    		ValuePerDay <"Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.">
+    		ValuePerPercent <"Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.">
+    		Weight <"Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.">
+    	
     	type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
 			capacityUnit CapacityUnitEnum (0..1) <"Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.">
 			weatherUnit WeatherUnitEnum (0..1) <"Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.">
@@ -196,196 +270,144 @@ class PythonObjectGenerationTest {
 		condition UnitType: <"Requires that a unit type must be set.">
 			one-of
 		'''.generatePython
-
+		
+		System.out.println(python)
 		val expectedTestType = 
 		'''
 		class UnitType(BaseDataClass):
+		  """
+		  Defines the unit to be used for price, quantity, or other purposes
+		  """
+		  capacityUnit: Optional[CapacityUnitEnum] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
+		  """
+		  Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
+		  """
+		  currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		  """
+		  Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		  """
+		  financialUnit: Optional[FinancialUnitEnum] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
+		  """
+		  Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
+		  """
+		  weatherUnit: Optional[WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
+		  """
+		  Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
+		  """
+		  
+		  @rosetta_condition
+		  def condition_0_UnitType(self):
 		    """
-		    Defines the unit to be used for price, quantity, or other purposes
+		    Requires that a unit type must be set.
 		    """
-		    capacityUnit: Optional[null] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
-		    """
-		    Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
-		    """
-		    currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
-		    """
-		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
-		    """
-		    financialUnit: Optional[null] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
-		    """
-		    Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
-		    """
-		    weatherUnit: Optional[null] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
-		    """
-		    Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
-		    """
-		    
-		    @rosetta_condition
-		    def condition_0_UnitType(self):
-		        """
-		        Requires that a unit type must be set.
-		        """
-		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
+		    return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
 		'''
 		assertTrue(python.toString.contains(expectedTestType))
     	
     }
     
+    
     @Test
     def void shouldGenerateTypes3() {
     	val python = 
     	'''
-    	type PortfolioState: <"State-full representation of a Portfolio that describes all the positions held at a given time, in various states which can be either traded, settled, etc., with lineage information to the previous state">
+    	enum AncillaryRoleEnum: <"Defines the enumerated values to specify the ancillary roles to the transaction. The product is agnostic to the actual parties involved in the transaction, with the party references abstracted away from the product definition and replaced by the AncillaryRoleEnum. The AncillaryRoleEnum can then be positioned in the product and the AncillaryParty type, which is positioned outside of the product definition, allows the AncillaryRoleEnum to be associated with an actual party reference.">
+    		DisruptionEventsDeterminingParty <"Specifies the party which determines additional disruption events.">
+    		ExtraordinaryDividendsParty <"Specifies the party which determines if dividends are extraordinary in relation to normal levels.">
+    		PredeterminedClearingOrganizationParty <"Specifies the clearing organization (CCP, DCO) which the trade should be cleared.">
+    		ExerciseNoticeReceiverPartyManual <"Specifies the party to which notice of a manual exercise should be given.">
+    		ExerciseNoticeReceiverPartyOptionalEarlyTermination <"Specifies the party to which notice of a optional early termination exercise should be given.">
+    		ExerciseNoticeReceiverPartyCancelableProvision <"Specifies the party to which notice of a cancelable provision exercise should be given.">
+    		ExerciseNoticeReceiverPartyExtendibleProvision <"Specifies the party to which notice of a extendible provision exercise should be given.">
+    	    CalculationAgentIndependent <"Specifies the party responsible for performing calculation agent duties as defined in the applicable product definition.">
+    	    CalculationAgentOptionalEarlyTermination <"Specifies the party responsible for performing calculation agent duties associated with an optional early termination.">
+    	    CalculationAgentMandatoryEarlyTermination <"Specifies the party responsible for performing calculation agent duties associated with an mandatory early termination.">
+    	    CalculationAgentFallback <"Specifies the party responsible for deciding the fallback rate.">
+    	    
+    	enum TelephoneTypeEnum: <"The enumerated values to specify the type of telephone number, e.g. work vs. mobile.">
+    		Work <"A number used primarily for work-related calls. Includes home office numbers used primarily for work purposes.">
+    		Mobile <"A number on a mobile telephone that is often or usually used for work-related calls. This type of number can be used for urgent work related business when a work number is not sufficient to contact the person or firm.">
+    		Fax <"A number used primarily for work-related facsimile transmissions.">
+    		Personal <"A number used primarily for non work-related calls. (Normally this type of number would be used only as an emergency backup number, not as a regular course of business).">
+    	
+    	type LegalEntity: <"A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).">
     		[metadata key]
     	
-    		positions Position (0..*) <"The list of positions, each containing a Quantity and a Product.">
-    		lineage Lineage (1..1) <"Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.">
+    		entityId string (0..*) <"A legal entity identifier (e.g. RED entity code).">
+    			[metadata scheme]
+    		name string (1..1) <"The legal entity name.">
+    			[metadata scheme]
     	
-    		condition Initialisation: <"When the PortfolioState is the starting state of the Portfolio, as identified by a Null state in the Lineage, Positions must be empty and the reference to the latest Event is also empty. This is how a Portfolio gets initialised.">
-    			if lineage -> portfolioStateReference is absent
-    			then positions is absent
-    				and lineage -> eventReference is absent
+    	type TelephoneNumber: <"A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.">
+    	
+    		telephoneNumberType TelephoneTypeEnum (0..1) <"The type of telephone number, e.g. work, mobile.">
+    		number string (1..1) <"The actual telephone number.">
+    	
+    	type AncillaryEntity: <"Holds an identifier for an ancillary entity, either identified directly via its ancillary role or directly as a legal entity.">
+    	
+    		ancillaryParty AncillaryRoleEnum (0..1) <"Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)">
+    		legalEntity LegalEntity (0..1)
+    	
+    		condition: one-of
     	'''.generatePython
-    	val expectedTestType = 
+    	
+    	System.out.println(python)
+    	
+    	val expectedTestType1 = 
     	'''
-    	class PortfolioState(BaseDataClass):
-    	    """
-    	    State-full representation of a Portfolio that describes all the positions held at a given time, in various states which can be either traded, settled, etc., with lineage information to the previous state
-    	    """
-    	    lineage: null = Field(..., description="Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.")
-    	    """
-    	    Pointer to the previous PortfolioState and new Event(s) leading to the current (new) state. Previous PortfolioState in the Lineage can be Null in case this is the start of the chain of Events.
-    	    """
-    	    positions: List[null] = Field([], description="The list of positions, each containing a Quantity and a Product.")
-    	    """
-    	    The list of positions, each containing a Quantity and a Product.
-    	    """
-    	    
-    	    @rosetta_condition
-    	    def condition_0_Initialisation(self):
-    	        """
-    	        When the PortfolioState is the starting state of the Portfolio, as identified by a Null state in the Lineage, Positions must be empty and the reference to the latest Event is also empty. This is how a Portfolio gets initialised.
-    	        """
-    	        def _then_fn0():
-    	            return (((self.positions) is None) and ((self.lineage.) is None))
-    	        
-    	        def _else_fn0():
-    	            return True
-    	        
-    	        return if_cond_fn(((self.lineage.) is None), _then_fn0, _else_fn0)
+    	class LegalEntity(BaseDataClass):
+    	  """
+    	  A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).
+    	  """
+    	  entityId: List[AttributeWithMeta[str] | str] = Field([], description="A legal entity identifier (e.g. RED entity code).")
+    	  """
+    	  A legal entity identifier (e.g. RED entity code).
+    	  """
+    	  name: AttributeWithMeta[str] | str = Field(..., description="The legal entity name.")
+    	  """
+    	  The legal entity name.
+    	  """
     	'''
-    	assertTrue(python.toString.contains("null"))
+    	val expectedTestType2 = 
+    	'''
+    	class TelephoneNumber(BaseDataClass):
+    	  """
+    	  A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.
+    	  """
+    	  number: str = Field(..., description="The actual telephone number.")
+    	  """
+    	  The actual telephone number.
+    	  """
+    	  telephoneNumberType: Optional[TelephoneTypeEnum] = Field(None, description="The type of telephone number, e.g. work, mobile.")
+    	  """
+    	  The type of telephone number, e.g. work, mobile.
+    	  """
+    	'''
+    	val expectedTestType3 = 
+    	'''
+    	class AncillaryEntity(BaseDataClass):
+    	  """
+    	  Holds an identifier for an ancillary entity, either identified directly via its ancillary role or directly as a legal entity.
+    	  """
+    	  ancillaryParty: Optional[AncillaryRoleEnum] = Field(None, description="Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)")
+    	  """
+    	  Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)
+    	  """
+    	  legalEntity: Optional[LegalEntity] = Field(None, description="")
+    	  
+    	  @rosetta_condition
+    	  def condition_0_(self):
+    	    return self.check_one_of_constraint('ancillaryParty', 'legalEntity', necessity=True)
+    	'''
+    	
+    	assertTrue(python.toString.contains(expectedTestType1))   
+        assertTrue(python.toString.contains(expectedTestType2))                
+        assertTrue(python.toString.contains(expectedTestType3))  
+    	
     	
     }
     
-    @Test
-    def void shouldGenerateTypes4() {
-    	val python = 
-    	'''
-    	type AssignedIdentifier: <"A class to specify the identifier value and its associated version.">
-    	
-    		identifier string (1..1) <"The identifier value.">
-    			[metadata scheme]
-    		identifierType TradeIdentifierTypeEnum (0..1) <"The enumerated classification of the identifier.">
-    		version int (0..1) <"The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.">
-    	
-    	type Identifier: <"A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it.">
-    		[metadata key]
-    	
-    		issuerReference Party (0..1) <"The identifier issuer, when specified by reference to a party specified as part of the transaction.">
-    			[metadata reference]
-    		issuer string (0..1) <"The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).">
-    			[metadata scheme]
-    		assignedIdentifier AssignedIdentifier (1..*) <"The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.">
-    	
-    		condition IssuerChoice: <"The identifier issuer is specified either explicitly or by reference to one of the parties.">
-    			required choice issuerReference, issuer
-    	
-    	type IdentifiedList: <"Attaches an identifier to a collection of objects, when those objects themselves can each be represented by an identifier. One use case is the representation of package transactions, where each component is a separate trade with its own identifier, and those trades are linked together as a package with its own identifier. The data type has been named generically rather than referring to 'packages' as it may have a number of other uses.">
-    		[metadata key]
-    	
-    		listId Identifier (1..1) <"The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.">
-    		componentId Identifier (2..*) <"Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.">
-    		price Price (0..1) <"The price of the package.">
-    	'''.generatePython
-    	val expectedType1 = 
-    	'''
-    	class AssignedIdentifier(BaseDataClass):
-    	    """
-    	    A class to specify the identifier value and its associated version.
-    	    """
-    	    identifier: AttributeWithMeta[str] | str = Field(..., description="The identifier value.")
-    	    """
-    	    The identifier value.
-    	    """
-    	    identifierType: Optional[null] = Field(None, description="The enumerated classification of the identifier.")
-    	    """
-    	    The enumerated classification of the identifier.
-    	    """
-    	    version: Optional[int] = Field(None, description="The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.")
-    	    """
-    	    The identifier version, which is specified as an integer and is meant to be incremented each time the transaction terms (whether contract or event) change. This version is made option to support the use case where the identifier is referenced without the version. The constraint that a contract and a lifecycle event need to have an associated version is enforced through data rules.
-    	    """
-    	'''
-    	val expectedType2 = 
-    	'''
-    	class Identifier(BaseDataClass):
-    	    """
-    	    A class to specify a generic identifier, applicable to CDM artefacts such as executions, contracts, lifecycle events and legal documents. An issuer can be associated with the actual identifier value as a way to properly qualify it.
-    	    """
-    	    assignedIdentifier: List[AssignedIdentifier] = Field([], description="The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.")
-    	    """
-    	    The identifier value. This level of indirection between the issuer and the identifier and its version provides the ability to associate multiple identifiers to one issuer, consistently with the FpML PartyTradeIdentifier.
-    	    """
-    	    @rosetta_condition
-    	    def cardinality_assignedIdentifier(self):
-    	        return check_cardinality(self.assignedIdentifier, 1, None)
-    	    
-    	    issuer: Optional[AttributeWithMeta[str] | str] = Field(None, description="The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).")
-    	    """
-    	    The identifier issuer, when specified explicitly alongside the identifier value (instead of being specified by reference to a party).
-    	    """
-    	    issuerReference: Optional[AttributeWithReference | null] = Field(None, description="The identifier issuer, when specified by reference to a party specified as part of the transaction.")
-    	    """
-    	    The identifier issuer, when specified by reference to a party specified as part of the transaction.
-    	    """
-    	    
-    	    @rosetta_condition
-    	    def condition_0_IssuerChoice(self):
-    	        """
-    	        The identifier issuer is specified either explicitly or by reference to one of the parties.
-    	        """
-    	        return self.check_one_of_constraint('issuerReference', 'issuer', necessity=True)
-    	'''
-    	val expectedType3 = 
-    	'''
-    	class IdentifiedList(BaseDataClass):
-    	    """
-    	    Attaches an identifier to a collection of objects, when those objects themselves can each be represented by an identifier. One use case is the representation of package transactions, where each component is a separate trade with its own identifier, and those trades are linked together as a package with its own identifier. The data type has been named generically rather than referring to 'packages' as it may have a number of other uses.
-    	    """
-    	    componentId: List[Identifier] = Field([], description="Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.")
-    	    """
-    	    Identifiers for each component of the list. Since the data type is used to link multiple identified objects together, at least 2 components are required in the list. Creating an identified list with only 1 identified component has been deemed unnecessary, because it would just create a redundant identifier.
-    	    """
-    	    @rosetta_condition
-    	    def cardinality_componentId(self):
-    	        return check_cardinality(self.componentId, 2, None)
-    	    
-    	    listId: Identifier = Field(..., description="The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.")
-    	    """
-    	    The identifier for the list. In the case of a package transaction, this would be the package identifier. This attribute is mandatory to allow the list itself to be identified.
-    	    """
-    	    price: Optional[null] = Field(None, description="The price of the package.")
-    	    """
-    	    The price of the package.
-    	    """
-    	'''
-    	assertTrue(python.toString.contains(expectedType1))
-    	assertTrue(python.toString.contains(expectedType2))
-    	assertTrue(python.toString.contains(expectedType3))
-    	
-    }
-    
+		
     
     @Test
     def void shouldGenerateTypesMethod2() {
