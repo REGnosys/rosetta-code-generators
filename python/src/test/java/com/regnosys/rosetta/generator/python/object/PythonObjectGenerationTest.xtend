@@ -832,7 +832,44 @@ class PythonObjectGenerationTest {
             assertTrue(python.toString.contains(expected))
         }
         
-	
+    @Test    
+	def void testConditionLessOrEqual() {
+		val python = 
+		'''
+		type DateRange: <"A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.">
+		
+			startDate date (1..1) <"The first date of a date range.">
+			endDate date (1..1) <"The last date of a date range.">
+		
+			condition DatesOrdered: <"The start date must fall on or before the end date (a date range of only one date is allowed).">
+				startDate <= endDate
+		'''.generatePython
+		
+		System.out.println(python)
+		val expectedCondition = 
+		'''
+		class DateRange(BaseDataClass):
+		  """
+		  A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.
+		  """
+		  endDate: date = Field(..., description="The last date of a date range.")
+		  """
+		  The last date of a date range.
+		  """
+		  startDate: date = Field(..., description="The first date of a date range.")
+		  """
+		  The first date of a date range.
+		  """
+		  
+		  @rosetta_condition
+		  def condition_0_DatesOrdered(self):
+		    """
+		    The start date must fall on or before the end date (a date range of only one date is allowed).
+		    """
+		    return all_elements(self.startDate, "<=", self.endDate)
+		'''
+		assertTrue(python.toString.contains(expectedCondition))
+	}
 
   	@Test
     def void testConditionsGeneration1() {
