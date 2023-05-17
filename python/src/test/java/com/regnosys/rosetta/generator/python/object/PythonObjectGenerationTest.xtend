@@ -473,7 +473,7 @@ class PythonObjectGenerationTest {
     }
 
     @Test
-    def void shouldGenerateTypesExtends() {
+    def void shouldGenerateTypesExtends1() {
         val python = '''
         type TestType extends TestType2:
             TestTypeValue1 string (1..1) <"Test string">
@@ -536,6 +536,142 @@ class PythonObjectGenerationTest {
         assertTrue(types.contains(expectedTestType3))        
              
     }
+    
+    @Test
+    def void shouldGenerateTypesExtends2() {
+    	val python = 
+    	'''
+    	enum CapacityUnitEnum: <"Provides enumerated values for capacity units, generally used in the context of defining quantities for commodities.">
+    	    		ALW <"Denotes Allowances as standard unit.">
+    	    		BBL <"Denotes a Barrel as a standard unit.">
+    	    		BCF <"Denotes Billion Cubic Feet as a standard unit.">
+    	    		BDFT <"Denotes Board Feet as a standard unit.">
+    	    		BSH <"Denotes a Bushel as a standard unit of weight (48 lb or 21.7725 kg).">
+    	    		BTU <"Denotes British Thermal Units as a standard unit.">
+    	    		CBM <"Denotes Cubic Meters as a standard unit.">
+    	    		CER <"Denotes Certified Emissions Reduction as a standard unit.">
+    	    		CRT <"Denotes Climate Reserve Tonnes as a standard unit.">
+    	    		DAG <"Denotes 10 grams as a standard unit used in precious metals contracts (e.g MCX).">
+    	    		DAY <"Denotes a single day as a standard unit used in time charter trades.">
+    	    		DMTU <"Denotes Dry Metric Ton (Tonne) Units - Consists of a metric ton of mass excluding moisture.">
+    	    		DTH <"Denotes a Dekatherm as a standard unit.">
+    	    		ENVCRD <"Denotes Environmental Credit as a standard unit.">
+    	    		ENVOFST <"Denotes Environmental Offset as a standard unit.">
+    	    		FEU <"Denotes a 40 ft. Equivalent Unit container as a standard unit.">
+    	    		G <"Denotes a Gram as a standard unit.">
+    	    		GBCWT <"Denotes a GB Hundredweight unit as standard unit.">
+    	    		GBGAL <"Denotes a GB Gallon unit as standard unit.">
+    	    		GBT <"Denotes a GB Ton as a standard unit.">
+    	    		GJ <"Denotes a Gigajoule as a standard unit.">
+    	    		GW <"Denotes a Gigawatt as a standard unit.">
+    	    		GWH <"Denotes a Gigawatt-hour as a standard unit.">
+    	    		HL <"Denotes a Hectolitre as a standard unit.">
+    	    		INGOT <"Denotes an Ingot as a standard unit.">
+    	    		KG <"Denotes a Kilogram as a standard unit.">
+    	    		KL <"Denotes a Kilolitre as a standard unit.">
+    	    		KW <"Denotes a Kilowatt as a standard unit.">
+    	    		KWDC <"Denotes a Kilowatt Day Capacity as a standard unit.">
+    	    		KWH <"Denotes a Kilowatt-hour as a standard unit.">
+    	    		KWHC <"Denotes a Kilowatt Hours Capacity as a standard unit.">
+    	    		KWMC <"Denotes a Kilowatt Month Capacity as a standard unit.">
+    	    		KWMINC <"Denotes a Kilowatt Minute Capacity as a standard unit.">
+    	    		KWYC <"Denotes a Kilowatt Year Capacity as a standard unit.">
+    	    		L <"Denotes a Litre as a standard unit.">
+    	    		LB <"Denotes a Pound as a standard unit.">
+    	    		MB <"Denotes a Thousand Barrels as a standard unit.">
+    	    		MBF <"Denotes a Thousand board feet, which are used in contracts on forestry underlyers as a standard unit.">
+    	    		MJ <"Denotes a Megajoule as a standard unit.">
+    	    		MMBF <"Denotes a Million board feet, which are used in contracts on forestry underlyers as a standard unit.">
+    	    		MMBBL <"Denotes a Million Barrels as a standard unit.">
+    	    		MMBTU <"Denotes a Million British Thermal Units as a standard unit.">
+    	    		MSF <"Denotes a Thousand square feet as a standard unit.">
+    	    		MT <"Denotes a Metric Ton as a standard unit.">
+    	    		MW <"Denotes a Megawatt as a standard unit.">
+    	    		MWDC <"Denotes a Megawatt Day Capacity as a standard unit.">
+    	    		MWH <"Denotes a Megawatt-hour as a standard unit.">
+    	    		MWHC <"Denotes a Megawatt Hours Capacity as a standard unit.">
+    	    		MWMC <"Denotes a Megawatt Month Capacity as a standard unit.">
+    	    		MWMINC <"Denotes a Megawatt Minute Capacity as a standard unit.">
+    	    		MWYC <"Denotes a Megawatt Year Capacity as a standard unit.">
+    	    		OZT <"Denotes a Troy Ounce as a standard unit.">
+    	    		TEU <"Denotes a 20 ft. Equivalent Unit container as a standard unit.">
+    	    		THERM <"Denotes a Thermal Unit as a standard unit.">
+    	    		USCWT <"Denotes US Hundredweight unit as a standard unit.">
+    	    		USGAL <"Denotes a US Gallon unit as a standard unit.">
+    	    		UST <"Denotes a US Ton as a standard unit.">
+    	    	
+    	    	enum WeatherUnitEnum: <"Provides enumerated values for weather units, generally used in the context of defining quantities for commodities.">
+    	    		CDD <"Denotes Cooling Degree Days as a standard unit.">
+    	    		CPD <"Denotes Critical Precipitation Day as a standard unit.">
+    	    		HDD <"Heating Degree Day as a standard unit.">
+    	    	
+    	    	enum FinancialUnitEnum: <"Provides enumerated values for financial units, generally used in the context of defining quantities for securities.">
+    	    		Contract <"Denotes financial contracts, such as listed futures and options.">
+    	    		ContractualProduct <"Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.">
+    	    		IndexUnit <"Denotes a price expressed in index points, e.g. for a stock index.">
+    	    		LogNormalVolatility <"Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.">
+    	    		Share <"Denotes the number of units of financial stock shares.">
+    	    		ValuePerDay <"Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.">
+    	    		ValuePerPercent <"Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.">
+    	    		Weight <"Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.">
+    	
+    	type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
+    		capacityUnit CapacityUnitEnum (0..1) <"Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.">
+    		weatherUnit WeatherUnitEnum (0..1) <"Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.">
+    		financialUnit FinancialUnitEnum (0..1) <"Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.">
+    		currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
+    			[metadata scheme]
+    	
+    		condition UnitType: <"Requires that a unit type must be set.">
+    			one-of
+    	
+    	type Measure extends MeasureBase: <"Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional.">
+    	
+    		condition ValueExists: <"The value attribute must be present in a concrete measure.">
+    			value exists
+    			
+    	type MeasureBase: <"Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.">
+    		
+    		value number (0..1) <"Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.">
+    		unit UnitType (0..1) <"Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).">
+    	'''.generatePython
+    	System.out.println(python)
+    	
+    	val expectedTestType1 = 
+    	'''
+    	class MeasureBase(BaseDataClass):
+    	  """
+    	  Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.
+    	  """
+    	  unit: Optional[UnitType] = Field(None, description="Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).")
+    	  """
+    	  Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
+    	  """
+    	  value: Optional[Decimal] = Field(None, description="Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.")
+    	  """
+    	  Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.
+    	  """
+    	'''
+    	
+    	val expectedTestType2 = 
+    	'''
+    	class Measure(MeasureBase):
+    	  """
+    	  Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional.
+    	  """
+    	  
+    	  @rosetta_condition
+    	  def condition_0_ValueExists(self):
+    	    """
+    	    The value attribute must be present in a concrete measure.
+    	    """
+    	    return ((self.value) is not None)
+    	'''
+    	
+    	assertTrue(python.toString.contains(expectedTestType1))   
+        assertTrue(python.toString.contains(expectedTestType2))                
+        
+    } 
 
 
     @Test
