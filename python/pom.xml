@@ -16,7 +16,7 @@
 	<properties>
 		<codebase.name>cdm</codebase.name>
 		<codebase.version>3.3.2</codebase.version>
-		<codebase.outputpath>build/python</codebase.outputpath>
+		<codebase.outputpath>target/python</codebase.outputpath>
 		<rosetta.source.path>build/resources/rosetta/cdm_3.3.2</rosetta.source.path>
 	</properties>
 	<profiles>

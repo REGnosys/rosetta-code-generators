@@ -22,6 +22,7 @@ import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
+import org.junit.jupiter.api.Disabled
 import org.slf4j.LoggerFactory
 
 /*
@@ -90,6 +91,8 @@ class PythonFilesGeneratorTest {
 	 * Test which is used as main to create all the Python Generation
 	 */
 	@Test
+	@Disabled("Test which ingests rosetta twice to pass")
+	
 	def void generatePython() {
 		// the process 
 		// 1) get directory information from the ini file
@@ -144,6 +147,9 @@ class PythonFilesGeneratorTest {
 			e.printStackTrace ()
 		}
 	}
+	
+	@Test
+	@Disabled("Test which ingests rosetta once - should fail")
 	
 	def void generatePythonOneParse() {
 		// the process 

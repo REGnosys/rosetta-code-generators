@@ -50,9 +50,10 @@ __pycache__
 build/.pyenv/
 .pytest_cache/
 # project
-build/python/build/
+target/python/build/
 python_cdm.egg-info
 build/testenv
 build/runtime/build
 rosetta_runtime.egg-info
 build/python/pyproject.toml
+build/python/src/cdm/version.py
