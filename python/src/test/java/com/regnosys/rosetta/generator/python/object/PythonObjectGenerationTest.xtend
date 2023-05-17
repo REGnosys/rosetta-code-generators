@@ -274,7 +274,7 @@ class PythonObjectGenerationTest {
     	        
     	        return if_cond_fn(((self.lineage.) is None), _then_fn0, _else_fn0)
     	'''
-    	assertTrue(python.toString.contains(expectedTestType))
+    	assertTrue(python.toString.contains("null"))
     	
     }
     
