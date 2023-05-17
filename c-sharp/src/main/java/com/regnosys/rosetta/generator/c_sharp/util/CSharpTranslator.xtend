@@ -8,7 +8,10 @@ class CSharpTranslator {
 				
 	static def toCSharpBasicType(String typename) {
 		switch typename {
-			case 'string':
+			case 'string',				
+			case 'calculation',				
+			case 'productType',				
+			case 'eventType':
 				'string'
 			case 'int':
 				'int'
@@ -24,7 +27,6 @@ class CSharpTranslator {
 				'decimal'
 			case 'boolean':
 				'bool'
-
 //			Ensure we rename MetaFields data members to avoid name clashes with the enclosing namespace.
 			case 'MetaFields':
 			    '_MetaFields'

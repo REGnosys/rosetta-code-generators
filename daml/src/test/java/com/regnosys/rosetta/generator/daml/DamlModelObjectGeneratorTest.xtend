@@ -45,18 +45,42 @@ class DamlModelObjectGeneratorTest {
 			    dateAttr date (1..1)
 			    timeAttr time (1..1)
 				zonedDateTimeAttr zonedDateTime (1..1)
-		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
+				calculationAttr calculation (1..1)
+				productTypeAttr productType (1..1)
+				eventTypeAttr eventType (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
 
-		assertTrue(classes.contains('''
-		data Foo = Foo with 
-		  booleanAttr : Bool
-		  dateAttr : Date
-		  intAttr : Int
-		  numberAttr : Decimal
-		  stringAttr : Text
-		  timeAttr : Text
-		  zonedDateTimeAttr : ZonedDateTime
-		    deriving (Eq, Ord, Show)'''))
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
+			
+			import Org.Isda.Cdm.Enums
+			import Org.Isda.Cdm.ZonedDateTime
+			import Org.Isda.Cdm.MetaClasses
+			import Org.Isda.Cdm.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement)
+			
+			data Foo = Foo with 
+			  booleanAttr : Bool
+			  calculationAttr : Text
+			  dateAttr : Date
+			  eventTypeAttr : Text
+			  intAttr : Int
+			  numberAttr : Decimal
+			  productTypeAttr : Text
+			  stringAttr : Text
+			  timeAttr : Text
+			  zonedDateTimeAttr : ZonedDateTime
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
 	}
 
 	@Test
