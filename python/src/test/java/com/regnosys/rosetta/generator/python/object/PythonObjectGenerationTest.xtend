@@ -775,10 +775,67 @@ class PythonObjectGenerationTest {
             assertTrue(types.contains(expected))
         }
         
+        
+    @Test
+    def void shouldGenerateIfThenElseCondition() {
+            val python = '''
+    	        type TestType: <"Test type with one-of condition.">
+    	            field1 string (0..1) <"Test string field 1">
+    	            field2 string (0..1) <"Test string field 2">
+    	            field3 number (0..1) <"Test number field 3">
+    	            field4 number (0..*) <"Test number field 4">
+    	            condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
+    	            		if field1 exists
+    	            				then field3 > 0
+    	            		else field4 > 0
+    	        '''.generatePython
+
+            System.out.println(python)
+
+            val expected =
+            '''
+            
+            class TestType(BaseDataClass):
+              """
+              Test type with one-of condition.
+              """
+              field1: Optional[str] = Field(None, description="Test string field 1")
+              """
+              Test string field 1
+              """
+              field2: Optional[str] = Field(None, description="Test string field 2")
+              """
+              Test string field 2
+              """
+              field3: Optional[Decimal] = Field(None, description="Test number field 3")
+              """
+              Test number field 3
+              """
+              field4: List[Decimal] = Field([], description="Test number field 4")
+              """
+              Test number field 4
+              """
+              
+              @rosetta_condition
+              def condition_0_BusinessCentersChoice(self):
+                """
+                Choice rule to represent an FpML choice construct.
+                """
+                def _then_fn0():
+                  return all_elements(self.field3, ">", 0)
+                
+                def _else_fn0():
+                  return all_elements(self.field4, ">", 0)
+                
+                return if_cond_fn(((self.field1) is not None), _then_fn0, _else_fn0)
+            '''
+            assertTrue(python.toString.contains(expected))
+        }
+        
 	
 
   	@Test
-    def void testConditionsGeneration() {
+    def void testConditionsGeneration1() {
         val python = '''
             type A:
                 a0 int (0..1)
@@ -853,6 +910,182 @@ class PythonObjectGenerationTest {
         
         assertTrue(python.toString.contains(expectedA))
         assertTrue(python.toString.contains(expectedB))
+    }
+    
+    @Test
+    def void testConditionsGeneration2() {
+        val python = '''
+        	enum EU_EMIR_EligibleCollateralEnum: <"Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules. Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.">
+        		EU_EMIRTypeA <"Denotes Cash in the form of money credited to an account in any currency, or similar claims for the repayment of money, such as money market deposits.">
+        		EU_EMIRTypeB <" Denotes gold in the form of allocated pure gold bullion of recognised good delivery.">
+        		EU_EMIRTypeC <" Denotes debt securities issued by Member States' central governments or central banks.">
+        		EU_EMIRTypeD <" Denotes debt securities issued by Member States' regional governments or local authorities whose exposures are treated as exposures to the central government of that Member State in accordance with Article 115(2) of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeE <" Denotes debt securities issued by Member States' public sector entities whose exposures are treated as exposures to the central government, regional government or local authority of that Member State in accordance with Article 116(4) of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeF <" Denotes debt securities issued by Member States' regional governments or local authorities other than those referred to in (TypeD.)">
+        		EU_EMIRTypeG <" Denotes debt securities issued by Member States' public sector entities other than those referred to in (TypeE).">
+        		EU_EMIRTypeH <" Denotes debt securities issued by multilateral development banks listed in Article 117(2) of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeI <" Denotes debt securities issued by the international organisations listed in Article 118 of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeJ <" Denotes debt securities issued by third countries' governments or central banks.">
+        		EU_EMIRTypeK <" Denotes debt securities issued by third countries' regional governments or local authorities that meet the requirements of (TypeD) and (TypeE).">
+        		EU_EMIRTypeL <" Denotes debt securities issued by third countries' regional governments or local authorities other than those referred to in (TypeD) and (TypeE).">
+        		EU_EMIRTypeM <" Denotes debt securities issued by credit institutions or investment firms including bonds referred to in Article 52(4) of Directive 2009/65/EC of the European Parliament and of the Council.">
+        		EU_EMIRTypeN <" Denotes corporate bonds.">
+        		EU_EMIRTypeO <" Denotes the most senior tranche of a securitisation, as defined in Article 4(61) of Regulation (EU) No 575/2013, that is not a re-securitisation as defined in Article 4(63) of that Regulation.">
+        		EU_EMIRTypeP <" Denotes convertible bonds provided that they can be converted only into equities which are included in an index specified pursuant to point (a) of Article 197 (8) of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeQ <" Denotes equities included in an index specified pursuant to point (a) of Article 197(8) of Regulation (EU) No 575/2013.">
+        		EU_EMIRTypeR <" Denotes shares or units in undertakings for collective investments in transferable securities (UCITS), provided that the conditions set out in Article 5 of EU Regulation 2016/2251 are met.">
+        	
+        	enum UK_EMIR_EligibleCollateralEnum: <"Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules. Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.">
+        	
+        		UK_EMIRTypeA <"Denotes cash in the form of money credited to an account in any currency, or similar claims for the repayment of money, such as money market deposits.">
+        		UK_EMIRTypeB <"Denotes gold in the form of allocated pure gold bullion of recognised good delivery.">
+        		UK_EMIRTypeC <"Denotes debt securities issued by the central government of the United Kingdom or the Bank of England.">
+        		UK_EMIRTypeD <"Denotes debt securities issued by United Kingdom regional governments or local authorities whose exposures are treated as exposures to the central government of the United Kingdom in accordance with Article 115(2) of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeE <"Denotes debt securities issued by United Kingdom public sector entities whose exposures are treated as exposures to the central government, regional government or local authority of the United Kingdom in accordance with Article 116(4) of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeF <"Denotes debt securities issued by United Kingdom regional governments or local authorities other than those referred to in (TypeD).">
+        		UK_EMIRTypeG <"Denotes debt securities issued by United Kingdom public sector entities other than those referred to in (TypeE).">
+        		UK_EMIRTypeH <"Denotes debt securities issued by multilateral development banks listed in Article 117(2) of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeI <"Denotes debt securities issued by the international organisations listed in Article 118 of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeJ <"Denotes debt securities issued by third countries' governments or central banks.">
+        		UK_EMIRTypeK <"Denotes debt securities issued by third countries' regional governments or local authorities that meet the requirements of (TypeD) and (TypeE).">
+        		UK_EMIRTypeL <"Denotes debt securities issued by third countries' regional governments or local authorities other than those referred to in (TypeD) and (TypeE).">
+        		UK_EMIRTypeM <"Denotes debt securities issued by credit institutions or investment firms including bonds admitted to the register of regulated covered bonds maintained under Regulation 7(1)(b) of the Regulated Covered Bonds Regulations 2008 (SI 2008/346).">
+        		UK_EMIRTypeN <"Denotes corporate bonds.">
+        		UK_EMIRTypeO <"Denotes the most senior tranche of a securitisation, as defined in Article 4(61) of Regulation (EU) No 575/2013, that is not a re-securitisation as defined in Article 4(63) of that Regulation.">
+        		UK_EMIRTypeP <"Denotes convertible bonds provided that they can be converted only into equities which are included in an index specified pursuant to point (a) of Article 197 (8) of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeQ <"Denotes equities included in an index specified pursuant to point (a) of Article 197(8) of Regulation (EU) No 575/2013.">
+        		UK_EMIRTypeR <"Denotes shares or units in undertakings for UK UCITS, provided that the conditions set out in Article 5 of EU Regulation 2016/2251 (as modified by the Technical Standards (European Market Infrastructure) (EU Exit) (No. 3) Instrument 2019) are met.">
+        	
+        	enum US_CFTC_PR_EligibleCollateralEnum: <"Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators margin rules, the precise definitions or application of those rules could differ between the two rules.">
+        	
+        		US_CFTC_PRType1 <"Denotes immediately available cash funds denominated in USD, a major currency, a currency of settlement for the uncleared swap.">
+        		US_CFTC_PRType2 <"Denotes a security that is issued by, or unconditionally guaranteed as to the timely payment of principal and interest by, the U.S. Department of the Treasury.">
+        		US_CFTC_PRType3 <"Denotes a security that is issued by, or unconditionally guaranteed as to the timely payment of principal and interest by, a U.S. government agency (other than the U.S. Department of Treasury) whose obligations are fully guaranteed by the full faith and credit of the United States government.">
+        		US_CFTC_PRType4 <"Denotes a security that is issued by, or fully guaranteed as to the payment of principal and interest by, the European Central Bank or a sovereign entity that is assigned no higher than a 20 percent risk weight under the capital rules applicable to swap dealers subject to regulation by a prudential regulator.">
+        		US_CFTC_PRType5A <"Denotes a publicly traded debt security issued by, or an asset-backed security fully guaranteed as to the timely payment of principal and interest by, a U.S. Government-sponsored enterprise that is operating with capital support or another form of direct financial assistance received from the U.S. government that enables the repayments of the U.S. Government-sponsored enterprise's eligible securities.">
+        		US_CFTC_PRType5B <"Denotes a publicly traded debt security, but not an asset backed security, that is investment grade and issued by a U.S. Government-sponsored enterprise that is not operating with capital support or another form of direct financial assistance received from the U.S. government.">
+        		US_CFTC_PRType6 <"Denotes a security that is issued by, or fully guaranteed as to the payment of principal and interest by, the Bank for International Settlements, the International Monetary Fund, or a multilateral development bank.">
+        		US_CFTC_PRType7 <"Denotes publicly-traded debt, but not an asset backed security, that is investment grade and is not a debt security issued by a  U.S. Government-sponsored enterprise. This category excludes a security issued by a non-bank financial institution supervised by the board of governors of the Federal Reserve System under Title I of the Dodd-Frank Wall Street Reform and Consumer Protection Act. This category also excludes a security issued by any of the following entities, by a company that would be any of the following entities if it were the organized under the laws of the United States or any State, or in either case by an affiliate of such an entity: the party posting the collateral, a bank holding company, a savings and loan holding company, a U.S. intermediate holding company, a foreign bank, a depositary institution, a securities holding company, a broker, a dealer, a futures commission merchant, a swap dealer, or a security-based swap dealer.">
+        		US_CFTC_PRType8A <"Denotes a publicly traded common equity security that is included in the Standard & Poor's Composite 500 Index or related indexes. This category excludes a security issued by a non-bank financial institution supervised by the board of governors of the Federal Reserve System under Title I of the Dodd-Frank Wall Street Reform and Consumer Protection Act. This category also excludes a security issued by any of the following entities, by a company that would be any of the following entities if it were the organized under the laws of the United States or any State, or in either case by an affiliate of such an entity: the party posting the collateral, a bank holding company, a savings and loan holding company, a U.S. intermediate holding company, a foreign bank, a depositary institution, a securities holding company, a broker, a dealer, a futures commission merchant, a swap dealer, or a security-based swap dealer.">
+        		US_CFTC_PRType8B <" Denotes a publicly traded common equity security that is included in the Standard & Poor's Composite 1500 Index or related indexes. This category excludes a security issued by a non-bank financial institution supervised by the board of governors of the Federal Reserve System under Title I of the Dodd-Frank Wall Street Reform and Consumer Protection Act. This category also excludes a security issued by any of the following entities, by a company that would be any of the following entities if it were the organized under the laws of the United States or any State, or in either case by an affiliate of such an entity: the party posting the collateral, a bank holding company, a savings and loan holding company, a U.S. intermediate holding company, a foreign bank, a depositary institution, a securities holding company, a broker, a dealer, a futures commission merchant, a swap dealer, or a security-based swap dealer.">
+        		US_CFTC_PRType8C <"Denotes a publicly traded common equity security that is included in an index that a regulated swap entity's supervisor in a foreign jurisdiction recognizes for purposes of including publicly traded common equity as initial margin under applicable regulatory policy, if held in that foreign jurisdiction. This category excludes a security issued by a non-bank financial institution supervised by the board of governors of the Federal Reserve System under Title I of the Dodd-Frank Wall Street Reform and Consumer Protection Act. This category also excludes a security issued by any of the following entities, by a company that would be any of the following entities if it were the organized under the laws of the United States or any State, or in either case by an affiliate of such an entity: the party posting the collateral, a bank holding company, a savings and loan holding company, a U.S. intermediate holding company, a foreign bank, a depositary institution, a securities holding company, a broker, a dealer, a futures commission merchant, a swap dealer, or a security-based swap dealer.">
+        		US_CFTC_PRType9<"Denotes securities in the form of redeemable securities in a pooled investment fund representing the security-holder's proportional interest in the fund's net assets and that are issued and redeemed only on the basis of the market value of the fund's net assets prepared each business day after the security-holder makes its investment commitment or redemption request to the fund, if the fund's investments are limited to the following: (A) securities that are issued by, or unconditionally guaranteed as to the timely payment of principal and interest by, the U.S. Department of the Treasury, and immediately-available cash funds denominated in U.S. dollars; or (B) securities denominated in a common currency and issued by, or fully guaranteed as to the payment of principal and interest by, the European Central Bank or a sovereign entity that is assigned no higher than a 20 percent risk weight under the capital rules applicable to swap dealers subject to regulation by a prudential regulator, and immediately-available cash funds denominated in the same currency; and (C) assets of the fund may not be transferred through securities lending, securities borrowing, repurchase agreements, reverse repurchase agreements, or other means that involve the fund having rights to acquire the same or similar assets from the transferee.">
+        		US_CTFC_PRType10 <"Denotes Gold.">
+        	
+        	enum TaxonomySourceEnum: <"Represents the enumerated values to specify taxonomy sources.">
+        		CFI <"Represents the ISO 10962 Classification of Financial Instruments code.">
+        		ISDA <"Represents the ISDA product taxonomy.">
+        		ICAD <"Represents the ISDA Collateral Asset Definition Idenifier code.">
+        		EMIR <"Represents the EMIR Article 9 Asset Definition Identifier code.">
+        		EU_EMIR_EligibleCollateralAssetClass <"Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules.">
+        		UK_EMIR_EligibleCollateralAssetClass <"Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities.Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.">
+        		US_CFTC_PR_EligibleCollateralAssetClass <"Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators margin rules, the precise definitions or application of those rules could differ between the two rules.">
+        		Other <"Denotes a user-specific scheme or taxonomy or other external sources not listed here.">
+        	
+        	
+        	type CollateralTaxonomyValue: <"Specifies the collateral taxonomy value, either as a specified enumeration or as a string.">
+        		eu_EMIR_EligibleCollateral EU_EMIR_EligibleCollateralEnum (0..*) <"Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules. Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM">
+        		uk_EMIR_EligibleCollateral UK_EMIR_EligibleCollateralEnum (0..*) <"Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.">
+        		us_CFTC_PR_EligibleCollateral US_CFTC_PR_EligibleCollateralEnum (0..*) <"Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators’ margin rules, the precise definitions or application of those rules could differ between the two rules.">
+        		nonEnumeratedTaxonomyValue string (0..*) <"Identifies the taxonomy value when not specified as an enumeration.">
+        		    [metadata scheme]
+        	
+        	    condition: one-of
+        	
+ 			type CollateralTaxonomy: <"Specifies the collateral taxonomy, which is composed of a taxonomy value and a taxonomy source.">
+ 			    taxonomyValue CollateralTaxonomyValue (1..1) <"Specifies the taxonomy value.">
+ 			    taxonomySource TaxonomySourceEnum (1..1) <"Specifies the taxonomy source.">
+ 			    
+ 				condition Eu_EligibleCollateralTaxonomy: <"If the Taxonomy Source is specified as EU EMIR Eligible Collateral then the enumeration must be EU EMIR Eligible Collateral.">
+ 					if taxonomySource = TaxonomySourceEnum -> EU_EMIR_EligibleCollateralAssetClass
+ 				    	then taxonomyValue -> eu_EMIR_EligibleCollateral exists
+ 				
+ 				condition UkEligibleCollateralTaxonomy: <"If the Taxonomy Source is specified as UK EMIR Eligible Collateral then the enumeration must be UK EMIR Eligible Collateral.">
+ 			    	if taxonomySource = TaxonomySourceEnum-> UK_EMIR_EligibleCollateralAssetClass
+ 			    		then taxonomyValue -> uk_EMIR_EligibleCollateral exists
+ 				
+ 				condition UsEligibleCollateralTaxonomy: <"If the Taxonomy Source is specified as US CFTCPR Eligbile Collateral then the enumeration must be US CFTCPR Eligible Collateral.">
+ 					if taxonomySource = TaxonomySourceEnum-> US_CFTC_PR_EligibleCollateralAssetClass
+ 						then taxonomyValue -> us_CFTC_PR_EligibleCollateral exists
+ 				
+ 				condition TaxonomyValue: <"If the Taxonomy Value is specified as a string then the taxonomy Source cannot be either EU Eligible Collateral or Uk Eligible Collateral or US Eligible Collateral.">
+ 					if taxonomyValue -> nonEnumeratedTaxonomyValue exists
+ 						then taxonomySource <> TaxonomySourceEnum -> EU_EMIR_EligibleCollateralAssetClass
+ 							and taxonomySource <> TaxonomySourceEnum -> UK_EMIR_EligibleCollateralAssetClass
+ 							and taxonomySource <> TaxonomySourceEnum -> US_CFTC_PR_EligibleCollateralAssetClass
+            
+            '''.generatePython
+        
+
+        
+        val expectedEu_EligibleCollateralTaxonomy=
+        '''
+        @rosetta_condition
+          def condition_0_Eu_EligibleCollateralTaxonomy(self):
+            """
+            If the Taxonomy Source is specified as EU EMIR Eligible Collateral then the enumeration must be EU EMIR Eligible Collateral.
+            """
+            def _then_fn0():
+              return ((self.taxonomyValue.eu_EMIR_EligibleCollateral) is not None)
+            
+            def _else_fn0():
+              return True
+            
+            return if_cond_fn(all_elements(self.taxonomySource, "=", TaxonomySourceEnum.EU_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS), _then_fn0, _else_fn0)
+        '''
+        
+        val expectedUkEligibleCollateralTaxonomy =
+        '''
+        @rosetta_condition
+          def condition_1_UkEligibleCollateralTaxonomy(self):
+            """
+            If the Taxonomy Source is specified as UK EMIR Eligible Collateral then the enumeration must be UK EMIR Eligible Collateral.
+            """
+            def _then_fn0():
+              return ((self.taxonomyValue.uk_EMIR_EligibleCollateral) is not None)
+            
+            def _else_fn0():
+              return True
+            
+            return if_cond_fn(all_elements(self.taxonomySource, "=", TaxonomySourceEnum.UK_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS), _then_fn0, _else_fn0)
+        '''
+        
+        val expectedUsEligibleCollateralTaxonomy = 
+        '''
+        @rosetta_condition
+          def condition_2_UsEligibleCollateralTaxonomy(self):
+            """
+            If the Taxonomy Source is specified as US CFTCPR Eligbile Collateral then the enumeration must be US CFTCPR Eligible Collateral.
+            """
+            def _then_fn0():
+              return ((self.taxonomyValue.us_CFTC_PR_EligibleCollateral) is not None)
+            
+            def _else_fn0():
+              return True
+            
+            return if_cond_fn(all_elements(self.taxonomySource, "=", TaxonomySourceEnum.US_CFTC_PR_ELIGIBLE_COLLATERAL_ASSET_CLASS), _then_fn0, _else_fn0)
+        '''
+        
+        val expectedTaxonomyValue = 
+        '''
+        @rosetta_condition
+          def condition_3_TaxonomyValue(self):
+            """
+            If the Taxonomy Value is specified as a string then the taxonomy Source cannot be either EU Eligible Collateral or Uk Eligible Collateral or US Eligible Collateral.
+            """
+            def _then_fn0():
+              return ((any_elements(self.taxonomySource, "<>", TaxonomySourceEnum.EU_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS) and any_elements(self.taxonomySource, "<>", TaxonomySourceEnum.UK_EMIR_ELIGIBLE_COLLATERAL_ASSET_CLASS)) and any_elements(self.taxonomySource, "<>", TaxonomySourceEnum.US_CFTC_PR_ELIGIBLE_COLLATERAL_ASSET_CLASS))
+            
+            def _else_fn0():
+              return True
+            
+            return if_cond_fn(((self.taxonomyValue.nonEnumeratedTaxonomyValue) is not None), _then_fn0, _else_fn0)
+        '''
+        
+        assertTrue(python.toString.contains(expectedEu_EligibleCollateralTaxonomy))
+        assertTrue(python.toString.contains(expectedUkEligibleCollateralTaxonomy))
+        assertTrue(python.toString.contains(expectedUsEligibleCollateralTaxonomy))
+        assertTrue(python.toString.contains(expectedTaxonomyValue))
     }
     
     
