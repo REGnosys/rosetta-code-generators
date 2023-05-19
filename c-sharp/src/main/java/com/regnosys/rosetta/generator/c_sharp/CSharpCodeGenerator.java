@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpCodeInfo;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
@@ -54,7 +54,7 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
+	public Map<String, ? extends CharSequence> generate(RootPackage root, List<RosettaRootElement> elements,
 			String version) {
 		return Collections.emptyMap();
 	}

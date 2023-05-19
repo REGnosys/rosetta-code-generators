@@ -1,15 +1,14 @@
 package com.regnosys.rosetta.generator.daml.util
 
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
-
 class DamlTranslator {
 				
 	static def toDamlBasicType(String typename) {
 		switch typename {
-			case 'String':
-				'Text'
-			case 'string':
+			case 'String',
+			case 'string',				
+			case 'calculation',				
+			case 'productType',				
+			case 'eventType':
 				'Text'
 			case 'int':
 				'Int'
@@ -25,12 +24,6 @@ class DamlTranslator {
 				'Decimal'
 			case 'boolean':
 				'Bool'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType:
-				'Text'
-			case RQualifiedType.EVENT_TYPE.qualifiedType:
-				'Text'
-			case RCalculationType.CALCULATION.calculationType:
-				'Text'
 		}
 	}
 

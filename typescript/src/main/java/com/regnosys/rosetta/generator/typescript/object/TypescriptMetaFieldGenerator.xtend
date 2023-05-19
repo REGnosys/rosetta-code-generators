@@ -31,7 +31,7 @@ class TypescriptMetaFieldGenerator {
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
 		export interface MetaFields {
 			«FOR type : types.distinctBy(t|t.name.toFirstLower)»
-				«type.name.toFirstLower»?: «type.type.name.toTSType»;
+				«type.name.toFirstLower»?: «type.typeCall.type.name.toTSType»;
 			«ENDFOR»
 			globalKey?: string;
 			externalKey?: string;
@@ -40,7 +40,7 @@ class TypescriptMetaFieldGenerator {
 		
 		export interface MetaAndTemplateFields {
 		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
-		  	«type.name.toFirstLower»?: «type.type.name.toTSType»;
+		  	«type.name.toFirstLower»?: «type.typeCall.type.name.toTSType»;
 		  «ENDFOR»
 		  globalKey?: string;
 		  externalKey?: string;

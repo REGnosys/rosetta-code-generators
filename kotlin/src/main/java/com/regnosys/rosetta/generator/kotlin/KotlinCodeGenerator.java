@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.generator.kotlin.enums.KotlinEnumGenerator;
 import com.regnosys.rosetta.generator.kotlin.object.KotlinModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
@@ -33,7 +33,7 @@ public class KotlinCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
+	public Map<String, ? extends CharSequence> generate(RootPackage packages, List<RosettaRootElement> elements, String version) {
 		return Collections.emptyMap();
 	}
 	

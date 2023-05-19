@@ -33,7 +33,7 @@ class GolangMetaFieldGenerator {
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''				
 		type MetaFields struct {
 			«FOR type : types.distinctBy(t|t.name.toFirstLower)»
-				«type.name.toFirstUpper» «type.type.name.toGOType»;
+				«type.name.toFirstUpper» «type.typeCall.type.name.toGOType»;
 			«ENDFOR»
 			GlobalKey string;
 			ExternalKey string;
@@ -42,7 +42,7 @@ class GolangMetaFieldGenerator {
 		
 		type MetaAndTemplateFields struct {
 			«FOR type : types.distinctBy(t|t.name.toFirstLower)»
-				«type.name.toFirstUpper» «type.type.name.toGOType»;
+				«type.name.toFirstUpper» «type.typeCall.type.name.toGOType»;
 			«ENDFOR»
 			GlobalKey string;
 			ExternalKey string;

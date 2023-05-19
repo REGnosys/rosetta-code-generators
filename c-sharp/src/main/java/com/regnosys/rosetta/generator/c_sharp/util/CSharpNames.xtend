@@ -9,29 +9,28 @@ import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.util.RosettaAttributeExtensions
 import com.regnosys.rosetta.rosetta.RosettaBasicType
-import com.regnosys.rosetta.rosetta.RosettaCalculationType
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaExternalFunction
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaNamed
-import com.regnosys.rosetta.rosetta.RosettaQualifiedType
 import com.regnosys.rosetta.rosetta.RosettaRecordType
 import com.regnosys.rosetta.rosetta.RosettaRootElement
 import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
-import com.regnosys.rosetta.types.RBuiltinType
 import com.regnosys.rosetta.types.RDataType
 import com.regnosys.rosetta.types.REnumType
-import com.regnosys.rosetta.types.RRecordType
 import com.regnosys.rosetta.types.RType
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
 import com.regnosys.rosetta.utils.DottedPath
+import com.regnosys.rosetta.rosetta.TypeCall
+import com.regnosys.rosetta.rosetta.RosettaTypeAlias
+import com.regnosys.rosetta.types.builtin.RRecordType
+import com.regnosys.rosetta.types.builtin.RBasicType
 
 class CSharpNames {
 
@@ -40,9 +39,9 @@ class CSharpNames {
 
     def StringConcatenationClient toListOrSingleCSharpType(Attribute attribute) {
         if (attribute.card.isIsMany) {
-            '''«List»<«attribute.type.toCSharpType()»>'''
+            '''«List»<«attribute.typeCall.toCSharpType»>'''
         } else
-            '''«attribute.type.toCSharpType()»'''
+            '''«attribute.typeCall.toCSharpType»'''
     }
 
     def CSharpType toCSharpType(ExpandedType type) {
@@ -66,6 +65,9 @@ class CSharpNames {
         }
     }
 
+	def CSharpType toCSharpType(TypeCall typeCall) {
+		typeCall.type.toCSharpType
+	}
     def CSharpType toCSharpType(RosettaType type) {
         switch (type) {
             RosettaBasicType:
@@ -78,9 +80,8 @@ class CSharpNames {
                     CSharpType.create(packages.defaultLibRecords.withDots + '.' + type.name.toFirstUpper)
             RosettaExternalFunction:
                 createCSharpType(packages.defaultLibFunctions, type.name)
-            RosettaCalculationType,
-            RosettaQualifiedType:
-                CSharpType.create('java.lang.String')
+            RosettaTypeAlias:
+            	type.typeCall.toCSharpType
             default:
                 throw new UnsupportedOperationException("Not implemented for type " + type?.class?.name)
         }
@@ -88,14 +89,15 @@ class CSharpNames {
 
     def CSharpType toCSharpType(RType rType) {
         switch (rType) {
-            RBuiltinType:
+            RBasicType:
                 rType.name.createForBasicType
             REnumType:
                 rType.enumeration.toCSharpType
             RDataType:
                 rType.data.toCSharpType
             RRecordType:
-                (rType.record as RosettaType).toCSharpType
+                CSharpType.create(rType.name) ?:
+                    CSharpType.create(packages.defaultLibRecords.withDots + '.' + rType.name.toFirstUpper)
             default:
                 CSharpType.create(rType.name)
         }
@@ -110,16 +112,9 @@ class CSharpNames {
     }
 
     def toMetaType(Attribute ctx, String name) {
-        var model = ctx.type.eContainer
-        if (model instanceof RosettaModel) {
-            var pkg = new RootPackage(model.name).metaField
-            return createCSharpType(pkg, name)
-        }
-        
-        if(model instanceof RosettaBasicType) {
-            // built-in meta types are defined in metafield package
-            return createCSharpType(packages.basicMetafields, name)
-        }
+        var model = ctx.typeCall.type.model
+        var pkg = new RootPackage(model.name).metaField
+        return createCSharpType(pkg, name)
     }
 
     def toMetaType(ExpandedAttribute type, String name) {
@@ -153,8 +148,8 @@ class CSharpNames {
     static class Factory {
         @Inject Injector injector
 
-        def create(RosettaModel model) {
-            create(new RosettaJavaPackages(model))
+        def create() {
+            create(new RosettaJavaPackages())
         }
 
         private def create(RosettaJavaPackages packages) {

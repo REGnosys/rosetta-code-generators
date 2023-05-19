@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.typescript.enums.TypescriptEnumGenerator;
 import com.regnosys.rosetta.generator.typescript.object.TypescriptModelObjectGenerator;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -33,7 +33,7 @@ public class TypescriptCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements,
+	public Map<String, ? extends CharSequence> generate(RootPackage packages, List<RosettaRootElement> elements,
 			String version) {
 		return Collections.emptyMap();
 	}

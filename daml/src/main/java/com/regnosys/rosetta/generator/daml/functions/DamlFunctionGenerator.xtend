@@ -74,7 +74,7 @@ class DamlFunctionGenerator {
 	}
 	
 	private def toRawType(Attribute input) {
-		input.type.name.toDamlType	
+		input.typeCall.type.name.toDamlType	
 	}
 	
 	private def prefixSingleOptional(CharSequence type, RosettaCardinality card) {

@@ -1,49 +1,40 @@
 package com.regnosys.rosetta.generator.typescript
 
 import com.google.inject.Inject
+import com.regnosys.rosetta.generators.test.TestUtil
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
+import java.nio.file.Files
+import java.nio.file.Paths
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.io.File
-import org.eclipse.xtext.testing.util.ParseHelper
-import org.eclipse.xtext.resource.XtextResourceSet
-import com.google.inject.Provider
-import org.junit.jupiter.api.Disabled
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class TypescriptModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
-	@Inject TypescriptCodeGenerator generator;
-
-	@Inject extension ParseHelper<RosettaModel>
-	@Inject Provider<XtextResourceSet> resourceSetProvider;
+	
+	@Inject extension TestUtil
+	
+	@Inject TypescriptCodeGenerator generator
 
 	@Test
 	@Disabled("Test to generate the typescript for CDM")
 	def void generateCdm() {
-		val dirs = newArrayList(
-			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-		);
+		val dirs = #[
+            '../../../finos/common-domain-model/rosetta-source/src/main/rosetta',
+            '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
+        ]
 
-		val resourceSet = resourceSetProvider.get
-
-		dirs.map[new File(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
-			map[Files.readAllBytes(toPath)].map[new String(it)]
-		].forEach[parse(resourceSet)]
-
-		val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
+		val rosettaModels = dirs.parseAllRosettaFiles
+		
 		val generatedFiles = generator.afterGenerate(rosettaModels)
 
 		val cdmDir = Files.createDirectories(Paths.get("cdm"))
@@ -141,8 +132,63 @@ class TypescriptModelObjectGeneratorTest {
 			  testType2Value2?: Date;
 			}
 			'''))
-
 	}
+
+    @Test
+    def void shouldGenerateCalculationType() {
+        val typescript = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateTypescript
+
+		val types = typescript.get('types.ts').toString
+        
+        assertEquals('''
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import { ReferenceWithMeta, FieldWithMeta, MetaFields } from './metatypes';
+	        import {
+	            } from './enums';
+	        
+	        export interface Foo {
+	          attr?: string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
+    
+    @Test
+    def void shouldGenerateProductAndEventType() {
+        val typescript = '''
+			type Foo:
+			     productAttr productType (0..1)
+			     eventAttr eventType (0..1)
+        '''.generateTypescript
+
+		val types = typescript.get('types.ts').toString
+        
+        assertEquals('''
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import { ReferenceWithMeta, FieldWithMeta, MetaFields } from './metatypes';
+	        import {
+	            } from './enums';
+	        
+	        export interface Foo {
+	          eventAttr?: string;
+	          productAttr?: string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
+
+
 
 	@Test
 	def void shouldGenerateTypesExtends() {

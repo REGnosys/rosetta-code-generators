@@ -51,7 +51,7 @@
 			<groupId>com.regnosys.rosetta</groupId>
 			<artifactId>com.regnosys.rosetta.lib</artifactId>
 		</dependency>
-            <dependency>
+        <dependency>
             <groupId>com.regnosys.rosetta</groupId>
             <artifactId>com.regnosys.rosetta</artifactId>
         </dependency>

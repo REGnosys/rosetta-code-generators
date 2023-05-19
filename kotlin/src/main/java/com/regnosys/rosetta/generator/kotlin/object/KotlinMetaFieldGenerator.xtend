@@ -99,7 +99,7 @@ class KotlinMetaFieldGenerator {
     '''
     @Serializable
     open class MetaFields (
-    	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.type.name.toKotlinBasicType»? = null,«ENDFOR»
+    	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.typeCall.type.name.toKotlinBasicType»? = null,«ENDFOR»
     	var globalKey: String? = null,
     	var externalKey: String? = null,
     	var location: MutableList<Key>? = null
@@ -107,7 +107,7 @@ class KotlinMetaFieldGenerator {
 
     @Serializable
     open class MetaAndTemplateFields (
-    	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.type.name.toKotlinBasicType»? = null,«ENDFOR»
+    	«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n'»var «type.name.toFirstLower»: «type.typeCall.type.name.toKotlinBasicType»? = null,«ENDFOR»
     	var globalKey: String? = null,
     	var externalKey: String? = null,
     	var templateGlobalReference: String? = null,

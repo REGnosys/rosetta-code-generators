@@ -13,14 +13,8 @@ import static org.junit.jupiter.api.Assertions.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.io.File
-import org.eclipse.xtext.testing.util.ParseHelper
-import org.eclipse.xtext.resource.XtextResourceSet
-import com.google.inject.Provider
-import org.eclipse.lsp4j.generator.TypeAdapterImpl
 import org.junit.jupiter.api.Disabled
-import java.io.IOException
-
-//import org.junit.jupiter.api.Disabled
+import com.regnosys.rosetta.generators.test.TestUtil
 
 /**
  * The parser of rosetta files has a particular requirement:
@@ -33,41 +27,32 @@ import java.io.IOException
 class GolangModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
+	
+    @Inject extension TestUtil
+	
 	@Inject GolangCodeGenerator generator;
-
-	@Inject extension ParseHelper<RosettaModel>
-	@Inject Provider<XtextResourceSet> resourceSetProvider;
 
 	@Test
 	@Disabled("Test to generate the golang for CDM")
 	def void generateCdm() {
+		val dirs = #[
+            '../../../finos/common-domain-model/rosetta-source/src/main/rosetta',
+            '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
+        ]
 
-		val dirs = newArrayList(			
-			('rosetta-cdm/src/main/rosetta'),
-			('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')
-		);
-
-		val resourceSet = resourceSetProvider.get	
-
-		dirs.map[new File(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
-			map[Files.readAllBytes(toPath)].map[new String(it)]
-		].forEach[parse(resourceSet)]
-
-		val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
+		val rosettaModels = dirs.parseAllRosettaFiles
+		
 		val generatedFiles = generator.afterGenerate(rosettaModels)		
 
 		val rootDir = System.getProperty("user.dir")
 		
-		generatedFiles.forEach [ fileName, contents |{
+		generatedFiles.forEach[fileName, contents | {
 			val pathString = rootDir+"/"+fileName
 			val path = Paths.get(pathString)
 			val file = new File(pathString);
 			file.getParentFile().mkdirs();					
 			Files.write(path, contents.toString.bytes)			
-		}
-			
-		]
+		}]
 	}
 
 	@Test
@@ -172,6 +157,63 @@ class GolangModelObjectGeneratorTest {
 
 	}	
 	
+    @Test
+    def void shouldGenerateCalculationType() {
+        val golang = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateGolang
+
+		val types = golang.get('org_isda_cdm/types.go').toString
+        
+        assertEquals('''
+	        package org_isda_cdm
+	        
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import "time"
+	        import . "org_isda_cdm_metafields";
+	          
+	        
+	        type Foo struct {
+	          Attr string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
+    
+    @Test
+    def void shouldGenerateProductAndEventType() {
+        val golang = '''
+			type Foo:
+			     productAttr productType (0..1)
+			     eventAttr eventType (0..1)
+        '''.generateGolang
+
+		val types = golang.get('org_isda_cdm/types.go').toString
+        
+        assertEquals('''
+	        package org_isda_cdm
+	        
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        
+	        import "time"
+	        import . "org_isda_cdm_metafields";
+	          
+	        
+	        type Foo struct {
+	          EventAttr string;
+	          ProductAttr string;
+	        }
+	          
+        '''.toString, types.toString)
+    }
 	
 	@Test	
 	def void shouldGenerateMetaTypes() {

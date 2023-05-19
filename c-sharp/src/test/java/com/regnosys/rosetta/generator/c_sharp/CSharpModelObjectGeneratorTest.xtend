@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
@@ -10,15 +9,14 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.List
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
+import com.regnosys.rosetta.generators.test.TestUtil
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -26,18 +24,15 @@ class CSharpModelObjectGeneratorTest {
 
     @Inject
     extension ModelHelper
+    
+    @Inject
+    extension TestUtil
 
     @Inject
-    CSharp8CodeGenerator generator8;
+    CSharp8CodeGenerator generator8
 
     @Inject
-    CSharp9CodeGenerator generator9;
-
-    @Inject
-    extension ParseHelper<RosettaModel>
-
-    @Inject
-    Provider<XtextResourceSet> resourceSetProvider;
+    CSharp9CodeGenerator generator9
 
     protected def boolean containsCdmVersionAttribute(String c_sharp) {
         c_sharp.contains('[assembly: Rosetta.Lib.Attributes.CdmVersion("test")]')
@@ -132,19 +127,12 @@ class CSharpModelObjectGeneratorTest {
     @Test
     @Disabled("Test to generate the C# for CDM")
     def void generateCdm() {
-
-        val dirs = newArrayList(
-            ('rosetta-cdm/src/main/rosetta'),
-            ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model')            
-        );
-
-        val resourceSet = resourceSetProvider.get   
-
-        dirs.map[toFile(it)].map[listFiles[it.name.endsWith('.rosetta')]].flatMap [
-            map[Files.readAllBytes(toPath)].map[new String(it)]
-        ].forEach[parse(resourceSet)]
-
-        val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
+        val dirs = #[
+            '../../../finos/common-domain-model/rosetta-source/src/main/rosetta',
+            '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
+        ]
+		
+        val rosettaModels = dirs.parseAllRosettaFiles
         
         generateCdm(generator8, "NetStandard.2.1", rosettaModels)
         generateCdm(generator9, "Net.5.0", rosettaModels)
@@ -481,22 +469,22 @@ class CSharpModelObjectGeneratorTest {
     @Test
     def void shouldGenerateTypes() {
         val c_sharp = '''
-            type GtTestType: <"Test type description.">
-                gtTestTypeValue1 string (1..1) <"Test string">
-                gtTestTypeValue2 string (0..1) <"Test optional string">
-                gtTestTypeValue3 string (0..*) <"Test string list">
-                gtTestTypeValue4 GtTestType2 (1..1) <"Test TestType2">
-                gtTestEnum GtTestEnum (0..1) <"Optional test enum">
-            
-            type GtTestType2:
-                 gtTestType2Value1 number(1..*) <"Test number list">
-                 gtTestType2Value2 date(0..1) <"Test optional date">
-                 gtTestEnum GtTestEnum (1..1) <"Test enum">
-            
-            enum GtTestEnum: <"Test enum description.">
-                GtTestEnumValue1 <"Test enum value 1">
-                GtTestEnumValue2 <"Test enum value 2">
-            
+			type GtTestType: <"Test type description.">
+			    gtTestTypeValue1 string (1..1) <"Test string">
+			    gtTestTypeValue2 string (0..1) <"Test optional string">
+			    gtTestTypeValue3 string (0..*) <"Test string list">
+			    gtTestTypeValue4 GtTestType2 (1..1) <"Test TestType2">
+			    gtTestEnum GtTestEnum (0..1) <"Optional test enum">
+			
+			type GtTestType2:
+			     gtTestType2Value1 number(1..*) <"Test number list">
+			     gtTestType2Value2 date(0..1) <"Test optional date">
+			     gtTestEnum GtTestEnum (1..1) <"Test enum">
+			
+			enum GtTestEnum: <"Test enum description.">
+			    GtTestEnumValue1 <"Test enum value 1">
+			    GtTestEnumValue2 <"Test enum value 2">
+
         '''.generateCSharp
 
         val types = c_sharp.get('Types.cs').toString
@@ -509,142 +497,232 @@ class CSharpModelObjectGeneratorTest {
         assertTrue(containsNullable(types))
         assertTrue(containsUsings(types))
 
-        assertTrue(types.contains('''
-            «""»
-                /// <summary>
-                /// Test type description.
-                /// </summary>
-                public class GtTestType : AbstractRosettaModelObject<GtTestType>
-                {
-                    private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
-                    
-                    [JsonConstructor]
-                    public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
-                    {
-                        GtTestEnum = gtTestEnum;
-                        GtTestTypeValue1 = gtTestTypeValue1;
-                        GtTestTypeValue2 = gtTestTypeValue2;
-                        GtTestTypeValue3 = gtTestTypeValue3;
-                        GtTestTypeValue4 = gtTestTypeValue4;
-                    }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GtTestType> MetaData => metaData;
-                    
-                    /// <summary>
-                    /// Optional test enum
-                    /// </summary>
-                    [JsonConverter(typeof(StringEnumConverter))]
-                    public Enums.GtTest? GtTestEnum { get; }
-                    
-                    /// <summary>
-                    /// Test string
-                    /// </summary>
-                    public string GtTestTypeValue1 { get; }
-                    
-                    /// <summary>
-                    /// Test optional string
-                    /// </summary>
-                    public string? GtTestTypeValue2 { get; }
-                    
-                    /// <summary>
-                    /// Test string list
-                    /// </summary>
-                    public IEnumerable<string> GtTestTypeValue3 { get; }
-                    
-                    /// <summary>
-                    /// Test TestType2
-                    /// </summary>
-                    public GtTestType2 GtTestTypeValue4 { get; }
-                }
-        '''))
-        var x = '''
-            /// <summary>
-            /// Test type description.
-            /// </summary>
-            public class GtTestType : AbstractRosettaModelObject<GtTestType>
-            {
-                private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
-                
-                [JsonConstructor]
-                public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
-                {
-                    GtTestEnum = gtTestEnum;
-                    GtTestTypeValue1 = gtTestTypeValue1;
-                    GtTestTypeValue2 = gtTestTypeValue2;
-                    GtTestTypeValue3 = gtTestTypeValue3;
-                    GtTestTypeValue4 = gtTestTypeValue4;
-                }
-                
-                /// <inheritdoc />
-                [JsonIgnore]
-                public override IRosettaMetaData<GtTestType> MetaData => metaData;
-                
-                /// <summary>
-                /// Optional test enum
-                /// </summary>
-                [JsonConverter(typeof(StringEnumConverter))]]
-                public Enums.GtTest? GtTestEnum { get; }
-                
-                /// <summary>
-                /// Test string
-                /// </summary>
-                public string GtTestTypeValue1 { get; }
-                
-                /// <summary>
-                /// Test optional string
-                /// </summary>
-                public string? GtTestTypeValue2 { get; }
-                
-                /// <summary>
-                /// Test string list
-                /// </summary>
-                public IEnumerable<string> GtTestTypeValue3 { get; }
-                
-                /// <summary>
-                /// Test TestType2
-                /// </summary>
-                public GtTestType2 GtTestTypeValue4 { get; }
-            }
-        '''
+        assertEquals('''
+	        // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	        //
+	        // Version: test
+	        //
+	        [assembly: Rosetta.Lib.Attributes.CdmVersion("test")]
+	        
+	        #nullable enable // Allow nullable reference types
+	        
+	        namespace Org.Isda.Cdm
+	        {
+	            using System.Collections.Generic;
+	        
+	            using Newtonsoft.Json;
+	            using Newtonsoft.Json.Converters;
+	        
+	            using NodaTime;
+	        
+	            using Rosetta.Lib;
+	            using Rosetta.Lib.Attributes;
+	            using Rosetta.Lib.Meta;
+	            using Rosetta.Lib.Validation;
+	        
+	            using Org.Isda.Cdm.Meta;
+	            using Org.Isda.Cdm.MetaFields;
+	            using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+	            
+	            /// <summary>
+	            /// Test type description.
+	            /// </summary>
+	            public class GtTestType : AbstractRosettaModelObject<GtTestType>
+	            {
+	                private static readonly IRosettaMetaData<GtTestType> metaData = new GtTestTypeMeta();
+	                
+	                [JsonConstructor]
+	                public GtTestType(Enums.GtTest? gtTestEnum, string gtTestTypeValue1, string? gtTestTypeValue2, IEnumerable<string> gtTestTypeValue3, GtTestType2 gtTestTypeValue4)
+	                {
+	                    GtTestEnum = gtTestEnum;
+	                    GtTestTypeValue1 = gtTestTypeValue1;
+	                    GtTestTypeValue2 = gtTestTypeValue2;
+	                    GtTestTypeValue3 = gtTestTypeValue3;
+	                    GtTestTypeValue4 = gtTestTypeValue4;
+	                }
+	                
+	                /// <inheritdoc />
+	                [JsonIgnore]
+	                public override IRosettaMetaData<GtTestType> MetaData => metaData;
+	                
+	                /// <summary>
+	                /// Optional test enum
+	                /// </summary>
+	                [JsonConverter(typeof(StringEnumConverter))]
+	                public Enums.GtTest? GtTestEnum { get; }
+	                
+	                /// <summary>
+	                /// Test string
+	                /// </summary>
+	                public string GtTestTypeValue1 { get; }
+	                
+	                /// <summary>
+	                /// Test optional string
+	                /// </summary>
+	                public string? GtTestTypeValue2 { get; }
+	                
+	                /// <summary>
+	                /// Test string list
+	                /// </summary>
+	                public IEnumerable<string> GtTestTypeValue3 { get; }
+	                
+	                /// <summary>
+	                /// Test TestType2
+	                /// </summary>
+	                public GtTestType2 GtTestTypeValue4 { get; }
+	            }
+	            
+	            public class GtTestType2 : AbstractRosettaModelObject<GtTestType2>
+	            {
+	                private static readonly IRosettaMetaData<GtTestType2> metaData = new GtTestType2Meta();
+	                
+	                [JsonConstructor]
+	                public GtTestType2(Enums.GtTest gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
+	                {
+	                    GtTestEnum = gtTestEnum;
+	                    GtTestType2Value1 = gtTestType2Value1;
+	                    GtTestType2Value2 = gtTestType2Value2;
+	                }
+	                
+	                /// <inheritdoc />
+	                [JsonIgnore]
+	                public override IRosettaMetaData<GtTestType2> MetaData => metaData;
+	                
+	                /// <summary>
+	                /// Test enum
+	                /// </summary>
+	                [JsonConverter(typeof(StringEnumConverter))]
+	                public Enums.GtTest GtTestEnum { get; }
+	                
+	                /// <summary>
+	                /// Test number list
+	                /// </summary>
+	                public IEnumerable<decimal> GtTestType2Value1 { get; }
+	                
+	                /// <summary>
+	                /// Test optional date
+	                /// </summary>
+	                [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
+	                public LocalDate? GtTestType2Value2 { get; }
+	            }
+	        }
+        '''.toString, types)
+    }
+    
+    @Test
+    def void shouldGenerateCalculationType() {
+        val c_sharp = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateCSharp
 
-        assertTrue(types.contains('''
-            «""»
-                public class GtTestType2 : AbstractRosettaModelObject<GtTestType2>
-                {
-                    private static readonly IRosettaMetaData<GtTestType2> metaData = new GtTestType2Meta();
-                    
-                    [JsonConstructor]
-                    public GtTestType2(Enums.GtTest gtTestEnum, IEnumerable<decimal> gtTestType2Value1, LocalDate? gtTestType2Value2)
-                    {
-                        GtTestEnum = gtTestEnum;
-                        GtTestType2Value1 = gtTestType2Value1;
-                        GtTestType2Value2 = gtTestType2Value2;
-                    }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GtTestType2> MetaData => metaData;
-                    
-                    /// <summary>
-                    /// Test enum
-                    /// </summary>
-                    [JsonConverter(typeof(StringEnumConverter))]
-                    public Enums.GtTest GtTestEnum { get; }
-                    
-                    /// <summary>
-                    /// Test number list
-                    /// </summary>
-                    public IEnumerable<decimal> GtTestType2Value1 { get; }
-                    
-                    /// <summary>
-                    /// Test optional date
-                    /// </summary>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
-                    public LocalDate? GtTestType2Value2 { get; }
-                }
-        '''))
+        val types = c_sharp.get('Types.cs')
+        
+        assertEquals('''
+	        // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	        //
+	        // Version: test
+	        //
+	        [assembly: Rosetta.Lib.Attributes.CdmVersion("test")]
+	        
+	        #nullable enable // Allow nullable reference types
+	        
+	        namespace Org.Isda.Cdm
+	        {
+	            using System.Collections.Generic;
+	        
+	            using Newtonsoft.Json;
+	            using Newtonsoft.Json.Converters;
+	        
+	            using NodaTime;
+	        
+	            using Rosetta.Lib;
+	            using Rosetta.Lib.Attributes;
+	            using Rosetta.Lib.Meta;
+	            using Rosetta.Lib.Validation;
+	        
+	            using Org.Isda.Cdm.Meta;
+	            using Org.Isda.Cdm.MetaFields;
+	            using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+	            
+	            public class Foo : AbstractRosettaModelObject<Foo>
+	            {
+	                private static readonly IRosettaMetaData<Foo> metaData = new FooMeta();
+	                
+	                [JsonConstructor]
+	                public Foo(string? attr)
+	                {
+	                    Attr = attr;
+	                }
+	                
+	                /// <inheritdoc />
+	                [JsonIgnore]
+	                public override IRosettaMetaData<Foo> MetaData => metaData;
+	                
+	                public string? Attr { get; }
+	            }
+	        }
+        '''.toString, types.toString)
+    }
+    
+    @Test
+    def void shouldGenerateProductAndEventType() {
+        val c_sharp = '''
+			type Foo:
+			     productAttr productType (0..1)
+			     eventAttr eventType (0..1)
+        '''.generateCSharp
+
+        val types = c_sharp.get('Types.cs')
+        
+        assertEquals('''
+	        // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	        //
+	        // Version: test
+	        //
+	        [assembly: Rosetta.Lib.Attributes.CdmVersion("test")]
+	        
+	        #nullable enable // Allow nullable reference types
+	        
+	        namespace Org.Isda.Cdm
+	        {
+	            using System.Collections.Generic;
+	        
+	            using Newtonsoft.Json;
+	            using Newtonsoft.Json.Converters;
+	        
+	            using NodaTime;
+	        
+	            using Rosetta.Lib;
+	            using Rosetta.Lib.Attributes;
+	            using Rosetta.Lib.Meta;
+	            using Rosetta.Lib.Validation;
+	        
+	            using Org.Isda.Cdm.Meta;
+	            using Org.Isda.Cdm.MetaFields;
+	            using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+	            
+	            public class Foo : AbstractRosettaModelObject<Foo>
+	            {
+	                private static readonly IRosettaMetaData<Foo> metaData = new FooMeta();
+	                
+	                [JsonConstructor]
+	                public Foo(string? eventAttr, string? productAttr)
+	                {
+	                    EventAttr = eventAttr;
+	                    ProductAttr = productAttr;
+	                }
+	                
+	                /// <inheritdoc />
+	                [JsonIgnore]
+	                public override IRosettaMetaData<Foo> MetaData => metaData;
+	                
+	                public string? EventAttr { get; }
+	                
+	                public string? ProductAttr { get; }
+	            }
+	        }
+        '''.toString, types.toString)
     }
 
     @Test

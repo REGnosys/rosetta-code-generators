@@ -15,6 +15,67 @@
 	<name>code-gen-default-cdm-generators</name>
 	<description>Setup for the generators that are run as part of the CDM distribution build</description>
 
+	<profiles>
+		<profile>
+			<!-- For demonstration purposes only, this is how the code generation step is hooked into the CDM build -->
+			<!-- Run from parent working directory, i.e. rosetta-code-generators, specifying this profile, i.e. -->
+			<!-- mvn clean install -P example-generate -DskipTests -->
+			<id>example-generate</id>
+			<build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.xtext</groupId>
+                        <artifactId>xtext-maven-plugin</artifactId>
+                        <version>${xtext.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-src</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceRoots>
+            							<!-- Checkout FINOS/common-domain-model locally, and specify the relative path (or absolute path) here -->
+                                        <sourceRoot>../../finos/common-domain-model/rosetta-source/src/main/rosetta</sourceRoot>
+                                    </sourceRoots>
+                                    <classPathLookupFilter>.*com\.regnosys\.rosetta.*</classPathLookupFilter>
+                                    <languages>
+                                        <language>
+                                            <setup>org.isda.cdm.generators.CDMRosettaSetup</setup>
+                                            <outputConfigurations>
+                                                <outputConfiguration>
+                                                    <name>SRC_GEN_EXAMPLE_OUTPUT</name>
+                                                </outputConfiguration>
+                                            </outputConfigurations>
+                                        </language>
+                                    </languages>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+	                        <dependency>
+	                            <groupId>com.regnosys.rosetta.code-generators</groupId>
+	                            <artifactId>default-cdm-generators</artifactId>
+	                            <version>${project.version}</version>
+	                        </dependency>
+	                        <dependency>
+	                            <groupId>com.regnosys.rosetta</groupId>
+	                            <artifactId>com.regnosys.rosetta</artifactId>
+	                            <version>${rosetta.dsl.version}</version>
+	                        </dependency>
+	                        <dependency>
+	                            <groupId>com.regnosys.rosetta</groupId>
+	                            <artifactId>com.regnosys.rosetta.lib</artifactId>
+	                            <version>${rosetta.dsl.version}</version>
+	                        </dependency>
+	                    </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>

@@ -1,17 +1,14 @@
 package com.regnosys.rosetta.generator.kotlin
 
 import com.google.inject.Inject
-import com.google.inject.Provider
+import com.regnosys.rosetta.generators.test.TestUtil
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
-import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
@@ -23,35 +20,27 @@ import static org.junit.jupiter.api.Assertions.*
 class KotlinModelObjectGeneratorTest {
 
     @Inject extension ModelHelper
-    @Inject KotlinCodeGenerator generator;
+    
+    @Inject extension TestUtil
+    
+    @Inject KotlinCodeGenerator generator
 
-    @Inject extension ParseHelper<RosettaModel>
-    @Inject Provider<XtextResourceSet> resourceSetProvider;
 
     @Test
     @Disabled("Test to generate the kotlin for CDM")
     def void generateCdm() {
-        val dirs = newArrayList(
-				//cdm distribution content
-	            ('rosetta-cdm/src/main/rosetta'),
-            	// common 'annotations.rosetta & basictypes.rosetta'
-                ('rosetta-dsl/com.regnosys.rosetta.lib/src/main/java/model') 
-        );
+    	val dirs = #[
+            '../../../finos/common-domain-model/rosetta-source/src/main/rosetta',
+            '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
+        ]
 
-        val resourceSet = resourceSetProvider.get
-
-        dirs.map[new File(it)]
-        	.map[listFiles[it.name.endsWith('.rosetta')]]
-        	.flatMap[map[Files.readAllBytes(toPath)].map[new String(it)]]
-        	.forEach[parse(resourceSet)]
-
-        val rosettaModels = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
-
+		val rosettaModels = dirs.parseAllRosettaFiles
+		
         val generatedFiles = generator.afterGenerate(rosettaModels)
 
         val cdmDir = Files.createDirectories(Paths.get("cdm"))
-        generatedFiles.forEach [ fileName, contents |
-                Files.write(cdmDir.resolve(fileName), contents.toString.bytes)
+        generatedFiles.forEach[fileName, contents |
+            Files.write(cdmDir.resolve(fileName), contents.toString.bytes)
 		]
     }
 
@@ -134,7 +123,78 @@ class KotlinModelObjectGeneratorTest {
 			  var testType2Value2: Date? = null
 			)
 	        '''))
+    }
+    
+    @Test
+    def void shouldGenerateCalculationType() {
+        val kotlin = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateKotlin
 
+		val types = kotlin.get('Types.kt').toString
+        
+        assertEquals('''
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        package org.isda.cdm.kotlin
+	        
+	        import kotlinx.serialization.*
+	        
+	        /**
+	        * Basic Date implementation
+	        */
+	        @Serializable
+	        class Date (
+	          val year: Int,
+	          val month: Int,
+	          val day: Int
+	        )
+	        
+	        @Serializable
+	        open class Foo (
+	          var attr: String? = null
+	        )
+        '''.toString, types.toString)
+    }
+    
+    @Test
+    def void shouldGenerateProductAndEventType() {
+        val kotlin = '''
+			type Foo:
+			     productAttr productType (0..1)
+			     eventAttr eventType (0..1)
+        '''.generateKotlin
+
+		val types = kotlin.get('Types.kt').toString
+        
+        assertEquals('''
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        package org.isda.cdm.kotlin
+	        
+	        import kotlinx.serialization.*
+	        
+	        /**
+	        * Basic Date implementation
+	        */
+	        @Serializable
+	        class Date (
+	          val year: Int,
+	          val month: Int,
+	          val day: Int
+	        )
+	        
+	        @Serializable
+	        open class Foo (
+	          var eventAttr: String? = null,
+	          var productAttr: String? = null
+	        )
+        '''.toString, types.toString)
     }
 
     @Test
