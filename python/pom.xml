@@ -17,7 +17,7 @@
 		<codebase.name>cdm</codebase.name>
 		<codebase.version>3.3.2</codebase.version>
 		<codebase.outputpath>target/python</codebase.outputpath>
-		<rosetta.source.path>build/resources/rosetta/cdm_3.3.2</rosetta.source.path>
+		<rosetta.source.path>src/main/resources/rosetta/cdm_3.3.2</rosetta.source.path>
 	</properties>
 	<profiles>
 		<profile>
@@ -26,6 +26,22 @@
 			<!-- mvn clean install -P example-generate -DskipTests -->
 			<id>example-generate</id>
 			<build>
+<!--
+				<resources>
+ 					<resource>
+						<directory>src/main/resources</directory>
+						<excludes>
+							<exclude>rosetta/**</exclude>
+							<exclude>build/**</exclude>
+							<exclude>*.sh</exclude>
+							<exclude>*.rosetta</exclude>
+							<exclude>*.json</exclude>
+							<exclude>*.toml</exclude>
+						</excludes>
+						<filtering>false</filtering>
+					</resource>
+				</resources>
+				-->			
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.xtext</groupId>
