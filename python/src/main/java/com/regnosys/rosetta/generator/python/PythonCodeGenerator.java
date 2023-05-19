@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
+import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -46,7 +47,9 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RosettaJavaPackages packages, List<RosettaRootElement> elements, String version) {
+	public Map<String, ? extends CharSequence> generate(RootPackage arg0, List<RosettaRootElement> arg1, String arg2) {
+		// TODO Auto-generated method stub
+//		return null;
 		return Collections.emptyMap();
 	}
 	
