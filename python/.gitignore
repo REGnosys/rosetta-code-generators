@@ -51,6 +51,7 @@ build/.pyenv/
 .pytest_cache/
 # project
 target/python/build/
+test/testenv
 python_cdm.egg-info
 build/testenv
 build/runtime/build

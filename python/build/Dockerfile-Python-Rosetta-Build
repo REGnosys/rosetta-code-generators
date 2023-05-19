@@ -1,13 +1,12 @@
-FROM alpine
+FROM python:3.10-alpine
 RUN apk add --no-cache bash
-RUN apk update && apk add --no-cache python3 py3-pip
+RUN apk update
 RUN mkdir /opt/isda-cdm-code-gen 
 WORKDIR /opt/isda-cdm-code-gen 
 COPY src/main/resources/runtime/rosetta_runtime-1.0.0-py3-none-any.whl rosetta_runtime-1.0.0-py3-none-any.whl
-COPY build/test/serialization/ /opt/isda-cdm-code-gen/test/serialization
 COPY target/python/src /opt/isda-cdm-code-gen/python/src
 COPY target/python/pyproject.toml /opt/isda-cdm-code-gen/python/pyproject.toml
-RUN python3 -m pip install setuptools>=62.0
+COPY test/serialization/ /opt/isda-cdm-code-gen/test/serialization
 RUN python3 -m pip install pylint
 RUN python3 -m pip install pycodestyle
 RUN python3 -m pip install yapf
@@ -23,5 +22,9 @@ RUN python3 -m pip install pytest
 WORKDIR /opt/isda-cdm-code-gen/test/
 CMD python3 -m pytest
 
-# docker build -f ./Dockerfile-Python-Rosetta-Build -t python-gen .
+# from root directory
+# docker build -f ./build/Dockerfile-Python-Rosetta-Build -t python-gen .
+# to run 
+# docker run -t python-gen
+# to run interactively
 # docker run -i -t python-gen bash              

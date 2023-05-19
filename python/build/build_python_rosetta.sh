@@ -5,6 +5,7 @@ function processError() {
   echo "***************************************************************************"
   echo "*                                                                         *"
   echo "*                         INITIALISATION FAILED!                          *"
+  echo "*                  -- must be run from root directory --                  *"
   echo "*                                                                         *"
   echo "***************************************************************************"
   echo ""
@@ -18,9 +19,12 @@ if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1;
         exit 1
 fi
 
-MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
-cd $MYPATH
+
+MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+ROSETTARUNTIMEDIR=$MYPATH/"../src/main/resources/runtime"
+PYTHONSOURCEDIR=$MYPATH/"../target/python"
+cd $PYTHONSOURCEDIR
 $PYEXE -m venv --clear .pyenv || processError
 source .pyenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
@@ -30,12 +34,13 @@ $PYEXE -m pip install pycodestyle || processError
 $PYEXE -m pip install yapf || processError
 $PYEXE -m pip install pydantic || processError
 $PYEXE -m pip install jsonpickle || processError
-$PYEXE -m pip install src/main/resources/runtime/rosetta_runtime-1.0.0-py3-none-any.whl || processError
-rm -rf target/python/build
+$PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-1.0.0-py3-none-any.whl || processError
+
+rm -rf build
 rm python_cdm-3.3.2-py3-none-any.whl
-$PYEXE -m pip install target/python || processError
-$PYEXE -m pip wheel --no-deps --only-binary :all: target/python || processError
-rm -rf target/python/build
+$PYEXE -m pip install . || processError
+$PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
+rm -rf build
 echo ""
 echo ""
 echo "***************************************************************************"
@@ -44,6 +49,7 @@ echo "*                                 SUCCESS!!!                              
 echo "*                                                                         *"
 echo "*Finished installing dependencies and building/installing the cdm package!*"
 echo "*                                                                         *"
+echo "*                      package placed in target/python                    !*"
+echo "*                                                                         *"
 echo "***************************************************************************"
 echo ""
-
