@@ -39,6 +39,39 @@ class PythonExceptionsTest {
 
     }
     
+    @Disabled
+    @Test
+    def void testNullTypeException2() {
+
+        val python = 
+            '''
+            type TestType: <"Test type with one-of condition.">
+            	field1 string (0..1) <"Test string field 1">
+                field2 string (0..1) <"Test string field 2">
+                condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
+                	 if field1 exists
+                	 	then field3 > 0
+            '''
+        var exception = assertThrows(AssertionError, [python.generatePython]);
+        assertTrue(exception.getMessage.contains("Couldn't resolve reference"));
+
+    }
+    
+    @Test
+    def void testExtends() {
+    
+        
+        val python = 
+        '''
+        type TestType1 extends TestType2:
+        TestType2Value1 number (0..1) <"Test number">
+        TestType2Value2 date (0..*) <"Test date">
+        '''
+        
+        var exception = assertThrows(AssertionError, [python.generatePython]);
+        assertTrue(exception.getMessage.contains("Couldn't resolve reference"));
+    }
+    
     /* ********************************************************************** */
 	/* ***				   Begin extreme case testing				   	  *** */	
 	/* ********************************************************************** */
@@ -121,18 +154,29 @@ class PythonExceptionsTest {
 				and if value2 exists then value1 is absent
 		'''.generatePython
 		
+		
 		val expected = 
 		'''
 		class ConditionPositive(BaseDataClass):
-		  expectedA: int = Field(..., description="")
+		  value1: Optional[int] = Field(None, description="")
+		  value2: Optional[int] = Field(None, description="")
 		  
 		  @rosetta_condition
 		  def condition_0_sameName(self):
-		    return all_elements(self.expectedA, ">", 0)
-		  
-		  @rosetta_condition
-		  def condition_1_sameName(self):
-		    return all_elements(self.expectedA, "<", 0)
+		    def _then_fn1():
+		      return ((self.value1) is None)
+		    
+		    def _else_fn1():
+		      return True
+		    
+		    def _then_fn0():
+		      return (((self.value2) is not None) and if_cond_fn(((self.value2) is not None), _then_fn1, _else_fn1))
+		    
+		    def _else_fn0():
+		      return True
+		    
+		    return if_cond_fn(((self.value1) is not None), _then_fn0, _else_fn0)
+
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -149,6 +193,7 @@ class PythonExceptionsTest {
 				expectedA > 0 and expectedA < 0
 			
 		'''.generatePython
+		
 		
 		val expected = 
 		'''
@@ -212,6 +257,7 @@ class PythonExceptionsTest {
 		assertTrue(python.toString.contains(expected))
 	}
 	
+	//Not working from last pull
 	@Test 
 	def void testRequired() {
 		val python = 
@@ -222,6 +268,8 @@ class PythonExceptionsTest {
 			condition Rule
 					required choice intValue1, intValue2
 		'''.generatePython
+		
+		println(python)
 		
 		val expected = 
 		'''
@@ -249,7 +297,23 @@ class PythonExceptionsTest {
 			condition sameName:
 				expectedA < 0
 		'''.generatePython
-		System.out.println(python)
+		
+		
+		val expected =
+		'''
+		class ConditionPositive(BaseDataClass):
+		  expectedA: int = Field(..., description="")
+		  
+		  @rosetta_condition
+		  def condition_0_sameName(self):
+		    return all_elements(self.expectedA, ">", 0)
+		  
+		  @rosetta_condition
+		  def condition_1_sameName(self):
+		    return all_elements(self.expectedA, "<", 0)
+		'''
+		
+		assertTrue(python.toString.contains(expected))
 	}
 	
 	@Test 
