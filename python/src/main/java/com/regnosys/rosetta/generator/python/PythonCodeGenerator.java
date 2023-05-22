@@ -68,9 +68,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 		models.stream()
 			  .sorted(Comparator.comparing(RosettaModel::getName, String.CASE_INSENSITIVE_ORDER)) // Sort models by name, case-insensitive
 			  .forEach(m -> {
-				  if(!subfolders.contains(m.getName())) {
-					  subfolders.add(m.getName());
-				  }
+				  
 				  List<Data> rosettaClasses = m.getElements().stream()
 						  .filter(e -> e instanceof Data)
 						  .map(Data.class::cast).collect(Collectors.toList());
@@ -86,6 +84,15 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 				  List<Function> rosettaFunctions = m.getElements().stream()
 						  .filter(t -> Function.class.isInstance(t))
 						  .map(Function.class::cast).collect(Collectors.toList());
+				  
+				  if(rosettaFunctions.size()>0) {
+                      if(!subfolders.contains(m.getName())) {
+                              subfolders.add(m.getName());
+                      }
+                      if(!subfolders.contains(m.getName()+".functions")) {
+                              subfolders.add(m.getName()+".functions");
+                      }
+				  }
 				
 				if(!m.getName().equals(previousNamespace.get())) {
 					previousNamespace.set(m.getName());

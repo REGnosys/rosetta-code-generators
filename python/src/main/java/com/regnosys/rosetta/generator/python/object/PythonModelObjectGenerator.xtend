@@ -20,7 +20,6 @@ import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.Necessity
 import com.regnosys.rosetta.rosetta.expression.OneOfOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaBigDecimalLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaConditionalExpression
@@ -40,8 +39,11 @@ import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
-import com.regnosys.rosetta.types.RCalculationType
-import com.regnosys.rosetta.types.RQualifiedType
+import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
+import com.regnosys.rosetta.rosetta.TypeCall
+import com.regnosys.rosetta.rosetta.RosettaTypeAlias
+import com.regnosys.rosetta.types.builtin.RRecordType
+import com.regnosys.rosetta.types.builtin.RBasicType
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
@@ -74,9 +76,10 @@ class PythonModelObjectGenerator {
 			case 'number': 'Decimal'
 			case 'boolean': 'bool'
 			case 'int': 'int'
-			case RQualifiedType.PRODUCT_TYPE.qualifiedType: 'str'
-			case RQualifiedType.EVENT_TYPE.qualifiedType: 'str'
-			case RCalculationType.CALCULATION.calculationType: 'str'
+			case 'calculation',				
+			case 'productType',				
+			case 'eventType':
+				'str'
 			default: (typename === null) ? null : typename.toFirstUpper
 		}
 	}
@@ -381,7 +384,7 @@ class PythonModelObjectGenerator {
 				reference(expr, iflvl)
 			}
 			
-			RosettaBigDecimalLiteral: {
+			RosettaNumberLiteral: {
 				'''«expr.value»'''
 			}
 			RosettaBooleanLiteral: {
