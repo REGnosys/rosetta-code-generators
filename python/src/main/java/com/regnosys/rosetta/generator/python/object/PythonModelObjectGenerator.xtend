@@ -127,7 +127,7 @@ class PythonModelObjectGenerator {
 	
 	def Map<String, ? extends CharSequence> generate(
 		Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, Collection<? extends RosettaModel> models
-	) throws Exception {
+	) {
 		val result = new HashMap
 		
 		for(Data type: rosettaClasses){

@@ -98,15 +98,9 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 					previousNamespace.set(m.getName());
 					LOGGER.info("processing module: {}", m.getName());
 				}
-
-				try {
-					result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
-					result.putAll(enumGenerator.generate(rosettaEnums, version));
-					result.putAll(funcGenerator.generate(rosettaFunctions, version));
-				} catch (Exception e) {
-					System.out.println ("Exception while generating python");
-					e.printStackTrace();
-				}
+				result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
+				result.putAll(enumGenerator.generate(rosettaEnums, version));
+				result.putAll(funcGenerator.generate(rosettaFunctions, version));
 			});
 		List<String> workspaces = getWorkspaces(subfolders);
 		result.putAll(generateWorkspaces(workspaces, version));
