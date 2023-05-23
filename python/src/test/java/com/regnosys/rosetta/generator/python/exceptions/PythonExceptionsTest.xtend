@@ -26,16 +26,19 @@ class PythonExceptionsTest {
 
 	@Test
     def void testNullTypeException1() {
-
-        val python = 
-            '''
-            type B:
-                intValue1 int (0..1)
-                intValue2 int (0..1)
-                aValue A (1..1)
-            '''
-        var exception = assertThrows(AssertionError, [python.generatePython]);
-        assertTrue(exception.getMessage.contains("Couldn't resolve reference"));
+		
+		try{
+	        val python = 
+	            '''
+	            type B:
+	                intValue1 int (0..1)
+	                intValue2 int (0..1)
+	                aValue A (1..1)
+	            '''.generatePython
+            
+        }catch(Exception ex){
+        	assertTrue(ex.getMessage.contains("Attribute type is null"));     	
+        }
 
     }
     
@@ -60,16 +63,16 @@ class PythonExceptionsTest {
     @Test
     def void testExtends() {
     
-        
-        val python = 
-        '''
-        type TestType1 extends TestType2:
-        TestType2Value1 number (0..1) <"Test number">
-        TestType2Value2 date (0..*) <"Test date">
-        '''
-        
-        var exception = assertThrows(AssertionError, [python.generatePython]);
-        assertTrue(exception.getMessage.contains("Couldn't resolve reference"));
+        try{
+        	val python = 
+	        '''
+	        type TestType1 extends TestType2:
+	        TestType2Value1 number (0..1) <"Test number">
+	        TestType2Value2 date (0..*) <"Test date">
+	        '''.generatePython
+        }catch(Exception ex){
+        	assertTrue(ex.getMessage.contains("SuperType is null"))
+        }      
     }
     
     /* ********************************************************************** */

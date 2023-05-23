@@ -171,6 +171,9 @@ class PythonModelObjectGenerator {
 		var List<String> classDefinitions = newArrayList
 		var List<String> updateForwardRefs = newArrayList
 		var superType = rosettaClass.superType
+		if(superType!== null && superType.name === null){
+			throw new Exception ("SuperType is null for " + rosettaClass.name)
+        }
 		importsFound = getImportsFromAttributes(rosettaClass)
 		
 		val classDefinition = generateClassDefinition(rosettaClass)
