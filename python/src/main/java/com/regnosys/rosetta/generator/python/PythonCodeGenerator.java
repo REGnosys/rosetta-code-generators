@@ -9,13 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages;
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
@@ -27,7 +24,6 @@ import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
 import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
 import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
-
 
 public class PythonCodeGenerator extends AbstractExternalGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
@@ -48,16 +44,23 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
 	@Override
 	public Map<String, ? extends CharSequence> generate(RootPackage arg0, List<RosettaRootElement> arg1, String arg2) {
-		// TODO Auto-generated method stub
-//		return null;
 		return Collections.emptyMap();
 	}
-	
+	private String getVersion (String version) {
+		if (version == null || version.equals ("${project.version}")) {
+			version = "0.0.0";
+		} else {
+			String[] versionParts = version.split ("\\.");
+			if (versionParts.length > 2) {
+				version = versionParts[0] + "." + versionParts[1] + "." + versionParts[2];
+			}
+		}
+		return version;
+	}
 	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-
-		String versionFromModels = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
-		final String version     = (versionFromModels.equals ("${project.version}")) ? "3.3.2" : versionFromModels;
+		// get version in format "#.#.#" defaulting to "0.0.0" if none provided
+		final String version = getVersion(models.stream().map(m -> m.getVersion()).findFirst().orElse(null));
 		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
 
 		Map<String, CharSequence> result = new HashMap<>();
@@ -86,12 +89,12 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 						  .map(Function.class::cast).collect(Collectors.toList());
 				  
 				  if(rosettaFunctions.size()>0) {
-                      if(!subfolders.contains(m.getName())) {
-                              subfolders.add(m.getName());
-                      }
-                      if(!subfolders.contains(m.getName()+".functions")) {
-                              subfolders.add(m.getName()+".functions");
-                      }
+					  if(!subfolders.contains(m.getName())) {
+							  subfolders.add(m.getName());
+					  }
+					  if(!subfolders.contains(m.getName()+".functions")) {
+							  subfolders.add(m.getName()+".functions");
+					  }
 				  }
 				
 				if(!m.getName().equals(previousNamespace.get())) {
@@ -110,46 +113,46 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	}
 	
 	public static ArrayList<String> getWorkspaces(List<String> subfolders) {
-        ArrayList<String> firstElements = new ArrayList<>();
+		ArrayList<String> firstElements = new ArrayList<>();
 
-        for (String subfolder : subfolders) {
-            String[] parts = subfolder.split("\\.");
-            if (parts.length > 0) {
-            	if(!firstElements.contains(parts[0]))
-            		firstElements.add(parts[0]);
-            }
-        }
+		for (String subfolder : subfolders) {
+			String[] parts = subfolder.split("\\.");
+			if (parts.length > 0) {
+				if(!firstElements.contains(parts[0]))
+					firstElements.add(parts[0]);
+			}
+		}
 
-        return firstElements;
-    }
+		return firstElements;
+	}
 	
-	public  HashMap<String, String> generateWorkspaces(List<String> workspaces, String version) {
-        HashMap<String, String> result = new HashMap<>();
+	public HashMap<String, String> generateWorkspaces(List<String> workspaces, String version) {
+		HashMap<String, String> result = new HashMap<>();
 
-        for (String workspace : workspaces) {
-            result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
-            result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
+		for (String workspace : workspaces) {
+			result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
+			result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
 
-        }	
+		}	
 
-        return result;
-    }
+		return result;
+	}
 	
 	public HashMap<String, String> generateInits(List<String> subfolders) {
-        HashMap<String, String> result = new HashMap<>();
+		HashMap<String, String> result = new HashMap<>();
 
-        for (String subfolder : subfolders) {
-            String[] parts = subfolder.split("\\.");
-            for (int i = 1; i < parts.length; i++) {
-                StringBuilder keyBuilder = new StringBuilder(parts[0]);
-                for (int j = 1; j <= i; j++) {
-                    keyBuilder.append(".").append(parts[j]);
-                }
-                String key = utils.toPyFileName(keyBuilder.toString(), "__init__");
-                result.putIfAbsent(key, " ");
-            }
-        }
+		for (String subfolder : subfolders) {
+			String[] parts = subfolder.split("\\.");
+			for (int i = 1; i < parts.length; i++) {
+				StringBuilder keyBuilder = new StringBuilder(parts[0]);
+				for (int j = 1; j <= i; j++) {
+					keyBuilder.append(".").append(parts[j]);
+				}
+				String key = utils.toPyFileName(keyBuilder.toString(), "__init__");
+				result.putIfAbsent(key, " ");
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 }

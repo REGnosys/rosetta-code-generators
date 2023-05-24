@@ -7,14 +7,10 @@ COPY src/main/resources/runtime/rosetta_runtime-1.0.0-py3-none-any.whl rosetta_r
 COPY target/python/src /opt/isda-cdm-code-gen/python/src
 COPY target/python/pyproject.toml /opt/isda-cdm-code-gen/python/pyproject.toml
 COPY test/serialization/ /opt/isda-cdm-code-gen/test/serialization
-RUN python3 -m pip install pylint
-RUN python3 -m pip install pycodestyle
-RUN python3 -m pip install yapf
 RUN python3 -m pip install pydantic
 RUN python3 -m pip install jsonpickle
 RUN python3 -m pip install rosetta_runtime-1.0.0-py3-none-any.whl
 WORKDIR /opt/isda-cdm-code-gen/python
-RUN python3 -m pip install .
 RUN python3 -m pip wheel --no-deps --only-binary :all: .
 # setup test environment
 RUN python3 -m pip install python_cdm-3.3.2-py3-none-any.whl
@@ -28,3 +24,5 @@ CMD python3 -m pytest
 # docker run -t python-gen
 # to run interactively
 # docker run -i -t python-gen bash              
+# mimick codefresh
+# docker run --rm -it --mount type=bind,source=/Users/dls/projects/common-domain-model/rosetta-source/target/classes/cdm/python,target=/mnt --entrypoint sh python:3.10-alpine

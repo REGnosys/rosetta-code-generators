@@ -29,6 +29,7 @@ import com.regnosys.rosetta.rosetta.expression.RosettaExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaFeatureCall
 import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
 import com.regnosys.rosetta.rosetta.expression.RosettaIntLiteral
+import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaReference
@@ -39,11 +40,6 @@ import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
-import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
-import com.regnosys.rosetta.rosetta.TypeCall
-import com.regnosys.rosetta.rosetta.RosettaTypeAlias
-import com.regnosys.rosetta.types.builtin.RRecordType
-import com.regnosys.rosetta.types.builtin.RBasicType
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collection
@@ -372,7 +368,8 @@ class PythonModelObjectGenerator {
 					
 			}
 			RosettaExistsExpression: {
-				val argument = expr.argument as RosettaExpression
+//				val argument = expr.argument as RosettaExpression
+				val argument = expr.argument
 				'''((«generateExpression(argument, iflvl)») is not None)'''
 			}
 			RosettaBinaryOperation: {

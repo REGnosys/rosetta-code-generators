@@ -45,18 +45,12 @@ class PythonFilesGeneratorTest {
 		var reader     = new MavenXpp3Reader();
 		var model      = reader.read(new FileReader("pom.xml"))
 		val properties = model.getProperties();
-        if (properties.getProperty ('codebase.name') === null) {
-        	throw new Exception ('Initialization failure: code base name not specified')
-        } 
-        if (properties.getProperty ('codebase.version') === null) {
-        	throw new Exception ('Initialization failure: code base version not specified')
-        }
-        if (properties.getProperty ('codebase.outputpath') === null) {
-        	throw new Exception ('Initialization failure: code base output path specified')
-        }
-        if (properties.getProperty ('rosetta.source.path') === null) {
-        	throw new Exception('Initialization failure: Rosetta path not specified')
-        }
+		if (properties.getProperty ('codebase.outputpath') === null) {
+			throw new Exception ('Initialization failure: code base output path specified')
+		}
+		if (properties.getProperty ('rosetta.source.path') === null) {
+			throw new Exception('Initialization failure: Rosetta path not specified')
+		}
 		return properties
 	}
 	def private void deleteFolderContent(String folderPath) {
@@ -85,15 +79,68 @@ class PythonFilesGeneratorTest {
 		LOGGER.info("Write Files ... wrote: {}", generatedFiles.size ())
 		
 	}
+	@Test
+	def void generatePython () {
+		// the process 
+		// 1) get directory information from the ini file
+		// 2) loop through each of the rosetta dsl definitions
+		//	- delete any existing directory and create a new one
+		//	- produce new python from the dsl definitions 
+		// 3) produce toml and version files
+		// 4) loop through the directory structure to add an empty __init__.py file
+		
+		try {
+			val properties    = getProperties ()
+			val rosettaSource = properties.get ('rosetta.source.path') as String
+			// Create a resource set and add the common Rosetta models to it
+			LOGGER.info("generatePython ... get resource set")
+			val resourceSet = resourceSetProvider.get	
+			parse(ModelHelper.commonTestTypes, resourceSet)
+			resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
+			resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
+		
+			// Get a list of all the DSL input files and filter out non-Rosetta files
+			val rosettaFilePaths = newArrayList (new File(rosettaSource))
+				.map[listFiles[name.endsWith("rosetta")].toList]
+				.flatten
+				.map[toPath]
+			val resources 		 = rosettaFilePaths
+				.map[resourceSet.getResource(URI.createURI(it.toString()), true)]
+				.toList
+			val rosettaModels 	 = resources
+				.flatMap[contents.filter(RosettaModel)]
+				.toList
+			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
+			val generatedFiles = generator.afterGenerate(rosettaModels)
+			val outputPath     = properties.getProperty ('codebase.outputpath')
+			deleteFolderContent(outputPath)
+			writeFiles(outputPath, generatedFiles)
+			LOGGER.info ("generatePython ... done")
+		} 
+		catch (IOException ioE) {
+			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
+			println (ioE.toString ())
+			ioE.printStackTrace ()
+		}
+		catch (ClassCastException ccE) {
+			println ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
+			println (ccE.toString ())
+			ccE.printStackTrace ()
+		}
+		catch(Exception e) {
+			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
+			println (e.toString ())
+			e.printStackTrace ()
+		}
+	}
 
-	 
 	/*
-	 * Test which is used as main to create all the Python Generation
+	 * Test which is used as main to generate Python after parsing the Rosetta files twice
 	 */
 	@Test
 	@Disabled("Test which ingests rosetta twice to pass")
 	
-	def void generatePython() {
+	def void generatePythonWithTwoPasses() {
 		// the process 
 		// 1) get directory information from the ini file
 		// 2) loop through each of the rosetta dsl definitions
@@ -113,8 +160,8 @@ class PythonFilesGeneratorTest {
 			resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
 			// Get a list of all the DSL input files and filter out non-Rosetta files
 			val rosettaSource = properties.get ('rosetta.source.path') as String
-			val dirs          = new File(rosettaSource)
-			val files         = dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sort()
+			val dirs  = new File(rosettaSource)
+			val files = dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sort()
 			files.forEach [file |
 				LOGGER.info("generatePython ... reading file: {}", file.name)
 				val content = new String(Files.readAllBytes(file.toPath))
@@ -129,7 +176,7 @@ class PythonFilesGeneratorTest {
 			val rosettaModels  = resourceSet.resources.filter[it.getURI().toString.contains("def_")].map[contents.filter(RosettaModel)].flatten.toList
 			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
 			val generatedFiles = generator.afterGenerate(rosettaModels)
-			val outputPath     = properties.getProperty ('codebase.outputpath') as String
+			val outputPath     = properties.getProperty ('codebase.outputpath')
 			deleteFolderContent(outputPath)
 			writeFiles(outputPath, generatedFiles)
 			LOGGER.info ("generatePython ... done")
@@ -150,6 +197,9 @@ class PythonFilesGeneratorTest {
 	
 	@Test
 	@Disabled("Test which ingests rosetta once - should fail")
+	/*
+	 * Test which is used as main to generate Python after parsing the Rosetta files once - should fail
+	 */
 	
 	def void generatePythonOneParse() {
 		// the process 
@@ -172,8 +222,8 @@ class PythonFilesGeneratorTest {
 		
 			// Get a list of all the DSL input files and filter out non-Rosetta files
 			val rosettaSource = properties.get ('rosetta.source.path') as String
-			val dirs          = new File(rosettaSource)
-			val files         = dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sort()
+			val dirs  = new File(rosettaSource)
+			val files = dirs.listFiles.filter[it.getName.endsWith(".rosetta")].sort()
 			files.forEach [file |
 				LOGGER.info ("generatePythonOneParse ... reading file: {}", file.name)
 					val content = new String(Files.readAllBytes(file.toPath))
@@ -183,7 +233,7 @@ class PythonFilesGeneratorTest {
 			val rosettaModels  = resourceSet.resources.map[contents.filter(RosettaModel)].flatten.toList
 			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
 			val generatedFiles = generator.afterGenerate(rosettaModels)
-			val outputPath     = properties.getProperty ('codebase.outputpath') as String
+			val outputPath     = properties.getProperty ('codebase.outputpath')
 			deleteFolderContent(outputPath)
 			writeFiles(outputPath, generatedFiles)
 			LOGGER.info ("generatePython ... done")
@@ -205,58 +255,4 @@ class PythonFilesGeneratorTest {
 		}
 	}
 	
-	@Test
-	def void generatePythonOneParseWithGetResource () {
-		// the process 
-		// 1) get directory information from the ini file
-		// 2) loop through each of the rosetta dsl definitions
-		//	- delete any existing directory and create a new one
-		//	- produce new python from the dsl definitions 
-		// 3) produce toml and version files
-		// 4) loop through the directory structure to add an empty __init__.py file
-		
-		try {
-			val properties = getProperties ()
-			val rosettaSource = properties.get ('rosetta.source.path') as String
-			// Create a resource set and add the common Rosetta models to it
-			LOGGER.info("generatePython ... get resource set")
-			val resourceSet = resourceSetProvider.get	
-			parse(ModelHelper.commonTestTypes, resourceSet)
-			resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
-			resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
-		
-			// Get a list of all the DSL input files and filter out non-Rosetta files
-			val rosettaFilePaths = newArrayList (new File(rosettaSource))
-				.map[listFiles[name.endsWith("rosetta")].toList]
-				.flatten
-				.map[toPath]
-			val resources 		 = rosettaFilePaths
-				.map[resourceSet.getResource(URI.createURI(it.toString()), true)]
-				.toList
-			val rosettaModels 	 = resources
-				.flatMap[contents.filter(RosettaModel)]
-				.toList
-			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
-			val generatedFiles = generator.afterGenerate(rosettaModels)
-			val outputPath     = properties.getProperty ('codebase.outputpath') as String
-			deleteFolderContent(outputPath)
-			writeFiles(outputPath, generatedFiles)
-			LOGGER.info ("generatePython ... done")
-		} 
-		catch (IOException ioE) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
-			println (ioE.toString ())
-			ioE.printStackTrace ()
-		}
-		catch (ClassCastException ccE) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
-			println (ccE.toString ())
-			ccE.printStackTrace ()
-		}
-		catch(Exception e) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
-			println (e.toString ())
-			e.printStackTrace ()
-		}
-	}
 }

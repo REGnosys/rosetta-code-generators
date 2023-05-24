@@ -29,16 +29,12 @@ $PYEXE -m venv --clear .pyenv || processError
 source .pyenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
-$PYEXE -m pip install pylint || processError
-$PYEXE -m pip install pycodestyle || processError
-$PYEXE -m pip install yapf || processError
 $PYEXE -m pip install pydantic || processError
 $PYEXE -m pip install jsonpickle || processError
 $PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-1.0.0-py3-none-any.whl || processError
 
 rm -rf build
 rm python_cdm-3.3.2-py3-none-any.whl
-$PYEXE -m pip install . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 rm -rf build
 echo ""
