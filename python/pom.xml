@@ -5,41 +5,24 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.regnosys.rosetta.code-generators</groupId>
 		<artifactId>parent</artifactId>
+		<groupId>com.regnosys.rosetta.code-generators</groupId>
 		<version>0.0.0.master</version>
-	 </parent>
+	</parent>
 	
 	<artifactId>python</artifactId>
 	<name>code-gen-python</name>
+
 	<description>Generators to create python for rosetta</description>
 	<properties>
+		<!-- used by PythonFilesGeneratorTest::generatePython to generate python from a rosetta source --> 
 		<rosetta.source.path>build/resources/rosetta/cdm_3.3.2</rosetta.source.path>
 		<codebase.outputpath>target/python</codebase.outputpath>
 	</properties>
 	<profiles>
 		<profile>
-			<!-- For demonstration purposes only, this is how the code generation step is hooked into the CDM build -->
-			<!-- Run from parent working directory, i.e. rosetta-code-generators, specifying this profile, i.e. -->
-			<!-- mvn clean install -P example-generate -DskipTests -->
 			<id>example-generate</id>
 			<build>
-<!--
-				<resources>
- 					<resource>
-						<directory>src/main/resources</directory>
-						<excludes>
-							<exclude>rosetta/**</exclude>
-							<exclude>build/**</exclude>
-							<exclude>*.sh</exclude>
-							<exclude>*.rosetta</exclude>
-							<exclude>*.json</exclude>
-							<exclude>*.toml</exclude>
-						</excludes>
-						<filtering>false</filtering>
-					</resource>
-				</resources>
-				-->			
 				<plugins>
 					<plugin>
 						<groupId>org.eclipse.xtext</groupId>
