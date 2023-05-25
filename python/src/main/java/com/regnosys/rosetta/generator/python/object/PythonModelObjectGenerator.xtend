@@ -368,8 +368,7 @@ class PythonModelObjectGenerator {
 					
 			}
 			RosettaExistsExpression: {
-//				val argument = expr.argument as RosettaExpression
-				val argument = expr.argument
+				val argument = expr.argument as RosettaExpression
 				'''((«generateExpression(argument, iflvl)») is not None)'''
 			}
 			RosettaBinaryOperation: {

@@ -47,14 +47,10 @@ Thumbs.db
 # Python
 __pycache__
 .pyenv/
-build/.pyenv/
 .pytest_cache/
 # project
 target/python/build/
-test/testenv
 python_cdm.egg-info
 build/testenv
 build/runtime/build
 rosetta_runtime.egg-info
-build/python/pyproject.toml
-build/python/src/cdm/version.py

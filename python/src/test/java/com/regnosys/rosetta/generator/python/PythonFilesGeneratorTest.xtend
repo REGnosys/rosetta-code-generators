@@ -80,6 +80,7 @@ class PythonFilesGeneratorTest {
 		
 	}
 	@Test
+	@Disabled("Generates Python from Rosetta CDM as pointed to in the file system")
 	def void generatePython () {
 		// the process 
 		// 1) get directory information from the ini file
