@@ -42,27 +42,6 @@ class RosettaObjectInheritanceGeneratorTest {
 		'''.generatePython
 
 		
-		val expected=
-		'''
-		class A(BaseDataClass):
-		    aa: Optional[str] = Field(None, description="")
-		
-		class B(A):
-		    bb: Optional[str] = Field(None, description="")
-		
-		class C(B):
-		    cc: Optional[str] = Field(None, description="")
-		
-		class D(C):
-		    dd: Optional[str] = Field(None, description="")
-		
-		
-		A.update_forward_refs()
-		B.update_forward_refs()
-		C.update_forward_refs()
-		D.update_forward_refs()
-		'''
-		
 		val expectedA=
 		'''
 		class A(BaseDataClass):

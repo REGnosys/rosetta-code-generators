@@ -13,9 +13,7 @@ import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
-import com.regnosys.rosetta.rosetta.expression.FilterOperation
 import com.regnosys.rosetta.rosetta.expression.ListLiteral
-import com.regnosys.rosetta.rosetta.expression.ListOperation
 import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.Necessity
 import com.regnosys.rosetta.rosetta.expression.OneOfOperation
@@ -35,7 +33,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
 import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaStringLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
-import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -420,41 +417,6 @@ class PythonModelObjectGenerator {
 				'''[«FOR arg : expr.elements SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»]'''
 			}
 			
-			FilterOperation : {
-				/* 
-				var body = generateExpression(expr.body, iflvl)
-				val reciver = generateExpression(expr.receiver, iflvl)
-				return '''return(filter(«body», «reciver»))'''
-				* 
-				*/
-			}
-			SumOperation : {
-				/* 
-				return '''sum(«generateExpression(expr.getReceiver(), iflvl)»)'''
-				* 
-				*/
-			}
-			
-						
-			ListOperation : {
-				/* 
-				val operation = expr.getOperationKind()
-				switch(operation) {
-					case ListOperationKind.SUM: {
-						return '''sum(«generateExpression(expr.getReceiver(), iflvl)»)'''
-					}
-					case ListOperationKind.FILTER:{
-						var body = generateExpression(expr.body, iflvl)
-						val reciver = generateExpression(expr.receiver, iflvl)
-						return '''return(filter(«body», «reciver»))'''
-					}
-						
-					default:
-						throw new UnsupportedOperationException("Unsupported ListOperation")						
-				} 
-				 * 
-			*/			  
-			}
 		  
 			default:
 				throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
@@ -480,11 +442,7 @@ class PythonModelObjectGenerator {
 			Attribute: {
 				'''self.«s.name»'''
 			}
-			//ShortcutDeclaration: {
-				 //'''«call.name»(«aliasCallArgs(call)»).«IF exprHelper.usesOutputParameter(call.expression)»build()«ELSE»get()«ENDIF»'''
-			//}
-			
-			//RosettaEnumeration: '''«call».«call.name»'''
+
 			RosettaEnumeration: {
 				'''«s.name»'''
 			}

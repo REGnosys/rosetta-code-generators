@@ -32,23 +32,6 @@ class RosettaExtensionsTest {
 		'''.generatePython
 
 		
-		val expected=
-		'''
-		class Baz(BaseDataClass):
-		    pass
-		
-		class Bar(Baz):
-		    pass
-		
-		class Foo(Bar):
-		    pass
-		
-		
-		Baz.update_forward_refs()
-		Bar.update_forward_refs()
-		Foo.update_forward_refs()
-		'''
-		
 		val expectedBaz=
 		'''
 		class Baz(BaseDataClass):
