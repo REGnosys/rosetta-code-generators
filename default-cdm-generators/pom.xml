@@ -111,6 +111,11 @@
 			<artifactId>kotlin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta.code-generators</groupId>
+			<artifactId>python</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

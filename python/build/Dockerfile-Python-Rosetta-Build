@@ -1,0 +1,20 @@
+FROM python:3.10-alpine
+RUN apk add --no-cache bash
+RUN apk update
+RUN mkdir /opt/isda-cdm-code-gen 
+WORKDIR /opt/isda-cdm-code-gen 
+COPY src/main/resources/runtime/rosetta_runtime-1.0.0-py3-none-any.whl rosetta_runtime-1.0.0-py3-none-any.whl
+COPY target/python/src /opt/isda-cdm-code-gen/python/src
+COPY target/python/pyproject.toml /opt/isda-cdm-code-gen/python/pyproject.toml
+RUN python3 -m pip install pydantic
+RUN python3 -m pip install jsonpickle
+RUN python3 -m pip install rosetta_runtime-1.0.0-py3-none-any.whl
+WORKDIR /opt/isda-cdm-code-gen/python
+RUN python3 -m pip wheel --no-deps --only-binary :all: .
+
+# to build (from root directory)
+# docker build -f ./build/Dockerfile-Python-Rosetta-Build -t python-gen .
+# to run interactively
+# docker run -i -t python-gen bash              
+# to mimic codefresh
+# docker run --rm -it --mount type=bind,source=/Users/dls/projects/common-domain-model/rosetta-source/target/classes/cdm/python,target=/mnt --entrypoint sh python:3.10-alpine
