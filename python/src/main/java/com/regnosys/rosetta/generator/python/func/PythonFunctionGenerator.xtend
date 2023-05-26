@@ -9,8 +9,12 @@ import java.util.Map
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 class  PythonFunctionGenerator {
+	
+	static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
 	
 	@Inject
 	PythonModelGeneratorUtil utils;
@@ -29,7 +33,7 @@ class  PythonFunctionGenerator {
 						utils.createImports(func.name) + funcs)
 				}
 				catch(Exception ex){
-					println ('PythonFilesGeneratorTest::Error in... ' + func.name )	
+					LOGGER.error("Exception occurred generating func {}", func.name, ex)	
 				}		
 			} 
 		}
