@@ -47,15 +47,15 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 		return Collections.emptyMap();
 	}
 	private String getVersion (String version) {
-		if (version == null || version.equals ("${project.version}")) {
-			version = "0.0.0";
-		} else {
+		String cleanVersion = "0.0.0";
+		if (version != null && !version.equals ("${project.version}")) {
 			String[] versionParts = version.split ("\\.");
 			if (versionParts.length > 2) {
-				version = versionParts[0] + "." + versionParts[1] + "." + versionParts[2];
+				String thirdPart = versionParts[2].replaceAll("[^\\d]","");
+				cleanVersion = versionParts[0] + "." + versionParts[1] + "." + thirdPart; 
 			}
 		}
-		return version;
+		return cleanVersion;
 	}
 	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
