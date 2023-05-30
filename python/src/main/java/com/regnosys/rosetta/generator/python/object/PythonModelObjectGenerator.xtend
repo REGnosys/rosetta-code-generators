@@ -134,23 +134,11 @@ class PythonModelObjectGenerator {
 	
 	def boolean checkBasicType(ExpandedAttribute attr) {
 		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool', 'number')
-		if(attr!==null){	
-			if(attr.toRawType!==null)
-				return types.contains(attr.toRawType.toString())	
-			else
-				return false
-		}
-		else{
-			return false
-		} 
-	 }
+		return (attr !== null && attr.toRawType!==null) ? types.contains(attr.toRawType.toString()) : false
+	 } 
 	 def boolean checkBasicType(String attr) {
 		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time', 'bool','number')
-		try {
-			return types.contains(attr)
-		} catch (Exception ex) {
-			return false
-		}
+		return types.contains (attr) 
 	 }
 
 	/**
@@ -518,12 +506,10 @@ class PythonModelObjectGenerator {
 		var att = ""
 		if (attribute.sup > 1 || attribute.unbound) {
 			att += "List[" + toPythonType(c, attribute) + "]"
-		}
-		else {
+		} else {
  			if (attribute.inf == 0) { // edge case (0..0) will come here
 				att += "Optional[" + toPythonType(c, attribute) + "]"	
-			}
-			else {
+			} else {
 				att += toPythonType(c, attribute) // cardinality (1..1)
 			}
 		}
@@ -535,25 +521,16 @@ class PythonModelObjectGenerator {
 			field_default = '[]'
 		}
 
-  		var attrName = ""
- 		if (attribute.name == "global")
-			attrName = "_global"
-		else
-			attrName = attribute.name
-
-		var need_card_check = true;
-		if ((attribute.inf == 0 && attribute.sup == 1) || 
-			(attribute.inf == 1 && attribute.sup == 1) ||
-			(attribute.inf == 0 && attribute.unbound)
-		) {
-			need_card_check = false;
-		}
-  		var sup_str = attribute.sup.toString();
-		if (attribute.unbound) {
-			sup_str = 'None';
-		}
+		var attrName        = (attribute.name == "global") ? "_global" : attribute.name
+		var need_card_check = !((attribute.inf == 0 && attribute.sup == 1) || 
+							    (attribute.inf == 1 && attribute.sup == 1) ||
+							    (attribute.inf == 0 && attribute.unbound))
+							   
+							   
+		var sup_str         = (attribute.unbound) ? 'None' : attribute.sup.toString()
+ 		val attrDesc        = (attribute.definition === null) ? '' : attribute.definition.replace('/n', ' ')
 		'''
-		«attrName»: «att» = Field(«field_default», description="«attribute.definition»")
+		«attrName»: «att» = Field(«field_default», description="«attrDesc»")
 		«IF attribute.definition !== null»
 		"""
 		«attribute.definition»
