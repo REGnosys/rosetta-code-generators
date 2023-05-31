@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>parent</artifactId>
+		<groupId>com.regnosys.rosetta.code-generators</groupId>
+		<version>0.0.0.master</version>
+	</parent>
+	
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>python</artifactId>
+	
+	<name>code-gen-python</name>
+
+	<description>Generators to create python for rosetta</description>
+	<properties>
+		<!-- used by PythonFilesGeneratorTest::generatePython to generate python from a rosetta source --> 
+		<rosetta.source.path>build/resources/rosetta/cdm_3.3.2</rosetta.source.path>
+		<codebase.outputpath>target/python</codebase.outputpath>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.xtend</groupId>
+				<artifactId>xtend-maven-plugin</artifactId>
+				<executions>
+					<execution>
+					<id>Generate xtend sources</id>
+					<phase>generate-sources</phase>
+					<goals>
+						<goal>compile</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>${project.basedir}/target/main/generated/xtend</outputDirectory>
+					</configuration>
+					</execution>
+					
+					<execution>
+					<id>Generate xtend test sources</id>
+					<phase>generate-test-sources</phase>
+					<goals>
+						<goal>testCompile</goal>
+					</goals>
+					<configuration>
+						<testOutputDirectory>${project.basedir}/target/test/generated/xtend</testOutputDirectory>
+					</configuration>
+					</execution>
+					
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys</groupId>
+			<artifactId>rosetta-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>org.eclipse.xtend</groupId>
+			<artifactId>org.eclipse.xtend.lib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.tests</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta.code-generators</groupId>
+			<artifactId>test-helper</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest</artifactId>
+				<scope>test</scope>
+			</dependency>
+		<!-- extra dependencies -->
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-model</artifactId>
+			<version>3.3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+	</dependencies>
+</project>

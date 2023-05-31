@@ -72,6 +72,7 @@
 		<module>golang</module>
 	  	<module>kotlin</module>
 		<module>c-sharp</module>
+		<module>python</module>
 	</modules>
 
 	<dependencyManagement>
