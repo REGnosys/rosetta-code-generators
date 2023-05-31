@@ -19,6 +19,29 @@ class PythonObjectGenerationTest {
 	@Inject extension ModelHelper
 	@Inject PythonCodeGenerator generator;
 
+	@Test
+	def void testMultilineAttributeDefinition() {
+		val python = '''
+			type Foo:
+				attr int (1..1) 
+					<"This is a
+					multiline
+					definition">
+			'''.generatePython
+		
+		val expected=
+		'''
+		class Foo(BaseDataClass):
+		  attr: int = Field(..., description="This is a multiline definition")
+		  """
+		  This is a
+		      multiline
+		      definition
+		  """
+		'''
+		
+		assertTrue(python.get("src/com/rosetta/test/model/Foo.py").toString.contains(expected))
+	}
 	
 	@Test
 	def void testConditions1() {
@@ -458,11 +481,10 @@ class PythonObjectGenerationTest {
 		  """
 		  Defines the number to be multiplied by the amount to derive a total quantity.
 		  """
-		  multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
+		  multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
 		  """
 		  Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
 		  """
-
 		'''
 		assertTrue(python.toString.contains(expectedMeasureBase))
 		assertTrue(python.toString.contains(expectedUnitType))

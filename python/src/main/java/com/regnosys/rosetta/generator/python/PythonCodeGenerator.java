@@ -107,7 +107,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 				result.putAll(enumGenerator.generate(rosettaEnums, version));
 				result.putAll(funcGenerator.generate(rosettaFunctions, version));
 			});
-		
+
 		List<String> workspaces = getWorkspaces(subfolders);
 		result.putAll(generateWorkspaces(workspaces, version));
 		result.putAll(generateInits(subfolders));

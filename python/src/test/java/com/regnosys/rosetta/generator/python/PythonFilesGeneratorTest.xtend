@@ -76,8 +76,7 @@ class PythonFilesGeneratorTest {
 			Files.createDirectories(outputPath.parent);
 			Files.write(outputPath, fileContents.getBytes(StandardCharsets.UTF_8))		
 		}
-		LOGGER.info("Write Files ... wrote: {}", generatedFiles.size ())
-		
+		LOGGER.info("Write Files ... wrote: {} to {}", generatedFiles.size (), pythonTgtPath)
 	}
 	@Test
 	@Disabled("Generates Python from Rosetta CDM as pointed to in the file system")
