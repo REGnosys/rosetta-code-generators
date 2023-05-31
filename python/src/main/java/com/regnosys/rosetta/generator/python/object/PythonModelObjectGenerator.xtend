@@ -525,10 +525,8 @@ class PythonModelObjectGenerator {
 		var need_card_check = !((attribute.inf == 0 && attribute.sup == 1) || 
 							    (attribute.inf == 1 && attribute.sup == 1) ||
 							    (attribute.inf == 0 && attribute.unbound))
-							   
-							   
 		var sup_str         = (attribute.unbound) ? 'None' : attribute.sup.toString()
- 		val attrDesc        = (attribute.definition === null) ? '' : attribute.definition.replace('/n', ' ')
+		val attrDesc        = (attribute.definition === null) ? '' : attribute.definition.replaceAll('\\s+', ' ')
 		'''
 		«attrName»: «att» = Field(«field_default», description="«attrDesc»")
 		«IF attribute.definition !== null»
