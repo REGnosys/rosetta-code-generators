@@ -46,6 +46,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 	public Map<String, ? extends CharSequence> generate(RootPackage arg0, List<RosettaRootElement> arg1, String arg2) {
 		return Collections.emptyMap();
 	}
+
 	private String getVersion (String version) {
 		String cleanVersion = "0.0.0";
 		if (version != null && !version.equals ("${project.version}")) {
@@ -57,11 +58,12 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 		}
 		return cleanVersion;
 	}
+
 	@Override
 	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
 		// get version in format "#.#.#" defaulting to "0.0.0" if none provided
 		final String version = getVersion(models.stream().map(m -> m.getVersion()).findFirst().orElse(null));
-		LOGGER.info("Generating python for model {} from DSL version {}", "CDM", version);
+		LOGGER.info("Generating python for model version {}", version);
 
 		Map<String, CharSequence> result = new HashMap<>();
 		AtomicReference<String> previousNamespace = new AtomicReference<>("");
@@ -99,12 +101,13 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 				
 				if(!m.getName().equals(previousNamespace.get())) {
 					previousNamespace.set(m.getName());
-					LOGGER.info("processing module: {}", m.getName());
+					LOGGER.debug("processing module: {}", m.getName());
 				}
 				result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version, models));
 				result.putAll(enumGenerator.generate(rosettaEnums, version));
 				result.putAll(funcGenerator.generate(rosettaFunctions, version));
 			});
+
 		List<String> workspaces = getWorkspaces(subfolders);
 		result.putAll(generateWorkspaces(workspaces, version));
 		result.putAll(generateInits(subfolders));
