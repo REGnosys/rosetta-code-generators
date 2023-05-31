@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpCodeInfo;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 
 public abstract class CSharpCodeGenerator extends AbstractExternalGenerator implements CSharpCodeInfo {
@@ -31,11 +32,9 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 		super("CSharp" + version);
 		enumGenerator = new CSharpEnumGenerator();
 	}
-
+	
 	@Override
-	public Map<String, ? extends CharSequence> afterGenerate(Collection<? extends RosettaModel> models) {
-		String version = models.stream().map(m -> m.getVersion()).findFirst().orElse("No version");
-
+	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set, Collection<? extends RosettaModel> models, String version) {
 		Map<String, CharSequence> result = new HashMap<>();
 
 		List<Data> rosettaClasses = models.stream().flatMap(m -> m.getElements().stream())
@@ -54,8 +53,7 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 	}
 
 	@Override
-	public Map<String, ? extends CharSequence> generate(RootPackage root, List<RosettaRootElement> elements,
-			String version) {
+	public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
 		return Collections.emptyMap();
 	}
 }

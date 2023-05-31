@@ -161,7 +161,9 @@ class CSharpMetaFieldGenerator {
                     [JsonConstructor]
                     public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, IEnumerable<Key> location)
                     {
-                        «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
+                        «FOR t : typesDistinct»
+                        	«t.name.toFirstUpper» = «t.name.toFirstLower»;
+                        «ENDFOR»
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
                         Location = location;

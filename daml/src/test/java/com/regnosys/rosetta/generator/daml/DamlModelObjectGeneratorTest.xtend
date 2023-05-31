@@ -9,7 +9,6 @@ import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
 import com.regnosys.rosetta.tests.util.ModelHelper
-import com.regnosys.rosetta.rosetta.RosettaModel
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -394,8 +393,9 @@ class DamlModelObjectGeneratorTest {
 	
 	
 	def generateDaml(CharSequence model) {
-		val eResource = model.parseRosettaWithNoErrors.eResource
+		val m = model.parseRosettaWithNoErrors
+		val resourceSet = m.eResource.resourceSet
 		
-		generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
+		generator.afterAllGenerate(resourceSet, #{m}, "test")
 	}
 }

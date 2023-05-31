@@ -11,7 +11,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.io.Resources;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.generators.test.TestHelper;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 
@@ -22,9 +21,8 @@ class SampleCodeGeneratorTest {
 		TestHelper<SampleCodeGenerator> helper = new TestHelper<>(new SampleCodeGenerator());
 		URL textModel = Resources.getResource("rosetta/sample.rosetta");
 		RosettaModel model = helper.parse(textModel);
-		RootPackage packages = new RootPackage(model);
 		SampleCodeGenerator generator = helper.getExternalGenerator();
-		Map<String, ? extends CharSequence> files = generator.generate(packages, model.getElements(),
+		Map<String, ? extends CharSequence> files = generator.generate(model.eResource(), model,
 				model.getVersion());
 		assertGenerated(Resources.getResource("sample/Foo.groovy.sample"), files);
 	}

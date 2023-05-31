@@ -8,7 +8,6 @@ import com.regnosys.rosetta.tests.util.ModelHelper
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.List
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.junit.jupiter.api.Disabled
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.^extension.ExtendWith
 
 import static org.junit.jupiter.api.Assertions.*
 import com.regnosys.rosetta.generators.test.TestUtil
+import org.eclipse.emf.ecore.resource.ResourceSet
 
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
@@ -99,8 +99,9 @@ class CSharpModelObjectGeneratorTest {
         c_sharp.contains('''using «namespace»;''')
     }
 
-    def void generateCdm(CSharpCodeGenerator generator, String subDirectory, List<RosettaModel> rosettaModels) {
-        val generatedFiles = generator.afterGenerate(rosettaModels)
+    def void generateCdm(CSharpCodeGenerator generator, String subDirectory, ResourceSet resourceSet) {
+    	val rosettaModels = resourceSet.resources.map[contents.head as RosettaModel]
+        val generatedFiles = generator.afterAllGenerate(resourceSet, rosettaModels, "0.0.0")
 
         val dir =  Paths.get("./target/classes/" + subDirectory + "/Cdm")
 
@@ -2374,8 +2375,8 @@ class CSharpModelObjectGeneratorTest {
     }
     
     def generateCSharp(CharSequence model) {
-        val eResource = model.parseRosettaWithNoErrors.eResource
-
-        generator8.afterGenerate(eResource.contents.filter(RosettaModel).toList)
+    	val m = model.parseRosettaWithNoErrors
+        val resourceSet = m.eResource.resourceSet
+        generator8.afterAllGenerate(resourceSet, #{m}, "test")
     }
 }
