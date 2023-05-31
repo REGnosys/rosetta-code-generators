@@ -19,8 +19,6 @@
 .vscode/
 # Eclipse
 .settings/
-.classpath
-.project
 .metadata/
 # Unit test reports
 TEST*.xml

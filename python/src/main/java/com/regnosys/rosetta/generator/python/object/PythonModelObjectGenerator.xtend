@@ -39,7 +39,6 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.Collection
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -127,14 +126,13 @@ class PythonModelObjectGenerator {
 	def Map<String, ? extends CharSequence> generate(
 		Iterable<Data> rosettaClasses,
 		Iterable<RosettaMetaType> metaTypes,
-		String version,
-		Collection<? extends RosettaModel> models
+		String version
 	) {
 		val result = new HashMap
 
 		for (Data type : rosettaClasses) {
 			val model = type.eContainer as RosettaModel
-			val classes = type.generateClasses(version, models).replaceTabsWithSpaces
+			val classes = type.generateClasses(version).replaceTabsWithSpaces
 			result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
 		}
 
@@ -158,7 +156,7 @@ class PythonModelObjectGenerator {
 	 */
 	// TODO remove Date implementation in beginning
 	// TODO removed one-of condition due to limitations after instantiation of objects
-	private def generateClasses(Data rosettaClass, String version, Collection<? extends RosettaModel> models) {
+	private def generateClasses(Data rosettaClass, String version) {
 		var List<String> enumImports = newArrayList
 		var List<String> dataImports = newArrayList
 		var List<String> classDefinitions = newArrayList

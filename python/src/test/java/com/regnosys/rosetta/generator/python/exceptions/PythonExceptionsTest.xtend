@@ -78,12 +78,18 @@ class PythonExceptionsTest {
     
 
 	def generatePython(CharSequence model) {
-    	val eResource = model.parseRosetta.eResource
-    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
-    	
+		val m = model.parseRosetta
+        val resourceSet = m.eResource.resourceSet
+        val version = m.version
+        
+        val result = newHashMap
+        result.putAll(generator.beforeAllGenerate(resourceSet, #{m}, version))
+        result.putAll(generator.beforeGenerate(m.eResource, m, version))
+        result.putAll(generator.generate(m.eResource, m, version))
+        result.putAll(generator.afterGenerate(m.eResource, m, version))
+        result.putAll(generator.afterAllGenerate(resourceSet, #{m}, version))
+        
+        result
     }
-	
-
-
 	
 }

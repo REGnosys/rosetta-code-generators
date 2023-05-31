@@ -469,8 +469,7 @@ class ModelObjectGeneratorTest {
                     optional choice intValue1, intValue2
 
                 condition SecondOneOrTwo: <"FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].">
-                    if B exists
-                    then aValue->a0 exists
+                    aValue->a0 exists
                         or (intValue2 exists and intValue1 exists and intValue1 exists)
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
@@ -509,13 +508,7 @@ class ModelObjectGeneratorTest {
             """
             FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
             """
-            def _then_fn0():
-              return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
-            
-            def _else_fn0():
-              return True
-            
-            return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
+            return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
         '''
         assertTrue(python.toString.contains(expectedA))
         assertTrue(python.toString.contains(expectedB))
@@ -845,8 +838,7 @@ class ModelObjectGeneratorTest {
                 condition ReqOneOrTwo: <"Choice rule to represent an FpML choice construct.">
                     required choice intValue1, intValue2
                 condition SecondOneOrTwo: <"FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].">
-                    if B exists
-                    then aValue->a0 exists
+                    aValue->a0 exists
                         or (intValue2 exists and intValue1 exists and intValue1 exists)
                         or (intValue2 exists and intValue1 exists and intValue1 is absent)
             '''.generatePython
@@ -893,13 +885,7 @@ class ModelObjectGeneratorTest {
             """
             FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
             """
-            def _then_fn0():
-              return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
-            
-            def _else_fn0():
-              return True
-            
-            return if_cond_fn(((B) is not None), _then_fn0, _else_fn0)
+            return ((((self.aValue.a0) is not None) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is not None))) or ((((self.intValue2) is not None) and ((self.intValue1) is not None)) and ((self.intValue1) is None)))
         '''
         assertTrue(python.toString.contains(expectedA))
         assertTrue(python.toString.contains(expectedB))
@@ -908,8 +894,17 @@ class ModelObjectGeneratorTest {
 	
 	
 	def generatePython(CharSequence model) {
-    	val eResource = model.parseRosetta.eResource
-    	generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
-    	
+		val m = model.parseRosettaWithNoErrors
+        val resourceSet = m.eResource.resourceSet
+        val version = m.version
+        
+        val result = newHashMap
+        result.putAll(generator.beforeAllGenerate(resourceSet, #{m}, version))
+        result.putAll(generator.beforeGenerate(m.eResource, m, version))
+        result.putAll(generator.generate(m.eResource, m, version))
+        result.putAll(generator.afterGenerate(m.eResource, m, version))
+        result.putAll(generator.afterAllGenerate(resourceSet, #{m}, version))
+        
+        result
     }
 }
