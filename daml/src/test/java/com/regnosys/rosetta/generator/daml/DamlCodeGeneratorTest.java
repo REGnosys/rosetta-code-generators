@@ -2,7 +2,7 @@ package com.regnosys.rosetta.generator.daml;
 
 import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
@@ -35,14 +35,14 @@ public class DamlCodeGeneratorTest {
 		URL textModel = Resources.getResource("rosetta/sample.rosetta");
 		RosettaModel model = helper.parse(textModel);
 		DamlCodeGenerator generator = helper.getExternalGenerator();
-		Map<String, ? extends CharSequence> files = generator.afterGenerate(Collections.singletonList(model));
+		Map<String, ? extends CharSequence> files = generator.afterAllGenerate(model.eResource().getResourceSet(), Collections.singletonList(model), "test");
 		assertGenerated(Resources.getResource("sample/Classes.daml"), files);
 	}
 
 	private void assertGenerated(URL source, Map<String, ? extends CharSequence> map) {
 		assertEquals(6, map.entrySet().size());
 		assertTrue(map.containsKey("Org/Isda/Cdm/Classes.daml"));
-		assertThat(map.get("Org/Isda/Cdm/Classes.daml").toString(), equalToIgnoringWhiteSpace(toStringContents(source)));
+		assertThat(map.get("Org/Isda/Cdm/Classes.daml").toString(), equalToCompressingWhiteSpace(toStringContents(source)));
 	}
 
 	class CodeGenModule extends AbstractModule {

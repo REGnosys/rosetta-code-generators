@@ -7,7 +7,6 @@ import com.google.inject.Inject
 import com.google.inject.Provider
 import org.eclipse.xtext.resource.XtextResourceSet
 import com.regnosys.rosetta.tests.util.ModelHelper
-import com.regnosys.rosetta.rosetta.RosettaModel
 
 class TestUtil {
 	
@@ -29,8 +28,6 @@ class TestUtil {
 	def parseAllRosettaFiles(List<String> srcPaths) {
         srcPaths.rosettaFileContents.parseRosetta
 
-        return resourceSetProvider.get.resources
-        	.flatMap[contents.filter(RosettaModel)]
-        	.toList
+        return resourceSetProvider.get
 	}
 }

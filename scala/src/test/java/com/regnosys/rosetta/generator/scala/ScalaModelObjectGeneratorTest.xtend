@@ -33,9 +33,10 @@ class ScalaModelObjectGeneratorTest {
             '../../rosetta-dsl/rosetta-lang/src/main/resources/model'            
         ]
 
-		val rosettaModels = dirs.parseAllRosettaFiles
+		val resourceSet = dirs.parseAllRosettaFiles
+		val models = resourceSet.resources.map[contents.head as RosettaModel]
 		
-		val generatedFiles = generator.afterGenerate(rosettaModels)
+		val generatedFiles = generator.afterAllGenerate(resourceSet, models, "test")
 
 		val cdmDir = Files.createDirectories(Paths.get("cdm"))
 		generatedFiles.forEach [ fileName, contents |
@@ -435,8 +436,9 @@ class ScalaModelObjectGeneratorTest {
     }
 
 	def generateScala(CharSequence model) {
-		val eResource = model.parseRosettaWithNoErrors.eResource
-
-		generator.afterGenerate(eResource.contents.filter(RosettaModel).toList)
+		val m = model.parseRosettaWithNoErrors
+		val resourceSet = m.eResource.resourceSet
+		
+		generator.afterAllGenerate(resourceSet, #{m}, "test")
 	}
 }

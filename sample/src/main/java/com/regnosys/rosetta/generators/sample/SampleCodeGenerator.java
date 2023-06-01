@@ -1,14 +1,15 @@
 package com.regnosys.rosetta.generators.sample;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.resource.Resource;
+
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
-import com.regnosys.rosetta.rosetta.RosettaRootElement;
+import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.simple.Attribute;
 import com.regnosys.rosetta.rosetta.simple.Data;
+import com.regnosys.rosetta.utils.DottedPath;
 
 /**
  * Implementation of a code generator for the Groovy language
@@ -26,20 +27,20 @@ public class SampleCodeGenerator extends AbstractExternalGenerator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, ? extends CharSequence> generate(RootPackage root, List<RosettaRootElement> elements,
-			String version) {
-		Map<String, ? extends CharSequence> generatedFiles = elements.stream().filter(Data.class::isInstance)
+	public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
+		DottedPath namespace = DottedPath.splitOnDots(model.getName());
+		Map<String, ? extends CharSequence> generatedFiles = model.getElements().stream().filter(Data.class::isInstance)
 				.map(Data.class::cast).collect(
-						Collectors.toMap(e -> generateFilename(root, e), e -> generateClass(root, e, version)));
+						Collectors.toMap(e -> generateFilename(namespace, e), e -> generateClass(namespace, e, version)));
 
 		return generatedFiles;
 	}
 
-	private String generateFilename(RootPackage root, Data clazz) {
+	private String generateFilename(DottedPath root, Data clazz) {
 		return root.withForwardSlashes() + "/" + clazz.getName() + ".sample";
 	}
 
-	private String generateClass(RootPackage root, Data clazz, String version) {
+	private String generateClass(DottedPath root, Data clazz, String version) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("package ").append(root);
 		sb.append(GeneratorUtils.LINE_SEPARATOR).append(GeneratorUtils.LINE_SEPARATOR);
