@@ -16,3 +16,6 @@ kotlin/cdm/**
 kotlin/src/main/generated-sources
 kotlin/src/main/xtend-gen
 kotlin-feature.code-workspace
+META-INF/MANIFEST.MF
+META-INF/maven/com.regnosys.rosetta.code-generators/python/pom.properties
+META-INF/maven/com.regnosys.rosetta.code-generators/python/pom.xml
