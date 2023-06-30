@@ -9,74 +9,88 @@
 	See the Apache License Version 2.0 for the specific language governing permissions
 	and limitations there under. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.regnosys.rosetta.code-generators</groupId>
-	<artifactId>parent</artifactId>
-	<packaging>pom</packaging>
-	<version>0.0.0.master</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.regnosys.rosetta.code-generators</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.0.master</version>
 
-	<name>code-gen-parent</name>
-	<description>A place to write code generators for the rosetta DSL</description>
+    <name>code-gen-parent</name>
+    <description>A place to write code generators for the rosetta DSL</description>
 
-	<url>https://github.com/REGnosys/rosetta-code-generators</url>
-	<organization>
-		<name>REGnosys Limited</name>
-		<url>https://www.regnosys.com/</url>
-	</organization>
+    <url>https://github.com/REGnosys/rosetta-code-generators</url>
+    <organization>
+        <name>REGnosys Limited</name>
+        <url>https://www.regnosys.com/</url>
+    </organization>
 
-	<profiles>
-		<profile>
-			<id>regnosys</id>
-			<properties>
-				<rosetta.dsl.version>7.10.0</rosetta.dsl.version>
-				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
-			</properties>
-		</profile>
-		<profile>
-			<id>external</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<rosetta.dsl.version>7.10.0</rosetta.dsl.version>
-				<rosetta.bundle.version>6.7.0</rosetta.bundle.version>
-			</properties>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>regnosys</id>
+            <properties>
+                <rosetta.dsl.version>7.10.0</rosetta.dsl.version>
+                <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>external</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <rosetta.dsl.version>7.10.0</rosetta.dsl.version>
+                <rosetta.bundle.version>6.7.3</rosetta.bundle.version>
+            </properties>
+        </profile>
+    </profiles>
 
-	<properties>
+    <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.enforced.version>[11,12)</java.enforced.version>
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
-        
-   		<apache.commons.lang.version>3.12.0</apache.commons.lang.version>
+
+        <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <apache.commons.text.version>1.10.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
+        <guava.version>32.0.1-jre</guava.version>
 
         <xtext.version>2.27.0</xtext.version>
-        
+
+        <!-- test -->
         <junit.version>5.9.1</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
+
+        <!-- plugin -->
+        <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
     </properties>
 
-	<modules>
-		<module>test-helper</module>
-		<module>sample</module>
-		<module>daml</module>
-		<module>default-cdm-generators</module>
-		<module>typescript</module>
-		<module>scala</module>
-		<module>golang</module>
-	  	<module>kotlin</module>
-		<module>c-sharp</module>
-		<module>python</module>
-	</modules>
+    <modules>
+        <module>test-helper</module>
+        <module>sample</module>
+        <module>daml</module>
+        <module>default-cdm-generators</module>
+        <module>typescript</module>
+        <module>scala</module>
+        <module>golang</module>
+        <module>kotlin</module>
+        <module>c-sharp</module>
+        <module>python</module>
+    </modules>
 
-	<dependencyManagement>
-		<dependencies>
+    <dependencyManagement>
+        <dependencies>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -127,27 +141,32 @@
                 <version>${xtext.version}</version>
             </dependency>
             <!-- xtext END -->
-			<dependency>
-				<groupId>com.regnosys.rosetta</groupId>
-				<artifactId>com.regnosys.rosetta</artifactId>
-				<version>${rosetta.dsl.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>com.regnosys.rosetta</groupId>
+                <artifactId>com.regnosys.rosetta</artifactId>
+                <version>${rosetta.dsl.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.regnosys.rosetta</groupId>
                 <artifactId>com.regnosys.rosetta.tests</artifactId>
                 <version>${rosetta.dsl.version}</version>
                 <scope>test</scope>
             </dependency>
-			<dependency>
-				<groupId>com.regnosys.rosetta</groupId>
-				<artifactId>com.regnosys.rosetta.lib</artifactId>
-				<version>${rosetta.dsl.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.regnosys</groupId>
-				<artifactId>rosetta-common</artifactId>
-				<version>${rosetta.bundle.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>com.regnosys.rosetta</groupId>
+                <artifactId>com.regnosys.rosetta.lib</artifactId>
+                <version>${rosetta.dsl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.regnosys</groupId>
+                <artifactId>rosetta-common</artifactId>
+                <version>${rosetta.bundle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -155,92 +174,112 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest</artifactId>
-				<version>${hamcrest.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons-io.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-	<build>
-		<!-- lock down plugins versions to avoid using maven defaults -->
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.1</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>2.5.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.1.0</version>
-					<configuration>
-						<configLocation>checkstyle/checkstyle.xml</configLocation>
-					</configuration>
-				</plugin>
+    <build>
+        <!-- lock down plugins versions to avoid using maven defaults -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven-install-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <configLocation>checkstyle/checkstyle.xml</configLocation>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.eclipse.xtend</groupId>
                     <artifactId>xtend-maven-plugin</artifactId>
                     <version>${xtext.version}</version>
                 </plugin>
-			</plugins>
-		</pluginManagement>
+            </plugins>
+        </pluginManagement>
 
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>checkstyle</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<logViolationsToConsole>false</logViolationsToConsole>
-							<failOnViolation>false</failOnViolation>
-							<violationSeverity>warning</violationSeverity>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>${java.enforced.version}</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <logViolationsToConsole>false</logViolationsToConsole>
+                            <failOnViolation>false</failOnViolation>
+                            <violationSeverity>warning</violationSeverity>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 </project>
