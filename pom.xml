@@ -27,25 +27,25 @@
         <url>https://www.regnosys.com/</url>
     </organization>
 
-	<profiles>
-		<profile>
-			<id>regnosys</id>
-			<properties>
-				<rosetta.dsl.version>8.1.0</rosetta.dsl.version>
-				<rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
-			</properties>
-		</profile>
-		<profile>
-			<id>external</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<rosetta.dsl.version>8.1.0</rosetta.dsl.version>
-				<rosetta.bundle.version>7.0.0</rosetta.bundle.version>
-			</properties>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>regnosys</id>
+            <properties>
+                <rosetta.dsl.version>8.1.0</rosetta.dsl.version>
+                <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>external</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <rosetta.dsl.version>8.1.0</rosetta.dsl.version>
+                <rosetta.bundle.version>7.0.0</rosetta.bundle.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -150,7 +150,7 @@
                 </exclusions>
             </dependency>
             <!-- xtext END -->
-            
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
