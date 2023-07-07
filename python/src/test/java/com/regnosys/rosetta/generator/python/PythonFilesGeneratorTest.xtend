@@ -60,10 +60,10 @@ class PythonFilesGeneratorTest {
 			try {
 				FileUtils.cleanDirectory(folder)
 			} catch (IOException e) {
-				System.err.println("Failed to delete folder content: " + e.message)
+				LOGGER.error ("Failed to delete folder content: " + e.message)
 			}
 		} else {
-			System.err.println("Folder does not exist or is not a directory")
+			LOGGER.error (folderPath + " does not exist or is not a directory")
 		}
 	}
 	
@@ -128,18 +128,18 @@ class PythonFilesGeneratorTest {
 			LOGGER.info ("generatePython ... done")
 		} 
 		catch (IOException ioE) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
-			println (ioE.toString ())
+			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
+			LOGGER.error (ioE.toString ())
 			ioE.printStackTrace ()
 		}
 		catch (ClassCastException ccE) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
-			println (ccE.toString ())
+			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
+			LOGGER.error (ccE.toString ())
 			ccE.printStackTrace ()
 		}
 		catch(Exception e) {
-			println ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
-			println (e.toString ())
+			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
+			LOGGER.error (e.toString ())
 			e.printStackTrace ()
 		}
 	}	
