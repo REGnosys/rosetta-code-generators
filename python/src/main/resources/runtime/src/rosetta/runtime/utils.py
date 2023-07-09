@@ -9,10 +9,10 @@ from pydantic.generics import GenericModel
 from pydantic import Extra
 
 
-
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
-           'all_elements', 'contains', 'disjoint', 'join',
+           'all_elements', 'contains', 'disjoint', 'join', 
+           '_resolve_rosetta_attr',
            'check_cardinality',
            'AttributeWithMeta',
            'AttributeWithAddress',
@@ -26,13 +26,27 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
 def if_cond(ifexpr, thenexpr: str, elseexpr: str, obj: object):
     '''A helper to return the value of the ternary operator.'''
     expr = thenexpr if ifexpr else elseexpr
-    return eval(expr, globals(), {'self': obj})
+    return eval(expr, globals(), {'self': obj})  # pylint: disable=eval-used
 
 
 def if_cond_fn(ifexpr, thenexpr: Callable, elseexpr: Callable) -> Any:
     '''A helper to return the value of the ternary operator (functional version).'''
     expr = thenexpr if ifexpr else elseexpr
     return expr()
+
+
+def _resolve_rosetta_attr(obj, attrib: str):
+    if obj is None:
+        return None
+    if isinstance(obj, list):
+        return [item for elem in obj for item in _to_list(_resolve_rosetta_attr(elem, attrib))]
+    return getattr(obj, attrib)
+
+
+def _to_list(obj):
+    if isinstance(obj, (list, tuple)):
+        return obj
+    return (obj,)
 
 
 class Multiprop(list):
