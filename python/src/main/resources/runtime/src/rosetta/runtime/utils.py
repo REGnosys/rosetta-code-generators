@@ -35,12 +35,15 @@ def if_cond_fn(ifexpr, thenexpr: Callable, elseexpr: Callable) -> Any:
     return expr()
 
 
-def _resolve_rosetta_attr(obj, attrib: str):
+def _resolve_rosetta_attr(obj: Any|None, attrib: str) -> Any|list[Any]|None:
     if obj is None:
         return None
-    if isinstance(obj, list):
-        return [item for elem in obj for item in _to_list(_resolve_rosetta_attr(elem, attrib))]
-    return getattr(obj, attrib)
+    if isinstance(obj, (list, tuple)):
+        res = [item for elem in obj
+               for item in _to_list(_resolve_rosetta_attr(elem, attrib))
+               if item is not None]
+        return res if res else None
+    return getattr(obj, attrib, None)
 
 
 def _to_list(obj):
