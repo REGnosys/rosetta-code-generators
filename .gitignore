@@ -19,3 +19,6 @@ kotlin-feature.code-workspace
 META-INF/MANIFEST.MF
 META-INF/maven/com.regnosys.rosetta.code-generators/python/pom.properties
 META-INF/maven/com.regnosys.rosetta.code-generators/python/pom.xml
+python/src/test/resources/python/build/
+python/src/test/resources/python/src/
+python/src/test/resources/python/src/pyproject.toml

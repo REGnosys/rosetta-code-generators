@@ -21,11 +21,13 @@ import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
+import static org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 import org.junit.jupiter.api.Disabled
 import java.util.Collection
 import org.slf4j.LoggerFactory
+
 /*
  * Test Principal
  */
@@ -38,6 +40,7 @@ class PythonFilesGeneratorTest {
 	@Inject PythonCodeGenerator generator
 
 	@Inject extension ParseHelper<RosettaModel>
+    @Inject extension ModelHelper
 	
 	@Inject
 	Provider<XtextResourceSet> resourceSetProvider;
@@ -80,6 +83,7 @@ class PythonFilesGeneratorTest {
 		LOGGER.info("Write Files ... wrote: {}", generatedFiles.size ())
 		
 	}
+	@Disabled("File Generation")
 	@Test
 	def void generatePython () {
 		// the process 
@@ -114,13 +118,9 @@ class PythonFilesGeneratorTest {
 			LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
 			val generatedFiles = newHashMap
 			for (model : rosettaModels) {
-				val version = model.version
-				LOGGER.info ("generatePython ... processing model: {}", model.name)					
-				generatedFiles.putAll(generator.beforeAllGenerate(resourceSet, #{model}, version))
-				generatedFiles.putAll(generator.beforeGenerate(model.eResource, model, version))
-				generatedFiles.putAll(generator.generate(model.eResource, model, version))
-				generatedFiles.putAll(generator.afterGenerate(model.eResource, model, version))
-				generatedFiles.putAll(generator.afterAllGenerate(resourceSet, #{model}, version))
+				LOGGER.info ("generatePython ... processing model: {}", model.name)
+				val python = generatePython (model, resourceSet);
+				generatedFiles.putAll (python)
 			}
 			val outputPath     = properties.getProperty ('codebase.outputpath')
 			deleteFolderContent(outputPath)
@@ -142,5 +142,41 @@ class PythonFilesGeneratorTest {
 			LOGGER.error (e.toString ())
 			e.printStackTrace ()
 		}
-	}	
+	}
+	
+	def generatePython(RosettaModel m, org.eclipse.emf.ecore.resource.ResourceSet resourceSet) {
+        val version = m.version
+        val result = newHashMap
+        result.putAll(generator.beforeAllGenerate(resourceSet, #{m}, version))
+        result.putAll(generator.beforeGenerate(m.eResource, m, version))
+        result.putAll(generator.generate(m.eResource, m, version))
+        result.putAll(generator.afterGenerate(m.eResource, m, version))
+        result.putAll(generator.afterAllGenerate(resourceSet, #{m}, version))
+        result
+    }
+
+	@Test 
+	def void generateClassMemberAccessOperatorPython () {
+		val model = '''
+			type Foo:
+				one int (1..1)
+				two int (0..1)
+				three int (0..*)
+''' as CharSequence
+		try {
+			val properties = getProperties ()
+			val filePath   = properties.get ('generated.python.path') as String
+			LOGGER.info ('generateClassMemberAccessOperatorPython ... generating files to: ' + filePath)
+			if (filePath != null) {
+				val m 			 = model.parseRosettaWithNoErrors
+				val resourceSet  = m.eResource.resourceSet
+				val results 	 = generatePython (m, resourceSet)
+				writeFiles (filePath, results)
+			}
+		} catch (Throwable t) {
+			LOGGER.info ('generateClassMemberAccessOperatorPython ... processing failed with an Exception')
+			LOGGER.info (t.toString ())
+			t.printStackTrace ()
+		}
+	}
 }
