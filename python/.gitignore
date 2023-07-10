@@ -52,3 +52,7 @@ python_cdm.egg-info
 build/testenv
 build/runtime/build
 rosetta_runtime.egg-info
+src/main/resources/functions
+src/test/resources/python/build/
+src/test/resources/python/src/
+src/test/resources/python/pyproject.toml
