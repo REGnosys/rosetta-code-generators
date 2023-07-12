@@ -32,7 +32,7 @@
             <id>regnosys</id>
             <properties>
                 <rosetta.dsl.version>0.0.0.model-config-annotation</rosetta.dsl.version>
-                <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.model-config-annotation</rosetta.bundle.version>
             </properties>
         </profile>
         <profile>
@@ -42,7 +42,7 @@
             </activation>
             <properties>
                 <rosetta.dsl.version>0.0.0.model-config-annotation</rosetta.dsl.version>
-                <rosetta.bundle.version>7.1.0</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.model-config-annotation</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
