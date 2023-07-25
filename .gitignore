@@ -16,3 +16,4 @@ kotlin/cdm/**
 kotlin/src/main/generated-sources
 kotlin/src/main/xtend-gen
 kotlin-feature.code-workspace
+python/src/test/resources/python/build/lib/com/rosetta/test/model/

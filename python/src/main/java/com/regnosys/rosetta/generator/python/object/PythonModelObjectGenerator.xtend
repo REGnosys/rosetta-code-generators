@@ -323,7 +323,6 @@ class PythonModelObjectGenerator {
 				var right = switch (expr.feature) {
 					Attribute: {
 						expr.feature.name
-
 					}
 					RosettaMetaType: {
 						expr.feature.name
@@ -353,9 +352,8 @@ class PythonModelObjectGenerator {
 				if (receiver === null) {
 					'''«right»'''
 				} else {
-					'''«receiver».«right»'''
+					'''_resolve_rosetta_attr(«receiver», "«right»")'''
 				}
-
 			}
 			RosettaExistsExpression: {
 				val argument = expr.argument as RosettaExpression
@@ -427,7 +425,7 @@ class PythonModelObjectGenerator {
 				'''«s.name»'''
 			}
 			Attribute: {
-				'''self.«s.name»'''
+				'''_resolve_rosetta_attr(self, "«s.name»")'''
 			}
 			RosettaEnumeration: {
 				'''«s.name»'''
