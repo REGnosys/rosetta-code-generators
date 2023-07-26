@@ -20,4 +20,4 @@ $PYEXE -m pip install "pydantic==1.*"
 $PYEXE -m pip install pytest
 $PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-1.0.0-py3-none-any.whl 
 pytest
-rm -rf testenv .pytest_cache __pycache__
+rm -rf testenv .pytest_cache __pycache__ build
