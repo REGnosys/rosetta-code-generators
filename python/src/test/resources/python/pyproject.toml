@@ -3,12 +3,12 @@ requires = ["setuptools>=62.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "rosetta_runtime"
-version = "1.0.0"
+name = "python-cdm"
+version = "0.0.0"
 requires-python = ">= 3.10"
 dependencies = [
-   "pydantic<2.0.0"
+   "pydantic<2.0.0",
+   "rosetta.runtime==1.0.0"
 ]
-
 [tool.setuptools.packages.find]
 where = ["src"]
