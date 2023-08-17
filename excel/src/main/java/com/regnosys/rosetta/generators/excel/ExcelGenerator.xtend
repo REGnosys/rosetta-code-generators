@@ -24,7 +24,7 @@ import java.util.Base64
 class ExcelGenerator extends AbstractExternalGenerator {
 
 	new() {
-		super("Csv")
+		super("Excel")
 	}
 
 	override generate(Resource resource, RosettaModel model, String version) {
