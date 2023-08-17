@@ -7,6 +7,7 @@ import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.io.ByteArrayOutputStream
+import java.util.Base64
 import java.util.Collection
 import java.util.List
 import org.apache.poi.ss.usermodel.Row
@@ -16,10 +17,6 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.emf.ecore.resource.ResourceSet
 import org.eclipse.xtext.nodemodel.ILeafNode
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
-import java.nio.file.Files
-import java.nio.file.Paths
-import org.apache.poi.openxml4j.opc.ZipPackage
-import java.util.Base64
 
 class ExcelGenerator extends AbstractExternalGenerator {
 
