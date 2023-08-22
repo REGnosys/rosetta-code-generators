@@ -9,7 +9,7 @@ import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.simple.Attribute;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.utils.DottedPath;
+import com.rosetta.util.DottedPath;
 
 /**
  * Implementation of a code generator for the Groovy language
