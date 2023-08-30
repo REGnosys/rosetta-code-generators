@@ -26,11 +26,11 @@ import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
-import com.regnosys.rosetta.utils.DottedPath
 import com.regnosys.rosetta.rosetta.TypeCall
 import com.regnosys.rosetta.rosetta.RosettaTypeAlias
 import com.regnosys.rosetta.types.builtin.RRecordType
 import com.regnosys.rosetta.types.builtin.RBasicType
+import com.rosetta.util.DottedPath
 
 class CSharpNames {
 
