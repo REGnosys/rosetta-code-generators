@@ -42,7 +42,7 @@
             </activation>
             <properties>
                 <rosetta.dsl.version>8.5.2</rosetta.dsl.version>
-                <rosetta.bundle.version>7.8.0</rosetta.bundle.version>
+                <rosetta.bundle.version>7.8.1</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
@@ -89,8 +89,6 @@
         <module>kotlin</module>
         <module>c-sharp</module>
         <module>python</module>
-        <module>csv</module>
-        <module>excel</module>
     </modules>
 
     <dependencyManagement>
@@ -308,6 +306,7 @@
                                 </requireJavaVersion>
                                 <bannedDependencies>
                                     <excludes>
+                                        <exclude>log4j:log4j</exclude>
                                         <exclude>org.apache.logging.log4j:log4j-core</exclude>
                                         <exclude>ch.qos.reload4j:reload4j</exclude>
                                     </excludes>
