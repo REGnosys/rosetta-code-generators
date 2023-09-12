@@ -31,8 +31,8 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>8.5.1</rosetta.dsl.version>
-                <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
+                <rosetta.dsl.version>8.5.2</rosetta.dsl.version>
+                <rosetta.bundle.version>7.8.0</rosetta.bundle.version>
             </properties>
         </profile>
         <profile>
@@ -41,8 +41,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>8.5.1</rosetta.dsl.version>
-                <rosetta.bundle.version>7.7.1</rosetta.bundle.version>
+                <rosetta.dsl.version>8.5.2</rosetta.dsl.version>
+                <rosetta.bundle.version>7.8.0</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
@@ -308,7 +308,6 @@
                                 </requireJavaVersion>
                                 <bannedDependencies>
                                     <excludes>
-                                        <exclude>log4j:log4j</exclude>
                                         <exclude>org.apache.logging.log4j:log4j-core</exclude>
                                         <exclude>ch.qos.reload4j:reload4j</exclude>
                                     </excludes>
