@@ -23,12 +23,12 @@ steps:
   Build:
     title: Maven build
     fail_fast: true
-    image: regnosys-docker-registry.jfrog.io/regnosys/mvn-docker-build:java-11
+    image: regnosys-docker-registry.jfrog.io/regnosys/rosetta-products-deps:java-17
     working_directory: ./
     commands:
       - rm -rf /codefresh/volume/.m2/com/regnosys
       - mvn -s /settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
-      - mvn -s /settings.xml versions:update-property -Dproperty=regnosys.common.version -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true
+      - mvn -s /settings.xml versions:set-property -Dproperty=regnosys.bundle.version -DnewVersion=[${{RELEASE_NAME}}]
       - mvn -U -s /settings.xml -Pregnosys clean deploy
 
   TagRepo:
