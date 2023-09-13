@@ -8,6 +8,45 @@
 	<artifactId>excel</artifactId>
 	<name>excel</name>
 
+	 <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.xtend</groupId>
+                <artifactId>xtend-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Generate xtend sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/target/main/generated/xtend</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>Generate xtend test sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <testOutputDirectory>${project.basedir}/target/test/generated/xtend</testOutputDirectory>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+        </plugins>
+    </build>
+    
 	<dependencies>
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>
@@ -66,14 +105,4 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>
