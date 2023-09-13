@@ -82,7 +82,7 @@ class CsvGeneratorTest {
 			"attribute","com.rosetta.test.model","TestType1","attribute2","number","(0..*)","Test attribute 2"
 			"data type","com.rosetta.test.model","TestType2","","","","Test type description."
 			"attribute","com.rosetta.test.model","TestType2","testType1","TestType1","(1..*)","Test  	    Type attribute 'quote1' 'quote2' "
-			"attribute","com.rosetta.test.model","TestType2","noDef","int","(0..1)",""''',
+			"attribute","com.rosetta.test.model","TestType2","noDef","int","(0..1)",""'''.toString,
 			enumString
 		)
 
@@ -105,7 +105,7 @@ class CsvGeneratorTest {
 			"Category","Namespace","Enum Name","Enum Value","Definition"
 			"enum","com.rosetta.test.model","TestEnum","","Test enum description."
 			"enum value","com.rosetta.test.model","TestEnum","TestEnumValue1","Test enum value 1"
-			"enum value","com.rosetta.test.model","TestEnum","TestEnumValue2","Test enum value 2"''',
+			"enum value","com.rosetta.test.model","TestEnum","TestEnumValue2","Test enum value 2"'''.toString,
 			enumString
 		)
 
