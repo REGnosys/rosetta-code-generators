@@ -47,6 +47,12 @@
 			<groupId>org.jxls</groupId>
 			<artifactId>jxls-jexcel</artifactId>
 			<version>1.0.9</version>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.dhatim</groupId>
