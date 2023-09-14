@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.regnosys.rosetta.code-generators</groupId>
+    <artifactId>parent</artifactId>
+    <version>0.0.0.master</version>
+  </parent>
+  <artifactId>csv</artifactId>
+  
+  	<name>code-gen-csv</name>
+	<description>A Rosetta code generator to create a simple CSV Export</description>
+   
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.xtend</groupId>
+                <artifactId>xtend-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Generate xtend sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/target/main/generated/xtend</outputDirectory>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>Generate xtend test sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <testOutputDirectory>${project.basedir}/target/test/generated/xtend</testOutputDirectory>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+        </plugins>
+    </build>
+    
+  	<dependencies>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta.lib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta.code-generators</groupId>
+			<artifactId>test-helper</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+</project>

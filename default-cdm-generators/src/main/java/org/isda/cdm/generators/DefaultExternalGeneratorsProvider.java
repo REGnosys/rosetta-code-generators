@@ -16,6 +16,8 @@ import com.regnosys.rosetta.generator.kotlin.KotlinCodeGenerator;
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator;
 import com.regnosys.rosetta.generator.scala.ScalaCodeGenerator;
 import com.regnosys.rosetta.generator.typescript.TypescriptCodeGenerator;
+import com.regnosys.rosetta.generators.csv.CsvGenerator;
+import com.regnosys.rosetta.generators.excel.ExcelGenerator;
 
 public final class DefaultExternalGeneratorsProvider implements Provider<ExternalGenerators> {
 
@@ -42,6 +44,12 @@ public final class DefaultExternalGeneratorsProvider implements Provider<Externa
 	
 	@Inject
 	private PythonCodeGenerator pythonGenerator;
+	
+	@Inject
+	private ExcelGenerator excelGenerator;
+	
+	@Inject
+	private CsvGenerator csvGenerator;
 
 	@Override
 	public ExternalGenerators get() {
@@ -51,7 +59,7 @@ public final class DefaultExternalGeneratorsProvider implements Provider<Externa
 	private final class DefaultGenerators implements ExternalGenerators {
 
 		private List<ExternalGenerator> gens = Arrays.asList(damlGenerator, scalaGenerator, typescriptGenerator,
-				golangGenerator, csharp8Generator, csharp9Generator, kotlinGenerator, pythonGenerator);
+				golangGenerator, csharp8Generator, csharp9Generator, kotlinGenerator, pythonGenerator, csvGenerator, excelGenerator);
 
 		@Override
 		public Iterator<ExternalGenerator> iterator() {
