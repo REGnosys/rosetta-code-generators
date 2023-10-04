@@ -29,12 +29,12 @@ class CsvGenerator extends AbstractExternalGenerator {
 		val dataLines = newArrayList;
 		dataLines.add(dataTypeHeader)
 		models.flatMap[elements].filter(Data).flatMap[dataAndAttributes].forEach[dataLines.add(it)]
-		res.put("types.csv", dataLines.join('\n'))
+		res.put("types.csv", dataLines.join(System.lineSeparator))
 
 		val enumLines = newArrayList;
 		enumLines.add(enumHeader)
 		models.flatMap[elements].filter(RosettaEnumeration).flatMap[enumAndValues].forEach[enumLines.add(it)]
-		res.put("enums.csv", enumLines.join('\n'))
+		res.put("enums.csv", enumLines.join(System.lineSeparator))
 
 		return res
 	}
