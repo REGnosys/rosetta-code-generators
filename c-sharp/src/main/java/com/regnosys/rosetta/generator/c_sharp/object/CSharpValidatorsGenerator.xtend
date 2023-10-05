@@ -36,7 +36,7 @@ class CSharpValidatorsGenerator {
     }
 
     private def StringConcatenationClient validatorClassBody(Data data) {
-        val attributes = data.getExpandedAttributes(false)
+        val attributes = data.getExpandedAttributes
         '''
         public class «data.name»Validator : AbstractValidator<«data.name»>
         {
