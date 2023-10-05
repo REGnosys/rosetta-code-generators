@@ -67,16 +67,16 @@ class DamlModelObjectGeneratorTest {
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo = Foo with 
-			  booleanAttr : Bool
-			  calculationAttr : Text
-			  dateAttr : Date
-			  eventTypeAttr : Text
+			  stringAttr : Text
 			  intAttr : Int
 			  numberAttr : Decimal
-			  productTypeAttr : Text
-			  stringAttr : Text
+			  booleanAttr : Bool
+			  dateAttr : Date
 			  timeAttr : Text
 			  zonedDateTimeAttr : ZonedDateTime
+			  calculationAttr : Text
+			  productTypeAttr : Text
+			  eventTypeAttr : Text
 			    deriving (Eq, Ord, Show)
 			
 	    '''.toString, fileContent)
@@ -205,8 +205,8 @@ class DamlModelObjectGeneratorTest {
 		
 		assertTrue(classes.contains('''
 		data Bar = Bar with 
-		  meta : Optional MetaFields
 		  stringAttr : Text
+		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)'''))
 
 		assertTrue(classes.contains('''
