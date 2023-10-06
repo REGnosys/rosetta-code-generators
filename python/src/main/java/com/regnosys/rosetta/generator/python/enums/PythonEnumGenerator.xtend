@@ -17,8 +17,6 @@ class PythonEnumGenerator {
 	@Inject
 	PythonModelGeneratorUtil utils;
 	
-	
-
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
 		val result = new HashMap
 		for(RosettaEnumeration enum: rosettaEnums){
@@ -50,7 +48,6 @@ class PythonEnumGenerator {
 	}
 
 	private def generateEnums(RosettaEnumeration enume, String version){
-
 		'''
 		«val allEnumValues = allEnumsValues(enume)»
 		class «enume.name»(Enum):
@@ -63,7 +60,7 @@ class PythonEnumGenerator {
 			pass
 			«ELSE»
 			«FOR value: allEnumValues SEPARATOR ''»
-			«value.name» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
+			«formatEnumValue(value.name)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
 			«IF value.definition!==null»
 			"""
 			«value.definition»
@@ -72,5 +69,11 @@ class PythonEnumGenerator {
 			«ENDFOR»
 			«ENDIF»
 		'''
+	}
+	
+	private def formatEnumValue(String value) {
+		if (PythonModelGeneratorUtil.isReservedWord(value))
+			return "_" + value
+		return value
 	}
 }

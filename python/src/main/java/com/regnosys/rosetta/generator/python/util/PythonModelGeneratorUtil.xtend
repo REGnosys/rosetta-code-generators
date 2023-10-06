@@ -3,8 +3,49 @@ package com.regnosys.rosetta.generator.python.util
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Arrays
+import java.util.List
 
 class PythonModelGeneratorUtil {
+    
+    static List<String> RESERVED_WORDS = Arrays.asList(
+    	"False",
+        "None",
+        "True",
+        "and",
+        "as",
+        "assert",
+        "break",
+        "class",
+        "continue",
+        "def",
+        "del",
+        "elif",
+        "else",
+        "except",
+        "finally",
+        "for",
+        "form",
+        "global",
+        "if",
+        "import",
+        "in",
+        "is",
+        "lambda",
+        "nonlocal",
+        "not",
+        "or",
+        "pass",
+        "raise",
+        "return",
+        "try",
+        "while",
+        "with",
+        "yield");
+    
+    static def isReservedWord(String s) {
+    	RESERVED_WORDS.contains(s)
+    }
     
     static def fileComment(String version) 
 		'''
