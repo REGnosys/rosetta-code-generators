@@ -18,9 +18,6 @@ class PythonEnumGeneratorTest {
 	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
-
-	
 	
 	@Test
     def void shouldGenerateEnums() {
@@ -38,15 +35,15 @@ class PythonEnumGeneratorTest {
           """
           Test enum description.
           """
-          TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
+          TestEnumValue1 = "TestEnumValue1"
           """
           Test enum value 1
           """
-          TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
+          TestEnumValue2 = "TestEnumValue2"
           """
           Test enum value 2
           """
-          TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
+          TestEnumValue3 = "TestEnumValue3"
           """
           Test enum value 3
           """

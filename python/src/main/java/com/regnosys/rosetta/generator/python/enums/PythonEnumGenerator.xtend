@@ -63,7 +63,7 @@ class PythonEnumGenerator {
 			pass
 			«ELSE»
 			«FOR value: allEnumValues SEPARATOR ''»
-			«EnumHelper.convertValues(value)» = "«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValues(value)»«ENDIF»"
+			«value.name» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
 			«IF value.definition!==null»
 			"""
 			«value.definition»

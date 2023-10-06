@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.eclipse.xtext.testing.InjectWith
@@ -19,7 +18,6 @@ class RosettaExtensionsTest {
 
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
 	
 	@Test
 	def testSuperClasses() {
@@ -75,25 +73,25 @@ class RosettaExtensionsTest {
 		val expectedBar=
 		'''
 		class Bar(Enum):
-		  BAR = "BAR"
-		  FOO_0 = "FOO_0"
-		  FOO_1 = "FOO_1"
+		  bar = "bar"
+		  foo0 = "foo0"
+		  foo1 = "foo1"
 		'''
 		
 		val expectedBaz=
 		'''
 		class Baz(Enum):
-		  BAR = "BAR"
-		  BAZ = "BAZ"
-		  FOO_0 = "FOO_0"
-		  FOO_1 = "FOO_1"
+		  bar = "bar"
+		  baz = "baz"
+		  foo0 = "foo0"
+		  foo1 = "foo1"
 		'''
 		
 		val expectedFoo=
 		'''
 		class Foo(Enum):
-		  FOO_0 = "FOO_0"
-		  FOO_1 = "FOO_1"
+		  foo0 = "foo0"
+		  foo1 = "foo1"
 		'''
 		
 		assertTrue(python.toString.contains(expectedBar))
