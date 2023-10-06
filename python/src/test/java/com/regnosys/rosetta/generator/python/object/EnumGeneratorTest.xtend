@@ -22,9 +22,6 @@ class EnumGeneratorTest {
     
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
-
-    
    
 	@Test
     def void shouldGenerateEnums() {
@@ -41,15 +38,15 @@ class EnumGeneratorTest {
           """
           Test enum description.
           """
-          TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
+          TestEnumValue1 = "TestEnumValue1"
           """
           Test enum value 1
           """
-          TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
+          TestEnumValue2 = "TestEnumValue2"
           """
           Test enum value 2
           """
-          TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
+          TestEnumValue3 = "TestEnumValue3"
           """
           Test enum value 3
           """
@@ -100,15 +97,15 @@ class EnumGeneratorTest {
           """
           Test enum description.
           """
-          TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
+          TestEnumValue1 = "TestEnumValue1"
           """
           Test enum value 1
           """
-          TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
+          TestEnumValue2 = "TestEnumValue2"
           """
           Test enum value 2
           """
-          TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
+          TestEnumValue3 = "TestEnumValue3"
           """
           Test enum value 3
           """
@@ -134,8 +131,8 @@ class EnumGeneratorTest {
 		  """
 		  Enumeration for the different types of confirmation status.
 		  """
-		  CONFIRMED = "CONFIRMED"
-		  UNCONFIRMED = "UNCONFIRMED"
+		  Confirmed = "Confirmed"
+		  Unconfirmed = "Unconfirmed"
 		'''
 		assertTrue(python.toString.contains(expected))
     }
@@ -157,23 +154,23 @@ class EnumGeneratorTest {
 		  """
 		  The enumeration values to specify the transfer status.
 		  """
-		  DISPUTED = "DISPUTED"
+		  Disputed = "Disputed"
 		  """
 		  The transfer is disputed.
 		  """
-		  INSTRUCTED = "INSTRUCTED"
+		  Instructed = "Instructed"
 		  """
 		  The transfer has been instructed.
 		  """
-		  NETTED = "NETTED"
+		  Netted = "Netted"
 		  """
 		  The transfer has been netted into a separate Transfer.
 		  """
-		  PENDING = "PENDING"
+		  Pending = "Pending"
 		  """
 		  The transfer is pending instruction.
 		  """
-		  SETTLED = "SETTLED"
+		  Settled = "Settled"
 		  """
 		  The transfer has been settled.
 		  """
@@ -202,35 +199,35 @@ class EnumGeneratorTest {
    		  """
    		  Provides enumerated values for financial units, generally used in the context of defining quantities for securities.
    		  """
-   		  CONTRACT = "CONTRACT"
+   		  Contract = "Contract"
    		  """
    		  Denotes financial contracts, such as listed futures and options.
    		  """
-   		  CONTRACTUAL_PRODUCT = "CONTRACTUAL_PRODUCT"
+   		  ContractualProduct = "ContractualProduct"
    		  """
    		  Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.
    		  """
-   		  INDEX_UNIT = "INDEX_UNIT"
+   		  IndexUnit = "IndexUnit"
    		  """
    		  Denotes a price expressed in index points, e.g. for a stock index.
    		  """
-   		  LOG_NORMAL_VOLATILITY = "LOG_NORMAL_VOLATILITY"
+   		  LogNormalVolatility = "LogNormalVolatility"
    		  """
    		  Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.
    		  """
-   		  SHARE = "SHARE"
+   		  Share = "Share"
    		  """
    		  Denotes the number of units of financial stock shares.
    		  """
-   		  VALUE_PER_DAY = "VALUE_PER_DAY"
+   		  ValuePerDay = "ValuePerDay"
    		  """
    		  Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.
    		  """
-   		  VALUE_PER_PERCENT = "VALUE_PER_PERCENT"
+   		  ValuePerPercent = "ValuePerPercent"
    		  """
    		  Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.
    		  """
-   		  WEIGHT = "WEIGHT"
+   		  Weight = "Weight"
    		  """
    		  Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
    		  """
