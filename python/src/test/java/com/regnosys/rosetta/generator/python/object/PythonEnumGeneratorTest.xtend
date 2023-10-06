@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.eclipse.xtext.testing.InjectWith
@@ -50,6 +49,35 @@ class PythonEnumGeneratorTest {
           _1 = "1"
           """
           Rolls on the 1st day of the month.
+          """
+        '''
+        assertTrue(enums.contains(expected))
+    }
+    
+	@Test
+    def void shouldGenerateEnumsKeywordClash() {
+        val python = '''
+	        enum InterpolationMethodEnum:
+	        	Linear <"Linear Interpolation applicable.">
+	        	LinearZeroYield <"Linear Interpolation applicable.">
+	        	None <"No Interpolation applicable.">
+	        '''.generatePython
+
+
+		val enums = python.toString
+        val expected = '''
+        class InterpolationMethodEnum(Enum):
+          Linear = "Linear"
+          """
+          Linear Interpolation applicable.
+          """
+          LinearZeroYield = "LinearZeroYield"
+          """
+          Linear Interpolation applicable.
+          """
+          _None = "None"
+          """
+          No Interpolation applicable.
           """
         '''
         assertTrue(enums.contains(expected))
