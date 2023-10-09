@@ -73,27 +73,26 @@ class RosettaExtensionsTest {
 		val expectedBar=
 		'''
 		class Bar(Enum):
-		  bar = "bar"
-		  foo0 = "foo0"
-		  foo1 = "foo1"
+		  BAR = "bar"
+		  FOO_0 = "foo0"
+		  FOO_1 = "foo1"
 		'''
 		
 		val expectedBaz=
 		'''
 		class Baz(Enum):
-		  bar = "bar"
-		  baz = "baz"
-		  foo0 = "foo0"
-		  foo1 = "foo1"
+		  BAR = "bar"
+		  BAZ = "baz"
+		  FOO_0 = "foo0"
+		  FOO_1 = "foo1"
 		'''
 		
 		val expectedFoo=
 		'''
 		class Foo(Enum):
-		  foo0 = "foo0"
-		  foo1 = "foo1"
+		  FOO_0 = "foo0"
+		  FOO_1 = "foo1"
 		'''
-		
 		assertTrue(python.toString.contains(expectedBar))
 		assertTrue(python.toString.contains(expectedBaz))
 		assertTrue(python.toString.contains(expectedFoo))
