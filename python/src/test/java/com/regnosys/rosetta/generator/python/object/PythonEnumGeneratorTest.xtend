@@ -30,27 +30,27 @@ class PythonEnumGeneratorTest {
 
         val enums = python.toString
         val expected = '''
-        class TestEnum(Enum):
-          """
-          Test enum description.
-          """
-          TestEnumValue1 = "TestEnumValue1"
-          """
-          Test enum value 1
-          """
-          TestEnumValue2 = "TestEnumValue2"
-          """
-          Test enum value 2
-          """
-          TestEnumValue3 = "TestEnumValue3"
-          """
-          Test enum value 3
-          """
-          _1 = "1"
-          """
-          Rolls on the 1st day of the month.
-          """
-        '''
+	        class TestEnum(Enum):
+	          """
+	          Test enum description.
+	          """
+	          TEST_ENUM_VALUE_1 = "TestEnumValue1"
+	          """
+	          Test enum value 1
+	          """
+	          TEST_ENUM_VALUE_2 = "TestEnumValue2"
+	          """
+	          Test enum value 2
+	          """
+	          TEST_ENUM_VALUE_3 = "TestEnumValue3"
+	          """
+	          Test enum value 3
+	          """
+	          _1 = "1"
+	          """
+	          Rolls on the 1st day of the month.
+	          """
+	        '''
         assertTrue(enums.contains(expected))
     }
     
@@ -66,20 +66,20 @@ class PythonEnumGeneratorTest {
 
 		val enums = python.toString
         val expected = '''
-        class InterpolationMethodEnum(Enum):
-          Linear = "Linear"
-          """
-          Linear Interpolation applicable.
-          """
-          LinearZeroYield = "LinearZeroYield"
-          """
-          Linear Interpolation applicable.
-          """
-          _None = "None"
-          """
-          No Interpolation applicable.
-          """
-        '''
+	        class InterpolationMethodEnum(Enum):
+	          LINEAR = "Linear"
+	          """
+	          Linear Interpolation applicable.
+	          """
+	          LINEAR_ZERO_YIELD = "LinearZeroYield"
+	          """
+	          Linear Interpolation applicable.
+	          """
+	          NONE = "None"
+	          """
+	          No Interpolation applicable.
+	          """
+	        '''
         assertTrue(enums.contains(expected))
     }
     

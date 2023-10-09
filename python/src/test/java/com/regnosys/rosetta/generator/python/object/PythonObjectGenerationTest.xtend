@@ -129,7 +129,6 @@ class PythonObjectGenerationTest {
 			TestEnumValue2 <"Test enum value 2">
 		'''.generatePython
 				 
-		  
 		  val expectedTestType = 
 			'''
 		   class TestType(BaseDataClass):
@@ -184,11 +183,11 @@ class PythonObjectGenerationTest {
 		     """
 		     Test enum description.
 		     """
-		     TestEnumValue1 = "TestEnumValue1"
+		     TEST_ENUM_VALUE_1 = "TestEnumValue1"
 		     """
 		     Test enum value 1
 		     """
-		     TestEnumValue2 = "TestEnumValue2"
+		     TEST_ENUM_VALUE_2 = "TestEnumValue2"
 		     """
 		     Test enum value 2
 		     """
@@ -196,7 +195,6 @@ class PythonObjectGenerationTest {
 		assertTrue(python.toString.contains(expectedTestType))
 		assertTrue(python.toString.contains(expectedTestType2))
 		assertTrue(python.toString.contains(expectedTestEnum))
-		
 	}
 	
 	@Test 
