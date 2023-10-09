@@ -60,7 +60,7 @@ class PythonEnumGenerator {
 			pass
 			«ELSE»
 			«FOR value: allEnumValues SEPARATOR ''»
-			«formatEnumValue(value.name)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
+			«EnumHelper.convertValues(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
 			«IF value.definition!==null»
 			"""
 			«value.definition»
@@ -69,11 +69,5 @@ class PythonEnumGenerator {
 			«ENDFOR»
 			«ENDIF»
 		'''
-	}
-	
-	private def formatEnumValue(String value) {
-		if (PythonModelGeneratorUtil.isReservedWord(value))
-			return "_" + value
-		return value
 	}
 }
