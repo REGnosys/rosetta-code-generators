@@ -106,7 +106,7 @@ class ScalaModelObjectGeneratorTest {
 
 		val types = scala.get('Types.scala').toString
 		//println(types)
-		assertTrue(types.contains('''
+		assertEquals('''
 			/**
 			  * This file is auto-generated from the ISDA Common Domain Model, do not edit.
 			  * Version: test
@@ -122,28 +122,28 @@ class ScalaModelObjectGeneratorTest {
 			/**
 			  * Test type description.
 			  *
-			  * @param testEnum Optional test enum
 			  * @param testTypeValue1 Test string
 			  * @param testTypeValue2 Test optional string
 			  * @param testTypeValue3 Test string list
 			  * @param testTypeValue4 Test TestType2
+			  * @param testEnum Optional test enum
 			  */
-			case class TestType(@JsonDeserialize(contentAs = classOf[TestEnum.Value])
-			    @JsonScalaEnumeration(classOf[TestEnum.Class])
-			    testEnum: Option[TestEnum.Value],
-			    testTypeValue1: String,
+			case class TestType(testTypeValue1: String,
 			    testTypeValue2: Option[String],
 			    testTypeValue3: List[String],
-			    testTypeValue4: TestType2) {
+			    testTypeValue4: TestType2,
+			    @JsonDeserialize(contentAs = classOf[TestEnum.Value])
+			    @JsonScalaEnumeration(classOf[TestEnum.Class])
+			    testEnum: Option[TestEnum.Value]) {
 			}
 			
-			case class TestType2(@JsonScalaEnumeration(classOf[TestEnum.Class])
-			    testEnum: TestEnum.Value,
-			    testType2Value1: List[scala.math.BigDecimal],
-			    testType2Value2: Option[java.time.LocalDate]) {
+			case class TestType2(testType2Value1: List[scala.math.BigDecimal],
+			    testType2Value2: Option[java.time.LocalDate],
+			    @JsonScalaEnumeration(classOf[TestEnum.Class])
+			    testEnum: TestEnum.Value) {
 			}
 			
-			'''))
+			'''.toString, types)
 	}
 
     @Test
@@ -197,8 +197,8 @@ class ScalaModelObjectGeneratorTest {
 	       
 	       import org.isda.cdm.metafields._
 	       
-	       case class Foo(eventAttr: Option[String],
-	           productAttr: Option[String]) {
+	       case class Foo(productAttr: Option[String],
+	           eventAttr: Option[String]) {
 	       }
 	       
         '''.toString, types.toString)
@@ -321,9 +321,9 @@ class ScalaModelObjectGeneratorTest {
 		// types
 		
 		assertTrue(types.contains('''
-		case class TestType(meta: Option[MetaFields],
-		    testTypeValue1: ReferenceWithMetaTestType2,
-		    testTypeValue2: FieldWithMetaTestType2) {
+		case class TestType(testTypeValue1: ReferenceWithMetaTestType2,
+		    testTypeValue2: FieldWithMetaTestType2,
+		    meta: Option[MetaFields]) {
 		}'''))
 
 		assertTrue(types.contains('''

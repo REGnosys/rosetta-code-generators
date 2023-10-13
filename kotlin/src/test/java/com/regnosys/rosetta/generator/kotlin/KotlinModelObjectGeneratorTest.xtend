@@ -102,26 +102,26 @@ class KotlinModelObjectGeneratorTest {
 			/**
 			 * Test type description.
 			 *
-			 * @param testEnum Optional test enum
 			 * @param testTypeValue1 Test string
 			 * @param testTypeValue2 Test optional string
 			 * @param testTypeValue3 Test string list
 			 * @param testTypeValue4 Test TestType2
+			 * @param testEnum Optional test enum
 			 */
 			@Serializable
 			open class TestType (
-			  var testEnum: TestEnum? = null,
 			  var testTypeValue1: String? = null,
 			  var testTypeValue2: String? = null,
 			  var testTypeValue3: MutableList<String>? = null,
-			  var testTypeValue4: TestType2? = null
+			  var testTypeValue4: TestType2? = null,
+			  var testEnum: TestEnum? = null
 			)
 			
 			@Serializable
 			open class TestType2 (
-			  var testEnum: TestEnum? = null,
 			  var testType2Value1: MutableList<Float>? = null,
-			  var testType2Value2: Date? = null
+			  var testType2Value2: Date? = null,
+			  var testEnum: TestEnum? = null
 			)
 	        '''))
     }
@@ -192,8 +192,8 @@ class KotlinModelObjectGeneratorTest {
 	        
 	        @Serializable
 	        open class Foo (
-	          var eventAttr: String? = null,
-	          var productAttr: String? = null
+	          var productAttr: String? = null,
+	          var eventAttr: String? = null
 	        )
         '''.toString, types.toString)
     }
@@ -357,9 +357,9 @@ class KotlinModelObjectGeneratorTest {
 	    assertTrue(types.contains('''
 	        @Serializable
 	        open class TestType (
-	          var meta: MetaFields? = null,
 	          var testTypeValue1: ReferenceWithMetaTestType2? = null,
-	          var testTypeValue2: TestType3? = null
+	          var testTypeValue2: TestType3? = null,
+	          var meta: MetaFields? = null
 	        )'''))
 	        
 	    assertTrue(types.contains('''

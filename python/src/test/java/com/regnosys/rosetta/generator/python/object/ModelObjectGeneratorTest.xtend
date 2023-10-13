@@ -35,8 +35,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[str] = Field([], description="")
 		  one: Optional[str] = Field(None, description="")
+		  list: List[str] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -53,8 +53,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[int] = Field([], description="")
 		  one: Optional[int] = Field(None, description="")
+		  list: List[int] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -74,8 +74,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[Decimal] = Field([], description="")
 		  one: Optional[Decimal] = Field(None, description="")
+		  list: List[Decimal] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -95,8 +95,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[bool] = Field([], description="")
 		  one: Optional[bool] = Field(None, description="")
+		  list: List[bool] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -115,8 +115,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[date] = Field([], description="")
 		  one: Optional[date] = Field(None, description="")
+		  list: List[date] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -134,8 +134,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[date] = Field([], description="")
 		  one: Optional[date] = Field(None, description="")
+		  list: List[date] = Field([], description="")
 		  zoned: Optional[datetime] = Field(None, description="")
 		'''
 		
@@ -153,8 +153,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  list: List[time] = Field([], description="")
 		  one: Optional[time] = Field(None, description="")
+		  list: List[time] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -309,8 +309,8 @@ class ModelObjectGeneratorTest {
 		val expectedC = 
 		'''
 		class C(BaseDataClass):
-		  list: List[int] = Field([], description="")
 		  one: Optional[int] = Field(None, description="")
+		  list: List[int] = Field([], description="")
 
 		'''
 		
@@ -488,9 +488,9 @@ class ModelObjectGeneratorTest {
         val expectedB=
         '''
         class B(BaseDataClass):
-          aValue: A = Field(..., description="")
           intValue1: Optional[int] = Field(None, description="")
           intValue2: Optional[int] = Field(None, description="")
+          aValue: A = Field(..., description="")
           
           @rosetta_condition
           def condition_0_Rule(self):
@@ -541,10 +541,6 @@ class ModelObjectGeneratorTest {
             """
             Test type description.
             """
-            testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
-            """
-            Optional test enum
-            """
             testTypeValue1: str = Field(..., description="Test string")
             """
             Test string
@@ -561,14 +557,14 @@ class ModelObjectGeneratorTest {
             """
             Test TestType2
             """
-          '''
-          val expectedTestType2=
-          '''
-          class TestType2(BaseDataClass):
             testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
             """
             Optional test enum
             """
+          '''
+          val expectedTestType2=
+          '''
+          class TestType2(BaseDataClass):
             testType2Value1: List[Decimal] = Field([], description="Test number list")
             """
             Test number list
@@ -580,6 +576,10 @@ class ModelObjectGeneratorTest {
             testType2Value2: Optional[date] = Field(None, description="Test date")
             """
             Test date
+            """
+            testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
+            """
+            Optional test enum
             """
           '''
             
@@ -859,9 +859,9 @@ class ModelObjectGeneratorTest {
         val expectedB=
         '''
         class B(BaseDataClass):
-          aValue: A = Field(..., description="")
           intValue1: Optional[int] = Field(None, description="")
           intValue2: Optional[int] = Field(None, description="")
+          aValue: A = Field(..., description="")
           
           @rosetta_condition
           def condition_0_Rule(self):

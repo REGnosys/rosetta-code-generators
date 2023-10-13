@@ -209,8 +209,8 @@ class GolangModelObjectGeneratorTest {
 	          
 	        
 	        type Foo struct {
-	          EventAttr string;
 	          ProductAttr string;
+	          EventAttr string;
 	        }
 	          
         '''.toString, types.toString)
@@ -257,8 +257,8 @@ class GolangModelObjectGeneratorTest {
 
 		assertTrue(types.contains('''
 		type TestType struct {
-		  Meta MetaFields;
 		  TestTypeValue1 ReferenceWithMeta;
+		  Meta MetaFields;
 		}'''))
 
 		assertTrue(types.contains('''

@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.eclipse.xtext.testing.InjectWith
@@ -18,9 +17,6 @@ class PythonEnumGeneratorTest {
 	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-
-
-	
 	
 	@Test
     def void shouldGenerateEnums() {
@@ -34,27 +30,56 @@ class PythonEnumGeneratorTest {
 
         val enums = python.toString
         val expected = '''
-        class TestEnum(Enum):
-          """
-          Test enum description.
-          """
-          TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
-          """
-          Test enum value 1
-          """
-          TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
-          """
-          Test enum value 2
-          """
-          TEST_ENUM_VALUE_3 = "TEST_ENUM_VALUE_3"
-          """
-          Test enum value 3
-          """
-          _1 = "1"
-          """
-          Rolls on the 1st day of the month.
-          """
-        '''
+	        class TestEnum(Enum):
+	          """
+	          Test enum description.
+	          """
+	          TEST_ENUM_VALUE_1 = "TestEnumValue1"
+	          """
+	          Test enum value 1
+	          """
+	          TEST_ENUM_VALUE_2 = "TestEnumValue2"
+	          """
+	          Test enum value 2
+	          """
+	          TEST_ENUM_VALUE_3 = "TestEnumValue3"
+	          """
+	          Test enum value 3
+	          """
+	          _1 = "1"
+	          """
+	          Rolls on the 1st day of the month.
+	          """
+	        '''
+        assertTrue(enums.contains(expected))
+    }
+    
+	@Test
+    def void shouldGenerateEnumsKeywordClash() {
+        val python = '''
+	        enum InterpolationMethodEnum:
+	        	Linear <"Linear Interpolation applicable.">
+	        	LinearZeroYield <"Linear Interpolation applicable.">
+	        	None <"No Interpolation applicable.">
+	        '''.generatePython
+
+
+		val enums = python.toString
+        val expected = '''
+	        class InterpolationMethodEnum(Enum):
+	          LINEAR = "Linear"
+	          """
+	          Linear Interpolation applicable.
+	          """
+	          LINEAR_ZERO_YIELD = "LinearZeroYield"
+	          """
+	          Linear Interpolation applicable.
+	          """
+	          NONE = "None"
+	          """
+	          No Interpolation applicable.
+	          """
+	        '''
         assertTrue(enums.contains(expected))
     }
     

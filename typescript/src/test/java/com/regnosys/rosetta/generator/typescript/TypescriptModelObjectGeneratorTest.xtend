@@ -182,8 +182,8 @@ class TypescriptModelObjectGeneratorTest {
 	            } from './enums';
 	        
 	        export interface Foo {
-	          eventAttr?: string;
 	          productAttr?: string;
+	          eventAttr?: string;
 	        }
 	          
         '''.toString, types.toString)
@@ -254,16 +254,16 @@ class TypescriptModelObjectGeneratorTest {
 		
 		assertTrue(types.contains('''
 		export interface TestType {
-		  meta?: MetaFields;
 		  testTypeValue1?: ReferenceWithMeta<TestType2>;
 		  testTypeValue2?: FieldWithMeta<TestType3>;
+		  meta?: MetaFields;
 		}'''))
 
 		assertTrue(types.contains('''
 		export interface TestType2 {
-		  testEnum?: FieldWithMeta<TestEnum>;
 		  testType2Value1?: ReferenceWithMeta<Number>;
 		  testType2Value2?: FieldWithMeta<String>;
+		  testEnum?: FieldWithMeta<TestEnum>;
 		}'''))
 		
 		assertTrue(types.contains('''

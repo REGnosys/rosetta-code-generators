@@ -82,9 +82,9 @@ class PythonObjectGenerationTest {
 		val expectedB=
 		'''
 		class B(BaseDataClass):
-		  aValue: A = Field(..., description="")
 		  intValue1: Optional[int] = Field(None, description="")
 		  intValue2: Optional[int] = Field(None, description="")
+		  aValue: A = Field(..., description="")
 		  
 		  @rosetta_condition
 		  def condition_0_Rule(self):
@@ -129,16 +129,11 @@ class PythonObjectGenerationTest {
 			TestEnumValue2 <"Test enum value 2">
 		'''.generatePython
 				 
-		  
 		  val expectedTestType = 
 			'''
 		   class TestType(BaseDataClass):
 		     """
 		     Test type description.
-		     """
-		     testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
-		     """
-		     Optional test enum
 		     """
 		     testTypeValue1: str = Field(..., description="Test string")
 		     """
@@ -156,14 +151,14 @@ class PythonObjectGenerationTest {
 		     """
 		     Test TestType2
 		     """
-			'''
-			val expectedTestType2 = 
-			'''
-		   class TestType2(BaseDataClass):
 		     testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
 		     """
 		     Optional test enum
 		     """
+			'''
+			val expectedTestType2 = 
+			'''
+		   class TestType2(BaseDataClass):
 		     testType2Value1: List[Decimal] = Field([], description="Test number list")
 		     """
 		     Test number list
@@ -176,6 +171,10 @@ class PythonObjectGenerationTest {
 		     """
 		     Test date
 		     """
+		     testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
+		     """
+		     Optional test enum
+		     """
 			'''
 			
 		  val expectedTestEnum = 
@@ -184,11 +183,11 @@ class PythonObjectGenerationTest {
 		     """
 		     Test enum description.
 		     """
-		     TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
+		     TEST_ENUM_VALUE_1 = "TestEnumValue1"
 		     """
 		     Test enum value 1
 		     """
-		     TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
+		     TEST_ENUM_VALUE_2 = "TestEnumValue2"
 		     """
 		     Test enum value 2
 		     """
@@ -196,7 +195,6 @@ class PythonObjectGenerationTest {
 		assertTrue(python.toString.contains(expectedTestType))
 		assertTrue(python.toString.contains(expectedTestType2))
 		assertTrue(python.toString.contains(expectedTestEnum))
-		
 	}
 	
 	@Test 
@@ -297,17 +295,17 @@ class PythonObjectGenerationTest {
 		  """
 		  Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
 		  """
-		  currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		  weatherUnit: Optional[WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
 		  """
-		  Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		  Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
 		  """
 		  financialUnit: Optional[FinancialUnitEnum] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
 		  """
 		  Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
 		  """
-		  weatherUnit: Optional[WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
+		  currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
 		  """
-		  Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
+		  Defines the currency to be used as a unit for a price, quantity, or other purpose.
 		  """
 		  
 		  @rosetta_condition
@@ -388,13 +386,13 @@ class PythonObjectGenerationTest {
 		  """
 		  A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.
 		  """
-		  number: str = Field(..., description="The actual telephone number.")
-		  """
-		  The actual telephone number.
-		  """
 		  telephoneNumberType: Optional[TelephoneTypeEnum] = Field(None, description="The type of telephone number, e.g. work, mobile.")
 		  """
 		  The type of telephone number, e.g. work, mobile.
+		  """
+		  number: str = Field(..., description="The actual telephone number.")
+		  """
+		  The actual telephone number.
 		  """
 		'''
 		val expectedTestType3 = 
@@ -414,8 +412,8 @@ class PythonObjectGenerationTest {
 		    return self.check_one_of_constraint('ancillaryParty', 'legalEntity', necessity=True)
 		'''
 		
-		assertTrue(python.toString.contains(expectedTestType1))   
-		assertTrue(python.toString.contains(expectedTestType2))				
+		assertTrue(python.toString.contains(expectedTestType1))
+		assertTrue(python.toString.contains(expectedTestType2))
 		assertTrue(python.toString.contains(expectedTestType3))  
 		
 		
@@ -655,13 +653,13 @@ class PythonObjectGenerationTest {
 		  """
 		  Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.
 		  """
-		  unit: Optional[UnitType] = Field(None, description="Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).")
-		  """
-		  Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
-		  """
 		  value: Optional[Decimal] = Field(None, description="Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.")
 		  """
 		  Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.
+		  """
+		  unit: Optional[UnitType] = Field(None, description="Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).")
+		  """
+		  Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
 		  """
 		'''
 		
@@ -861,13 +859,13 @@ class PythonObjectGenerationTest {
 		  """
 		  A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.
 		  """
-		  endDate: date = Field(..., description="The last date of a date range.")
-		  """
-		  The last date of a date range.
-		  """
 		  startDate: date = Field(..., description="The first date of a date range.")
 		  """
 		  The first date of a date range.
+		  """
+		  endDate: date = Field(..., description="The last date of a date range.")
+		  """
+		  The last date of a date range.
 		  """
 		  
 		  @rosetta_condition
@@ -918,9 +916,9 @@ class PythonObjectGenerationTest {
 		val expectedB=
 		'''
 		class B(BaseDataClass):
-		  aValue: A = Field(..., description="")
 		  intValue1: Optional[int] = Field(None, description="")
 		  intValue2: Optional[int] = Field(None, description="")
+		  aValue: A = Field(..., description="")
 		  
 		  @rosetta_condition
 		  def condition_0_Rule(self):
@@ -1069,10 +1067,6 @@ class PythonObjectGenerationTest {
 		  """
 		  Identifies European Union Eligible Collateral Assets classification categories based on EMIR Uncleared Margin Rules. Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM
 		  """
-		  nonEnumeratedTaxonomyValue: List[AttributeWithMeta[str] | str] = Field([], description="Identifies the taxonomy value when not specified as an enumeration.")
-		  """
-		  Identifies the taxonomy value when not specified as an enumeration.
-		  """
 		  uk_EMIR_EligibleCollateral: List[UK_EMIR_EligibleCollateralEnum] = Field([], description="Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.")
 		  """
 		  Identifies United Kingdom Eligible Collateral Assets classification categories based on UK Onshored EMIR Uncleared Margin Rules Eligible Collateral asset classes for both initial margin (IM) and variation margin (VM) posted and collected between specified entities. Please note: UK EMIR regulation will detail which eligible collateral assets classes apply to each type of entity pairing (counterparty) and which apply to posting of IM and VM.
@@ -1081,10 +1075,15 @@ class PythonObjectGenerationTest {
 		  """
 		  Identifies US Eligible Collateral Assets classification categories based on Uncleared Margin Rules published by the CFTC and the US Prudential Regulator. Note: While the same basic categories exist in the CFTC and US Prudential Regulators’ margin rules, the precise definitions or application of those rules could differ between the two rules.
 		  """
+		  nonEnumeratedTaxonomyValue: List[AttributeWithMeta[str] | str] = Field([], description="Identifies the taxonomy value when not specified as an enumeration.")
+		  """
+		  Identifies the taxonomy value when not specified as an enumeration.
+		  """
 		  
 		  @rosetta_condition
 		  def condition_0_(self):
 		    return self.check_one_of_constraint('eu_EMIR_EligibleCollateral', 'uk_EMIR_EligibleCollateral', 'us_CFTC_PR_EligibleCollateral', 'nonEnumeratedTaxonomyValue', necessity=True)
+
 		'''
 		
 
