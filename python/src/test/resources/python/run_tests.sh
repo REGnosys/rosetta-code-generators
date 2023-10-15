@@ -16,7 +16,7 @@ rm -rf testenv
 $PYEXE -m venv --clear testenv
 source testenv/$ACDIR/activate
 
-$PYEXE -m pip install "pydantic==1.*"
+$PYEXE -m pip install "pydantic>=2"
 $PYEXE -m pip install pytest
 $PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl 
 pytest
