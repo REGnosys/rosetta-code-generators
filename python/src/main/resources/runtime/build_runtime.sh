@@ -32,7 +32,7 @@ $PYEXE -m pip install yapf || processError
 $PYEXE -m pip install "pydantic<2.0.0" || processError
 $PYEXE -m pip install jsonpickle || processError
 rm -rf build
-rm rosetta_runtime-1.0.0-py3-none-any.whl
+rm rosetta_runtime-2.0.0-py3-none-any.whl
 $PYEXE -m pip install -e . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 rm -rf build

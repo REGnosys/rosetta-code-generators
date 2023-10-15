@@ -3,12 +3,12 @@ RUN apk add --no-cache bash
 RUN apk update
 RUN mkdir /opt/isda-cdm-code-gen 
 WORKDIR /opt/isda-cdm-code-gen 
-COPY src/main/resources/runtime/rosetta_runtime-1.0.0-py3-none-any.whl rosetta_runtime-1.0.0-py3-none-any.whl
+COPY src/main/resources/runtime/rosetta_runtime-2.0.0-py3-none-any.whl rosetta_runtime-2.0.0-py3-none-any.whl
 COPY target/python/src /opt/isda-cdm-code-gen/python/src
 COPY target/python/pyproject.toml /opt/isda-cdm-code-gen/python/pyproject.toml
 RUN python3 -m pip install pydantic
 RUN python3 -m pip install jsonpickle
-RUN python3 -m pip install rosetta_runtime-1.0.0-py3-none-any.whl
+RUN python3 -m pip install rosetta_runtime-2.0.0-py3-none-any.whl
 WORKDIR /opt/isda-cdm-code-gen/python
 RUN python3 -m pip wheel --no-deps --only-binary :all: .
 

@@ -31,7 +31,7 @@ $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
 $PYEXE -m pip install "pydantic==1.*" || processError
 $PYEXE -m pip install jsonpickle || processError
-$PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-1.0.0-py3-none-any.whl || processError
+$PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl || processError
 
 rm -rf build
 rm python_cdm-3.3.2-py3-none-any.whl
