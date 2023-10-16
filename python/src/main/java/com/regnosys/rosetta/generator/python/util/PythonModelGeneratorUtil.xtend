@@ -96,9 +96,29 @@ class PythonModelGeneratorUtil {
 		
 		imports
 		
+	}
 		
+	def String createImportsFunc(String name){			
+		val imports=
+		'''
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		from __future__ import annotations
+		from datetime import date
+		from datetime import time
+		from datetime import datetime
+		from decimal import Decimal
+		from abc import ABC,abstractmethod
+		from rosetta.runtime.utils import *
+		
+		__all__ = [«"'"+name+"'"»]
+		
+		'''
+		
+		imports
 		
 	}
+	
 	def String toPyFileName(String namespace, String fileName) {
 		'''src/«namespace.replace(".", "/")»/«fileName».py''';
 	}
