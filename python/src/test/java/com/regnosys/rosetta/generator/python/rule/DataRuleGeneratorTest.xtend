@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.python.rule
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.eclipse.xtext.testing.InjectWith
@@ -261,8 +260,17 @@ class DataRuleGeneratorTest {
 
 		val expectedFoo=
 		'''
-		def Foo(price=None):
-			pass
+		class Foo(ABC):
+			def __init__(self,price=None):
+				self.price=price
+				
+			def evaluate(self):
+				something = self.doEvaluate()
+				return something
+			
+			@abstractmethod
+			def doEvaluate(self):
+				pass
 		'''
 		val expectedQuote='''
 		class Quote(BaseDataClass):
@@ -322,8 +330,17 @@ class DataRuleGeneratorTest {
 		
 		val expectedFoo=
 		'''
-		def Foo(price=None):
-			pass
+		class Foo(ABC):
+			def __init__(self,price=None):
+				self.price=price
+				
+			def evaluate(self):
+				something = self.doEvaluate()
+				return something
+			
+			@abstractmethod
+			def doEvaluate(self):
+				pass
 		'''
 		
 		

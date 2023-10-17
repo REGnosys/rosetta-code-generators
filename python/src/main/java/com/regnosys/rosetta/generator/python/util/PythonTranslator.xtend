@@ -2,6 +2,7 @@ package com.regnosys.rosetta.generator.python.util
 
 
 import com.regnosys.rosetta.generator.object.ExpandedType
+
 import com.regnosys.rosetta.rosetta.simple.Attribute
 
 class PythonTranslator {
@@ -42,5 +43,6 @@ class PythonTranslator {
             return basicType
         return type.toFirstUpper
     }
+    
 
 }

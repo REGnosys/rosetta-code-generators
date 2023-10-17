@@ -18,6 +18,7 @@ class RosettaExtensionsTest {
 
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
+
 	
 	@Test
 	def testSuperClasses() {
@@ -73,26 +74,27 @@ class RosettaExtensionsTest {
 		val expectedBar=
 		'''
 		class Bar(Enum):
-		  BAR = "bar"
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
+		  BAR = "BAR"
+		  FOO_0 = "FOO_0"
+		  FOO_1 = "FOO_1"
 		'''
 		
 		val expectedBaz=
 		'''
 		class Baz(Enum):
-		  BAR = "bar"
-		  BAZ = "baz"
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
+		  BAR = "BAR"
+		  BAZ = "BAZ"
+		  FOO_0 = "FOO_0"
+		  FOO_1 = "FOO_1"
 		'''
 		
 		val expectedFoo=
 		'''
 		class Foo(Enum):
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
+		  FOO_0 = "FOO_0"
+		  FOO_1 = "FOO_1"
 		'''
+		
 		assertTrue(python.toString.contains(expectedBar))
 		assertTrue(python.toString.contains(expectedBaz))
 		assertTrue(python.toString.contains(expectedFoo))

@@ -83,7 +83,7 @@ class PythonFilesGeneratorTest {
 		LOGGER.info("Write Files ... wrote: {}", generatedFiles.size ())
 		
 	}
-	@Disabled("File Generation")
+	//@Disabled("File Generation")
 	@Test
 	def void generatePython () {
 		// the process 

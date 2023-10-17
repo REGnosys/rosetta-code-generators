@@ -177,7 +177,44 @@ class PythonMetaDataGenerationTest {
                 assertTrue(types.contains(expected12))*/
             }
             
+    @Disabled   
+    @Test
+    def void func() {
+        val python = 
+        '''
+        func Create_RejectedWorkflowStep: 
+            [creation WorkflowStep]
+            inputs:
+                messageInformation MessageInformation (0..1) <"Contains all information pertaining the messaging header">
+                timestamp EventTimestamp (1..*) <"The dateTime and qualifier associated with this event.">
+                eventIdentifier Identifier (1..*) <"The identifiers that uniquely identify this lifecycle event.">
+                proposedWorkflowStep WorkflowStep (1..1) <"Required previous WorkflowStep that provides lineage to WorkflowStep that precedes it.">
+        
+            output:
+                rejectedWorkflowStep WorkflowStep (1..1) <"Rejected WorkflowStep with lineage to the proposed step that preceded it.">
+        
+            condition ProposedEventExists: <"The previous proposed step being rejected must exist">
+                proposedWorkflowStep -> proposedEvent exists
             
+            set rejectedWorkflowStep -> messageInformation: <"Assign the workflowStep action.">
+                messageInformation
+        
+            add rejectedWorkflowStep -> timestamp: <"Assign the dateTime and qualifier associated with this event.">
+                timestamp
+        
+            add rejectedWorkflowStep -> eventIdentifier: <"Assign the identifiers that uniquely identify this lifecycle event.">
+                eventIdentifier
+        
+            set rejectedWorkflowStep -> previousWorkflowStep: <"Set the reference to the previous WorkflowStep to provide lineage">
+                proposedWorkflowStep as-key
+        
+            set rejectedWorkflowStep -> rejected: <"Set the rejected flag to True">
+                True
+        '''.generatePython
+        println(python)
+    
+        
+    }  
             
 	def generatePython(CharSequence model) {
 		val m = model.parseRosettaWithNoErrors

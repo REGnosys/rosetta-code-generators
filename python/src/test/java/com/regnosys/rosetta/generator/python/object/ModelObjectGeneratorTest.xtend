@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.PythonCodeGenerator
-import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.tests.RosettaInjectorProvider
 import com.regnosys.rosetta.tests.util.ModelHelper
 import org.eclipse.xtext.testing.InjectWith
@@ -10,7 +9,6 @@ import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
-
 import static org.junit.jupiter.api.Assertions.*
 
 @ExtendWith(InjectionExtension)
@@ -311,7 +309,6 @@ class ModelObjectGeneratorTest {
 		class C(BaseDataClass):
 		  one: Optional[int] = Field(None, description="")
 		  list: List[int] = Field([], description="")
-
 		'''
 		
 		val expectedA = 
@@ -887,13 +884,12 @@ class ModelObjectGeneratorTest {
             FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
             """
             return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
-
         '''
         assertTrue(python.toString.contains(expectedA))
         assertTrue(python.toString.contains(expectedB))
     }
 	
-	
+
 	
 	def generatePython(CharSequence model) {
 		val m = model.parseRosettaWithNoErrors

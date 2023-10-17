@@ -16,7 +16,7 @@
 	<description>Generators to create python for rosetta</description>
 	<properties>
 		<!-- used by PythonFilesGeneratorTest::generatePython to generate python from a rosetta source --> 
-		<rosetta.source.path>path/to/rosetta</rosetta.source.path>
+		<rosetta.source.path>build/resources/rosetta/cdm_3.3.2</rosetta.source.path>
 		<codebase.outputpath>target/python</codebase.outputpath>
 	</properties>
 	<build>
