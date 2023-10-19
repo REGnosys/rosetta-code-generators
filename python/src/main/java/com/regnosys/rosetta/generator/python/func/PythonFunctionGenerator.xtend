@@ -112,25 +112,27 @@ class  PythonFunctionGenerator {
 
 	private def generateFunctions(Function function,String version) {
 	    
-	    importsFound = getImportsFromAttributes(function)
-	    //var List<String> updateForwardRefs = newArrayList
-	    //updateForwardRefs.add('''«function.name».update_forward_refs()''')
+	    // importsFound = getImportsFromAttributes(function)
+	    // //var List<String> updateForwardRefs = newArrayList
+	    // //updateForwardRefs.add('''«function.name».update_forward_refs()''')
 	    
-		'''
-		«generatesBody(function)»
+		// '''
+		// «generatesBody(function)»
 		
-		«FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
+		// «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
 					
+		// '''
 		'''
-		
+		def «function.name»(*_, **__):
+			pass
+		'''
 	}
 	
     private def generatesBody(Function function) {
  
     	val output = function.output
     	val defaultClassName = function.name+"Default"
-		'''	
-		
+		'''
 		class «function.name»(ABC):
 			def __init__(self,«generatesInputs(function)»):
 				«FOR inp : function.inputs SEPARATOR "\n"»self.«inp.name»=«inp.name»«ENDFOR»
