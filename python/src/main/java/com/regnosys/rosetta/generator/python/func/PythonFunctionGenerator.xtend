@@ -133,9 +133,9 @@ class  PythonFunctionGenerator {
 		
 		class «function.name»(ABC):
 		«IF function.definition !== null»
-		"""
-		«function.definition»
-		"""
+			"""
+			«function.definition»
+			"""
 		«ENDIF»
 			def __init__(self,«generatesInputs(function)»):
 				«FOR inp : function.inputs SEPARATOR "\n"»self.«inp.name»=«inp.name»«ENDFOR»
