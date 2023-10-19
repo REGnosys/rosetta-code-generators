@@ -113,8 +113,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  one: Optional[date] = Field(None, description="")
-		  list: List[date] = Field([], description="")
+		  one: Optional[datetime.date] = Field(None, description="")
+		  list: List[datetime.date] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -132,9 +132,9 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  one: Optional[date] = Field(None, description="")
-		  list: List[date] = Field([], description="")
-		  zoned: Optional[datetime] = Field(None, description="")
+		  one: Optional[datetime.date] = Field(None, description="")
+		  list: List[datetime.date] = Field([], description="")
+		  zoned: Optional[datetime.datetime] = Field(None, description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -151,8 +151,8 @@ class ModelObjectGeneratorTest {
 		val expected=
 		'''
 		class Tester(BaseDataClass):
-		  one: Optional[time] = Field(None, description="")
-		  list: List[time] = Field([], description="")
+		  one: Optional[datetime.time] = Field(None, description="")
+		  list: List[datetime.time] = Field([], description="")
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -570,7 +570,7 @@ class ModelObjectGeneratorTest {
             def cardinality_testType2Value1(self):
               return check_cardinality(self.testType2Value1, 1, None)
             
-            testType2Value2: Optional[date] = Field(None, description="Test date")
+            testType2Value2: Optional[datetime.date] = Field(None, description="Test date")
             """
             Test date
             """
@@ -688,7 +688,7 @@ class ModelObjectGeneratorTest {
           """
           Test number
           """
-          TestType2Value2: List[date] = Field([], description="Test date")
+          TestType2Value2: List[datetime.date] = Field([], description="Test date")
           """
           Test date
           """

@@ -167,7 +167,7 @@ class PythonObjectGenerationTest {
 		     def cardinality_testType2Value1(self):
 		       return check_cardinality(self.testType2Value1, 1, None)
 		     
-		     testType2Value2: Optional[date] = Field(None, description="Test date")
+		     testType2Value2: Optional[datetime.date] = Field(None, description="Test date")
 		     """
 		     Test date
 		     """
@@ -522,7 +522,7 @@ class PythonObjectGenerationTest {
 		  """
 		  Test number
 		  """
-		  TestType2Value2: List[date] = Field([], description="Test date")
+		  TestType2Value2: List[datetime.date] = Field([], description="Test date")
 		  """
 		  Test date
 		  """
@@ -860,11 +860,11 @@ class PythonObjectGenerationTest {
 		  """
 		  A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.
 		  """
-		  startDate: date = Field(..., description="The first date of a date range.")
+		  startDate: datetime.date = Field(..., description="The first date of a date range.")
 		  """
 		  The first date of a date range.
 		  """
-		  endDate: date = Field(..., description="The last date of a date range.")
+		  endDate: datetime.date = Field(..., description="The last date of a date range.")
 		  """
 		  The last date of a date range.
 		  """
