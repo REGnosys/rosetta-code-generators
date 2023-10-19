@@ -4,7 +4,9 @@ import logging as log
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
 from collections import defaultdict
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic.v1.main import BaseModel, validate_model
+from pydantic.v1.generics import GenericModel
+from pydantic.v1 import Extra
 
 
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
@@ -37,6 +39,12 @@ def if_cond_fn(ifexpr, thenexpr: Callable, elseexpr: Callable) -> Any:
     return expr()
 
 
+def _to_list(obj) -> list | tuple:
+    if isinstance(obj, (list, tuple)):
+        return obj
+    return (obj,)
+
+
 def _resolve_rosetta_attr(obj: Any | None,
                           attrib: str) -> Any | list[Any] | None:
     if obj is None:
@@ -47,16 +55,18 @@ def _resolve_rosetta_attr(obj: Any | None,
                if item is not None]
         return res if res else None
     return getattr(obj, attrib, None)
-    
-def _get_rosetta_object(base_model:string, attribute:string, value:Any)->Any|list[Any]|None:
+
+
+def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
     model_class = globals()[base_model]
     instance_kwargs = {attribute: value}
     instance = model_class(**instance_kwargs)
     return instance
-    
-def validateConditions(condition,msg):
-	if not condition:
-		raise Exception(msg)
+
+
+def validateConditions(condition, msg):
+    if not condition:
+        raise ConditionViolationError(msg)
 
 
 class Multiprop(list):
@@ -126,7 +136,10 @@ class BaseDataClass(BaseModel):
 
     meta: dict | None = None
     address: MetaAddress | None = None
-    model_config = ConfigDict(extra="forbid")
+
+    class Config:
+        '''Disables the validity of extra parameters'''
+        extra = Extra.forbid
 
     def validate_model(self,
                        recursively: bool = True,
@@ -148,14 +161,10 @@ class BaseDataClass(BaseModel):
             thrown if a validation or condition is violated or if a list with
             all encountered violations should be returned instead.
         '''
-        try:
-            validation_errors = []
-            self.model_validate(self, strict=False)
-        except ValidationError as ex:
-            if raise_exc:
-                raise
-            validation_errors = ex.errors()
-        return validation_errors
+        *_, validation_error = validate_model(self.__class__, self.__dict__)
+        if raise_exc and validation_error:
+            raise validation_error
+        return [validation_error] if validation_error else []
 
     def validate_conditions(self,
                             recursively: bool = True,
@@ -189,10 +198,10 @@ class BaseDataClass(BaseModel):
                         'Invoking conditions validation on the property '
                         '"%s" of %s', k, self
                     )
-                    excs = v.validate_conditions(recursively=True,
-                                                 raise_exc=raise_exc)
-                    exceptions += excs
-                    if excs:
+                    exc = v.validate_conditions(recursively=True,
+                                                raise_exc=raise_exc)
+                    exceptions += exc
+                    if exc:
                         log.error(
                             'Validation of the property "%s" of %s failed!', k,
                             self)
@@ -217,43 +226,42 @@ class BaseDataClass(BaseModel):
 ValueT = TypeVar('ValueT')
 
 
-# pylint: disable=missing-class-docstring
-class AttributeWithMeta(BaseModel, Generic[ValueT]):
+class AttributeWithMeta(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     value: ValueT
 
 
-class AttributeWithAddress(BaseModel, Generic[ValueT]):
+class AttributeWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     address: MetaAddress | None = None
     value: ValueT | None = None
 
 
-class AttributeWithReference(BaseDataClass):
+class AttributeWithReference(BaseDataClass):  # pylint: disable=missing-class-docstring
     externalReference: str | None = None
     globalReference: str | None = None
 
 
-class AttributeWithMetaWithAddress(BaseModel, Generic[ValueT]):
+class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     address: MetaAddress | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithReference(BaseModel, Generic[ValueT]):
+class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithAddressWithReference(BaseModel, Generic[ValueT]):
+class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     address: MetaAddress | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithAddressWithReference(BaseModel, Generic[ValueT]):
+class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
     meta: dict | None = None
     address: MetaAddress | None = None
     externalReference: str | None = None
@@ -269,12 +277,6 @@ _cmp = {
     '>': lambda x, y: x > y,
     '<': lambda x, y: x < y
 }
-
-
-def _to_list(obj) -> list | tuple:
-    if isinstance(obj, (list, tuple)):
-        return obj
-    return (obj,)
 
 
 def all_elements(lhs, op, rhs) -> bool:
