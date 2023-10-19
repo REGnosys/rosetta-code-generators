@@ -144,13 +144,13 @@ class PythonModelObjectGenerator {
 	}
 
 	def boolean checkBasicType(ExpandedAttribute attr) {
-		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
+		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
 			'bool', 'number')
 		return (attr !== null && attr.toRawType !== null) ? types.contains(attr.toRawType.toString()) : false
 	}
 
 	def boolean checkBasicType(String attr) {
-		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
+		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
 			'bool', 'number')
 		return types.contains(attr)
 	}
