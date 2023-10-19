@@ -10,10 +10,10 @@ class PythonTranslator {
     static def toPythonBasicType(String typename) {
         switch typename {
            case 'string': 'str'
-			case 'time': 'time'
-			case 'date': 'date'
-			case 'dateTime': 'datetime'
-			case 'zonedDateTime': 'datetime'
+			case 'time': 'datetime.time'
+			case 'date': 'datetime.date'
+			case 'dateTime': 'datetime.datetime'
+			case 'zonedDateTime': 'datetime.datetime'
 			case 'number': 'Decimal'
 			case 'boolean': 'bool'
 			case 'int': 'int'

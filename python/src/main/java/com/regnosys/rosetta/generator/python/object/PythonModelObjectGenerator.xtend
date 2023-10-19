@@ -65,13 +65,13 @@ class PythonModelObjectGenerator {
 			case 'string':
 				'str'
 			case 'time':
-				'time'
+				'datetime.time'
 			case 'date':
-				'date'
+				'datetime.date'
 			case 'dateTime':
-				'datetime'
+				'datetime.datetime'
 			case 'zonedDateTime':
-				'datetime'
+				'datetime.datetime'
 			case 'number':
 				'Decimal'
 			case 'boolean':
