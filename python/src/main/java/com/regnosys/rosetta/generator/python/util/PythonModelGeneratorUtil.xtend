@@ -100,8 +100,8 @@ class PythonModelGeneratorUtil {
 			   "version = \"" + version + "\"\n" + 
 			   "requires-python = \">= 3.10\"\n" +
 			   "dependencies = [\n" + 
-			   "   \"pydantic<2.0.0\",\n" +
-			   "   \"rosetta.runtime==1.0.0\"\n" +
+			   "   \"pydantic>=2.0.0\",\n" +
+			   "   \"rosetta.runtime==2.0.0\"\n" +
 			   "]\n" +
 			   "[tool.setuptools.packages.find]\n" +
 			   "where = [\"src\"]"
