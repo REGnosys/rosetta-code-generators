@@ -25,6 +25,8 @@ MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROSETTARUNTIMEDIR=$MYPATH/"../src/main/resources/runtime"
 PYTHONSOURCEDIR=$MYPATH/"../target/python"
 cd $PYTHONSOURCEDIR
+rm -rf build
+rm python_cdm-*.*.*-py3-none-any.whl
 $PYEXE -m venv --clear .pyenv || processError
 source .pyenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
@@ -33,10 +35,8 @@ $PYEXE -m pip install "pydantic>=2" || processError
 $PYEXE -m pip install jsonpickle || processError
 $PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl || processError
 
-rm -rf build
-rm python_cdm-3.3.2-py3-none-any.whl
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
-rm -rf build
+rm -rf build .pyenv target/python/.pyenv
 echo ""
 echo ""
 echo "***************************************************************************"
