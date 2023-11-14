@@ -41,7 +41,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>9.0.2</rosetta.dsl.version>
+                <rosetta.dsl.version>9.0.3</rosetta.dsl.version>
                 <rosetta.bundle.version>9.1.0</rosetta.bundle.version>
             </properties>
         </profile>
