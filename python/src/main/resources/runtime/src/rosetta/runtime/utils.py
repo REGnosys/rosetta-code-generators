@@ -337,4 +337,23 @@ def check_cardinality(prop, inf: int, sup: int | None = None) -> bool:
 
     return inf <= prop_card <= sup
 
+def get_only_element(collection):
+    if isinstance(collection, list) and len(collection) == 1:
+        return collection[0]
+    else:
+        return None
+
+
+def filter_collection(collection, attribute_path, filter_value, operator):
+    # Check if the operator is valid
+    if operator not in _cmp:
+        raise ValueError(f'Invalid operator: {operator}')
+
+    # Construct the lambda function for filtering
+    lambda_condition = lambda item: _cmp[operator](_resolve_rosetta_attr(item, attribute_path), filter_value)
+
+    # Apply the lambda function to filter the collection
+    return [item for item in collection if lambda_condition(item)]
+
 # EOF
+

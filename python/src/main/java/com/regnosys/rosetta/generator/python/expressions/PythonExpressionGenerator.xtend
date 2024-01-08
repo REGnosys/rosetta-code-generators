@@ -43,6 +43,20 @@ import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
 import com.regnosys.rosetta.rosetta.expression.OneOfOperation
+import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
+import com.regnosys.rosetta.rosetta.expression.DistinctOperation
+import com.regnosys.rosetta.rosetta.expression.ThenOperation
+import com.regnosys.rosetta.rosetta.expression.LastOperation
+import com.regnosys.rosetta.rosetta.expression.InlineFunction
+import com.regnosys.rosetta.rosetta.expression.SumOperation
+import com.regnosys.rosetta.rosetta.expression.FirstOperation
+import com.regnosys.rosetta.rosetta.expression.FilterOperation
+import com.regnosys.rosetta.rosetta.simple.Operation
+import com.regnosys.rosetta.rosetta.expression.MapOperation
+import com.regnosys.rosetta.rosetta.expression.SortOperation
+import com.regnosys.rosetta.rosetta.expression.FlattenOperation
+import com.regnosys.rosetta.rosetta.TypeParameter
+
 
 class PythonExpressionGenerator {
 	
@@ -53,7 +67,7 @@ class PythonExpressionGenerator {
 	PythonModelGeneratorUtil utils;
 	
 	public var List<String> importsFound
-	var if_cond_blocks = new ArrayList<String>()
+	public var if_cond_blocks = new ArrayList<String>()
 	
 	public def generateConditions(Data cls) {
         // Move your condition and expression-related logic here
@@ -123,6 +137,18 @@ class PythonExpressionGenerator {
 		'''
 	}
 	
+	def generateExpressionThenElse(RosettaExpression expr, List<Integer> iflvl) {
+	    if_cond_blocks = new ArrayList<String>()
+	    val expression = generateExpression(expr, iflvl.get(0))
+	
+	    var blocks = ""
+	    if (!if_cond_blocks.isEmpty()) {
+	        iflvl.set(0, iflvl.get(0) + 1)
+	        blocks = '''    «FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
+	    }
+	    return '''«blocks»'''
+	}
+	
 	
 	def String generateExpression(RosettaExpression expr, int iflvl) {
 		switch (expr) {
@@ -139,8 +165,8 @@ class PythonExpressionGenerator {
 						return «ifthen»
 					
 					def _else_fn«iflvl»():
-						return «elsethen»
-					
+						return «elsethen»				
+							
 				'''
 				if_cond_blocks.add(if_blocks)
 
@@ -214,7 +240,7 @@ class PythonExpressionGenerator {
 			}
 			RosettaOnlyElement: {
 				val argument = expr.argument as RosettaExpression
-				'''(«generateExpression(argument, iflvl)»)'''
+				'''get_only_element(«generateExpression(argument, iflvl)»)'''
 			}
 			RosettaEnumValueReference: {
 				val value = EnumHelper.convertValues(expr.value)
@@ -231,6 +257,109 @@ class PythonExpressionGenerator {
 			ListLiteral: {
 				'''[«FOR arg : expr.elements SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»]'''
 			}
+
+			DistinctOperation: {
+            // Implement the logic for DistinctOperation
+            // Example: return '''set(«generateExpression(expr.argument, iflvl)»)'''
+	            val argument = generateExpression(expr.argument, iflvl);
+	    		return '''set(«argument»)''';
+	        }
+	        
+	        SortOperation: {
+	        	val argument = generateExpression(expr.argument, iflvl);
+    			return '''sorted(«argument»)''';
+            // Implement the logic for DistinctOperation
+            // Example: return '''set(«generateExpression(expr.argument, iflvl)»)'''
+	        }
+	        ThenOperation: {
+			    val funcExpr = expr.function;
+			    var funcBody = "";
+			    val body = funcExpr.body
+			
+			    switch (body) {
+			        SortOperation: {
+			            val sortArgument = generateExpression(expr.argument, iflvl);
+			            funcBody = "sorted(" + sortArgument + ")";
+			        }
+			        DistinctOperation: {
+			            val distinctArgument = generateExpression(expr.argument, iflvl);
+			            funcBody = "set(" + distinctArgument + ")";
+			        }
+			        FlattenOperation: {
+			            // Assuming the argument is a list of lists
+			            val flattenArgument = generateExpression(expr.argument, iflvl);
+			            // Flatten the list of lists
+			            funcBody = "value for item in " + flattenArgument;
+			        }
+			        RosettaOnlyElement:{
+			        	funcBody = "get_only_element("+generateExpression(expr.argument, iflvl)+")"
+			        }
+			        
+			        default: {
+			            funcBody = generateExpression(funcExpr.body, iflvl);
+			        }
+			    }
+			
+			    // Using list comprehension to apply the function to each item
+			    return '''«funcBody»''';
+			}
+	       
+	        
+	        LastOperation: {
+	            // Implement the logic for LastOperation
+	            // Example: return '''«generateExpression(expr.argument, iflvl)»[-1]'''
+	            val argument = generateExpression(expr.argument, iflvl);
+			    // Assuming argument is a list from which we want the last item
+			    return '''«argument»[-1]''';
+	        }
+	        SumOperation: {
+	            // Implement the logic for SumOperation
+	            // Example: return '''sum(«generateExpression(expr.argument, iflvl)»)'''
+	            val argument = generateExpression(expr.argument, iflvl);
+			    // Assuming argument is a list of numbers we want to sum
+			    return '''sum(«argument»)''';
+	        }
+	        FirstOperation: {
+	            // Implement the logic for FirstOperation
+	            // Example: return '''«generateExpression(expr.argument, iflvl)»[0]'''
+	            val argument = generateExpression(expr.argument, iflvl);
+			    // Assuming argument is a list from which we want the first item
+			    return '''«argument»[0]''';
+	        }
+	        FilterOperation: {
+			    // Generate the expression for the list to be filtered
+			    val argument = generateExpression(expr.argument, iflvl);
+			
+			    // Assuming the binary operation is a comparison (e.g., equality check)
+			    val body = expr.function.body;
+			    var condition = "";
+			    var element_to_filter = "";
+			    var filter_value = "";
+			    var operator = "";
+			    if(body instanceof RosettaBinaryOperation){
+			    	operator = "'"+body.operator+"'";
+			        element_to_filter = generateExpression(body.left, iflvl);
+			        filter_value = generateExpression(body.right, iflvl);
+			        // Construct the filter condition
+			    } else {
+			        condition = generateExpression(body, iflvl);
+			    }
+			
+			    // Construct the call to filter_collection
+			    val filterCall = "filter_collection(" + argument + ", " + element_to_filter + ", " + filter_value + ", " + operator + ")";
+						
+			    // Return the filter call
+			    return filterCall;
+			}
+	        MapOperation: {
+			    val inlineFunc = expr.function as InlineFunction;
+			    val funcParameters = inlineFunc.parameters.map[it.name].join(", ");
+			    val funcBody = generateExpression(inlineFunc.body, iflvl);
+			    // Construct the Python lambda function
+			    val argument = generateExpression(expr.argument, iflvl);
+			    // Using map function with the lambda
+			    return '''«argument» for value in «funcBody»''';
+			}
 			default:
 				throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
 		}
@@ -239,6 +368,7 @@ class PythonExpressionGenerator {
 	protected def String reference(RosettaReference expr, int iflvl) {
 		switch (expr) {
 			RosettaImplicitVariable: {
+				'''«expr.name»'''	
 			}
 			RosettaSymbolReference: {
 				symbolReference(expr, iflvl)
@@ -248,6 +378,7 @@ class PythonExpressionGenerator {
 
 	def String symbolReference(RosettaSymbolReference expr, int iflvl) {
 		val s = expr.symbol
+		
 		switch (s) {
 			Data: {
 				'''«s.name»'''
@@ -261,10 +392,15 @@ class PythonExpressionGenerator {
 			RosettaCallableWithArgs: {
 				callableWithArgsCall(s, expr, iflvl)
 			}
+			ShortcutDeclaration:{
+				'''_resolve_rosetta_attr(self, "«s.name»")'''
+			}
+			
 			default:
 				throw new UnsupportedOperationException("Unsupported callable type of " + s.class.simpleName)
 		}
 	}
+	
 
 	def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl) {
 		if (s instanceof FunctionImpl)
@@ -313,9 +449,12 @@ class PythonExpressionGenerator {
 	
 	def addImportsFromConditions(String variable, String namespace) {
 		val import = '''from «namespace».«variable» import «variable»'''
-		if (!importsFound.contains(import)) {
+		if(importsFound!=null){
+			if (!importsFound.contains(import)) {
 			importsFound.add(import)
 		}
+		}
+		
 	}
 	
 	
