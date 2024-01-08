@@ -31,7 +31,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>8.8.2</rosetta.dsl.version>
+                <rosetta.dsl.version>9.3.0</rosetta.dsl.version>
                 <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
             </properties>
         </profile>
@@ -41,8 +41,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>8.8.2</rosetta.dsl.version>
-                <rosetta.bundle.version>8.0.0</rosetta.bundle.version>
+                <rosetta.dsl.version>9.3.0</rosetta.dsl.version>
+                <rosetta.bundle.version>10.0.0</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
@@ -52,8 +52,8 @@
         <java.enforced.version>[17,18)</java.enforced.version>
         <maven.compiler.release>11</maven.compiler.release>
 
-        <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
-        <apache.commons.text.version>1.10.0</apache.commons.text.version>
+        <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
+        <apache.commons.text.version>1.11.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
         <guava.version>32.0.1-jre</guava.version>
 
@@ -63,7 +63,7 @@
         <logback.version>1.4.7</logback.version>
 
         <!-- test -->
-        <junit.version>5.9.1</junit.version>
+        <junit.version>5.10.1</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
 
         <!-- plugin -->
