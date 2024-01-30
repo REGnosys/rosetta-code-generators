@@ -38,38 +38,33 @@ class PythonFunctionsTest {
 		
 		val expected = 
 		'''
-		class Abs(ABC):
-		"""
-		Returns the absolute value of a number. If the argument is not negative, the argument is returned. If the argument is negative, the negation of the argument is returned.
-		"""
-			def __init__(self,arg):
-				self.arg=arg
-				
-			def evaluate(self):
-				result = self.doEvaluate()
-				return result
+		@replacable
+		def Abs(arg: number) -> number:
+			"""
+			Returns the absolute value of a number. If the argument is not negative, the argument is returned. If the argument is negative, the negation of the argument is returned.
 			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
+			Parameters 
+			----------
+			arg : number
+			
+			Returns
+			-------
+			result : number
+			
+			"""
+			self = inspect.currentframe()
 			
 			
-		
-		class AbsDefault(Abs):
-			def doEvaluate(self):
-				result=None
-				return self.assignOutput(result)
-							
-			def assignOutput(self,result):
-				def returnResult_0():
-					def _then_fn0():
-						return (-1 * _resolve_rosetta_attr(self, "arg"))
-					def _else_fn0():
-						return _resolve_rosetta_attr(self, "arg")	
-					return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
-				
-				result = returnResult_0()
-				return result
+		    def _then_fn0():
+		    	return (-1 * _resolve_rosetta_attr(self, "arg"))
+		    
+		    def _else_fn0():
+		    	return _resolve_rosetta_attr(self, "arg")				
+		    		
+			result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
+			
+			
+			return result
 		'''
 		assertTrue(python.toString.contains(expected))
 	

@@ -43,6 +43,7 @@ class PythonModelGeneratorUtil {
 		from __future__ import annotations
 		from typing import List, Optional
 		import datetime
+		import inspect
 		from decimal import Decimal
 		from pydantic import Field
 		from rosetta.runtime.utils import *
@@ -62,12 +63,10 @@ class PythonModelGeneratorUtil {
 		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
 		from __future__ import annotations
 		import datetime
+		import inspect
 		from decimal import Decimal
 		from abc import ABC,abstractmethod
-		from rosetta.runtime.utils import *
-		
-		__all__ = [«"'"+name+"'"»]
-		
+		from rosetta.runtime.utils import *		
 		'''
 		
 		imports
