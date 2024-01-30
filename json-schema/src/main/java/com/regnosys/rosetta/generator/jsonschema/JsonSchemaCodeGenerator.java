@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.jsonschema;
 
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.jsonschema.JsonSchemaEnumGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -34,7 +33,6 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 	@Override
 	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
 			Collection<? extends RosettaModel> models, String version) {
-		Map<String, CharSequence> result = new HashMap<>();
 
 		List<Data> rosettaData = models.stream().flatMap(m -> m.getElements().stream()).filter((e) -> e instanceof Data)
 				.map(Data.class::cast).collect(Collectors.toList());
