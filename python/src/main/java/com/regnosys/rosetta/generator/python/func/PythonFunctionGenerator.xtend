@@ -1,54 +1,31 @@
 package com.regnosys.rosetta.generator.python.func
 
+import com.google.inject.Inject
+import com.regnosys.rosetta.generator.python.expressions.PythonExpressionGenerator
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
+import com.regnosys.rosetta.generator.python.util.PythonTranslator
+import com.regnosys.rosetta.generator.python.util.Util
+import com.regnosys.rosetta.rosetta.RosettaEnumeration
+import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Attribute
+import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
-import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
-import com.regnosys.rosetta.rosetta.expression.RosettaExpression
+import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
-import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
-import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
-import com.regnosys.rosetta.rosetta.expression.RosettaFeatureCall
-import com.regnosys.rosetta.rosetta.expression.RosettaConditionalExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
 import java.util.ArrayList
+import java.util.Arrays
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import java.util.Arrays
-import com.regnosys.rosetta.rosetta.RosettaModel
-import com.google.inject.Inject
-import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
-import com.regnosys.rosetta.generator.python.util.PythonTranslator
-import org.slf4j.LoggerFactory
+import org.eclipse.emf.ecore.EObject
 import org.slf4j.Logger
-import com.regnosys.rosetta.rosetta.RosettaMetaType
-import com.regnosys.rosetta.rosetta.RosettaEnumValue
-import com.regnosys.rosetta.generator.java.enums.EnumHelper
-import com.regnosys.rosetta.rosetta.RosettaFeature
-import com.regnosys.rosetta.rosetta.expression.RosettaExistsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
-import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaIntLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaStringLiteral
-import com.regnosys.rosetta.rosetta.expression.ListLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaCountOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
-import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
-import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
-import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
-import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
-import com.regnosys.rosetta.rosetta.simple.Segment
-import com.regnosys.rosetta.rosetta.expression.MapOperation
-import com.regnosys.rosetta.rosetta.expression.ReduceOperation
-import com.regnosys.rosetta.rosetta.expression.SortOperation
-import com.regnosys.rosetta.rosetta.expression.FilterOperation
-import com.regnosys.rosetta.rosetta.TypeParameter
-import org.eclipse.emf.common.util.EList
-import com.regnosys.rosetta.rosetta.simple.Condition
+import org.slf4j.LoggerFactory
+import com.regnosys.rosetta.rosetta.RosettaType
+import java.util.Set
+import com.regnosys.rosetta.rosetta.simple.AssignPathRoot
+import java.util.Collections
+import com.regnosys.rosetta.rosetta.expression.RosettaExpression
 
 class  PythonFunctionGenerator {
 	
@@ -59,34 +36,32 @@ class  PythonFunctionGenerator {
 	
 	@Inject PythonModelGeneratorUtil utils;
 	@Inject PythonTranslator translator
+	@Inject FunctionDependencyProvider functionDependencyProvider
+	
+	
+	@Inject
+	PythonExpressionGenerator expressionGenerator;
 	
 	val Object SymbolReference = null
 	
 	static def toPythonBasicType(String typename) {
 		switch typename {
-			case 'string':
-				'str'
-			case 'time':
-				'time'
-			case 'date':
-				'date'
-			case 'dateTime':
-				'datetime'
-			case 'zonedDateTime':
-				'datetime'
-			case 'number':
-				'BigDecimal'
-			case 'boolean':
-				'bool'
-			case 'int':
-				'int'
-			case 'calculation',
-			case 'productType',
+           case 'string': 'str'
+			case 'time': 'datetime.time'
+			case 'date': 'datetime.date'
+			case 'dateTime': 'datetime.datetime'
+			case 'zonedDateTime': 'datetime.datetime'
+			case 'number': 'Decimal'
+			case 'boolean': 'bool'
+			case 'int': 'int'
+			case 'calculation',				
+			case 'productType',				
 			case 'eventType':
 				'str'
 			default:
-				(typename === null) ? null : typename.toFirstUpper
-		}
+				typename
+
+        }
 	}
 	
 	def Map<String, ? extends CharSequence> generate(List<Function> rosettaFunctions, String version) {
@@ -121,14 +96,364 @@ class  PythonFunctionGenerator {
 		
 		// «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
 					
-		// '''
+		// '''	
+		if(function.name=="VectorScalarOperation"){
+			println('A')
+		}
+		val dependencies = collectFunctionDependencies(function);
+
 		'''
-		def «function.name»(*_, **__):
-			pass
+		«generateImports(dependencies, function)»
+		
+		
+		@replacable
+		def «function.name»«generatesInputs(function)»:
+			«generateDescription(function)»
+			self = inspect.currentframe()
+			
+			«generateConditions(function)»
+			
+		«generateIfBlocks(function)»
+			«generateAlias(function)»
+			«generateOperations(function)»
+			«generatesOutput(function)»
 		'''
 	}
 	
-    private def generatesBody(Function function) {
+	private def generateImports(Iterable<EObject> dependencies, Function function) {
+    val imports = new StringBuilder();
+
+    for (EObject dependency : dependencies) {
+        // Assuming a simple mapping from class names to import paths
+        // This mapping needs to be defined based on your project structure
+        val tr = dependency.eContainer as RosettaModel
+        val importPath = tr.name;
+        if(dependency instanceof Function){
+        	imports.append("from ").append(importPath).append(".functions.").append(dependency.name).append(" import ").append(dependency.name).append("\n");
+        }else if(dependency instanceof RosettaEnumeration){
+        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+        }
+        else if(dependency instanceof Data){
+        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+        }
+        
+        
+    }
+    imports.append("\n")
+    imports.append('''__all__ = [«"'"+function.name+"'"»]''')
+
+    return imports.toString();
+}
+	
+	private def generatesOutput(Function function) {
+	    val output = function.output
+	    if(output!=null){
+	    	'''
+	    	«IF function.operations.size==0 && function.getShortcuts().size==0»
+	    	«output.name» = _resolve_rosetta_attr(self, "«output.name»")
+	    	«ENDIF»
+	    	
+	    	«generatePostConditions(function)»
+	    	
+	    	return «output.name»
+	    	'''
+	    }
+		
+	}
+	
+	private def generatesInputs(Function function) {
+	    val inputs = function.inputs
+	    val output = function.output
+	
+	    var result = "("
+	    for (input : inputs) {
+	        val typeName = input.getTypeCall().getType().getName()
+	        val type = input.getCard().sup == 0 ? "list[" + toPythonBasicType(typeName) + "]" : toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
+	
+	        result += input.getName() + ": " + type
+	        if (input.getCard().inf == 0)  // Check for optional parameter
+	            result += " | None"
+	        if (inputs.indexOf(input) < inputs.size() - 1)
+	            result += ", "
+	    }
+	    result += ") -> "
+	    if (output !== null)
+	        result += toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
+	    else
+	        result += "None"  // Default to 'None' if output is null
+	    '''«result»'''
+	}
+	
+	private def generateDescription(Function function) {
+	    val inputs = function.inputs
+	    val output = function.output
+	    val description = function.getDefinition()
+	    
+	    return
+	    '''
+	    """
+	    «description»
+	    
+	    Parameters 
+	    ----------
+	    «FOR input : inputs SEPARATOR '\n'»
+	    «input.getName» : «input.getTypeCall().getType().getName()»
+	    «input.getDefinition()»
+	    «ENDFOR»
+	    
+	    Returns
+	    -------
+	    «IF output !== null»
+	    «output.getName()» : «output.getTypeCall().getType().getName()»
+	    «ELSE»
+	    No Return
+	    «ENDIF»
+	    
+	    """
+	    '''
+	}
+	
+	private def collectFunctionDependencies(Function func) {
+	    val Set<EObject> dependencies = newHashSet()
+	
+	    // Add dependencies from shortcuts and operations
+	    func.shortcuts.forEach[shortcut |
+	        dependencies.addAll(functionDependencyProvider.dependencies(shortcut.expression))
+	    ]
+	    func.operations.forEach[operation |
+	        dependencies.addAll(functionDependencyProvider.dependencies(operation.expression))
+	    ]
+	
+	    // Add dependencies from conditions and post conditions
+	    (func.conditions + func.postConditions).forEach[condition |
+	        dependencies.addAll(functionDependencyProvider.dependencies(condition.expression))
+	    ]
+	
+	    // Add dependencies from input types
+	    func.inputs.forEach[input |
+	        if (input.getTypeCall()?.getType() !== null) {
+	            dependencies.add(input.getTypeCall().getType())
+	        }
+	    ]
+	
+	    // Add dependency from output type if it exists
+	    if (func.output?.getTypeCall()?.getType() !== null) {
+	        dependencies.add(func.output.getTypeCall().getType())
+	    }
+	
+	    return dependencies
+	}
+
+	
+	private def generateIfBlocks(Function function) {
+	    val levelList = newArrayList(0) // List with a single element initialized to 0
+	
+	    ''' 
+	    «FOR shortcut : function.shortcuts »
+	    «expressionGenerator.generateExpressionThenElse(shortcut.expression, levelList)»
+	    «ENDFOR»
+	    «FOR opeartion : function.operations »
+	    «expressionGenerator.generateExpressionThenElse(opeartion.expression, levelList)»
+	    «ENDFOR»
+	    '''
+	}
+	
+	private def generateConditions(Function function) {
+	    '''     
+	    «IF function.conditions.size>0»
+	    # conditions
+	    «expressionGenerator.generateConditions(function.conditions)»
+	    
+	    # Execute all registered conditions
+	    execute_conditions(self)
+	    «ENDIF»
+	    '''
+	}
+	
+	private def generatePostConditions(Function function) {	
+	    '''     
+	    «IF function.postConditions.size>0»
+	    # post-conditions
+	    «expressionGenerator.generatePostConditions(function.postConditions)»
+	    
+	    # Execute all registered post-conditions
+	    execute_post_conditions(self)
+	    «ENDIF»
+	    '''
+	}
+	
+	private def generateAlias(Function function) {
+	    val lineSeparator = System.getProperty("line.separator")
+	    var result = new StringBuilder()
+	    var level = 0
+	
+	    for (shortcut : function.shortcuts) {
+	    	expressionGenerator.if_cond_blocks = new ArrayList<String>();	    	
+	        val expression = expressionGenerator.generateExpression(shortcut.expression, level);
+	        val if_cond_blocks = expressionGenerator.if_cond_blocks;
+	        val isEmpty = if_cond_blocks.isEmpty();
+	        if (!isEmpty) {
+	            level += 1
+	        }
+	        result.append('''«shortcut.name» = «expression»''' + lineSeparator)
+	    }
+	
+	    return result.toString()
+	}
+
+
+	
+	private def generateOperations(Function function) {  
+	    val lineSeparator = System.getProperty("line.separator")
+	    var result = new StringBuilder()
+		var level = 0
+	    if (function.output != null) {
+	    	val setNames = new ArrayList<String>();
+	        for (operation: function.getOperations()) {
+	            val root = operation.getAssignRoot()
+	            val expression = expressionGenerator.generateExpression(operation.getExpression(), level)
+	            // Generate the full path using _resolve_rosetta_attr recursively
+				val if_cond_blocks = expressionGenerator.if_cond_blocks;
+		        val isEmpty = if_cond_blocks.isEmpty();
+		        if (!isEmpty) {
+		            level += 1
+		        }
+	            if (operation.isAdd()) {
+	            	result.append(generateAddOperation(root, operation, function, expression) + lineSeparator)
+	             }else {
+	             	result.append(generateSetOperation(root, operation, function, expression, setNames) + lineSeparator)
+	            }
+	        }               
+	    }
+	    return result
+	}
+	
+	private def generateAddOperation(AssignPathRoot root, Operation operation, Function function, String expression){
+		val lineSeparator = System.getProperty("line.separator")
+		val attribute = root as Attribute
+		 val fullPath = generateFullPath(operation.getPath().getReversedAttributes, root.name)
+		
+		var result=""
+    	if(attribute.typeCall.type instanceof RosettaEnumeration){
+    		if(operation == function.getOperations().head){
+    			result = '''«root.name» = []'''  + lineSeparator	
+    		}
+    		result += '''«root.name».extend(«expression»)''' 		
+    	}else{
+    		if(operation == function.getOperations().head){
+    			result = '''«root.name» = «expression»''' 		
+    		}
+    		else{
+    			result = '''«root.name».add_rosetta_attr(«fullPath», «expression»)''' 		
+    		}
+    	}
+    	return result
+	}
+	private def List<Operation> getNonAddOperations(Function function) {
+	    return function.getOperations().filter[!isAdd()].toList()
+	}
+	
+	
+	private def generateSetOperation(AssignPathRoot root, Operation operation, Function function, String expression, List<String> setNames){
+		var result=""
+		
+		// Use _get_rosetta_object for setting the attribute
+        val attributeRoot = root as Attribute
+        if(attributeRoot.typeCall.type instanceof RosettaEnumeration || operation.path==null){
+        	result = '''«attributeRoot.name» =  «expression»'''
+        }
+        else{
+        	if(!setNames.contains(attributeRoot.name)){
+        		result = '''«attributeRoot.name» = _get_rosetta_object('«attributeRoot.typeCall.type.name»', «getNextPathElementName(operation.path)», «buildObject(expression, operation.path)»)'''
+        		setNames.add(attributeRoot.name)
+        	}  	
+        	else{
+        		result = '''«attributeRoot.name» = set_rosetta_attr(_resolve_rosetta_attr(self, '«attributeRoot.name»'), «generateAttributesPath(operation.path)», «expression»)'''
+        	}
+        }
+    	return result
+	}
+	
+	private def generateAttributesPath(Segment path) {
+	    var currentPath = path
+	    var result = new StringBuilder()
+	    result.append("'")
+	    while(currentPath!=null){
+	    	result.append(currentPath.getAttribute().name)
+	    	if(currentPath.next!=null){
+	    		result.append("->")
+	    	}
+	    	currentPath = currentPath.next
+	    }
+	    result.append("'")  
+	    return result
+	    
+	}
+	
+	private def getNextPathElementName(Segment path) {  
+	    if (path !== null) {
+	        val attribute = path.getAttribute()
+	        return "'" + attribute.name + "'"
+	    }
+	    return null // or an appropriate default value
+	}
+	
+	private def buildObject(String expression, Segment path) {
+	    if (path == null) {
+	        return expression;
+	    }
+	
+	    if (path.next == null) {
+	        return expression;
+	    }
+	
+	    val attribute = path.getAttribute();
+	    return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
+	}
+	
+	private def generateFullPath(Iterable<Attribute> attrs, String root) {
+	    // Base case: if there are no attributes, return "self" or appropriate root object
+	    if (attrs.isEmpty) {
+	        return "self" // or appropriate root object
+	    }
+	
+	    val attr = attrs.head
+	    val remainingAttrs = attrs.tail.toList // Convert Iterable to List
+	
+	    val nextPath = if (remainingAttrs.isEmpty) '''_resolve_rosetta_attr(self, «root»)''' else generateFullPath(remainingAttrs, root)
+	
+	    return '''_resolve_rosetta_attr(«nextPath», '«attr.name»')'''
+	}
+
+
+	
+	private def getReversedAttributes(Segment segment) {
+	    val attributes = new ArrayList<Attribute>();
+	    var current = segment;
+	
+	    // Traverse the linked list and collect attributes
+	    while (current != null) {
+	        attributes.add(current.getAttribute());
+	        current = current.getNext();
+	    }
+	
+	    // Reverse the collected list of attributes
+	    Collections.reverse(attributes);
+	
+	    return attributes;
+	}
+
+
+
+
+
+
+
+
+	
+	
+	
+    /*private def generatesBody(Function function) {
  
     	val output = function.output
     	val defaultClassName = function.name+"Default"
@@ -174,6 +499,8 @@ class  PythonFunctionGenerator {
 			«ENDIF»	
 		'''
 	}
+	* 
+	*/
 	
 	/* ********************************************************************** */
 	/* ***	   OUTPUT GENERATION	  										*** */
@@ -246,7 +573,7 @@ class  PythonFunctionGenerator {
 	/* ********************************************************************** */
 	
 	
-	private def generateFuncConditions(Function function,EList<Condition> cond) {
+	/*private def generateFuncConditions(Function function,EList<Condition> cond) {
 		var n_condition = 0;
 		var res = "";
 		for (Condition c : cond) {
@@ -265,8 +592,10 @@ class  PythonFunctionGenerator {
 		def «c.name»():
 		'''
 	}
+	* 
+	*/
 	
-	private def generateFuncExpressionCondition(Function function,RosettaExpression exp,int n_condition) {
+	/*private def generateFuncExpressionCondition(Function function,RosettaExpression exp,int n_condition) {
 		if_cond_blocks = new ArrayList<String>()
 		var expr = generateExpression(exp,function, 0)
 		var blocks = ""
@@ -278,13 +607,15 @@ class  PythonFunctionGenerator {
 		'''	
 		
 	}
+	* 
+	*/
 	
 	/* ********************************************************************** */
 	/* ***	   END of function conditions and postcondition		  *** */
 	/* ********************************************************************** */
 	
 	
-	private def generateConditions(Function function) {
+	/*private def generateConditions(Function function) {
 		var n_condition = 0;
 		var res = '';
 		for (Operation op : function.operations) {
@@ -293,6 +624,8 @@ class  PythonFunctionGenerator {
 		}
 		return res
 	}
+	* 
+	*/
 
 	private def generateConditionBoilerPlate(Operation op, int n_condition) {
 		'''
@@ -309,7 +642,7 @@ class  PythonFunctionGenerator {
 	/* ***	   ALIAS GENERATION	  										  *** */
 	/* ********************************************************************** */
 	
-	private def generateAliasCondition(ShortcutDeclaration s,Function function,int n_condition) {
+	/*private def generateAliasCondition(ShortcutDeclaration s,Function function,int n_condition) {
 		if_cond_blocks = new ArrayList<String>()
 		var expr = generateExpression(s.expression,function, 0)
 		var blocks = ""
@@ -332,6 +665,8 @@ class  PythonFunctionGenerator {
 		«out»
 		'''
 	}
+	* 
+	*/
 	
 	private def getAlias(Function function,ShortcutDeclaration s) {
 		'''
@@ -345,7 +680,7 @@ class  PythonFunctionGenerator {
 	/* ***	  END ALIAS GENERATION	  										*** */
 	/* ********************************************************************** */
 	
-	private def generateExpressionCondition(Function function, Operation op,int n_condition) {
+	/*private def generateExpressionCondition(Function function, Operation op,int n_condition) {
 		if_cond_blocks = new ArrayList<String>()
 		var expr = generateExpression(op.expression,function, 0)
 		var blocks = ""
@@ -363,7 +698,7 @@ class  PythonFunctionGenerator {
 		«ENDIF»
 		'''
 	}
-	
+	*/
 	
 	
 
@@ -374,219 +709,6 @@ class  PythonFunctionGenerator {
 		}
 	}
 	
-	/* ********************************************************************** */
-	/* ***				   BEGIN expression generation				   *** */
-	/* ********************************************************************** */
-
-	def String generateExpression(RosettaExpression expr, Function function,int iflvl) {
-		switch (expr) {
-			RosettaConditionalExpression: {
-				// val nslashes = (2**iflvl - 1) as int;
-				// val escsec = '\\'.repeat(nslashes) + "'";
-				val ifexpr = generateExpression(expr.getIf(), function,iflvl + 1)
-				val ifthen = generateExpression(expr.ifthen,function, iflvl + 1)
-				var elsethen = expr.elsethen !== null && expr.full ? generateExpression(expr.elsethen,
-						function,iflvl + 1) : 'True'
-
-				val if_blocks = '''
-					def _then_fn«iflvl»():
-						return «ifthen»
-					def _else_fn«iflvl»():
-						return «elsethen»	
-				'''
-				if_cond_blocks.add(if_blocks)
-
-				// '''if_cond(«ifexpr», «escsec»«ifthen»«escsec», «escsec»«elsethen»«escsec», self)'''
-				'''if_cond_fn(«ifexpr», _then_fn«iflvl», _else_fn«iflvl»)'''
-			}
-			RosettaFeatureCall: {
-				var right = switch (expr.feature) {
-					Attribute: {
-						expr.feature.name
-
-					}
-					RosettaMetaType: {
-						expr.feature.name
-					}
-					RosettaEnumValue: {
-						val rosettaValue = expr.feature as RosettaEnumValue
-						val value = EnumHelper.convertValues(rosettaValue)
-
-						val symbol = (expr.receiver as RosettaSymbolReference).symbol
-						val model = symbol.eContainer as RosettaModel
-						addImportsFromConditions(symbol.name, model.name)
-
-						value
-					}
-					// TODO: RosettaFeature: '''.Select(x => x.«feature.name.toFirstUpper»)'''
-					RosettaFeature: {
-						expr.feature.name
-					}
-					
-					default:
-						throw new UnsupportedOperationException("Unsupported expression type of " +
-							expr.feature.eClass.name)
-				}
-
-				if (right == "None")
-					right = "NONE"
-				var receiver = generateExpression(expr.receiver,function, iflvl)
-				if (receiver === null) {
-					'''«right»'''
-				} else {
-					'''_resolve_rosetta_attr(«receiver», "«right»")'''
-				}
-
-			}
-			RosettaExistsExpression: {
-				val argument = expr.argument as RosettaExpression
-				'''((«generateExpression(argument,function, iflvl)») is not None)'''
-			}
-			RosettaBinaryOperation: {
-				binaryExpr(expr, function,iflvl)
-			}
-			RosettaAbsentExpression: {
-				val argument = expr.argument as RosettaExpression
-				'''((«generateExpression(argument,function, iflvl)») is None)'''
-			}
-			RosettaReference: {
-				reference(expr, function,iflvl)
-			}
-			RosettaNumberLiteral: {
-				'''«expr.value»'''
-			}
-			RosettaBooleanLiteral: {
-				if (expr.value == "true")
-					'''True'''
-				else
-					'''False'''
-			}
-			RosettaIntLiteral: {
-				'''«expr.value»'''
-			}
-			RosettaStringLiteral: {
-				'''"«expr.value»"'''
-			}
-			RosettaOnlyElement: {
-				val argument = expr.argument as RosettaExpression
-				'''(«generateExpression(argument,function, iflvl)»)'''
-			}
-			RosettaEnumValueReference: {
-				val value = EnumHelper.convertValues(expr.value)
-				'''«expr.enumeration».«value»'''
-			}
-			RosettaOnlyExistsExpression: {
-				var aux = expr as RosettaOnlyExistsExpression;
-				'''check_one_of_constraint(self, «generateExpression(aux.getArgs().get(0),function, iflvl)»)'''
-			}
-			RosettaCountOperation: {
-				val argument = expr.argument as RosettaExpression
-				'''len(«generateExpression(argument,function, iflvl)»)'''
-			}
-			ListLiteral: {
-				'''[«FOR arg : expr.elements SEPARATOR ', '»«generateExpression(arg,function, iflvl)»«ENDFOR»]'''
-			}
-			MapOperation: {
-				val argument = expr.argument as RosettaExpression
-				'''list(map(lambda «generateExpression(argument,function, iflvl)»:«generateExpression(expr.function.body,function, iflvl)»,«generateExpression(argument,function, iflvl)»))'''
-			}
-			ReduceOperation: {
-				
-			}
-			SortOperation: {
-				
-			}
-			FilterOperation: {
-				val argument = expr.argument as RosettaExpression
-				'''list(filter(lambda «generateExpression(argument,function, iflvl)»:«generateExpression(expr.function.body,function, iflvl)»,«generateExpression(argument,function, iflvl)»))'''
-			}
-			default:
-				throw new UnsupportedOperationException("Unsupported expression type of " + expr?.class?.simpleName)
-		}
-	}
-	
-
-	protected def String reference(RosettaReference expr,Function function, int iflvl) {
-		switch (expr) {
-			RosettaImplicitVariable: {
-			}
-			RosettaSymbolReference: {
-				symbolReference(expr,function, iflvl)
-			}
-		}
-	}
-
-	def String symbolReference(RosettaSymbolReference expr,Function function, int iflvl) {
-		val s = expr.symbol
-		switch (s) {
-			Function: {
-				'''«s.name»Default(«generatesInputs(s)»).evaluate()'''
-			}
-			Attribute: {
-				'''_resolve_rosetta_attr(self, "«s.name»")'''
-			}
-			RosettaEnumeration: {
-				'''«s.name»'''
-			}
-			RosettaCallableWithArgs: {
-				callableWithArgsCall(s, expr, iflvl,function)
-			}
-			ShortcutDeclaration: {
-				'''self.«s.name»()'''
-			}
-			default:
-				throw new UnsupportedOperationException("Unsupported callable type of " + s.class.simpleName)
-		}
-	}
-	
-	def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl,Function function) {
-		if (s instanceof FunctionImpl)
-			addImportsFromConditions(s.getName(), (s.eContainer as RosettaModel).name + "." + "functions")
-		else
-			addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)
-		var args = '''«FOR arg : expr.args SEPARATOR ', '»«generateExpression(arg,function, iflvl)»«ENDFOR»'''
-		'''«s.name»(«args»)'''
-
-	}
-
-	def String binaryExpr(RosettaBinaryOperation expr,Function function,int iflvl) {
-		if (expr instanceof ModifiableBinaryOperation) {
-			if (expr.cardMod !== null) {
-				if (expr.operator == "<>") {
-					'''any_elements(«generateExpression(expr.left,function, iflvl)», "«expr.operator»", «generateExpression(expr.right,function, iflvl)»)'''
-				} else {
-					'''all_elements(«generateExpression(expr.left,function, iflvl)», "«expr.operator»", «generateExpression(expr.right, function,iflvl)»)'''
-				}
-			}
-		} else {
-			switch expr.operator {
-				case ("="): {
-					'''(«generateExpression(expr.left,function, iflvl)» == «generateExpression(expr.right,function, iflvl)»)'''
-				}
-				case ("<>"): {
-					'''(«generateExpression(expr.left,function, iflvl)» != «generateExpression(expr.right,function, iflvl)»)'''
-				}
-				case ("contains"): {
-					'''contains(«generateExpression(expr.left,function, iflvl)», «generateExpression(expr.right,function, iflvl)»)'''
-
-				}
-				case ("disjoint"): {
-					'''disjoint(«generateExpression(expr.left,function, iflvl)», «generateExpression(expr.right, function,iflvl)»)'''
-
-				}
-				case ("join"): {
-					'''join(«generateExpression(expr.left,function, iflvl)», «generateExpression(expr.right,function, iflvl)»)'''
-				}
-				default: {
-					'''(«generateExpression(expr.left,function, iflvl)» «expr.operator» «generateExpression(expr.right,function, iflvl)»)'''
-				}
-			}
-		}
-	}
-	
-	/* ********************************************************************** */
-	/* ***					  END condition generation				  *** */
-	/* ********************************************************************** */
 
 	
 	
@@ -637,34 +759,7 @@ class  PythonFunctionGenerator {
 	
 	
  	
-	private def generatesInputs(Function function) {
-		
-		val inputs = orderInputs(function.inputs)
-		
-		var result=""
-		var count =0
-		for(Attribute input: inputs){
-			count+=1
-			result+=input.name
-			if(input.card.inf==0)
-				result+="=None"
-			if(count<inputs.size())
-				result+=", "
-		}
-		'''«result»'''
-	}
 	
-	private def List<Attribute> orderInputs(List<Attribute> inputs){
-		val orderedInputs = new ArrayList<Attribute>();
-		
-		for(Attribute input: inputs){
-			if(input.card.inf!=0)
-				orderedInputs.add(input)
-		}
-		for(Attribute input: inputs){
-			if(!orderedInputs.contains(input))
-				orderedInputs.add(input)
-		}
-		orderedInputs
-	}
+	
+	
 }

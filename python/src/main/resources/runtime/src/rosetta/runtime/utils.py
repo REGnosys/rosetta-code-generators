@@ -7,13 +7,19 @@ from collections import defaultdict
 from pydantic.v1.main import BaseModel, validate_model
 from pydantic.v1.generics import GenericModel
 from pydantic.v1 import Extra
+from typing import get_args, get_origin, Union, List
+
 
 
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
+           'get_only_element', 'rosetta_filter',
            'all_elements', 'contains', 'disjoint', 'join',
+           'flatten_list',
            '_resolve_rosetta_attr',
            '_get_rosetta_object',
+           'set_rosetta_attr',
+           'add_rosetta_attr',
            'validateConditions',
            'check_cardinality',
            'AttributeWithMeta',
@@ -85,6 +91,7 @@ class Multiprop(list):
 
 
 _CONDITIONS_REGISTRY: defaultdict[str, dict[str, Any]] = defaultdict(dict)
+_POST_CONDITIONS_REGISTRY: defaultdict[str, dict[str, Any]] = defaultdict(dict)
 
 
 def rosetta_condition(condition):
@@ -98,6 +105,14 @@ def rosetta_condition(condition):
     def wrapper(*args, **kwargs):
         return condition(*args, **kwargs)
     return wrapper
+
+def rosetta_post_condition(condition):
+    """ Registers a post-condition function. """
+    path_components = condition.__qualname__.split('.')
+    path = '.'.join([condition.__module__ or ''] + path_components[:-1])
+    name = path_components[-1]
+    _POST_CONDITIONS_REGISTRY[path][name] = condition
+    return condition
 
 
 class ConditionViolationError(ValueError):
@@ -222,6 +237,55 @@ class BaseDataClass(BaseModel):
             return False
         return True
 
+    def add_to_list_attribute(self, attr_name: str, value) -> None:
+        """
+        Adds a value to a list attribute, ensuring the value is of an allowed type.
+
+        Parameters:
+        attr_name (str): Name of the list attribute.
+        value: Value to add to the list.
+
+        Raises:
+        AttributeError: If the attribute name is not found or not a list.
+        TypeError: If the value type is not one of the allowed types.
+        """
+        if not hasattr(self, attr_name):
+            raise AttributeError(f"Attribute {attr_name} not found.")
+
+        attr = getattr(self, attr_name)
+        if not isinstance(attr, list):
+            raise AttributeError(f"Attribute {attr_name} is not a list.")
+
+        # Get allowed types for the list elements
+        allowed_types = get_allowed_types_for_list_field(self.__class__, attr_name)
+
+        # Check if value is an instance of one of the allowed types
+        if not isinstance(value, allowed_types):
+            raise TypeError(f"Value must be an instance of {allowed_types}, not {type(value)}")
+
+        attr.append(value)
+
+
+
+def get_allowed_types_for_list_field(model_class: type, field_name: str):
+    """
+    Gets the allowed types for a list field in a Pydantic model, supporting both Union and | operator.
+
+    Parameters:
+    model_class (type): The Pydantic model class.
+    field_name (str): The field name.
+
+    Returns:
+    tuple: A tuple of allowed types.
+    """
+    field_type = model_class.__annotations__.get(field_name)
+    if field_type and get_origin(field_type) is list:
+        list_elem_type = get_args(field_type)[0]
+        if get_origin(list_elem_type):
+            return get_args(list_elem_type)
+        return (list_elem_type,)  # Single type or | operator used
+    return ()
+
 
 ValueT = TypeVar('ValueT')
 
@@ -288,6 +352,7 @@ def all_elements(lhs, op, rhs) -> bool:
     return all(cmp(el1, el2) for el1 in op1 for el2 in op2)
 
 
+
 def disjoint(op1, op2):
     '''Checks if two lists have no common elements'''
     op1 = set(_to_list(op1))
@@ -337,4 +402,105 @@ def check_cardinality(prop, inf: int, sup: int | None = None) -> bool:
 
     return inf <= prop_card <= sup
 
+def get_only_element(collection):
+    if isinstance(collection, list) and len(collection) == 1:
+        return collection[0]
+    else:
+        return None
+
+def flatten_list(nested_list):
+    return [item for sublist in nested_list for item in sublist]
+
+def rosetta_filter(items, filter_func, item_name='item'):
+    """
+    Filters a list of items based on a specified filtering criteria provided as a boolean lambda function.
+
+    :param items: List of items to be filtered.
+    :param filter_func: A lambda function representing the boolean expression for filtering.
+    :param item_name: The name used to refer to each item in the boolean expression.
+    :return: Filtered list.
+    """
+    return [item for item in items if filter_func(locals()[item_name])]
+
+
+def execute_conditions(obj):
+    """
+    Executes all conditions registered with @rosetta_condition for a given object.
+
+    Parameters:
+    obj (object): The object for which to execute all registered conditions.
+
+    Raises:
+    ConditionViolationError: If any condition fails.
+    """
+    conditions = _CONDITIONS_REGISTRY.get(obj.__class__.__name__, {})
+    for condition_name, condition_func in conditions.items():
+        if not condition_func(obj):
+            raise ConditionViolationError(f"Condition '{condition_name}' failed for {obj.__class__.__name__}")
+
+def execute_post_conditions(obj):
+    """ Executes all post-conditions registered for a given object. """
+    for condition_name, condition_func in _POST_CONDITIONS_REGISTRY[obj.__class__.__name__].items():
+        if not condition_func(obj):
+            raise ConditionViolationError(f"Post-condition '{condition_name}' failed for {obj.__class__.__name__}")
+
+
+
+def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
+    """
+    Sets an attribute of a Rosetta model object to a specified value using a path.
+
+    Parameters:
+    obj (Any): The object whose attribute is to be set.
+    path (str): The path to the attribute, with components separated by '->'.
+    value (Any): The value to set the attribute to.
+
+    Raises:
+    ValueError: If the object or attribute at any level in the path is None.
+    AttributeError: If an invalid attribute path is provided.
+    """
+    if obj is None:
+        raise ValueError("Cannot set attribute on a None object in set_rosetta_attr.")
+
+    path_components = path.split('->')  # Use '->' for splitting the path
+    parent_obj = obj
+
+    # Iterate through the path components, except the last one
+    for attrib in path_components[:-1]:
+        parent_obj = _resolve_rosetta_attr(parent_obj, attrib)
+        if parent_obj is None:
+            raise ValueError(f"Attribute '{attrib}' in the path is None, cannot proceed to set value.")
+
+    # Set the value to the last attribute in the path
+    final_attr = path_components[-1]
+    if hasattr(parent_obj, final_attr):
+        setattr(parent_obj, final_attr, value)
+    else:
+        raise AttributeError(f"Invalid attribute '{final_attr}' for object of type {type(parent_obj).__name__}")
+
+
+
+
+def add_rosetta_attr(obj: Any, attrib: str, value: Any) -> None:
+    """
+    Adds a value to a list-like attribute of a Rosetta model object.
+
+    Parameters:
+    obj (Any): The object whose attribute is to be modified.
+    attrib (str): The list-like attribute to add the value to.
+    value (Any): The value to add to the attribute.
+    """
+    if obj is not None:
+        if hasattr(obj, attrib):
+            current_attr = getattr(obj, attrib)
+            if isinstance(current_attr, list):
+                current_attr.append(value)
+            else:
+                raise TypeError(f"Attribute {attrib} is not list-like.")
+        else:
+            setattr(obj, attrib, [value])
+    else:
+        raise ValueError("Object for add_rosetta_attr cannot be None.")
+
 # EOF
+

@@ -31,7 +31,7 @@ $PYEXE -m venv --clear .pyenv || processError
 source .pyenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
-$PYEXE -m pip install "pydantic>=2" || processError
+$PYEXE -m pip install "pydantic>=2.0.0" || processError
 $PYEXE -m pip install jsonpickle || processError
 $PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl || processError
 
