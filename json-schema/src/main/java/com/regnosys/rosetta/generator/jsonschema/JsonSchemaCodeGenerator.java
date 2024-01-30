@@ -1,0 +1,55 @@
+package com.regnosys.rosetta.generator.jsonschema;
+
+import com.google.inject.Inject;
+import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
+import com.regnosys.rosetta.generator.jsonschema.JsonSchemaEnumGenerator;
+import com.regnosys.rosetta.rosetta.RosettaEnumeration;
+import com.regnosys.rosetta.rosetta.RosettaMetaType;
+import com.regnosys.rosetta.rosetta.RosettaModel;
+import com.regnosys.rosetta.rosetta.RosettaNamed;
+import com.regnosys.rosetta.rosetta.simple.Data;
+import com.regnosys.rosetta.rosetta.simple.Function;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+
+import static java.lang.String.format;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
+
+	@Inject
+	private JsonSchemaFileGenerator schemaGenerator;
+
+	public JsonSchemaCodeGenerator() {
+		super("JsonSchema");
+	}
+
+	@Override
+	public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
+		return Collections.emptyMap();
+	}
+
+	@Override
+	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
+			Collection<? extends RosettaModel> models, String version) {
+		Map<String, CharSequence> result = new HashMap<>();
+
+		List<Data> rosettaData = models.stream().flatMap(m -> m.getElements().stream()).filter((e) -> e instanceof Data)
+				.map(Data.class::cast).collect(Collectors.toList());
+
+		List<RosettaMetaType> metaTypes = models.stream().flatMap(m -> m.getElements().stream())
+				.filter(RosettaMetaType.class::isInstance).map(RosettaMetaType.class::cast)
+				.collect(Collectors.toList());
+
+		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m -> m.getElements().stream())
+				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
+				.collect(Collectors.toList());
+
+		String generatedJsonSchema = schemaGenerator.generate(rosettaData, metaTypes, rosettaEnums, version).toString();
+
+		return Map.of(format("schema-%s.json", version), generatedJsonSchema);
+	}
+
+}
