@@ -129,17 +129,17 @@ class PythonFilesGeneratorTest {
 		} 
 		catch (IOException ioE) {
 			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
-			LOGGER.error (ioE.toString ())
+			LOGGER.error ('\n' + ioE.toString ())
 			ioE.printStackTrace ()
 		}
 		catch (ClassCastException ccE) {
 			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
-			LOGGER.error (ccE.toString ())
+			LOGGER.error ('\n' + ccE.toString ())
 			ccE.printStackTrace ()
 		}
 		catch(Exception e) {
 			LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
-			LOGGER.error (e.toString ())
+			LOGGER.error ('\n' + e.toString ())
 			e.printStackTrace ()
 		}
 	}

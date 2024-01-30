@@ -49,6 +49,7 @@ __pycache__
 # project
 target/python/build/
 python_cdm.egg-info
+.testenv
 build/testenv
 build/runtime/build
 rosetta_runtime.egg-info
