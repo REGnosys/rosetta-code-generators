@@ -46,7 +46,7 @@ class JsonSchemaModelObjectGeneratorTest {
 
 	@Test
 	def void shouldGenerateType() {
-		val rosetta = '''
+		val modelMap = '''
 				type Product: <"A product from a catalog.">
 				  productId   int    (1..1) <"The unique identifier for a product">
 				  productName string (1..1) <"Name of the product">
@@ -54,11 +54,10 @@ class JsonSchemaModelObjectGeneratorTest {
 				  tags        string (1..*) <"Tags for the product">			
 		'''.generate
 
-		val schemaFile = rosetta.get('schema-test.json').toString
+		val schemaFile = modelMap.get('com/rosetta/test/model/product-schema.json').toString
 		//println(types)
 		assertEquals('''
 				{
-				  "$schema": "https://json-schema.org/draft/2020-12/schema",
 				  "$id": "https://example.com/product.schema.json",
 				  "title": "Product",
 				  "description": "A product from a catalog.",

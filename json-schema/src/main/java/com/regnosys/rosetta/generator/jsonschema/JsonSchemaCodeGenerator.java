@@ -1,20 +1,20 @@
 package com.regnosys.rosetta.generator.jsonschema;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.rosetta.simple.Function;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-
-import static java.lang.String.format;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 
@@ -45,9 +45,7 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
-		String generatedJsonSchema = schemaGenerator.generate(rosettaData, metaTypes, rosettaEnums, version).toString();
-
-		return Map.of(format("schema-%s.json", version), generatedJsonSchema);
+		return schemaGenerator.generate(rosettaData, rosettaEnums, version);
 	}
 
 }
