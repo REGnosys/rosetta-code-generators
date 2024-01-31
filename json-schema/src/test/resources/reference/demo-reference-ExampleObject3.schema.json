@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "ExampleObject3",
+  "properties": {
+    "eg": {
+      "description": "",
+      "type": "number"
+    }
+  },
+  "required": [
+    "eg"
+  ]
+}

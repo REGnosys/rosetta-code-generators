@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.basic",
   "type": "object",
   "title": "BasicTypeExample2",
   "description": "Example with all required basic types",

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.enumeration",
+  "type": "object",
+  "title": "ExampleEnumType",
+  "description": "Example of using a required enum in a type",
+  "properties": {
+    "exampleEnum1": {
+      "description": "Comment 1",
+      "type": "ExampleEnum1.Value"
+    },
+    "exampleEnum2": {
+      "description": "Comment 2",
+      "type": "ExampleEnum2.Value"
+    }
+  },
+  "required": [
+    "exampleEnum1",
+    "exampleEnum2"
+  ]
+}

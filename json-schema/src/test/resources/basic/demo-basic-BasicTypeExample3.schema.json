@@ -1,7 +1,9 @@
 {
-    "$schema": "https://json-schema.org/draft-04/schema#",
-    "description": "Net zero schema",
-    "type": "object",
-    "properties": {
-    }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.basic",
+  "type": "object",
+  "title": "BasicTypeExample3",
+  "description": "Nothing to see here",
+  "properties": {
+  }
 }
