@@ -2,13 +2,16 @@ package com.regnosys.rosetta.generator.jsonschema
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
+import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
-import com.regnosys.rosetta.rosetta.RosettaNamed
+
+import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 
 class JsonSchemaFileGenerator {
 
@@ -41,32 +44,29 @@ class JsonSchemaFileGenerator {
 	def String generateTypeDefinition(Data data) '''
 		{
 		  "$id": "https://example.com/product.schema.json",
-		  "title": "Product",
-		  "description": "A product from a catalog.",
+		  "title": "«data.name»",
+		  "description": "«data.definition»",
 		  "type": "object",
 		  "properties": {
-		    "productId": {
-		      "description": "The unique identifier for a product",
-		      "type": "integer"
-		    },
-		    "productName": {
-		      "description": "Name of the product",
-		      "type": "string"
-		    },
-		    "price": {
-		      "description": "The price of the product",
-		      "type": "number"
-		    },
-		    "tags": {
-		      "description": "Tags for the product",
-		      "type": "array",
-		      "items": {
-		        "type": "string"
-		      },
-		      "minItems": 1
-		    }
+		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  },
 		  "required": [ "productId", "productName" ]
+		}
+	'''
+
+	def String generateAttributeDefinition(ExpandedAttribute attr) '''
+		«val type = JsonSchemaTranslator.toJsonSchemaType(attr.type)»
+		"«attr.name»": {
+		  "description": "«attr.definition»",
+		  «IF attr.isMultiple»
+		  "type": "array",
+		  "items": {
+		    "type": "«type»"
+		  },
+		  "minItems": «attr.inf»
+		  «ELSE»
+		  "type": "«type»"
+		  «ENDIF»
 		}
 	'''
 
