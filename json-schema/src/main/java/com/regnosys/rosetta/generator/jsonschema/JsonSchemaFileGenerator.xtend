@@ -43,9 +43,12 @@ class JsonSchemaFileGenerator {
 
 	def String generateTypeDefinition(Data data) '''
 		{
-		  "title": "«data.name»",
-		  "description": "«data.definition»",
+		  "$schema": "http://json-schema.org/draft-04/schema#",
 		  "type": "object",
+		  "title": "«data.name»",
+		  «IF data.definition !== null»
+		  "description": "«data.definition»",
+		  «ENDIF»
 		  "properties": {
 		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  },

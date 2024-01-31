@@ -1,7 +1,8 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
   "title": "BasicTypeExample2",
   "description": "Example with all required basic types",
-  "type": "object",
   "properties": {
     "stringExample": {
       "description": "Comment 1",
@@ -17,19 +18,19 @@
     },
     "timeExample": {
       "description": "Comment 4",
-      "type": "Time"
+      "type": "string"
     },
     "dateExample": {
       "description": "Comment 5",
-      "type": "Date"
+      "type": "string"
     },
     "dateTimeExample": {
       "description": "Comment 6",
-      "type": "DateTime"
+      "type": "string"
     },
     "zonedDateTimeExample": {
       "description": "Comment 7",
-      "type": "ZonedDateTime"
+      "type": "string"
     },
     "booleanExample": {
       "description": "Comment 8",
