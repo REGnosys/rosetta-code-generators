@@ -1,7 +1,8 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
   "title": "BasicTypeExample1",
   "description": "Example with one required string",
-  "type": "object",
   "properties": {
     "stringExample": {
       "description": "Comment 1",
