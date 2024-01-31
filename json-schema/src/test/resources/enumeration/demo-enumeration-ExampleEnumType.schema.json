@@ -7,11 +7,11 @@
   "properties": {
     "exampleEnum1": {
       "description": "Comment 1",
-      "type": "ExampleEnum1.Value"
+      "$ref": "demo-enumeration-ExampleEnum1.schema.json"
     },
     "exampleEnum2": {
       "description": "Comment 2",
-      "type": "ExampleEnum2.Value"
+      "$ref": "demo-enumeration-ExampleEnum2.schema.json"
     }
   },
   "required": [

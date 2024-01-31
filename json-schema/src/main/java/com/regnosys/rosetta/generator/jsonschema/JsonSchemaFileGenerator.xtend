@@ -77,9 +77,6 @@ class JsonSchemaFileGenerator {
 		if (expandedType.isBuiltInType) {
 			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
 		}
-		else if (expandedType.isEnumeration) {
-			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
-		} 
 		else {
 			return '''"$ref": "«type.filename»"'''
 		}

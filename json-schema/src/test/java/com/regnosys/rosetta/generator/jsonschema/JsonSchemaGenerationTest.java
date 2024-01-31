@@ -59,7 +59,7 @@ public class JsonSchemaGenerationTest {
                 }
                 String expectedFile = Files.readString(expectationFile);
                 CharSequence actualFile = generatedFiles.get(generatedFile);
-                Files.write(expectationFile,actualFile.toString().getBytes());
+                //Files.write(expectationFile,actualFile.toString().getBytes());
                 builder.add(Arguments.of(generatedFile, expectedFile, actualFile));
             }
         }
@@ -71,7 +71,7 @@ public class JsonSchemaGenerationTest {
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("load")
     void runTest(String generatedFileName, String expectedFile, String actualFile) {
-    	LOGGER.info("Testing {}", generatedFileName);
+    	LOGGER.info("Testing schema generation, file: {}", generatedFileName);
         assertEquals(expectedFile, actualFile);
         validateJsonSchema(actualFile);
     }
