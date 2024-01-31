@@ -49,7 +49,9 @@ class JsonSchemaFileGenerator {
 		  "properties": {
 		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  },
-		  "required": [ «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ", "»"«requiredAttrName»"«ENDFOR» ]
+		  "required": [
+		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
+		  ]
 		}
 	'''
 
@@ -88,6 +90,27 @@ class JsonSchemaFileGenerator {
 	
 	def String generateEnumDefinition(RosettaEnumeration e) '''
 		{
+		  "description": "«e.definition»",
+		  "enum": [
+		    «FOR enumValue : e.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
+		  ],
+		  "oneOf": [
+		    {
+		      "enum": [
+		        "PRIN"
+		      ],
+		      "title": "Principal",
+		      "description": "Trading as Principal."
+		    },
+		    {
+		      "enum": [
+		        "AGEN"
+		      ],
+		      "title": "Agent",
+		      "description": "Trading as Agent on behalf of a customer."
+		    }
+		  ],
+		  "type": "string"
 		}
 	'''
 	
