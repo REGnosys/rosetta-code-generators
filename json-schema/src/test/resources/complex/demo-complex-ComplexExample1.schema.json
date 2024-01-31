@@ -1,7 +1,9 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex",
+  "type": "object",
   "title": "ComplexExample1",
   "description": "Example with an complex type with 2 nested types",
-  "type": "object",
   "properties": {
     "nestedLevel1Example": {
       "description": "Comment 1",

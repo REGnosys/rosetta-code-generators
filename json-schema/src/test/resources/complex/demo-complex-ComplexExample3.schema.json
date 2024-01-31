@@ -1,7 +1,9 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex",
+  "type": "object",
   "title": "ComplexExample3",
   "description": "Example with a complex type containing cyclical type",
-  "type": "object",
   "properties": {
     "cyclicNamespaceExample1": {
       "description": "Comment 1",

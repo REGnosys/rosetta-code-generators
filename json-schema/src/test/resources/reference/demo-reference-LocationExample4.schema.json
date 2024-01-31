@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "LocationExample4",
+  "properties": {
+    "exampleObject4": {
+      "description": "",
+      "type": "array",
+      "items": {
+        "type": "ExampleObject4"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+  ]
+}
