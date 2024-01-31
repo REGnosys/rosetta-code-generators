@@ -1,0 +1,54 @@
+namespace demo.reference
+version "${project.version}"
+
+type ReferenceExample1:
+    exampleObject1 ExampleObject1 (1..1)
+        [metadata id]
+    exampleObject1Reference ExampleObject1 (1..1)
+        [metadata reference]
+
+type ExampleObject1:
+    [metadata key]
+    basicString string (0..1) <"Comment 1">
+
+type ReferenceExample2:
+    exampleObject1 ExampleObject2 (1..*)
+        [metadata id]
+    exampleObject1Reference ExampleObject2 (1..1)
+        [metadata reference]
+
+type ExampleObject2:
+    [metadata key]
+    basicString string (0..1) <"Comment 1">
+
+
+type ReferenceExample3:
+    locationExample LocationExample3 (1..1)
+    addressExample AddressExample3 (1..1)
+
+type LocationExample3:
+	exampleObject3 ExampleObject3 (1..1)
+        [metadata location]
+
+type AddressExample3:
+	exampleObject3 ExampleObject3 (1..1)
+        [metadata address "pointsTo"=LocationExample3->exampleObject3]
+
+type ExampleObject3:
+	eg number (1..1)
+
+
+type ReferenceExample4:
+    locationExample LocationExample4 (1..*)
+    addressExample AddressExample4 (1..1)
+
+type LocationExample4:
+	exampleObject4 ExampleObject4 (1..*)
+        [metadata location]
+
+type AddressExample4:
+	exampleObject4 ExampleObject4 (1..1)
+        [metadata address "pointsTo"=LocationExample4->exampleObject4]
+
+type ExampleObject4:
+	eg number (1..1)
