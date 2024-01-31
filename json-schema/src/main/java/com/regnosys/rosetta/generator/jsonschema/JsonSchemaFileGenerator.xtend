@@ -50,7 +50,7 @@ class JsonSchemaFileGenerator {
 		  "properties": {
 		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  },
-		  "required": [ "productId", "productName" ]
+		  "required": [ «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ", "»"«requiredAttrName»"«ENDFOR» ]
 		}
 	'''
 
@@ -69,6 +69,10 @@ class JsonSchemaFileGenerator {
 		  «ENDIF»
 		}
 	'''
+
+	def List<String> getRequiredAttributeNames(Data data) {
+		data.expandedAttributes.filter[inf == 1 && sup == 1].map[name].toList
+	}
 
 	def Map<String, ? extends CharSequence> generateEnumDefinitions(List<RosettaEnumeration> enumList) {
 		val result = newHashMap
