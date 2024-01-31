@@ -1,21 +1,8 @@
 package com.regnosys.rosetta.generator.jsonschema;
 
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.Provider;
-import com.google.inject.TypeLiteral;
-import com.regnosys.rosetta.tests.RosettaInjectorProvider;
-import com.regnosys.rosetta.tests.util.ModelHelper;
-import org.eclipse.xtext.resource.XtextResourceSet;
-import org.eclipse.xtext.testing.InjectWith;
-import org.eclipse.xtext.testing.extensions.InjectionExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.Assert.assertEquals;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -25,10 +12,24 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
+import org.eclipse.xtext.resource.XtextResourceSet;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
+import com.regnosys.rosetta.tests.RosettaInjectorProvider;
+import com.regnosys.rosetta.tests.util.ModelHelper;
 
 public class JsonSchemaGenerationTest {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(JsonSchemaGenerationTest.class);
+	
     public static Stream<Arguments> load() throws IOException {
 
         RosettaInjectorProvider rosettaInjectorProvider = new RosettaInjectorProvider();
@@ -65,6 +66,7 @@ public class JsonSchemaGenerationTest {
     @ParameterizedTest(name = "{index} {0}")
     @MethodSource("load")
     void runTest(String generatedFileName, String expectedFile, String actualFile) {
+    	//LOGGER.info("Testing {}", generatedFileName);
         assertEquals(expectedFile, actualFile);
     }
 
