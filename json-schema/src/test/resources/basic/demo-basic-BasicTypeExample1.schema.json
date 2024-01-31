@@ -1,0 +1,14 @@
+{
+  "title": "BasicTypeExample1",
+  "description": "Example with one required string",
+  "type": "object",
+  "properties": {
+    "stringExample": {
+      "description": "Comment 1",
+      "type": "string"
+    }
+  },
+  "required": [
+    "stringExample"
+  ]
+}

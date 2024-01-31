@@ -1,0 +1,49 @@
+{
+  "title": "BasicTypeExample2",
+  "description": "Example with all required basic types",
+  "type": "object",
+  "properties": {
+    "stringExample": {
+      "description": "Comment 1",
+      "type": "string"
+    },
+    "numberExample": {
+      "description": "Comment 2",
+      "type": "number"
+    },
+    "intExample": {
+      "description": "Comment 3",
+      "type": "integer"
+    },
+    "timeExample": {
+      "description": "Comment 4",
+      "type": "Time"
+    },
+    "dateExample": {
+      "description": "Comment 5",
+      "type": "Date"
+    },
+    "dateTimeExample": {
+      "description": "Comment 6",
+      "type": "DateTime"
+    },
+    "zonedDateTimeExample": {
+      "description": "Comment 7",
+      "type": "ZonedDateTime"
+    },
+    "booleanExample": {
+      "description": "Comment 8",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "stringExample",
+    "numberExample",
+    "intExample",
+    "timeExample",
+    "dateExample",
+    "dateTimeExample",
+    "zonedDateTimeExample",
+    "booleanExample"
+  ]
+}

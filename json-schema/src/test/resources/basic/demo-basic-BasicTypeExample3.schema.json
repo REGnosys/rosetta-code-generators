@@ -1,0 +1,9 @@
+{
+  "title": "BasicTypeExample3",
+  "description": "Nothing to see here",
+  "type": "object",
+  "properties": {
+  },
+  "required": [
+  ]
+}
