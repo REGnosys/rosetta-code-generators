@@ -1,0 +1,17 @@
+{
+  "title": "CardinalityExample2",
+  "description": "Example with an optional basic types",
+  "type": "object",
+  "properties": {
+    "optionalListExample": {
+      "description": "Comment 1",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+  ]
+}
