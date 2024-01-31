@@ -1,0 +1,13 @@
+{
+  "title": "ComplexExample2",
+  "description": "Example with an complex type from another namespace",
+  "type": "object",
+  "properties": {
+    "nestedLevel1Example": {
+      "description": "Comment 1",
+      "type": "AnotherNamespaceExample1"
+    }
+  },
+  "required": [
+  ]
+}
