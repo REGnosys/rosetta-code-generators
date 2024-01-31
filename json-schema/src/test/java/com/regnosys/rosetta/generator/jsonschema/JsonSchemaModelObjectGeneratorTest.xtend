@@ -54,7 +54,7 @@ class JsonSchemaModelObjectGeneratorTest {
 				  tags        string (1..*) <"Tags for the product">			
 		'''.generate
 
-		val schemaFile = modelMap.get('com/rosetta/test/model/product-schema.json').toString
+		val schemaFile = modelMap.get('com-rosetta-test-model-Product.schema.json').toString
 		//println(types)
 		assertEquals('''
 				{
