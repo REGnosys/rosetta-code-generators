@@ -1,0 +1,19 @@
+namespace demo.complex
+version "${project.version}"
+
+import demo.complex.namespace1.*
+
+type ComplexExample1: <"Example with an complex type with 2 nested types">
+    nestedLevel1Example NestedLevel1Example (0..1) <"Comment 1">
+
+type NestedLevel1Example: <"Example with an complex type with 1 nested type">
+    nestedLevel2Example NestedLevel2Example (0..1) <"Comment 1">
+
+type NestedLevel2Example: <"Example with an optional string type">
+    basicString string (0..1) <"Comment 1">
+
+type ComplexExample2: <"Example with an complex type from another namespace">
+    nestedLevel1Example AnotherNamespaceExample1 (0..1) <"Comment 1">
+
+type ComplexExample3: <"Example with a complex type containing cyclical type">
+    cyclicNamespaceExample1 CyclicNamespaceExample1 (0..1) <"Comment 1">

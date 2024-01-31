@@ -1,0 +1,10 @@
+namespace demo.complex.namespace1
+version "${project.version}"
+
+import demo.complex.*
+
+type AnotherNamespaceExample1: <"Example with a simple type">
+    basicString string (0..1) <"Comment 1">
+
+type CyclicNamespaceExample1: <"Example with containing parent namespace">
+    complexExample3 ComplexExample3 (0..1) <"Comment 1">
