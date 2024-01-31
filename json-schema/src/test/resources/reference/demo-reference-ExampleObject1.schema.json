@@ -7,10 +7,6 @@
     "basicString": {
       "description": "Comment 1",
       "type": "string"
-    },
-    "meta": {
-      "description": "",
-      "type": "MetaFields"
     }
   }
 }

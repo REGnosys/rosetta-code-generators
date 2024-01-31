@@ -8,7 +8,7 @@
       "description": "",
       "type": "array",
       "items": {
-        "type": "ExampleObject4"
+        "$ref": "demo-reference-ExampleObject4.schema.json"
       },
       "minItems": 1
     }

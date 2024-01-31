@@ -8,13 +8,13 @@
       "description": "",
       "type": "array",
       "items": {
-        "type": "ExampleObject2"
+        "$ref": "demo-reference-ExampleObject2.schema.json"
       },
       "minItems": 1
     },
     "exampleObject1Reference": {
       "description": "",
-      "type": "ExampleObject2"
+      "$ref": "demo-reference-ExampleObject2.schema.json"
     }
   },
   "required": [

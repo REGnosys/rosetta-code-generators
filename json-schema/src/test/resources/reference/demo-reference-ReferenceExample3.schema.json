@@ -6,11 +6,11 @@
   "properties": {
     "locationExample": {
       "description": "",
-      "type": "LocationExample3"
+      "$ref": "demo-reference-LocationExample3.schema.json"
     },
     "addressExample": {
       "description": "",
-      "type": "AddressExample3"
+      "$ref": "demo-reference-AddressExample3.schema.json"
     }
   },
   "required": [

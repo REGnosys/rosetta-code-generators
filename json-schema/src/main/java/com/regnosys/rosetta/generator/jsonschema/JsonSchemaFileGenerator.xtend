@@ -2,10 +2,9 @@ package com.regnosys.rosetta.generator.jsonschema
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.rosetta.RosettaNamed
+import com.regnosys.rosetta.rosetta.RosettaType
+import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.ArrayList
 import java.util.List
@@ -32,26 +31,24 @@ class JsonSchemaFileGenerator {
 		val result = newHashMap
 
 		for (Data data : dataList) {
-			val model = data.eContainer as RosettaModel
-			val typeDefinitionName = getFilename(model, data)
-			val typeDefinitionContents = generateTypeDefinition(model.name, data)
-			result.put(typeDefinitionName, typeDefinitionContents)
+			val typeDefinitionContents = generateTypeDefinition(data)
+			result.put(data.filename, typeDefinitionContents)
 		}
 
 		result
 	}
 
-	def String generateTypeDefinition(String namespace, Data data) '''
+	def String generateTypeDefinition(Data data) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
-		  "$anchor": "«namespace»",
+		  "$anchor": "«data.namespace»",
 		  "type": "object",
 		  "title": "«data.name»",
 		  «IF data.definition !== null»
 		  "description": "«data.definition»",
 		  «ENDIF»
 		  "properties": {
-		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
+		    «FOR attr : data.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  }«IF !data.requiredAttributeNames.isEmpty»,
 		  "required": [
 		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
@@ -59,21 +56,33 @@ class JsonSchemaFileGenerator {
 		}
 	'''
 
-	def String generateAttributeDefinition(ExpandedAttribute attr) '''
-		«val type = JsonSchemaTranslator.toJsonSchemaType(attr.type)»
+	def String generateAttributeDefinition(Attribute attr) '''
 		"«attr.name»": {
 		  "description": "«attr.definition»",
-		  «IF attr.isMultiple»
+		  «IF attr.toExpandedAttribute.multiple»
 		  "type": "array",
 		  "items": {
-		    "type": "«type»"
+		    «attr.attributeType»
 		  },
-		  "minItems": «attr.inf»
+		  "minItems": «attr.card.inf»
 		  «ELSE»
-		  "type": "«type»"
+		  «attr.attributeType»
 		  «ENDIF»
 		}
 	'''
+	def String getAttributeType(Attribute attr) {
+		val type = attr.typeCall.type
+		val expandedType = type.toExpandedType
+		if (expandedType.isBuiltInType) {
+			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		}
+		else if (expandedType.isEnumeration) {
+			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		} 
+		else {
+			return '''"$ref": "«type.filename»"'''
+		}
+	}
 
 	def List<String> getRequiredAttributeNames(Data data) {
 		data.expandedAttributes.filter[inf == 1 && sup == 1].map[name].toList
@@ -83,10 +92,8 @@ class JsonSchemaFileGenerator {
 		val result = newHashMap
 
 		for (RosettaEnumeration enumeration : enumList) {
-			val model = enumeration.eContainer as RosettaModel
-			val enumDefinitionName = getFilename(model, enumeration)
 			val enumDefinitionContents = enumeration.generateEnumDefinition
-			result.put(enumDefinitionName, enumDefinitionContents)
+			result.put(enumeration.filename, enumDefinitionContents)
 		}
 
 		result
@@ -118,8 +125,12 @@ class JsonSchemaFileGenerator {
 		}
 	'''
 	
-	def String getFilename(RosettaModel model, RosettaNamed named) {
-		model.name.replace(".", "-") + "-" + named.name + ".schema.json"
+	def String getNamespace(RosettaType type) {
+		type.model.name
+	}
+	
+	def String getFilename(RosettaType type) {
+		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
 	}
 	
 	private def allEnumsValues(RosettaEnumeration enumeration) {

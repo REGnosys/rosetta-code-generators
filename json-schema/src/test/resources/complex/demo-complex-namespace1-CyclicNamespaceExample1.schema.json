@@ -7,7 +7,7 @@
   "properties": {
     "complexExample3": {
       "description": "Comment 1",
-      "type": "ComplexExample3"
+      "$ref": "demo-complex-ComplexExample3.schema.json"
     }
   }
 }

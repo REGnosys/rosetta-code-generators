@@ -6,11 +6,11 @@
   "properties": {
     "exampleObject1": {
       "description": "",
-      "type": "ExampleObject1"
+      "$ref": "demo-reference-ExampleObject1.schema.json"
     },
     "exampleObject1Reference": {
       "description": "",
-      "type": "ExampleObject1"
+      "$ref": "demo-reference-ExampleObject1.schema.json"
     }
   },
   "required": [
