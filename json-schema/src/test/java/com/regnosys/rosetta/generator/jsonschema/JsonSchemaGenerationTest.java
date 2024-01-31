@@ -1,14 +1,15 @@
 package com.regnosys.rosetta.generator.jsonschema;
 
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Provider;
+import com.google.inject.TypeLiteral;
 import com.regnosys.rosetta.tests.RosettaInjectorProvider;
 import com.regnosys.rosetta.tests.util.ModelHelper;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.eclipse.xtext.testing.InjectWith;
 import org.eclipse.xtext.testing.extensions.InjectionExtension;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,59 +27,67 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
-@ExtendWith(InjectionExtension.class)
-@InjectWith(RosettaInjectorProvider.class)
 public class JsonSchemaGenerationTest {
 
-    @Inject
-    private ModelHelper modelHelper;
-    @Inject
-    private Provider<XtextResourceSet> resourceSetProvider;
-    @Inject
-    private JsonSchemaCodeGenerator generator;
-
     public static Stream<Arguments> load() throws IOException {
-        return Files.list(Path.of("src/test/resources")).map(x -> Arguments.of(x));
+
+        RosettaInjectorProvider rosettaInjectorProvider = new RosettaInjectorProvider();
+
+        rosettaInjectorProvider.setupRegistry();
+        Injector injector = rosettaInjectorProvider.getInjector();
+        ModelHelper modelHelper = injector.getInstance(ModelHelper.class);
+        Provider<XtextResourceSet> resourceSetProvider = injector.getInstance(Key.get(new TypeLiteral<Provider<XtextResourceSet>>() {
+        }));
+        JsonSchemaCodeGenerator generator = injector.getInstance(JsonSchemaCodeGenerator.class);
+
+
+        Stream.Builder<Arguments> builder = Stream.builder();
+        List<Path> testDirs = Files.list(Path.of("src/test/resources")).collect(Collectors.toList());
+
+        for (Path testDir : testDirs) {
+            Map<String, ? extends CharSequence> generatedFiles = getGeneratedFiles(testDir, modelHelper, resourceSetProvider, generator);
+
+            for (String generatedFile : generatedFiles.keySet()) {
+                Path expectationFile = testDir.resolve(generatedFile);
+                if (!Files.exists(expectationFile)) {
+                    Files.createFile(expectationFile);
+                }
+                String expectedFile = Files.readString(expectationFile);
+                CharSequence actualFile = generatedFiles.get(generatedFile);
+                builder.add(Arguments.of(generatedFile, expectedFile, actualFile));
+            }
+        }
+
+
+        return builder.build();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} {0}")
     @MethodSource("load")
-    void runTest(Path testPath) throws IOException {
+    void runTest(String generatedFileName, String expectedFile, String actualFile) {
+        assertEquals(expectedFile, actualFile);
+    }
+
+    private static Map<String, ? extends CharSequence> getGeneratedFiles(Path testPath, ModelHelper modelHelper, Provider<XtextResourceSet> resourceSetProvider, JsonSchemaCodeGenerator generator) throws IOException {
         String[] rosettaFiles = loadRosettaFiles(testPath);
         var m = modelHelper.parseRosettaWithNoErrors(rosettaFiles);
         Map<String, ? extends CharSequence> generatedFiles = generator.afterAllGenerate(resourceSetProvider.get(), m, "test");
-
-        for (String generatedFile : generatedFiles.keySet()) {
-            Path expectationFile = testPath.resolve(generatedFile);
-            if (!Files.exists(expectationFile)) {
-                Files.createFile(expectationFile);
-            }
-
-            String expectedFile = Files.readString(expectationFile);
-            CharSequence charSequence = generatedFiles.get(generatedFile);
-            assertEquals(expectedFile, charSequence);
-        }
+        return generatedFiles;
     }
 
-    private String[] loadRosettaFiles(Path testPath) throws IOException {
+    private static String[] loadRosettaFiles(Path testPath) throws IOException {
         return Files.list(testPath)
                 .filter(x -> x.toString().endsWith(".rosetta"))
-                .map(this::readString)
+                .map(JsonSchemaGenerationTest::readString)
                 .toArray(String[]::new);
     }
 
-    String readString(Path p) {
+    private static String readString(Path p) {
         try {
             return Files.readString(p);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
 
-    }
-
-    private Map<String, ? extends CharSequence> generate(String model) {
-        var m = modelHelper.parseRosettaWithNoErrors(model);
-        var resourceSet = m.eResource().getResourceSet();
-        return generator.afterAllGenerate(resourceSet, List.of(m), "test");
     }
 }
