@@ -6,25 +6,22 @@ class JsonSchemaTranslator {
 				
 	static def toJsonSchemaBasicType(String typename) {
 		switch typename {
-			case 'string',				
-			case 'calculation',				
-			case 'productType',				
-			case 'eventType':
-				'String'
+			case 'string':
+				'string'
 			case 'int':
-				'Int'
-			case 'time':
-				'java.time.LocalTime'
-			case 'date':
-				'java.time.LocalDate'
-			case 'dateTime':
-				'java.time.LocalDateTime'
-			case 'zonedDateTime':
-				'java.time.ZonedDateTime'
+				'integer'
+//			case 'time':
+//				'java.time.LocalTime'
+//			case 'date':
+//				'java.time.LocalDate'
+//			case 'dateTime':
+//				'java.time.LocalDateTime'
+//			case 'zonedDateTime':
+//				'java.time.ZonedDateTime'
 			case 'number':
-				'json.math.BigDecimal'
+				'number'
 			case 'boolean':
-				'Boolean'
+				'boolean'
 		}
 	}
 
