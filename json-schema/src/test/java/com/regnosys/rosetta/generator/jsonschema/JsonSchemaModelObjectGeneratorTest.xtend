@@ -47,14 +47,17 @@ class JsonSchemaModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateType() {
 		val modelMap = '''
-				type Product: <"A product from a catalog.">
-				  productId   int    (1..1) <"The unique identifier for a product">
-				  productName string (1..1) <"Name of the product">
-				  price       number (0..1) <"The price of the product">
-				  tags        string (1..*) <"Tags for the product">			
+			namespace demo.foo
+			version "${project.version}"
+			
+			type Product: <"A product from a catalog.">
+			    productId int (1..1) <"The unique identifier for a product">
+			    productName string (1..1) <"Name of the product">
+			    price number (0..1) <"The price of the product">
+			    tags string (1..*) <"Tags for the product">
 		'''.generate
 
-		val schemaFile = modelMap.get('com-rosetta-test-model-Product.schema.json').toString
+		val schemaFile = modelMap.get('demo-foo-Product.schema.json').toString
 		//println(types)
 		assertEquals('''
 				{
