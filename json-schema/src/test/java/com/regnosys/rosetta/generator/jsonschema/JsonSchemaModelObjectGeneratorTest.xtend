@@ -60,39 +60,81 @@ class JsonSchemaModelObjectGeneratorTest {
 		val schemaFile = modelMap.get('demo-foo-Product.schema.json').toString
 		//println(types)
 		assertEquals('''
-				{
-				  "$id": "https://example.com/product.schema.json",
-				  "title": "Product",
-				  "description": "A product from a catalog.",
-				  "type": "object",
-				  "properties": {
-				    "productId": {
-				      "description": "The unique identifier for a product",
-				      "type": "integer"
-				    },
-				    "productName": {
-				      "description": "Name of the product",
-				      "type": "string"
-				    },
-				    "price": {
-				      "description": "The price of the product",
-				      "type": "number"
-				    },
-				    "tags": {
-				      "description": "Tags for the product",
-				      "type": "array",
-				      "items": {
-				        "type": "string"
-				      },
-				      "minItems": 1
-				    }
-				  },
-				  "required": [ "productId", "productName" ]
-				}
+			{
+			  "title": "Product",
+			  "description": "A product from a catalog.",
+			  "type": "object",
+			  "properties": {
+			    "productId": {
+			      "description": "The unique identifier for a product",
+			      "type": "integer"
+			    },
+			    "productName": {
+			      "description": "Name of the product",
+			      "type": "string"
+			    },
+			    "price": {
+			      "description": "The price of the product",
+			      "type": "number"
+			    },
+			    "tags": {
+			      "description": "Tags for the product",
+			      "type": "array",
+			      "items": {
+			        "type": "string"
+			      },
+			      "minItems": 1
+			    }
+			  },
+			  "required": [ "productId", "productName" ]
+			}
 			'''.toString, schemaFile)
 	}
 	
+	@Test
+	def void shouldGenerateComplexTypes() {
+		val modelMap = '''
+			namespace demo.foo
+			version "${project.version}"
+			
+			type Product:
+			    productName string (1..1)
+			    identifiers ProductIdentifer (0..*) <"List of product identifiers">
+			    
+			type ProductIdentifer:
+				identifier string (1..1) <"Identifier value">
+				identifierType ProductIdentifierEnum (1..1) <"Identifier type e.g., ISIN, CUSIP etc">
+			
+			enum ProductIdentifierEnum:
+				ISIN
+				CUSIP
+		'''.generate
 
+		val schemaFile = modelMap.get('demo-foo-Product.schema.json').toString
+		//println(types)
+		assertEquals('''
+			{
+			  "title": "Product",
+			  "description": "",
+			  "type": "object",
+			  "properties": {
+			    "productName": {
+			      "description": "",
+			      "type": "string"
+			    },
+			    "identifiers": {
+			      "description": "List of product identifiers",
+			      "type": "array",
+			      "items": {
+			        "type": "ProductIdentifer"
+			      },
+			      "minItems": 0
+			    }
+			  },
+			  "required": [ "productName" ]
+			}
+			'''.toString, schemaFile)
+	}
 
 	def generate(CharSequence model) {
 		val m = model.parseRosettaWithNoErrors

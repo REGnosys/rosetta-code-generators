@@ -43,7 +43,6 @@ class JsonSchemaFileGenerator {
 
 	def String generateTypeDefinition(Data data) '''
 		{
-		  "$id": "https://example.com/product.schema.json",
 		  "title": "«data.name»",
 		  "description": "«data.definition»",
 		  "type": "object",
