@@ -86,7 +86,10 @@ class JsonSchemaModelObjectGeneratorTest {
 			      "minItems": 1
 			    }
 			  },
-			  "required": [ "productId", "productName" ]
+			  "required": [
+			    "productId",
+			    "productName"
+			  ]
 			}
 			'''.toString, schemaFile)
 	}
@@ -131,7 +134,50 @@ class JsonSchemaModelObjectGeneratorTest {
 			      "minItems": 0
 			    }
 			  },
-			  "required": [ "productName" ]
+			  "required": [
+			    "productName"
+			  ]
+			}
+			'''.toString, schemaFile)
+	}
+	
+	@Test
+	def void shouldGenerateEnum() {
+		val modelMap = '''
+			namespace demo.foo
+			version "${project.version}"
+			
+			enum ProductIdentifierTypeEnum: <"Product identifier type enum">
+				ISIN <"ISIN identifier type">
+				CUSIP <"CUSIP identifier type">
+		'''.generate
+
+		val schemaFile = modelMap.get('demo-foo-ProductIdentifierTypeEnum.schema.json').toString
+		//println(types)
+		assertEquals('''
+			{
+			  "description": "Product identifier type enum",
+			  "enum": [
+			    "CUSIP",
+			    "ISIN"
+			  ],
+			  "oneOf": [
+			    {
+			      "enum": [
+			        "PRIN"
+			      ],
+			      "title": "Principal",
+			      "description": "Trading as Principal."
+			    },
+			    {
+			      "enum": [
+			        "AGEN"
+			      ],
+			      "title": "Agent",
+			      "description": "Trading as Agent on behalf of a customer."
+			    }
+			  ],
+			  "type": "string"
 			}
 			'''.toString, schemaFile)
 	}
