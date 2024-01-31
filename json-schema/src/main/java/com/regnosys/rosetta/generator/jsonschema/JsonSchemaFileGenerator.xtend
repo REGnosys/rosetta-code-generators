@@ -52,10 +52,10 @@ class JsonSchemaFileGenerator {
 		  «ENDIF»
 		  "properties": {
 		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
-		  },
+		  }«IF !data.requiredAttributeNames.isEmpty»,
 		  "required": [
 		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
-		  ]
+		  ]«ENDIF»
 		}
 	'''
 

@@ -9,7 +9,5 @@
       "description": "Comment 1",
       "type": "CyclicNamespaceExample1"
     }
-  },
-  "required": [
-  ]
+  }
 }

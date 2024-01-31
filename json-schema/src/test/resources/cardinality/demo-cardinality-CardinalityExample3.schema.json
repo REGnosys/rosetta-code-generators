@@ -13,7 +13,5 @@
       },
       "minItems": 1
     }
-  },
-  "required": [
-  ]
+  }
 }
