@@ -93,7 +93,7 @@ class JsonSchemaFileGenerator {
 	'''
 	
 	def String getFilename(RosettaModel model, RosettaNamed named) {
-		model.name.replace(".", "/") + "/" + named.name.toLowerCase + "-schema.json"
+		model.name.replace(".", "-") + "-" + named.name + ".schema.json"
 	}
 	
 	private def allEnumsValues(RosettaEnumeration enumeration) {
