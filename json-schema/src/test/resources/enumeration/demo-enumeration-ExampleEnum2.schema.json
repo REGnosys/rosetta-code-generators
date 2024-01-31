@@ -8,17 +8,26 @@
   "oneOf": [
     {
       "enum": [
-        "PRIN"
+        "Example1"
       ],
-      "title": "Principal",
-      "description": "Trading as Principal."
+      "title": "EG1",
+      "description": "Comment 1"
     },
+    
     {
       "enum": [
-        "AGEN"
+        "Example2"
       ],
-      "title": "Agent",
-      "description": "Trading as Agent on behalf of a customer."
+      "title": "EG2",
+      "description": "Comment 2"
+    },
+    
+    {
+      "enum": [
+        "Exmaple3"
+      ],
+      "title": "EG3",
+      "description": "Comment 3"
     }
   ],
   "type": "string"

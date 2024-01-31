@@ -11,6 +11,7 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.rosetta.RosettaEnumValue
 
 class JsonSchemaFileGenerator {
 
@@ -99,31 +100,29 @@ class JsonSchemaFileGenerator {
 		result
 	}
 	
-	def String generateEnumDefinition(RosettaEnumeration e) '''
+	def String generateEnumDefinition(RosettaEnumeration enumeration) '''
 		{
-		  "description": "«e.definition»",
+		  "description": "«enumeration.definition»",
 		  "enum": [
-		    «FOR enumValue : e.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
+		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
 		  ],
 		  "oneOf": [
-		    {
-		      "enum": [
-		        "PRIN"
-		      ],
-		      "title": "Principal",
-		      "description": "Trading as Principal."
-		    },
-		    {
-		      "enum": [
-		        "AGEN"
-		      ],
-		      "title": "Agent",
-		      "description": "Trading as Agent on behalf of a customer."
-		    }
+		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»«enumValue.generateEnumValue»«ENDFOR»
 		  ],
 		  "type": "string"
 		}
 	'''
+	
+	def String generateEnumValue(RosettaEnumValue enumValue) '''
+		{
+		  "enum": [
+		    "«enumValue.name»"
+		  ],
+		  "title": "«IF enumValue.display !== null»«enumValue.display»«ELSE»enumValue.name«ENDIF»"«IF enumValue.definition !== null»,
+		  "description": "«enumValue.definition»"«ENDIF»
+		}
+	'''
+	
 	
 	def String getNamespace(RosettaType type) {
 		type.model.name
