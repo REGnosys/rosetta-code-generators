@@ -1,0 +1,13 @@
+{
+  "title": "NestedLevel2Example",
+  "description": "Example with an optional string type",
+  "type": "object",
+  "properties": {
+    "basicString": {
+      "description": "Comment 1",
+      "type": "string"
+    }
+  },
+  "required": [
+  ]
+}

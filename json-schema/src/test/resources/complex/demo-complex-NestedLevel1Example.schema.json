@@ -1,0 +1,13 @@
+{
+  "title": "NestedLevel1Example",
+  "description": "Example with an complex type with 1 nested type",
+  "type": "object",
+  "properties": {
+    "nestedLevel2Example": {
+      "description": "Comment 1",
+      "type": "NestedLevel2Example"
+    }
+  },
+  "required": [
+  ]
+}

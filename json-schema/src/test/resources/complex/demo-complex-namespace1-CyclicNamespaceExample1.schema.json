@@ -1,0 +1,13 @@
+{
+  "title": "CyclicNamespaceExample1",
+  "description": "Example with containing parent namespace",
+  "type": "object",
+  "properties": {
+    "complexExample3": {
+      "description": "Comment 1",
+      "type": "ComplexExample3"
+    }
+  },
+  "required": [
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "title": "ComplexExample3",
+  "description": "Example with a complex type containing cyclical type",
+  "type": "object",
+  "properties": {
+    "cyclicNamespaceExample1": {
+      "description": "Comment 1",
+      "type": "CyclicNamespaceExample1"
+    }
+  },
+  "required": [
+  ]
+}
