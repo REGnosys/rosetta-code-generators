@@ -1,4 +1,8 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.enumeration",
+  "type": "string",
+  "title": "ExampleEnum2",
   "description": "Example Enum 2",
   "enum": [
     "Example1",
@@ -8,18 +12,26 @@
   "oneOf": [
     {
       "enum": [
-        "PRIN"
+        "Example1"
       ],
-      "title": "Principal",
-      "description": "Trading as Principal."
+      "title": "EG1",
+      "description": "Comment 1"
     },
+    
     {
       "enum": [
-        "AGEN"
+        "Example2"
       ],
-      "title": "Agent",
-      "description": "Trading as Agent on behalf of a customer."
+      "title": "EG2",
+      "description": "Comment 2"
+    },
+    
+    {
+      "enum": [
+        "Exmaple3"
+      ],
+      "title": "EG3",
+      "description": "Comment 3"
     }
-  ],
-  "type": "string"
+  ]
 }

@@ -7,7 +7,7 @@
   "properties": {
     "cyclicNamespaceExample1": {
       "description": "Comment 1",
-      "$ref": "demo.complex.namespace1.CyclicNamespaceExample1.schema.json"
+      "$ref": "demo-complex-namespace1-CyclicNamespaceExample1.schema.json"
     }
   }
 }

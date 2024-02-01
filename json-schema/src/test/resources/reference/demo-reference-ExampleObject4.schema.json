@@ -5,7 +5,6 @@
   "title": "ExampleObject4",
   "properties": {
     "eg": {
-      "description": "",
       "type": "number"
     }
   },

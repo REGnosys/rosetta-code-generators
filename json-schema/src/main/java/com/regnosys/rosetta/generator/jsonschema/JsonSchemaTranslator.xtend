@@ -25,8 +25,6 @@ class JsonSchemaTranslator {
 		val basicType = JsonSchemaTranslator.toJsonSchemaBasicType(type.name);
 		if (basicType !== null)
 			return basicType
-		else if (type.enumeration)
-			return '''«type.name.toFirstUpper».Value'''
 		else
 			return type.name.toFirstUpper
 	}

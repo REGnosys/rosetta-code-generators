@@ -7,7 +7,7 @@
   "properties": {
     "nestedLevel1Example": {
       "description": "Comment 1",
-      "type": "demo.complex.NestedLevel1Example.schema.json"
+      "$ref": "demo-complex-NestedLevel1Example.schema.json"
     }
   }
 }

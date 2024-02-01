@@ -5,8 +5,7 @@
   "title": "AddressExample4",
   "properties": {
     "exampleObject4": {
-      "description": "",
-      "type": "ExampleObject4"
+      "$ref": "demo-reference-ExampleObject4.schema.json"
     }
   },
   "required": [

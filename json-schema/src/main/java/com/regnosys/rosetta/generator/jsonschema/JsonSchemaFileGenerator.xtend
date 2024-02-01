@@ -2,16 +2,16 @@ package com.regnosys.rosetta.generator.jsonschema
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.rosetta.RosettaNamed
+import com.regnosys.rosetta.rosetta.RosettaType
+import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.rosetta.RosettaEnumValue
 
 class JsonSchemaFileGenerator {
 
@@ -32,26 +32,24 @@ class JsonSchemaFileGenerator {
 		val result = newHashMap
 
 		for (Data data : dataList) {
-			val model = data.eContainer as RosettaModel
-			val typeDefinitionName = getFilename(model, data)
-			val typeDefinitionContents = generateTypeDefinition(model.name, data)
-			result.put(typeDefinitionName, typeDefinitionContents)
+			val typeDefinitionContents = generateTypeDefinition(data)
+			result.put(data.filename, typeDefinitionContents)
 		}
 
 		result
 	}
 
-	def String generateTypeDefinition(String namespace, Data data) '''
+	def String generateTypeDefinition(Data data) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
-		  "$anchor": "«namespace»",
+		  "$anchor": "«data.namespace»",
 		  "type": "object",
 		  "title": "«data.name»",
 		  «IF data.definition !== null»
 		  "description": "«data.definition»",
 		  «ENDIF»
 		  "properties": {
-		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
+		    «FOR attr : data.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  }«IF !data.requiredAttributeNames.isEmpty»,
 		  "required": [
 		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
@@ -59,21 +57,33 @@ class JsonSchemaFileGenerator {
 		}
 	'''
 
-	def String generateAttributeDefinition(ExpandedAttribute attr) '''
-		«val type = JsonSchemaTranslator.toJsonSchemaType(attr.type)»
+	def String generateAttributeDefinition(Attribute attr) '''
 		"«attr.name»": {
+		  «IF attr.definition !== null»
 		  "description": "«attr.definition»",
-		  «IF attr.isMultiple»
+		  «ENDIF»
+		  «IF attr.toExpandedAttribute.multiple»
 		  "type": "array",
 		  "items": {
-		    "type": "«type»"
+		    «attr.attributeType»
 		  },
-		  "minItems": «attr.inf»
+		  "minItems": «attr.card.inf»«IF attr.card.sup > 1»,
+		  "maxItems": «attr.card.sup»«ENDIF»
 		  «ELSE»
-		  "type": "«type»"
+		  «attr.attributeType»
 		  «ENDIF»
 		}
 	'''
+	def String getAttributeType(Attribute attr) {
+		val type = attr.typeCall.type
+		val expandedType = type.toExpandedType
+		if (expandedType.isBuiltInType) {
+			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		}
+		else {
+			return '''"$ref": "«type.filename»"'''
+		}
+	}
 
 	def List<String> getRequiredAttributeNames(Data data) {
 		data.expandedAttributes.filter[inf == 1 && sup == 1].map[name].toList
@@ -83,43 +93,48 @@ class JsonSchemaFileGenerator {
 		val result = newHashMap
 
 		for (RosettaEnumeration enumeration : enumList) {
-			val model = enumeration.eContainer as RosettaModel
-			val enumDefinitionName = getFilename(model, enumeration)
 			val enumDefinitionContents = enumeration.generateEnumDefinition
-			result.put(enumDefinitionName, enumDefinitionContents)
+			result.put(enumeration.filename, enumDefinitionContents)
 		}
 
 		result
 	}
 	
-	def String generateEnumDefinition(RosettaEnumeration e) '''
+	def String generateEnumDefinition(RosettaEnumeration enumeration) '''
 		{
-		  "description": "«e.definition»",
+		  "$schema": "http://json-schema.org/draft-04/schema#",
+		  "$anchor": "«enumeration.namespace»",
+		  "type": "string",
+		  "title": "«enumeration.name»",
+		  «IF enumeration.definition !== null»
+		  "description": "«enumeration.definition»",
+		  «ENDIF»
 		  "enum": [
-		    «FOR enumValue : e.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
+		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
 		  ],
 		  "oneOf": [
-		    {
-		      "enum": [
-		        "PRIN"
-		      ],
-		      "title": "Principal",
-		      "description": "Trading as Principal."
-		    },
-		    {
-		      "enum": [
-		        "AGEN"
-		      ],
-		      "title": "Agent",
-		      "description": "Trading as Agent on behalf of a customer."
-		    }
-		  ],
-		  "type": "string"
+		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»«enumValue.generateEnumValue»«ENDFOR»
+		  ]
 		}
 	'''
 	
-	def String getFilename(RosettaModel model, RosettaNamed named) {
-		model.name.replace(".", "-") + "-" + named.name + ".schema.json"
+	def String generateEnumValue(RosettaEnumValue enumValue) '''
+		{
+		  "enum": [
+		    "«enumValue.name»"
+		  ],
+		  "title": "«IF enumValue.display !== null»«enumValue.display»«ELSE»enumValue.name«ENDIF»"«IF enumValue.definition !== null»,
+		  "description": "«enumValue.definition»"«ENDIF»
+		}
+	'''
+	
+	
+	def String getNamespace(RosettaType type) {
+		type.model.name
+	}
+	
+	def String getFilename(RosettaType type) {
+		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
 	}
 	
 	private def allEnumsValues(RosettaEnumeration enumeration) {
