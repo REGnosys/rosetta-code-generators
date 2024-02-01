@@ -53,8 +53,8 @@ class JsonSchemaFileGenerator {
 		  "properties": {
 		    «FOR attr : data.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  }«IF !data.requiredAttributeNames.isEmpty»,
-		  	"required": [
-		  	  «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
+		  "required": [
+		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
 		  ]«ENDIF»
 		}
 	'''
