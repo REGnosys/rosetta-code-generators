@@ -7,7 +7,7 @@
     "exampleObject4": {
       "type": "array",
       "items": {
-        "$ref": "demo-reference-ExampleObject4.schema.json"
+        "$ref": "demo-reference-FieldWithMetaExampleObject4.schema.json"
       },
       "minItems": 1
     }

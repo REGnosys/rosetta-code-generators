@@ -4,15 +4,15 @@
   "type": "object",
   "title": "ReferenceExample1",
   "properties": {
-    "exampleObject1": {
-      "$ref": "demo-reference-ExampleObject1.schema.json"
+    "exampleString1": {
+      "$ref": "com-rosetta-model-FieldWithMetaString.schema.json"
     },
-    "exampleObject1Reference": {
-      "$ref": "demo-reference-ExampleObject1.schema.json"
+    "exampleString1Reference": {
+      "$ref": "com-rosetta-model-BasicReferenceWithMetaString.schema.json"
     }
   },
   "required": [
-    "exampleObject1",
-    "exampleObject1Reference"
+    "exampleString1",
+    "exampleString1Reference"
   ]
 }

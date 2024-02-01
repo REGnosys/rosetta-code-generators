@@ -4,18 +4,18 @@
   "type": "object",
   "title": "ReferenceExample2",
   "properties": {
-    "exampleObject1": {
+    "exampleObject2": {
       "type": "array",
       "items": {
         "$ref": "demo-reference-ExampleObject2.schema.json"
       },
       "minItems": 1
     },
-    "exampleObject1Reference": {
-      "$ref": "demo-reference-ExampleObject2.schema.json"
+    "exampleObject2Reference": {
+      "$ref": "demo-reference-ReferenceWithMetaExampleObject2.schema.json"
     }
   },
   "required": [
-    "exampleObject1Reference"
+    "exampleObject2Reference"
   ]
 }

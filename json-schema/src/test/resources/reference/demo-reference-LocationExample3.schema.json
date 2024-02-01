@@ -5,7 +5,7 @@
   "title": "LocationExample3",
   "properties": {
     "exampleObject3": {
-      "$ref": "demo-reference-ExampleObject3.schema.json"
+      "$ref": "demo-reference-FieldWithMetaExampleObject3.schema.json"
     }
   },
   "required": [
