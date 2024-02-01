@@ -1,0 +1,11 @@
+{
+	"cyclicNamespaceExample1":{
+	    "complexExample3" :{
+	       "cyclicNamespaceExample1":{
+	           "complexExample3" :{
+	        
+	           }
+	       }   
+	    }
+	}
+}
