@@ -65,7 +65,8 @@ class JsonSchemaFileGenerator {
 		  "items": {
 		    «attr.attributeType»
 		  },
-		  "minItems": «attr.card.inf»
+		  "minItems": «attr.card.inf»«IF attr.card.sup > 1»,
+		  "maxItems": «attr.card.sup»«ENDIF»
 		  «ELSE»
 		  «attr.attributeType»
 		  «ENDIF»
