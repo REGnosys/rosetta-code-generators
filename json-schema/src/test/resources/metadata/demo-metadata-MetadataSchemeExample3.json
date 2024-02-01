@@ -1,1 +1,8 @@
-{}
+{
+  "schemeEnum2": {
+    "value": "A",
+    "meta": {
+      "scheme": "http://scheme/3"
+    }
+  }
+}
