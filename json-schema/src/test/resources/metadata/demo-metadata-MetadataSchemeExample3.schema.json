@@ -4,11 +4,11 @@
   "type": "object",
   "title": "MetadataSchemeExample3",
   "properties": {
-    "schemeEnum2": {
-      "$ref": "demo-metadata-FieldWithMetaSchemeEnum2.schema.json"
+    "schemeEnum3": {
+      "$ref": "demo-metadata-FieldWithMetaSchemeEnum3.schema.json"
     }
   },
   "required": [
-    "schemeEnum2"
+    "schemeEnum3"
   ]
 }

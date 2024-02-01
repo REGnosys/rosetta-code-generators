@@ -26,7 +26,7 @@ class JsonSchemaMetaFieldGenerator {
                 .toSet
 
         for (ref:refs) {
-            result.put(getFilename(ref.metaNamespace, ref.toMetaTypeName), generateReferenceWithMeta(ref))
+            result.put(getFilename(ref.metaNamespace, ref.toReferenceWithMetaTypeName), generateReferenceWithMeta(ref))
         }
 
         val metas =  data
@@ -36,7 +36,7 @@ class JsonSchemaMetaFieldGenerator {
                 .toSet
 
         for (meta:metas) {
-            result.put(getFilename(meta.metaNamespace, meta.toMetaTypeName), generateFieldWithMeta(meta))
+            result.put(getFilename(meta.metaNamespace, meta.toFieldWithMetaTypeName), generateFieldWithMeta(meta))
         }
 
 		result.put(getFilename("com.rosetta.model.metafields", "MetaFields"), genMetaFields())
@@ -51,7 +51,7 @@ class JsonSchemaMetaFieldGenerator {
 		  "$schema": "http://json-schema.org/draft-04/schema#",
 		  "$anchor": "«type.model.name»",
 		  "type": "object",
-		  "title": "FieldWithMeta«type.toMetaTypeName»",
+		  "title": "«type.toFieldWithMetaTypeName»",
 		  "properties": {
 		    "value": {
 		      «type.attributeType»

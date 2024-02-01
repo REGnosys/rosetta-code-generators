@@ -13,11 +13,12 @@ class JsonSchemaModelObjectBoilerPlate {
     }
 
 	def String getNamespace(RosettaType type) {
+		
 		type.model.name
 	}
 
     def getMetaNamespace(ExpandedType type) {
-    	type.model.name + ".metafields"
+		type.model.name + ".metafields"	
     }
 
 	def String getFilename(RosettaType type) {
@@ -31,21 +32,14 @@ class JsonSchemaModelObjectBoilerPlate {
     def toType(ExpandedAttribute attribute) {
 		if (!attribute.hasMetas)
 			JsonSchemaTranslator.toJsonSchemaType(attribute.type)
-		else if (attribute.refIndex >= 0) {
-			if (attribute.type.isType)
-				attribute.type.toReferenceWithMetaTypeName
-			else
-				attribute.type.toBasicReferenceWithMetaTypeName
-		} else
+		else if (attribute.refIndex >= 0)
+			attribute.type.toReferenceWithMetaTypeName
+		else
 			attribute.type.toFieldWithMetaTypeName
 	}
 
 	def toReferenceWithMetaTypeName(ExpandedType type) {
 		'''ReferenceWithMeta«type.toMetaTypeName»'''
-	}
-
-	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
 	}
 
 	def toFieldWithMetaTypeName(ExpandedType type) {

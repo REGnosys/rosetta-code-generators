@@ -8,7 +8,7 @@
       "$ref": "com-rosetta-model-FieldWithMetaString.schema.json"
     },
     "exampleString1Reference": {
-      "$ref": "com-rosetta-model-BasicReferenceWithMetaString.schema.json"
+      "$ref": "com-rosetta-model-ReferenceWithMetaString.schema.json"
     }
   },
   "required": [
