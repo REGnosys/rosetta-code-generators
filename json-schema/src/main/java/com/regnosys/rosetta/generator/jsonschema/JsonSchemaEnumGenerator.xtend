@@ -9,7 +9,7 @@ import java.util.Map
 
 class JsonSchemaEnumGenerator {
 
-	@Inject extension JsonSchemaModelObjectBoilerPlate
+	@Inject extension JsonSchemaGeneratorHelper
 	
 	def Map<String, ? extends CharSequence> generateEnumDefinitions(List<RosettaEnumeration> enumList) {
 		val result = newHashMap

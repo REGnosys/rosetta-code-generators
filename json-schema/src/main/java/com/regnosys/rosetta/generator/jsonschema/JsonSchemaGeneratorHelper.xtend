@@ -6,7 +6,7 @@ import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.jsonschema.JsonSchemaTranslator
 import com.regnosys.rosetta.rosetta.RosettaType
 
-class JsonSchemaModelObjectBoilerPlate {
+class JsonSchemaGeneratorHelper {
 
     def replaceTabsWithSpaces(CharSequence code) {
         code.toString.replace('\t', '  ')

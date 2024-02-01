@@ -7,12 +7,12 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.List
 import java.util.Map
 
-import static extension com.regnosys.rosetta.generator.jsonschema.JsonSchemaModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import static extension com.regnosys.rosetta.generator.jsonschema.JsonSchemaGeneratorHelper.*
 
 class JsonSchemaMetaFieldGenerator {
 
-	@Inject extension JsonSchemaModelObjectBoilerPlate
+	@Inject extension JsonSchemaGeneratorHelper
 
 
     def Map<String, ? extends CharSequence> generateMetaFields(List<Data> data, Iterable<RosettaMetaType> metaTypes) {

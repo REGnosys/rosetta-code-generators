@@ -14,7 +14,7 @@ import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExte
 
 class JsonSchemaTypeGenerator {
 
-	@Inject extension JsonSchemaModelObjectBoilerPlate
+	@Inject extension JsonSchemaGeneratorHelper
 	
 	@Inject extension RosettaExtensions
 
