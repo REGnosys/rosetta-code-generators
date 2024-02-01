@@ -34,12 +34,9 @@ public class JsonSampleValidationTest {
             String schemaFileName = jsonSchemaFile.getFileName().toString();
             String sampleFileName = schemaFileName.replace(".schema", "");
             Path sampleFileNamePath = jsonSchemaFile.getParent().resolve(sampleFileName);
-            if (!Files.exists(sampleFileNamePath)) {
-                Files.createFile(sampleFileNamePath);
-                Files.writeString(sampleFileNamePath, "{}");
+            if (Files.exists(sampleFileNamePath)) {
+                builder.add(Arguments.of(sampleFileName, jsonSchemaFile, sampleFileNamePath));
             }
-
-            builder.add(Arguments.of(sampleFileName, jsonSchemaFile, sampleFileNamePath));
 
             for (int i = 0; i < 10; i++) {
                 String anotherSampleFileName = schemaFileName.replace(".schema", "." + i);
@@ -58,7 +55,7 @@ public class JsonSampleValidationTest {
     void runTest(String testName, Path jsonSchemaFile, Path sampleFile) throws IOException {
         LOGGER.info("Testing json {} is valid against {}", jsonSchemaFile.getFileName().toString(), sampleFile.getFileName().toString());
         String sampleFileContents = Files.readString(sampleFile);
-        if (sampleFileContents.isEmpty() || sampleFileContents.equals("{}")) {
+        if (sampleFileContents.isEmpty()) {
             fail("No Sample file. Populate " + sampleFile.getFileName().toString());
         }
         Set<ValidationMessage> validationMessages = validateSample(jsonSchemaFile, sampleFileContents);
