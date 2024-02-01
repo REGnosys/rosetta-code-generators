@@ -1,13 +1,14 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Schema for type 'NestedLevel2Example'",
-    "description": "Example with an optional string type",
-    "type": "object",
-    "properties": {
-        "basicString": {
-            "description": "The propertyName description",
-            "type": "string",
-            "title": "Comment 1"
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex",
+  "type": "object",
+  "title": "NestedLevel2Example",
+  "description": "Example with an optional string type",
+  "properties": {
+    "basicString": {
+      "description": "Comment 1",
+      "type": "string",
+      "title": "Comment 1"
     }
+  }
 }

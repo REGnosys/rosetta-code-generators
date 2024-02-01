@@ -34,16 +34,17 @@ class JsonSchemaFileGenerator {
 		for (Data data : dataList) {
 			val model = data.eContainer as RosettaModel
 			val typeDefinitionName = getFilename(model, data)
-			val typeDefinitionContents = data.generateTypeDefinition
+			val typeDefinitionContents = generateTypeDefinition(model.name, data)
 			result.put(typeDefinitionName, typeDefinitionContents)
 		}
 
 		result
 	}
 
-	def String generateTypeDefinition(Data data) '''
+	def String generateTypeDefinition(String namespace, Data data) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
+		  "$anchor": "«namespace»",
 		  "type": "object",
 		  "title": "«data.name»",
 		  «IF data.definition !== null»
@@ -51,10 +52,10 @@ class JsonSchemaFileGenerator {
 		  «ENDIF»
 		  "properties": {
 		    «FOR attr : data.expandedAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
-		  },
+		  }«IF !data.requiredAttributeNames.isEmpty»,
 		  "required": [
 		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
-		  ]
+		  ]«ENDIF»
 		}
 	'''
 

@@ -1,0 +1,25 @@
+{
+  "description": "Example Enum 2",
+  "enum": [
+    "Example1",
+    "Example2",
+    "Exmaple3"
+  ],
+  "oneOf": [
+    {
+      "enum": [
+        "PRIN"
+      ],
+      "title": "Principal",
+      "description": "Trading as Principal."
+    },
+    {
+      "enum": [
+        "AGEN"
+      ],
+      "title": "Agent",
+      "description": "Trading as Agent on behalf of a customer."
+    }
+  ],
+  "type": "string"
+}
