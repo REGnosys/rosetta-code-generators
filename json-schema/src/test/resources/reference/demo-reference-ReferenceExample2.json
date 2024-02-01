@@ -1,0 +1,31 @@
+{
+  "exampleObject2" : [ {
+    "basicString" : "eg1",
+    "meta" : {
+      "globalKey" : "187cf",
+      "externalKey" : "key1"
+    }
+  }, {
+    "basicString" : "eg2",
+    "meta" : {
+      "globalKey" : "187d0",
+      "externalKey" : "key2"
+    }
+  }, {
+    "basicString" : "eg3",
+    "meta" : {
+      "globalKey" : "187d1",
+      "externalKey" : "key3"
+    }
+  }, {
+    "basicString" : "eg4",
+    "meta" : {
+      "globalKey" : "187d2",
+      "externalKey" : "key4"
+    }
+  } ],
+  "exampleObject2Reference" : {
+    "globalReference" : "187d0",
+    "externalReference" : "key2"
+  }
+}

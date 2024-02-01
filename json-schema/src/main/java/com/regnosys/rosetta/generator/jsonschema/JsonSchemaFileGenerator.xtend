@@ -12,6 +12,8 @@ import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.object.ExpandedType
 
 class JsonSchemaFileGenerator {
 
@@ -21,10 +23,10 @@ class JsonSchemaFileGenerator {
 		String version) {
 
 		val result = newHashMap
-		
+
 		result.putAll(data.sortBy[name].generateTypeDefinitions)
 		result.putAll(enumerations.sortBy[name].generateEnumDefinitions)
-		
+
 		result
 	}
 
@@ -46,13 +48,13 @@ class JsonSchemaFileGenerator {
 		  "type": "object",
 		  "title": "«data.name»",
 		  «IF data.definition !== null»
-		  "description": "«data.definition»",
+		  	"description": "«data.definition»",
 		  «ENDIF»
 		  "properties": {
 		    «FOR attr : data.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  }«IF !data.requiredAttributeNames.isEmpty»,
-		  "required": [
-		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
+		  	"required": [
+		  	  «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
 		  ]«ENDIF»
 		}
 	'''
@@ -60,29 +62,33 @@ class JsonSchemaFileGenerator {
 	def String generateAttributeDefinition(Attribute attr) '''
 		"«attr.name»": {
 		  «IF attr.definition !== null»
-		  "description": "«attr.definition»",
+		  	"description": "«attr.definition»",
 		  «ENDIF»
 		  «IF attr.toExpandedAttribute.multiple»
-		  "type": "array",
-		  "items": {
-		    «attr.attributeType»
-		  },
-		  "minItems": «attr.card.inf»«IF attr.card.sup > 1»,
-		  "maxItems": «attr.card.sup»«ENDIF»
+		  	"type": "array",
+		  	"items": {
+		  	  «attr.attributeType»
+		  	},
+		  	"minItems": «attr.card.inf»«IF attr.card.sup > 1»,
+		  	"maxItems": «attr.card.sup»«ENDIF»
 		  «ELSE»
-		  «attr.attributeType»
+		  	«attr.attributeType»
 		  «ENDIF»
 		}
 	'''
+
 	def String getAttributeType(Attribute attr) {
+
+		// toType...
+		
 		val type = attr.typeCall.type
 		val expandedType = type.toExpandedType
-		if (expandedType.isBuiltInType) {
-			return '''"type": "« JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		if (expandedType.isBuiltInType && !attr.toExpandedAttribute.hasMetas) {
+			return '''"type": "«JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		} else {
+			return '''"$ref": "«getFilename(type.namespace, attr.toExpandedAttribute.toType)»"'''
 		}
-		else {
-			return '''"$ref": "«type.filename»"'''
-		}
+				
 	}
 
 	def List<String> getRequiredAttributeNames(Data data) {
@@ -99,7 +105,7 @@ class JsonSchemaFileGenerator {
 
 		result
 	}
-	
+
 	def String generateEnumDefinition(RosettaEnumeration enumeration) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
@@ -107,7 +113,7 @@ class JsonSchemaFileGenerator {
 		  "type": "string",
 		  "title": "«enumeration.name»",
 		  «IF enumeration.definition !== null»
-		  "description": "«enumeration.definition»",
+		  	"description": "«enumeration.definition»",
 		  «ENDIF»
 		  "enum": [
 		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
@@ -117,7 +123,7 @@ class JsonSchemaFileGenerator {
 		  ]
 		}
 	'''
-	
+
 	def String generateEnumValue(RosettaEnumValue enumValue) '''
 		{
 		  "enum": [
@@ -127,16 +133,21 @@ class JsonSchemaFileGenerator {
 		  "description": "«enumValue.definition»"«ENDIF»
 		}
 	'''
-	
-	
+
 	def String getNamespace(RosettaType type) {
 		type.model.name
 	}
-	
+
 	def String getFilename(RosettaType type) {
 		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
 	}
 	
+	def String getFilename(String nameSpace, CharSequence typeName) {
+		nameSpace.replace(".", "-") + "-" + typeName + ".schema.json"
+	}
+
+	
+
 	private def allEnumsValues(RosettaEnumeration enumeration) {
 		val enumValues = new ArrayList
 		var e = enumeration;
@@ -146,6 +157,43 @@ class JsonSchemaFileGenerator {
 			e = e.superType
 		}
 		return enumValues.sortBy[name];
+	}
+
+
+	private def toType(ExpandedAttribute attribute) {
+		if (!attribute.hasMetas)
+			JsonSchemaTranslator.toJsonSchemaType(attribute.type)
+		else if (attribute.refIndex >= 0) {
+			if (attribute.type.isType)
+				attribute.type.toReferenceWithMetaTypeName
+			else
+				attribute.type.toBasicReferenceWithMetaTypeName
+		} else
+			attribute.type.toFieldWithMetaTypeName
+	}
+
+	def toReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta«type.toMetaTypeName»'''
+	}
+
+	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
+	}
+
+	def toFieldWithMetaTypeName(ExpandedType type) {
+		'''FieldWithMeta«type.toMetaTypeName»'''
+	}
+
+	static def toMetaTypeName(ExpandedType type) {
+		val name = JsonSchemaTranslator.toJsonSchemaType(type)
+
+		if (type.enumeration) {
+			return name
+		} else if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
+		}
+
+		return name.toFirstUpper
 	}
 
 }

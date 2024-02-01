@@ -2,19 +2,14 @@ namespace demo.reference
 version "${project.version}"
 
 type ReferenceExample1:
-    exampleObject1 ExampleObject1 (1..1)
-        [metadata id]
-    exampleObject1Reference ExampleObject1 (1..1)
-        [metadata reference]
-
-type ExampleObject1:
-    [metadata key]
-    basicString string (0..1) <"Comment 1">
+  exampleString1 string (1..1)
+    [metadata id]
+  exampleString1Reference string (1..1)
+    [metadata reference]
 
 type ReferenceExample2:
-    exampleObject1 ExampleObject2 (1..*)
-        [metadata id]
-    exampleObject1Reference ExampleObject2 (1..1)
+    exampleObject2 ExampleObject2 (1..*)
+    exampleObject2Reference ExampleObject2 (1..1)
         [metadata reference]
 
 type ExampleObject2:
