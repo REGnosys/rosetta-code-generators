@@ -84,6 +84,8 @@ class JsonSchemaFileGenerator {
 		val expandedType = type.toExpandedType
 		if (expandedType.isBuiltInType && !attr.toExpandedAttribute.hasMetas) {
 			return '''"type": "«JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
+		} else if (attr.toExpandedAttribute.hasMetas) {
+			return '''"$ref": "«getFilename(type.toExpandedType.metaNamespace, attr.toExpandedAttribute.toType)»"'''
 		} else {
 			return '''"$ref": "«getFilename(type.namespace, attr.toExpandedAttribute.toType)»"'''
 		}

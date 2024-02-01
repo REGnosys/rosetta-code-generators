@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 
 public class GenerateCDMJsonSchemas {
     public static void main(String[] args) throws IOException {
-        Path cdmDir = Path.of("/Users/user/dev/github/rosetta-models/common-domain-model/rosetta-source/src/main/rosetta");
-        Path output = Path.of("./json-schema-cdm-5.2.0");
+        Path cdmDir = Path.of("/Users/hugohills/dev/github/rosetta-models/common-domain-model/rosetta-source/src/main/rosetta");
+        Path output = Path.of("./json-schema-cdm-5.4.0");
         Files.createDirectories(output);
 
         RosettaInjectorProvider rosettaInjectorProvider = new RosettaInjectorProvider();

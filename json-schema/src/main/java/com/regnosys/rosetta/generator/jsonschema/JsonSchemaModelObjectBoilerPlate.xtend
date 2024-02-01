@@ -13,7 +13,6 @@ class JsonSchemaModelObjectBoilerPlate {
     }
 
 	def String getNamespace(RosettaType type) {
-		
 		type.model.name
 	}
 

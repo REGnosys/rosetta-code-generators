@@ -5,7 +5,7 @@
   "title": "MetadataSchemeExample1",
   "properties": {
     "exampleString": {
-      "$ref": "com-rosetta-model-FieldWithMetaString.schema.json"
+      "$ref": "com-rosetta-model-metafields-FieldWithMetaString.schema.json"
     }
   },
   "required": [

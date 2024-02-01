@@ -12,7 +12,7 @@
       "minItems": 1
     },
     "exampleObject2Reference": {
-      "$ref": "demo-reference-ReferenceWithMetaExampleObject2.schema.json"
+      "$ref": "demo-reference-metafields-ReferenceWithMetaExampleObject2.schema.json"
     }
   },
   "required": [

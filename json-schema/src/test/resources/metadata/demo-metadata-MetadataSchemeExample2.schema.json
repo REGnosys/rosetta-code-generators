@@ -5,7 +5,7 @@
   "title": "MetadataSchemeExample2",
   "properties": {
     "exampleObject2": {
-      "$ref": "demo-metadata-FieldWithMetaSchemeExampleObject2.schema.json"
+      "$ref": "demo-metadata-metafields-FieldWithMetaSchemeExampleObject2.schema.json"
     }
   },
   "required": [

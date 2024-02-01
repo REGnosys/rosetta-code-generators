@@ -5,7 +5,7 @@
   "title": "AddressExample4",
   "properties": {
     "exampleObject4": {
-      "$ref": "demo-reference-ReferenceWithMetaExampleObject4.schema.json"
+      "$ref": "demo-reference-metafields-ReferenceWithMetaExampleObject4.schema.json"
     }
   },
   "required": [

@@ -5,7 +5,7 @@
   "title": "MetadataSchemeExample3",
   "properties": {
     "schemeEnum3": {
-      "$ref": "demo-metadata-FieldWithMetaSchemeEnum3.schema.json"
+      "$ref": "demo-metadata-metafields-FieldWithMetaSchemeEnum3.schema.json"
     }
   },
   "required": [
