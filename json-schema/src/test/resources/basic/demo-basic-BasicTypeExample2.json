@@ -1,0 +1,10 @@
+{
+	"stringExample": "My String",
+	"numberExample": 1234567890.1234567890,
+	"intExample": 12345657890,
+	"timeExample": "14:55:23",
+	"dateExample": "2024-01-31",
+	"dateTimeExample": "2024-01-31T14:56:38",
+	"zonedDateTimeExample": "2024-01-31T15:01:02Z",
+	"booleanExample": false
+}
