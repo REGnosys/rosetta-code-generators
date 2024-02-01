@@ -2,8 +2,9 @@ package com.regnosys.rosetta.generator.jsonschema
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
+import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaType
+import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.ArrayList
@@ -11,20 +12,21 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import com.regnosys.rosetta.rosetta.RosettaEnumValue
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.generator.object.ExpandedType
 
 class JsonSchemaFileGenerator {
 
+	@Inject extension JsonSchemaModelObjectBoilerPlate
+	
 	@Inject extension RosettaExtensions
+	
+	@Inject JsonSchemaMetaFieldGenerator metaFieldGenerator
 
-	def Map<String, ? extends CharSequence> generate(List<Data> data, List<RosettaEnumeration> enumerations,
-		String version) {
+	def Map<String, ? extends CharSequence> generate(List<Data> data, List<RosettaMetaType> metaTypes, List<RosettaEnumeration> enumerations) {
 
 		val result = newHashMap
 
 		result.putAll(data.sortBy[name].generateTypeDefinitions)
+		result.putAll(metaFieldGenerator.generateMetaFields(data, metaTypes))
 		result.putAll(enumerations.sortBy[name].generateEnumDefinitions)
 
 		result
@@ -131,20 +133,6 @@ class JsonSchemaFileGenerator {
 		}
 	'''
 
-	def String getNamespace(RosettaType type) {
-		type.model.name
-	}
-
-	def String getFilename(RosettaType type) {
-		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
-	}
-	
-	def String getFilename(String nameSpace, CharSequence typeName) {
-		nameSpace.replace(".", "-") + "-" + typeName + ".schema.json"
-	}
-
-	
-
 	private def allEnumsValues(RosettaEnumeration enumeration) {
 		val enumValues = new ArrayList
 		var e = enumeration;
@@ -155,42 +143,4 @@ class JsonSchemaFileGenerator {
 		}
 		return enumValues.sortBy[name];
 	}
-
-
-	private def toType(ExpandedAttribute attribute) {
-		if (!attribute.hasMetas)
-			JsonSchemaTranslator.toJsonSchemaType(attribute.type)
-		else if (attribute.refIndex >= 0) {
-			if (attribute.type.isType)
-				attribute.type.toReferenceWithMetaTypeName
-			else
-				attribute.type.toBasicReferenceWithMetaTypeName
-		} else
-			attribute.type.toFieldWithMetaTypeName
-	}
-
-	def toReferenceWithMetaTypeName(ExpandedType type) {
-		'''ReferenceWithMeta«type.toMetaTypeName»'''
-	}
-
-	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
-	}
-
-	def toFieldWithMetaTypeName(ExpandedType type) {
-		'''FieldWithMeta«type.toMetaTypeName»'''
-	}
-
-	static def toMetaTypeName(ExpandedType type) {
-		val name = JsonSchemaTranslator.toJsonSchemaType(type)
-
-		if (type.enumeration) {
-			return name
-		} else if (name.contains(".")) {
-			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
-		}
-
-		return name.toFirstUpper
-	}
-
 }

@@ -45,7 +45,7 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
-		return schemaGenerator.generate(rosettaData, rosettaEnums, version);
+		return schemaGenerator.generate(rosettaData, metaTypes, rosettaEnums);
 	}
 
 }

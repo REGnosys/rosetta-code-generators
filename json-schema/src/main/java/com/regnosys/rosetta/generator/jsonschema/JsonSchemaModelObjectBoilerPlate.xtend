@@ -1,0 +1,67 @@
+package com.regnosys.rosetta.generator.jsonschema
+
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
+
+import com.regnosys.rosetta.generator.object.ExpandedType
+import com.regnosys.rosetta.generator.jsonschema.JsonSchemaTranslator
+import com.regnosys.rosetta.rosetta.RosettaType
+
+class JsonSchemaModelObjectBoilerPlate {
+
+    def replaceTabsWithSpaces(CharSequence code) {
+        code.toString.replace('\t', '  ')
+    }
+
+	def String getNamespace(RosettaType type) {
+		type.model.name
+	}
+
+    def getMetaNamespace(ExpandedType type) {
+    	type.model.name + ".metafields"
+    }
+
+	def String getFilename(RosettaType type) {
+		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
+	}
+	
+	def String getFilename(String namespace, CharSequence typeName) {
+		namespace.replace(".", "-") + "-" + typeName + ".schema.json"
+	}
+
+    def toType(ExpandedAttribute attribute) {
+		if (!attribute.hasMetas)
+			JsonSchemaTranslator.toJsonSchemaType(attribute.type)
+		else if (attribute.refIndex >= 0) {
+			if (attribute.type.isType)
+				attribute.type.toReferenceWithMetaTypeName
+			else
+				attribute.type.toBasicReferenceWithMetaTypeName
+		} else
+			attribute.type.toFieldWithMetaTypeName
+	}
+
+	def toReferenceWithMetaTypeName(ExpandedType type) {
+		'''ReferenceWithMeta«type.toMetaTypeName»'''
+	}
+
+	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
+	}
+
+	def toFieldWithMetaTypeName(ExpandedType type) {
+		'''FieldWithMeta«type.toMetaTypeName»'''
+	}
+
+	static def toMetaTypeName(ExpandedType type) {
+		val name = JsonSchemaTranslator.toJsonSchemaType(type)
+
+		if (type.enumeration) {
+			return name
+		} else if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
+		}
+
+		return name.toFirstUpper
+	}
+
+}
