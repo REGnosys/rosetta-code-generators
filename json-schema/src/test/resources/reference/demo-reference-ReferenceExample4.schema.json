@@ -5,7 +5,6 @@
   "title": "ReferenceExample4",
   "properties": {
     "locationExample": {
-      "description": "",
       "type": "array",
       "items": {
         "$ref": "demo-reference-LocationExample4.schema.json"
@@ -13,7 +12,6 @@
       "minItems": 1
     },
     "addressExample": {
-      "description": "",
       "$ref": "demo-reference-AddressExample4.schema.json"
     }
   },

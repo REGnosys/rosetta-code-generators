@@ -5,11 +5,9 @@
   "title": "ReferenceExample1",
   "properties": {
     "exampleObject1": {
-      "description": "",
       "$ref": "demo-reference-ExampleObject1.schema.json"
     },
     "exampleObject1Reference": {
-      "description": "",
       "$ref": "demo-reference-ExampleObject1.schema.json"
     }
   },

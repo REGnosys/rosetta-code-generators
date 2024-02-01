@@ -5,11 +5,9 @@
   "title": "ReferenceExample3",
   "properties": {
     "locationExample": {
-      "description": "",
       "$ref": "demo-reference-LocationExample3.schema.json"
     },
     "addressExample": {
-      "description": "",
       "$ref": "demo-reference-AddressExample3.schema.json"
     }
   },

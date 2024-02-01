@@ -5,7 +5,6 @@
   "title": "ReferenceExample2",
   "properties": {
     "exampleObject1": {
-      "description": "",
       "type": "array",
       "items": {
         "$ref": "demo-reference-ExampleObject2.schema.json"
@@ -13,7 +12,6 @@
       "minItems": 1
     },
     "exampleObject1Reference": {
-      "description": "",
       "$ref": "demo-reference-ExampleObject2.schema.json"
     }
   },

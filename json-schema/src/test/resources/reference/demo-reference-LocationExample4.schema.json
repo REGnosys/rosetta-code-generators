@@ -5,7 +5,6 @@
   "title": "LocationExample4",
   "properties": {
     "exampleObject4": {
-      "description": "",
       "type": "array",
       "items": {
         "$ref": "demo-reference-ExampleObject4.schema.json"
