@@ -70,7 +70,7 @@ public class JsonSchemaGenerationTest {
         validateJsonSchema(actualFile);
     }
 
-    private static Map<String, ? extends CharSequence> getGeneratedFiles(Path testPath, ModelHelper modelHelper, Provider<XtextResourceSet> resourceSetProvider, JsonSchemaCodeGenerator generator) throws IOException {
+    static Map<String, ? extends CharSequence> getGeneratedFiles(Path testPath, ModelHelper modelHelper, Provider<XtextResourceSet> resourceSetProvider, JsonSchemaCodeGenerator generator) throws IOException {
         String[] rosettaFiles = loadRosettaFiles(testPath);
         var m = modelHelper.parseRosettaWithNoErrors(rosettaFiles);
         Map<String, ? extends CharSequence> generatedFiles = generator.afterAllGenerate(resourceSetProvider.get(), m, "test");
