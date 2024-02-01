@@ -127,7 +127,7 @@ class JsonSchemaFileGenerator {
 		  "enum": [
 		    "«enumValue.name»"
 		  ],
-		  "title": "«IF enumValue.display !== null»«enumValue.display»«ELSE»enumValue.name«ENDIF»"«IF enumValue.definition !== null»,
+		  "title": "«IF enumValue.display !== null»«enumValue.display»«ELSE»«enumValue.name»«ENDIF»"«IF enumValue.definition !== null»,
 		  "description": "«enumValue.definition»"«ENDIF»
 		}
 	'''

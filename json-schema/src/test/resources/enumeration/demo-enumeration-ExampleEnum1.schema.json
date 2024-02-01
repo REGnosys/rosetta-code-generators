@@ -14,7 +14,7 @@
       "enum": [
         "Example1"
       ],
-      "title": "enumValue.name",
+      "title": "Example1",
       "description": "Comment 1"
     },
     
@@ -22,7 +22,7 @@
       "enum": [
         "Example2"
       ],
-      "title": "enumValue.name",
+      "title": "Example2",
       "description": "Comment 2"
     },
     
@@ -30,7 +30,7 @@
       "enum": [
         "Exmaple3"
       ],
-      "title": "enumValue.name",
+      "title": "Exmaple3",
       "description": "Comment 3"
     }
   ]

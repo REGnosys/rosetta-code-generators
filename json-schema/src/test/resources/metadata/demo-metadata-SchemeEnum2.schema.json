@@ -13,21 +13,21 @@
       "enum": [
         "A"
       ],
-      "title": "enumValue.name"
+      "title": "A"
     },
     
     {
       "enum": [
         "B"
       ],
-      "title": "enumValue.name"
+      "title": "B"
     },
     
     {
       "enum": [
         "C"
       ],
-      "title": "enumValue.name"
+      "title": "C"
     }
   ]
 }
