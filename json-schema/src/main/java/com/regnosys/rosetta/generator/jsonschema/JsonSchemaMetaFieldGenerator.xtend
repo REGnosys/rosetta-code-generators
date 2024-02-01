@@ -54,7 +54,7 @@ class JsonSchemaMetaFieldGenerator {
 		  "title": "FieldWithMeta«type.toMetaTypeName»",
 		  "properties": {
 		    "value": {
-		      "type": "string"
+		      «type.attributeType»
 		    },
 		    "meta": {
 		      "$ref": "com-rosetta-model-metafields-MetaFields.schema.json"
@@ -62,6 +62,14 @@ class JsonSchemaMetaFieldGenerator {
 		  }
 		}
 	'''
+
+	def String getAttributeType(ExpandedType type) {
+		if (type.isBuiltInType) {
+			return '''"type": "«JsonSchemaTranslator.toJsonSchemaType(type)»"'''
+		} else {
+			return '''"$ref": "«getFilename(type.model.name, JsonSchemaTranslator.toJsonSchemaType(type))»"'''
+		}
+	}
 
     private def String generateReferenceWithMeta(ExpandedType type) '''
 		{

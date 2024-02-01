@@ -5,7 +5,7 @@
   "title": "FieldWithMetaSchemeExampleObject2",
   "properties": {
     "value": {
-      "type": "string"
+      "$ref": "demo-metadata-SchemeExampleObject2.schema.json"
     },
     "meta": {
       "$ref": "com-rosetta-model-metafields-MetaFields.schema.json"

@@ -87,7 +87,6 @@ class JsonSchemaFileGenerator {
 		} else {
 			return '''"$ref": "«getFilename(type.namespace, attr.toExpandedAttribute.toType)»"'''
 		}
-				
 	}
 
 	def List<String> getRequiredAttributeNames(Data data) {

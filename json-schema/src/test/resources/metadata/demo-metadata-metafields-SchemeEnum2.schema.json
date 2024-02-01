@@ -5,7 +5,7 @@
   "title": "FieldWithMetaSchemeEnum2",
   "properties": {
     "value": {
-      "type": "string"
+      "$ref": "demo-metadata-SchemeEnum2.schema.json"
     },
     "meta": {
       "$ref": "com-rosetta-model-metafields-MetaFields.schema.json"

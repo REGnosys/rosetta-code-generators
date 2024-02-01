@@ -5,7 +5,7 @@
   "title": "FieldWithMetaExampleObject4",
   "properties": {
     "value": {
-      "type": "string"
+      "$ref": "demo-reference-ExampleObject4.schema.json"
     },
     "meta": {
       "$ref": "com-rosetta-model-metafields-MetaFields.schema.json"
