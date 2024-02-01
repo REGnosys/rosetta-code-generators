@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.ArrayList
@@ -13,24 +12,11 @@ import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 
-class JsonSchemaFileGenerator {
+class JsonSchemaTypeGenerator {
 
 	@Inject extension JsonSchemaModelObjectBoilerPlate
 	
 	@Inject extension RosettaExtensions
-	
-	@Inject JsonSchemaMetaFieldGenerator metaFieldGenerator
-
-	def Map<String, ? extends CharSequence> generate(List<Data> data, List<RosettaMetaType> metaTypes, List<RosettaEnumeration> enumerations) {
-
-		val result = newHashMap
-
-		result.putAll(data.sortBy[name].generateTypeDefinitions)
-		result.putAll(metaFieldGenerator.generateMetaFields(data, metaTypes))
-		result.putAll(enumerations.sortBy[name].generateEnumDefinitions)
-
-		result
-	}
 
 	def Map<String, ? extends CharSequence> generateTypeDefinitions(List<Data> dataList) {
 		val result = newHashMap
@@ -116,7 +102,7 @@ class JsonSchemaFileGenerator {
 		  	"description": "«enumeration.definition»",
 		  «ENDIF»
 		  "enum": [
-		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
+		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.enumValueString»"«ENDFOR»
 		  ],
 		  "oneOf": [
 		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»«enumValue.generateEnumValue»«ENDFOR»
@@ -127,12 +113,19 @@ class JsonSchemaFileGenerator {
 	def String generateEnumValue(RosettaEnumValue enumValue) '''
 		{
 		  "enum": [
-		    "«enumValue.name»"
+		    "«enumValue.enumValueString»"
 		  ],
-		  "title": "«IF enumValue.display !== null»«enumValue.display»«ELSE»«enumValue.name»«ENDIF»"«IF enumValue.definition !== null»,
+		  "title": "«enumValue.name»"«IF enumValue.definition !== null»,
 		  "description": "«enumValue.definition»"«ENDIF»
 		}
 	'''
+
+	private def String getEnumValueString(RosettaEnumValue enumValue) {
+		if (enumValue.display !== null)
+			return enumValue.display
+		else
+			return enumValue.name
+	}
 
 	private def allEnumsValues(RosettaEnumeration enumeration) {
 		val enumValues = new ArrayList

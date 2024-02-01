@@ -2,6 +2,7 @@ package com.regnosys.rosetta.generator.jsonschema;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,8 +20,14 @@ import com.regnosys.rosetta.rosetta.simple.Data;
 public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 
 	@Inject
-	private JsonSchemaFileGenerator schemaGenerator;
+	private JsonSchemaTypeGenerator typeSchemaGenerator;
 
+	@Inject 
+	private JsonSchemaMetaFieldGenerator metaFieldGenerator;
+
+	@Inject
+	private JsonSchemaEnumGenerator enumGenerator;
+	
 	public JsonSchemaCodeGenerator() {
 		super("JsonSchema");
 	}
@@ -45,7 +52,13 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
-		return schemaGenerator.generate(rosettaData, metaTypes, rosettaEnums);
+		Map<String, CharSequence> result = new HashMap<>();
+
+		result.putAll(typeSchemaGenerator.generateTypeDefinitions(rosettaData));
+		result.putAll(metaFieldGenerator.generateMetaFields(rosettaData, metaTypes));
+		result.putAll(enumGenerator.generateEnumDefinitions(rosettaEnums));
+
+		return result;
 	}
 
 }
