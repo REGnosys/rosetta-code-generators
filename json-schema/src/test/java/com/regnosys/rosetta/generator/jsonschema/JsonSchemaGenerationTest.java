@@ -30,14 +30,12 @@ import static org.junit.Assert.fail;
 
 public class JsonSchemaGenerationTest {
 
-    public static final String JSON_SCHEMA_VERSION = SchemaId.V4;
+    public static final SpecVersion.VersionFlag JSON_SCHEMA_VERSION = SpecVersion.VersionFlag.V4;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JsonSchemaGenerationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonSchemaGenerationTest.class);
 
     public static Stream<Arguments> load() throws IOException {
-
         RosettaInjectorProvider rosettaInjectorProvider = new RosettaInjectorProvider();
-
         rosettaInjectorProvider.setupRegistry();
         Injector injector = rosettaInjectorProvider.getInjector();
         ModelHelper modelHelper = injector.getInstance(ModelHelper.class);
@@ -45,13 +43,11 @@ public class JsonSchemaGenerationTest {
         }));
         JsonSchemaCodeGenerator generator = injector.getInstance(JsonSchemaCodeGenerator.class);
 
-
         Stream.Builder<Arguments> builder = Stream.builder();
         List<Path> testDirs = Files.list(Path.of("src/test/resources")).collect(Collectors.toList());
 
         for (Path testDir : testDirs) {
             Map<String, ? extends CharSequence> generatedFiles = getGeneratedFiles(testDir, modelHelper, resourceSetProvider, generator);
-
             for (String generatedFile : generatedFiles.keySet()) {
                 Path expectationFile = testDir.resolve(generatedFile);
                 if (!Files.exists(expectationFile)) {
@@ -63,8 +59,6 @@ public class JsonSchemaGenerationTest {
                 builder.add(Arguments.of(generatedFile, expectedFile, actualFile));
             }
         }
-
-
         return builder.build();
     }
 
@@ -100,17 +94,14 @@ public class JsonSchemaGenerationTest {
     }
 
     public void validateJsonSchema(String input) {
-        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012,
+        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(JSON_SCHEMA_VERSION,
                 builder -> builder.schemaMappers(schemaMappers -> schemaMappers
                         .mapPrefix("https://json-schema.org", "classpath:")
                         .mapPrefix("http://json-schema.org", "classpath:")));
 
         SchemaValidatorsConfig config = new SchemaValidatorsConfig();
-
         config.setPathType(PathType.JSON_POINTER);
-
-        // Due to the mapping the meta schema will be retrieved from the classpath at classpath:draft/2020-12/schema.
-        JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(JSON_SCHEMA_VERSION), config);
+        JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(JSON_SCHEMA_VERSION.getId()), config);
 
         Set<ValidationMessage> assertions = schema.validate(input, InputFormat.JSON, executionContext -> {
             executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
@@ -119,7 +110,5 @@ public class JsonSchemaGenerationTest {
         for (ValidationMessage assertion : assertions) {
             fail(assertion.toString());
         }
-
     }
-
 }
