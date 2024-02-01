@@ -59,7 +59,9 @@ class JsonSchemaFileGenerator {
 
 	def String generateAttributeDefinition(Attribute attr) '''
 		"«attr.name»": {
+		  «IF attr.definition !== null»
 		  "description": "«attr.definition»",
+		  «ENDIF»
 		  «IF attr.toExpandedAttribute.multiple»
 		  "type": "array",
 		  "items": {
@@ -102,7 +104,7 @@ class JsonSchemaFileGenerator {
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
 		  "$anchor": "«enumeration.namespace»",
-		  "type": "string"
+		  "type": "string",
 		  "title": "«enumeration.name»",
 		  «IF enumeration.definition !== null»
 		  "description": "«enumeration.definition»",

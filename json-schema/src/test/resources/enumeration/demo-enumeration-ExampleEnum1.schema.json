@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "$anchor": "demo.enumeration",
-  "type": "string"
+  "type": "string",
   "title": "ExampleEnum1",
   "description": "Example Enum 1",
   "enum": [
