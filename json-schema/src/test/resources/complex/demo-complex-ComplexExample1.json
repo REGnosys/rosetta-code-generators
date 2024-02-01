@@ -1,0 +1,7 @@
+{
+	"nestedLevel1Example": { 
+	   "nestedLevel2Example" : { 
+	       "basicString" : "an example string"
+	   } 
+	} 
+}
