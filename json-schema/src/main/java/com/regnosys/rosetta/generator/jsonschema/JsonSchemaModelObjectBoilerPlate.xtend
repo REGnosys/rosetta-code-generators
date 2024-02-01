@@ -21,7 +21,7 @@ class JsonSchemaModelObjectBoilerPlate {
     }
 
 	def String getFilename(RosettaType type) {
-		type.namespace.replace(".", "-") + "-" + type.name + ".schema.json"
+		getFilename(type.namespace, type.name)
 	}
 	
 	def String getFilename(String namespace, CharSequence typeName) {
