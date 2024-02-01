@@ -1,13 +1,12 @@
 {
-  "title": "ComplexExample2",
-  "description": "Example with an complex type from another namespace",
-  "type": "object",
-  "properties": {
-    "nestedLevel1Example": {
-      "description": "Comment 1",
-      "type": "AnotherNamespaceExample1"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for type 'ComplexExample2'",
+    "description": "Example with an complex type from another namespace",
+    "type": "object",
+    "properties": {
+        "nestedLevel1Example": {
+            "description": "Comment 1",
+            "$ref": "demo.complex.namespace1.AnotherNamespaceExample1.schema.json"
+        }
     }
-  },
-  "required": [
-  ]
 }

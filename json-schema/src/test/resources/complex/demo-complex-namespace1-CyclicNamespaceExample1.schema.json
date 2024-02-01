@@ -1,13 +1,12 @@
 {
-  "title": "CyclicNamespaceExample1",
-  "description": "Example with containing parent namespace",
-  "type": "object",
-  "properties": {
-    "complexExample3": {
-      "description": "Comment 1",
-      "type": "ComplexExample3"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for type 'CyclicNamespaceExample1'",
+    "description": "Example with containing parent namespace",
+    "type": "object",
+    "properties": {
+        "complexExample3": {
+            "description": "Comment 1",
+            "$ref": "demo.complex.ComplexExample3.schema.json"
+        }
     }
-  },
-  "required": [
-  ]
 }

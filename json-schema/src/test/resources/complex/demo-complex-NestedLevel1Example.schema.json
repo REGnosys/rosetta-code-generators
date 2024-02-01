@@ -1,13 +1,12 @@
 {
-  "title": "NestedLevel1Example",
-  "description": "Example with an complex type with 1 nested type",
-  "type": "object",
-  "properties": {
-    "nestedLevel2Example": {
-      "description": "Comment 1",
-      "type": "NestedLevel2Example"
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Schema for type 'NestedLevel1Example'",
+    "description": "Example with an complex type with 1 nested type",
+    "type": "object",
+    "properties": {
+        "nestedLevel2Example": {
+            "$ref": "demo.complex.NestedLevel2Example.schema.json",
+            "description": "Comment 1"
+        }
     }
-  },
-  "required": [
-  ]
 }
