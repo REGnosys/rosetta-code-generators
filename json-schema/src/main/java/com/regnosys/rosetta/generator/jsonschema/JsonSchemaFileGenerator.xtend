@@ -100,14 +100,19 @@ class JsonSchemaFileGenerator {
 	
 	def String generateEnumDefinition(RosettaEnumeration enumeration) '''
 		{
+		  "$schema": "http://json-schema.org/draft-04/schema#",
+		  "$anchor": "«enumeration.namespace»",
+		  "type": "string"
+		  "title": "«enumeration.name»",
+		  «IF enumeration.definition !== null»
 		  "description": "«enumeration.definition»",
+		  «ENDIF»
 		  "enum": [
 		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»"«enumValue.name»"«ENDFOR»
 		  ],
 		  "oneOf": [
 		    «FOR enumValue : enumeration.allEnumsValues SEPARATOR ",\n"»«enumValue.generateEnumValue»«ENDFOR»
-		  ],
-		  "type": "string"
+		  ]
 		}
 	'''
 	

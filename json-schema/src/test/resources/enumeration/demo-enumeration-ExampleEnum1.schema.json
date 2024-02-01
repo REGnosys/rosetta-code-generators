@@ -1,4 +1,8 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.enumeration",
+  "type": "string"
+  "title": "ExampleEnum1",
   "description": "Example Enum 1",
   "enum": [
     "Example1",
@@ -29,6 +33,5 @@
       "title": "enumValue.name",
       "description": "Comment 3"
     }
-  ],
-  "type": "string"
+  ]
 }
