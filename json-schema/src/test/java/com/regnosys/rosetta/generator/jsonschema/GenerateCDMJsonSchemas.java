@@ -1,23 +1,21 @@
 package com.regnosys.rosetta.generator.jsonschema;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+
+import org.eclipse.xtext.resource.XtextResourceSet;
+
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
 import com.regnosys.rosetta.tests.RosettaInjectorProvider;
 import com.regnosys.rosetta.tests.util.ModelHelper;
-import org.eclipse.xtext.resource.XtextResourceSet;
-import org.junit.jupiter.params.provider.Arguments;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GenerateCDMJsonSchemas {
+	
     public static void main(String[] args) throws IOException {
         Path cdmDir = Path.of("/Users/hugohills/dev/github/rosetta-models/common-domain-model/rosetta-source/src/main/rosetta");
         Path output = Path.of("./json-schema-cdm-5.4.0");
