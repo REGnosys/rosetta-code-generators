@@ -47,14 +47,18 @@ public class JsonSampleValidationTest {
     @ParameterizedTest(name = "{index} {1}")
     @MethodSource("load")
     void runTest(Path jsonSchemaFile, Path sampleFile) throws IOException {
-        LOGGER.info("Testing json {} is valid against {}", jsonSchemaFile.toString(), sampleFile.toString());
-        Set<ValidationMessage> validationMessages = validateSample(jsonSchemaFile, sampleFile);
+        LOGGER.info("Testing json {} is valid against {}", jsonSchemaFile.getFileName().toString(), sampleFile.getFileName().toString());
+        String sampleFileContents = Files.readString(sampleFile);
+        if (sampleFileContents.isEmpty() || sampleFileContents.equals("{}")) {
+            fail("No Sample file. Populate " + sampleFile.getFileName().toString());
+        }
+        Set<ValidationMessage> validationMessages = validateSample(jsonSchemaFile, sampleFileContents);
         for (ValidationMessage assertion : validationMessages) {
             fail(assertion.toString());
         }
     }
 
-    private Set<ValidationMessage> validateSample(Path jsonSchemaFile, Path sampleFile) throws IOException {
+    private Set<ValidationMessage> validateSample(Path jsonSchemaFile, String sampleFileContents) throws IOException {
         JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.getInstance(JSON_SCHEMA_VERSION, builder ->
                 builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix("https://www.example.org/", "classpath:schema/"))
         );
@@ -63,7 +67,6 @@ public class JsonSampleValidationTest {
         config.setPathType(PathType.JSON_POINTER);
         JsonSchema schema = jsonSchemaFactory.getSchema(SchemaLocation.of(jsonSchemaFile.toUri().toString()), config);
 
-        String sampleFileContents = Files.readString(sampleFile);
         Set<ValidationMessage> assertions = schema.validate(sampleFileContents, InputFormat.JSON, executionContext -> {
             // By default since Draft 2019-09 the format keyword only generates annotations and not assertions
             executionContext.getExecutionConfig().setFormatAssertionsEnabled(true);
