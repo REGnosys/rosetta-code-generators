@@ -78,9 +78,6 @@ class JsonSchemaFileGenerator {
 	'''
 
 	def String getAttributeType(Attribute attr) {
-
-		// toType...
-		
 		val type = attr.typeCall.type
 		val expandedType = type.toExpandedType
 		if (expandedType.isBuiltInType && !attr.toExpandedAttribute.hasMetas) {
