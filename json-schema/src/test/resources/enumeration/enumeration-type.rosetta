@@ -1,0 +1,6 @@
+namespace demo.enumeration
+version "${project.version}"
+
+type ExampleEnumType: <"Example of using a required enum in a type">
+    exampleEnum1 ExampleEnum1 (1..1) <"Comment 1">
+    exampleEnum2 ExampleEnum2 (1..1) <"Comment 2">

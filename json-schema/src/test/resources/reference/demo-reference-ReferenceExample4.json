@@ -1,0 +1,45 @@
+{
+  "locationExample" : [ {
+    "exampleObject4" : [ {
+      "value" : {
+        "eg" : 1
+      },
+      "meta" : {
+        "location" : [ {
+          "scope" : "DOCUMENT",
+          "value" : "key-1"
+        } ]
+      }
+    }, {
+      "value" : {
+        "eg" : 2
+      },
+      "meta" : {
+        "location" : [ {
+          "scope" : "DOCUMENT",
+          "value" : "key-2"
+        } ]
+      }
+    } ]
+  }, {
+    "exampleObject4" : [ {
+      "value" : {
+        "eg" : 3
+      },
+      "meta" : {
+        "location" : [ {
+          "scope" : "DOCUMENT",
+          "value" : "key-3"
+        } ]
+      }
+    } ]
+  } ],
+  "addressExample" : {
+    "exampleObject4" : {
+      "address" : {
+        "scope" : "DOCUMENT",
+        "value" : "key-2"
+      }
+    }
+  }
+}

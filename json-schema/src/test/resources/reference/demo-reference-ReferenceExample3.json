@@ -1,0 +1,23 @@
+{
+  "locationExample" : {
+    "exampleObject3" : {
+      "value" : {
+        "eg" : 10
+      },
+      "meta" : {
+        "location" : [ {
+          "scope" : "DOCUMENT",
+          "value" : "key-1"
+        } ]
+      }
+    }
+  },
+  "addressExample" : {
+    "exampleObject3" : {
+      "address" : {
+        "scope" : "DOCUMENT",
+        "value" : "key-1"
+      }
+    }
+  }
+}

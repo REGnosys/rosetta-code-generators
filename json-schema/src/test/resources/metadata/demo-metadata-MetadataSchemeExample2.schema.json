@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.metadata",
+  "type": "object",
+  "title": "MetadataSchemeExample2",
+  "properties": {
+    "exampleObject2": {
+      "$ref": "demo-metadata-metafields-FieldWithMetaSchemeExampleObject2.schema.json"
+    }
+  },
+  "required": [
+    "exampleObject2"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "exampleObject2": {
+    "value": {
+      "eg1": "eg123"
+    },
+    "meta": {
+      "scheme": "http://scheme/2"
+    }
+  }
+}

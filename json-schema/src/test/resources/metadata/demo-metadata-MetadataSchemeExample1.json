@@ -1,0 +1,8 @@
+{
+  "exampleString": {
+    "value": "value1",
+    "meta": {
+      "scheme": "http://scheme/1"
+    }
+  }
+}

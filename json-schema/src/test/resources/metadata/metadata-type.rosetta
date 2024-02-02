@@ -1,0 +1,20 @@
+namespace demo.metadata
+version "${project.version}"
+
+type MetadataSchemeExample1:
+  exampleString string (1..1)
+    [metadata scheme]
+
+type MetadataSchemeExample2:
+  exampleObject2 SchemeExampleObject2 (1..1)
+    [metadata scheme]
+
+type SchemeExampleObject2:
+   eg1 string (1..1)
+
+type MetadataSchemeExample3:
+  schemeEnum3 SchemeEnum3 (1..1)
+    [metadata scheme]
+
+enum SchemeEnum3:
+   A B C

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.metadata",
+  "type": "object",
+  "title": "FieldWithMetaSchemeExampleObject2",
+  "properties": {
+    "value": {
+      "$ref": "demo-metadata-SchemeExampleObject2.schema.json"
+    },
+    "meta": {
+      "$ref": "com-rosetta-model-metafields-MetaFields.schema.json"
+    }
+  }
+}

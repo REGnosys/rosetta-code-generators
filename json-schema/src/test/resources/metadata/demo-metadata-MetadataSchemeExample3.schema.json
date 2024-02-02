@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.metadata",
+  "type": "object",
+  "title": "MetadataSchemeExample3",
+  "properties": {
+    "schemeEnum3": {
+      "$ref": "demo-metadata-metafields-FieldWithMetaSchemeEnum3.schema.json"
+    }
+  },
+  "required": [
+    "schemeEnum3"
+  ]
+}

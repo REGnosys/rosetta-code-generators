@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex.namespace1",
+  "type": "object",
+  "title": "CyclicNamespaceExample1",
+  "description": "Example with containing parent namespace",
+  "properties": {
+    "complexExample3": {
+      "description": "Comment 1",
+      "$ref": "demo-complex-ComplexExample3.schema.json"
+    }
+  }
+}

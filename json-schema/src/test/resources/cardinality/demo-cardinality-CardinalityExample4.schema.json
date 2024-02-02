@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.cardinality",
+  "type": "object",
+  "title": "CardinalityExample4",
+  "description": "Example with 2 and only 2",
+  "properties": {
+    "onlyTwoExample": {
+      "description": "Comment 1",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    }
+  }
+}

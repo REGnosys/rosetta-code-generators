@@ -1,0 +1,13 @@
+{
+  "exampleString1" : {
+    "value" : "eg1",
+    "meta" : {
+      "globalKey" : "187cf",
+      "externalKey" : "key1"
+    }
+  },
+  "exampleString1Reference" : {
+    "globalReference" : "187d0",
+    "externalReference" : "key1"
+  }
+}
