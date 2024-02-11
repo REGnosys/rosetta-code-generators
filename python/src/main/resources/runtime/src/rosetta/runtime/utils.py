@@ -1,26 +1,26 @@
 '''Utility functions (runtime) for rosetta models.'''
 from __future__ import annotations
 import logging as log
+from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
 from collections import defaultdict
 from pydantic.v1.main import BaseModel, validate_model
 from pydantic.v1.generics import GenericModel
 from pydantic.v1 import Extra
-from typing import get_args, get_origin, Union, List
-
 
 
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
            'get_only_element', 'rosetta_filter',
            'all_elements', 'contains', 'disjoint', 'join',
+           'local_rosetta_condition',
+           'execute_local_conditions',
            'flatten_list',
            '_resolve_rosetta_attr',
            '_get_rosetta_object',
            'set_rosetta_attr',
            'add_rosetta_attr',
-           'validateConditions',
            'check_cardinality',
            'AttributeWithMeta',
            'AttributeWithAddress',
@@ -70,11 +70,6 @@ def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
     return instance
 
 
-def validateConditions(condition, msg):
-    if not condition:
-        raise ConditionViolationError(msg)
-
-
 class Multiprop(list):
     ''' A class allowing for dot access to a attribute of all elements of a
         list.
@@ -91,7 +86,6 @@ class Multiprop(list):
 
 
 _CONDITIONS_REGISTRY: defaultdict[str, dict[str, Any]] = defaultdict(dict)
-_POST_CONDITIONS_REGISTRY: defaultdict[str, dict[str, Any]] = defaultdict(dict)
 
 
 def rosetta_condition(condition):
@@ -106,13 +100,28 @@ def rosetta_condition(condition):
         return condition(*args, **kwargs)
     return wrapper
 
-def rosetta_post_condition(condition):
-    """ Registers a post-condition function. """
-    path_components = condition.__qualname__.split('.')
-    path = '.'.join([condition.__module__ or ''] + path_components[:-1])
-    name = path_components[-1]
-    _POST_CONDITIONS_REGISTRY[path][name] = condition
-    return condition
+
+def local_rosetta_condition(registry):
+    '''Registers a condition function in a local registry.'''
+    def decorator(condition):
+        path_components = condition.__qualname__.split('.')
+        path = '.'.join([condition.__module__ or ''] + path_components)
+        registry[path] = condition
+
+        @wraps(condition)
+        def wrapper(*args, **kwargs):
+            return condition(*args, **kwargs)
+        return wrapper
+
+    return decorator
+
+
+def execute_local_conditions(registry, cond_type):
+    '''Executes all registered in a local registry.'''
+    for condition_path, condition_func in registry.items():
+        if not condition_func():
+            raise ConditionViolationError(
+                f"{cond_type} '{condition_path}' failed.")
 
 
 class ConditionViolationError(ValueError):
@@ -152,7 +161,7 @@ class BaseDataClass(BaseModel):
     meta: dict | None = None
     address: MetaAddress | None = None
 
-    class Config:
+    class Config:  # pylint: disable=too-few-public-methods
         '''Disables the validity of extra parameters'''
         extra = Extra.forbid
 
@@ -213,9 +222,9 @@ class BaseDataClass(BaseModel):
                         'Invoking conditions validation on the property '
                         '"%s" of %s', k, self
                     )
-                    exc = v.validate_conditions(recursively=True,
+                    exc = v.validate_conditions(recursively=True,  # type:ignore
                                                 raise_exc=raise_exc)
-                    exceptions += exc
+                    exceptions += exc  # type:ignore
                     if exc:
                         log.error(
                             'Validation of the property "%s" of %s failed!', k,
@@ -239,7 +248,8 @@ class BaseDataClass(BaseModel):
 
     def add_to_list_attribute(self, attr_name: str, value) -> None:
         """
-        Adds a value to a list attribute, ensuring the value is of an allowed type.
+        Adds a value to a list attribute, ensuring the value is of an allowed
+        type.
 
         Parameters:
         attr_name (str): Name of the list attribute.
@@ -257,19 +267,23 @@ class BaseDataClass(BaseModel):
             raise AttributeError(f"Attribute {attr_name} is not a list.")
 
         # Get allowed types for the list elements
-        allowed_types = get_allowed_types_for_list_field(self.__class__, attr_name)
+        allowed_types = get_allowed_types_for_list_field(
+            self.__class__, attr_name)
 
         # Check if value is an instance of one of the allowed types
         if not isinstance(value, allowed_types):
-            raise TypeError(f"Value must be an instance of {allowed_types}, not {type(value)}")
+            raise TypeError(
+                f"Value must be an instance of {allowed_types}, "
+                f"not {type(value)}"
+            )
 
         attr.append(value)
 
 
-
 def get_allowed_types_for_list_field(model_class: type, field_name: str):
     """
-    Gets the allowed types for a list field in a Pydantic model, supporting both Union and | operator.
+    Gets the allowed types for a list field in a Pydantic model, supporting
+    both Union and | operator.
 
     Parameters:
     model_class (type): The Pydantic model class.
@@ -290,42 +304,49 @@ def get_allowed_types_for_list_field(model_class: type, field_name: str):
 ValueT = TypeVar('ValueT')
 
 
-class AttributeWithMeta(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithMeta(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     meta: dict | None = None
     value: ValueT
 
 
-class AttributeWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithAddress(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     address: MetaAddress | None = None
     value: ValueT | None = None
 
 
-class AttributeWithReference(BaseDataClass):  # pylint: disable=missing-class-docstring
+class AttributeWithReference(BaseDataClass):
+    '''Meta support'''
     externalReference: str | None = None
     globalReference: str | None = None
 
 
-class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     meta: dict | None = None
     address: MetaAddress | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     meta: dict | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     address: MetaAddress | None = None
     externalReference: str | None = None
     globalReference: str | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):  # pylint: disable=missing-class-docstring
+class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):
+    '''Meta support'''
     meta: dict | None = None
     address: MetaAddress | None = None
     externalReference: str | None = None
@@ -352,7 +373,6 @@ def all_elements(lhs, op, rhs) -> bool:
     return all(cmp(el1, el2) for el1 in op1 for el2 in op2)
 
 
-
 def disjoint(op1, op2):
     '''Checks if two lists have no common elements'''
     op1 = set(_to_list(op1))
@@ -372,13 +392,13 @@ def contains(op1, op2):
 
 def join(lst, sep=''):
     ''' Joins the string representation of the list elements, optionally
-        separted.
+        separated.
     '''
     return sep.join([str(el) for el in lst])
 
 
 def any_elements(lhs, op, rhs) -> bool:
-    '''Checks if to lists have any comon element(s)'''
+    '''Checks if to lists have any common element(s)'''
     cmp = _cmp[op]
     op1 = _to_list(lhs)
     op2 = _to_list(rhs)
@@ -402,53 +422,40 @@ def check_cardinality(prop, inf: int, sup: int | None = None) -> bool:
 
     return inf <= prop_card <= sup
 
+
 def get_only_element(collection):
-    if isinstance(collection, list) and len(collection) == 1:
+    ''' Returns the single element of a collection, if the list contains more
+        more than one element or is empty, None is returned.
+    '''
+    if isinstance(collection, (list, tuple)) and len(collection) == 1:
         return collection[0]
-    else:
-        return None
+    return None
+
 
 def flatten_list(nested_list):
+    '''flattens the list of lists (no-recursively)'''
     return [item for sublist in nested_list for item in sublist]
+
 
 def rosetta_filter(items, filter_func, item_name='item'):
     """
-    Filters a list of items based on a specified filtering criteria provided as a boolean lambda function.
+    Filters a list of items based on a specified filtering criteria provided as
+    a boolean lambda function.
 
     :param items: List of items to be filtered.
-    :param filter_func: A lambda function representing the boolean expression for filtering.
-    :param item_name: The name used to refer to each item in the boolean expression.
+    :param filter_func: A lambda function representing the boolean expression
+        for filtering.
+    :param item_name: The name used to refer to each item in the boolean
+        expression.
     :return: Filtered list.
     """
     return [item for item in items if filter_func(locals()[item_name])]
 
 
-def execute_conditions(obj):
-    """
-    Executes all conditions registered with @rosetta_condition for a given object.
-
-    Parameters:
-    obj (object): The object for which to execute all registered conditions.
-
-    Raises:
-    ConditionViolationError: If any condition fails.
-    """
-    conditions = _CONDITIONS_REGISTRY.get(obj.__class__.__name__, {})
-    for condition_name, condition_func in conditions.items():
-        if not condition_func(obj):
-            raise ConditionViolationError(f"Condition '{condition_name}' failed for {obj.__class__.__name__}")
-
-def execute_post_conditions(obj):
-    """ Executes all post-conditions registered for a given object. """
-    for condition_name, condition_func in _POST_CONDITIONS_REGISTRY[obj.__class__.__name__].items():
-        if not condition_func(obj):
-            raise ConditionViolationError(f"Post-condition '{condition_name}' failed for {obj.__class__.__name__}")
-
-
-
 def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
     """
-    Sets an attribute of a Rosetta model object to a specified value using a path.
+    Sets an attribute of a Rosetta model object to a specified value using a
+    path.
 
     Parameters:
     obj (Any): The object whose attribute is to be set.
@@ -460,7 +467,8 @@ def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
     AttributeError: If an invalid attribute path is provided.
     """
     if obj is None:
-        raise ValueError("Cannot set attribute on a None object in set_rosetta_attr.")
+        raise ValueError(
+            "Cannot set attribute on a None object in set_rosetta_attr.")
 
     path_components = path.split('->')  # Use '->' for splitting the path
     parent_obj = obj
@@ -469,16 +477,20 @@ def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
     for attrib in path_components[:-1]:
         parent_obj = _resolve_rosetta_attr(parent_obj, attrib)
         if parent_obj is None:
-            raise ValueError(f"Attribute '{attrib}' in the path is None, cannot proceed to set value.")
+            raise ValueError(
+                f"Attribute '{attrib}' in the path is None, cannot "
+                "proceed to set value."
+            )
 
     # Set the value to the last attribute in the path
     final_attr = path_components[-1]
     if hasattr(parent_obj, final_attr):
         setattr(parent_obj, final_attr, value)
     else:
-        raise AttributeError(f"Invalid attribute '{final_attr}' for object of type {type(parent_obj).__name__}")
-
-
+        raise AttributeError(
+            f"Invalid attribute '{final_attr}' for object of "
+            f"type {type(parent_obj).__name__}"
+        )
 
 
 def add_rosetta_attr(obj: Any, attrib: str, value: Any) -> None:
@@ -503,4 +515,3 @@ def add_rosetta_attr(obj: Any, attrib: str, value: Any) -> None:
         raise ValueError("Object for add_rosetta_attr cannot be None.")
 
 # EOF
-
