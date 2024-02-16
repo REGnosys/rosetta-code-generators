@@ -55,6 +55,7 @@ import java.util.ArrayList
 import java.util.List
 import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.expression.EqualityOperation
+import com.regnosys.rosetta.rosetta.expression.AsKeyOperation
 
 class PythonExpressionGenerator {
 	
@@ -89,33 +90,27 @@ class PythonExpressionGenerator {
         var res = '';
         for (Condition cond : conditions) {
             res += generateConditionBoilerPlate(cond, n_condition)
-            if (cond.isConstraintCondition)
-            	println('A')
-                //res += generateConstraintCondition(cls, cond)
-            else
-                res += generateExpressionCondition(cond)
+            res += generateExpressionCondition(cond)
             n_condition += 1;
         }
         
         return res
     }
     
-    public def generatePostConditions(List<Condition> conditions) {
+    public def generateFunctionConditions(List<Condition> conditions, String condition_type) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
         for (Condition cond : conditions) {
-            res += generatePostConditionBoilerPlate(cond, n_condition)
-            if (cond.isConstraintCondition)
-            	println('A')
-                //res += generateConstraintCondition(cls, cond)
-            else
-                res += generateExpressionCondition(cond)
+            res += generateFunctionConditionBoilerPlate(cond, n_condition, condition_type)
+            res += generateExpressionCondition(cond)
             n_condition += 1;
         }
         
         return res
     }
+    
+    
     def boolean isConstraintCondition(Condition cond) {
 		return cond.isOneOf || cond.isChoice
 	}
@@ -132,6 +127,19 @@ class PythonExpressionGenerator {
 		'''
 			
 			@rosetta_condition
+			def condition_«n_condition»_«cond.name»(self):
+				«IF cond.definition!==null»
+					"""
+					«cond.definition»
+					"""
+				«ENDIF»
+		'''
+	}
+	
+	private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
+		'''
+			
+			@local_rosetta_condition(«condition_type»)
 			def condition_«n_condition»_«cond.name»(self):
 				«IF cond.definition!==null»
 					"""
@@ -385,12 +393,11 @@ class PythonExpressionGenerator {
 			    
 			    return pythonMapOperation;
 			}
-			AsKeyOperationImpl: {
+			AsKeyOperation: {
 	            // Assuming AsKeyOperationImpl has a 'key' (possibly the 'operator' attribute) and an 'argument' property
-	            val key = expr.operator // or another property representing the key
 	            val argument = generateExpression(expr.argument, iflvl)
 	
-	            return '''{«key»: «argument»}''' // Example: creating a dictionary entry in Python
+	            return '''{«argument»: True}''' // Example: creating a dictionary entry in Python
 	        }
 	        FlattenOperation: {
 			    val nestedListExpr = generateExpression(expr.argument, iflvl)

@@ -7,15 +7,15 @@ from datetime import time
 from datetime import datetime
 from decimal import Decimal
 from pydantic import Field
-from rosetta.runtime.utils import *
+from rosetta.runtime.utils import BaseDataClass
 
 __all__ = ['Foo']
 
 
 class Foo(BaseDataClass):
-  one: int = Field(..., description="")
-  three: List[int] = Field([], description="")
-  two: Optional[int] = Field(None, description="")
+    one: int = Field(..., description="")
+    three: List[int] = Field([], description="")
+    two: Optional[int] = Field(None, description="")
 
 
 Foo.update_forward_refs()

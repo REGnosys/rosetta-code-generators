@@ -109,6 +109,7 @@ class  PythonFunctionGenerator {
 		@replacable
 		def «function.name»«generatesInputs(function)»:
 			«generateDescription(function)»
+			«generateVariables(function)»
 			self = inspect.currentframe()
 			
 			«generateConditions(function)»
@@ -121,29 +122,43 @@ class  PythonFunctionGenerator {
 	}
 	
 	private def generateImports(Iterable<EObject> dependencies, Function function) {
-    val imports = new StringBuilder();
-
-    for (EObject dependency : dependencies) {
-        // Assuming a simple mapping from class names to import paths
-        // This mapping needs to be defined based on your project structure
-        val tr = dependency.eContainer as RosettaModel
-        val importPath = tr.name;
-        if(dependency instanceof Function){
-        	imports.append("from ").append(importPath).append(".functions.").append(dependency.name).append(" import ").append(dependency.name).append("\n");
-        }else if(dependency instanceof RosettaEnumeration){
-        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
-        }
-        else if(dependency instanceof Data){
-        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
-        }
-        
-        
-    }
-    imports.append("\n")
-    imports.append('''__all__ = [«"'"+function.name+"'"»]''')
-
-    return imports.toString();
-}
+	    val imports = new StringBuilder();
+	
+	    for (EObject dependency : dependencies) {
+	        // Assuming a simple mapping from class names to import paths
+	        // This mapping needs to be defined based on your project structure
+	        val tr = dependency.eContainer as RosettaModel
+	        val importPath = tr.name;
+	        if(dependency instanceof Function){
+	        	imports.append("from ").append(importPath).append(".functions.").append(dependency.name).append(" import ").append(dependency.name).append("\n");
+	        }else if(dependency instanceof RosettaEnumeration){
+	        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+	        }
+	        else if(dependency instanceof Data){
+	        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+	        }
+	        
+	        
+	    }
+	    imports.append("\n")
+	    imports.append('''__all__ = [«"'"+function.name+"'"»]''')
+	
+	    return imports.toString();
+	}
+	
+	private def generateVariables(Function function) {
+		var result = new StringBuilder();
+		val lineSeparator = System.getProperty("line.separator")
+		
+		if(function.conditions.size>0)
+			result.append(" _pre_registry = {}").append(lineSeparator);
+		if(function.postConditions.size>0)
+			result.append(" _post_registry  = {}").append(lineSeparator);
+		
+		return result
+	
+	}
+	
 	
 	private def generatesOutput(Function function) {
 	    val output = function.output
@@ -260,12 +275,12 @@ class  PythonFunctionGenerator {
 	
 	private def generateConditions(Function function) {
 	    '''     
-	    «IF function.conditions.size>0»
+	    «IF function.conditions.size>0»   
 	    # conditions
-	    «expressionGenerator.generateConditions(function.conditions)»
+	    «expressionGenerator.generateFunctionConditions(function.conditions, "_pre_registry")»
 	    
 	    # Execute all registered conditions
-	    execute_conditions(self)
+	    execute_local_conditions(_pre_registry, 'Pre-condition')
 	    «ENDIF»
 	    '''
 	}
@@ -274,10 +289,10 @@ class  PythonFunctionGenerator {
 	    '''     
 	    «IF function.postConditions.size>0»
 	    # post-conditions
-	    «expressionGenerator.generatePostConditions(function.postConditions)»
+	    «expressionGenerator.generateFunctionConditions(function.postConditions, "_post_registry")»
 	    
 	    # Execute all registered post-conditions
-	    execute_post_conditions(self)
+	    execute_local_conditions(_post_registry, 'Post-condition')
 	    «ENDIF»
 	    '''
 	}
