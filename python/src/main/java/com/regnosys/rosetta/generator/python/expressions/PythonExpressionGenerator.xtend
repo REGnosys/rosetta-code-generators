@@ -78,11 +78,10 @@ class PythonExpressionGenerator {
             else
                 res += generateExpressionCondition(cond)
             n_condition += 1;
-        }
-        
+        }        
         return res
     }
-    
+
     public def generateConditions(List<Condition> conditions) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
@@ -99,7 +98,7 @@ class PythonExpressionGenerator {
         
         return res
     }
-    
+
     public def generatePostConditions(List<Condition> conditions) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
@@ -116,10 +115,11 @@ class PythonExpressionGenerator {
         
         return res
     }
+
     def boolean isConstraintCondition(Condition cond) {
 		return cond.isOneOf || cond.isChoice
 	}
-	
+
 	private def boolean isOneOf(Condition cond) {
 		return cond.expression instanceof OneOfOperation
 	}
@@ -127,7 +127,7 @@ class PythonExpressionGenerator {
 	private def boolean isChoice(Condition cond) {
 		return cond.expression instanceof ChoiceOperation
 	}
-    
+
     private def generateConditionBoilerPlate(Condition cond, int n_condition) {
 		'''
 			
@@ -140,7 +140,7 @@ class PythonExpressionGenerator {
 				«ENDIF»
 		'''
 	}
-	
+
 	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
 		'''
 			
@@ -153,7 +153,7 @@ class PythonExpressionGenerator {
 				«ENDIF»
 		'''
 	}
-	
+
 	private def generateConstraintCondition(Data cls, Condition cond) {
 		val expression = cond.expression
 		var attributes = cls.attributes
@@ -167,9 +167,8 @@ class PythonExpressionGenerator {
 		}
 		'''	return self.check_one_of_constraint(«FOR a : attributes SEPARATOR ", "»'«a.name»'«ENDFOR», «necessity»)
 		'''
-
 	}
-	
+
 	private def generateExpressionCondition(Condition c) {
 		if_cond_blocks = new ArrayList<String>()
 		var expr = generateExpression(c.expression, 0)
@@ -180,7 +179,7 @@ class PythonExpressionGenerator {
 		return '''«blocks»	return «expr»
 		'''
 	}
-	
+
 	def generateExpressionThenElse(RosettaExpression expr, List<Integer> iflvl) {
 	    if_cond_blocks = new ArrayList<String>()
 	    val expression = generateExpression(expr, iflvl.get(0))
@@ -188,12 +187,11 @@ class PythonExpressionGenerator {
 	    var blocks = ""
 	    if (!if_cond_blocks.isEmpty()) {
 	        iflvl.set(0, iflvl.get(0) + 1)
-	        blocks = '''    «FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
+	        blocks = '''	«FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
 	    }
 	    return '''«blocks»'''
 	}
-	
-	
+
 	def String generateExpression(RosettaExpression expr, int iflvl) {
 		switch (expr) {
 			RosettaConditionalExpression: {
@@ -207,10 +205,10 @@ class PythonExpressionGenerator {
 				val if_blocks = '''
 					def _then_fn«iflvl»():
 						return «ifthen»
-					
+
 					def _else_fn«iflvl»():
-						return «elsethen»				
-							
+						return «elsethen»
+
 				'''
 				if_cond_blocks.add(if_blocks)
 
@@ -331,11 +329,6 @@ class PythonExpressionGenerator {
 			    // Using the lambda function. If there are no parameters, argExpr will not be used.
 			    return '''«lambdaFunction»(«argExpr»)'''
 			}
-
-
-
-	       
-	        
 	        LastOperation: {
 	            // Implement the logic for LastOperation
 	            // Example: return '''«generateExpression(expr.argument, iflvl)»[-1]'''
@@ -455,7 +448,6 @@ class PythonExpressionGenerator {
 				throw new UnsupportedOperationException("Unsupported callable type of " + s.class.simpleName)
 		}
 	}
-	
 
 	def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl) {
 		if (s instanceof FunctionImpl)
@@ -501,16 +493,13 @@ class PythonExpressionGenerator {
 			}
 		}
 	}
-	
+
 	def addImportsFromConditions(String variable, String namespace) {
 		val import = '''from «namespace».«variable» import «variable»'''
 		if(importsFound!=null){
 			if (!importsFound.contains(import)) {
-			importsFound.add(import)
+				importsFound.add(import)
+			}
 		}
-		}
-		
 	}
-	
-	
 }

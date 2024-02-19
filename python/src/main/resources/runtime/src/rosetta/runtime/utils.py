@@ -5,10 +5,7 @@ from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
 from collections import defaultdict
-from pydantic.v1.main import BaseModel, validate_model
-from pydantic.v1.generics import GenericModel
-from pydantic.v1 import Extra
-
+from pydantic import BaseModel, ValidationError
 
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
@@ -163,7 +160,7 @@ class BaseDataClass(BaseModel):
 
     class Config:  # pylint: disable=too-few-public-methods
         '''Disables the validity of extra parameters'''
-        extra = Extra.forbid
+        extra = 'forbid'
 
     def validate_model(self,
                        recursively: bool = True,
@@ -185,10 +182,13 @@ class BaseDataClass(BaseModel):
             thrown if a validation or condition is violated or if a list with
             all encountered violations should be returned instead.
         '''
-        *_, validation_error = validate_model(self.__class__, self.__dict__)
-        if raise_exc and validation_error:
-            raise validation_error
-        return [validation_error] if validation_error else []
+        try:
+            self.model_validate(self)
+        except ValidationError as validation_error:
+            if raise_exc and validation_error:
+                raise validation_error
+            return [validation_error]
+        return []
 
     def validate_conditions(self,
                             recursively: bool = True,
@@ -304,13 +304,13 @@ def get_allowed_types_for_list_field(model_class: type, field_name: str):
 ValueT = TypeVar('ValueT')
 
 
-class AttributeWithMeta(GenericModel, Generic[ValueT]):
+class AttributeWithMeta(BaseModel, Generic[ValueT]):
     '''Meta support'''
     meta: dict | None = None
     value: ValueT
 
 
-class AttributeWithAddress(GenericModel, Generic[ValueT]):
+class AttributeWithAddress(BaseModel, Generic[ValueT]):
     '''Meta support'''
     address: MetaAddress | None = None
     value: ValueT | None = None
@@ -322,14 +322,14 @@ class AttributeWithReference(BaseDataClass):
     globalReference: str | None = None
 
 
-class AttributeWithMetaWithAddress(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithAddress(BaseModel, Generic[ValueT]):
     '''Meta support'''
     meta: dict | None = None
     address: MetaAddress | None = None
     value: ValueT
 
 
-class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithReference(BaseModel, Generic[ValueT]):
     '''Meta support'''
     meta: dict | None = None
     externalReference: str | None = None
@@ -337,7 +337,7 @@ class AttributeWithMetaWithReference(GenericModel, Generic[ValueT]):
     value: ValueT
 
 
-class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithAddressWithReference(BaseModel, Generic[ValueT]):
     '''Meta support'''
     address: MetaAddress | None = None
     externalReference: str | None = None
@@ -345,7 +345,7 @@ class AttributeWithAddressWithReference(GenericModel, Generic[ValueT]):
     value: ValueT
 
 
-class AttributeWithMetaWithAddressWithReference(GenericModel, Generic[ValueT]):
+class AttributeWithMetaWithAddressWithReference(BaseModel, Generic[ValueT]):
     '''Meta support'''
     meta: dict | None = None
     address: MetaAddress | None = None

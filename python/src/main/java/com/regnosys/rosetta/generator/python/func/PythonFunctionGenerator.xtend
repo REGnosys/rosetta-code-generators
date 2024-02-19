@@ -81,12 +81,10 @@ class  PythonFunctionGenerator {
 				}		
 			} 
 		}
-		
 		return result
 	}
 
 	private def generateFunctions(Function function,String version) {
-	    
 	    // importsFound = getImportsFromAttributes(function)
 	    // //var List<String> updateForwardRefs = newArrayList
 	    // //updateForwardRefs.add('''«function.name».update_forward_refs()''')
@@ -97,16 +95,13 @@ class  PythonFunctionGenerator {
 		// «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
 					
 		// '''	
-		if(function.name=="VectorScalarOperation"){
-			println('A')
-		}
 		val dependencies = collectFunctionDependencies(function);
 
 		'''
 		«generateImports(dependencies, function)»
 		
 		
-		@replacable
+		@replaceable
 		def «function.name»«generatesInputs(function)»:
 			«generateDescription(function)»
 			self = inspect.currentframe()
@@ -121,29 +116,27 @@ class  PythonFunctionGenerator {
 	}
 	
 	private def generateImports(Iterable<EObject> dependencies, Function function) {
-    val imports = new StringBuilder();
+		val imports = new StringBuilder();
 
-    for (EObject dependency : dependencies) {
-        // Assuming a simple mapping from class names to import paths
-        // This mapping needs to be defined based on your project structure
-        val tr = dependency.eContainer as RosettaModel
-        val importPath = tr.name;
-        if(dependency instanceof Function){
-        	imports.append("from ").append(importPath).append(".functions.").append(dependency.name).append(" import ").append(dependency.name).append("\n");
-        }else if(dependency instanceof RosettaEnumeration){
-        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
-        }
-        else if(dependency instanceof Data){
-        	imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
-        }
-        
-        
-    }
-    imports.append("\n")
-    imports.append('''__all__ = [«"'"+function.name+"'"»]''')
+		for (EObject dependency : dependencies) {
+			// Assuming a simple mapping from class names to import paths
+			// This mapping needs to be defined based on your project structure
+			val tr = dependency.eContainer as RosettaModel
+			val importPath = tr.name;
+			if(dependency instanceof Function){
+				imports.append("from ").append(importPath).append(".functions.").append(dependency.name).append(" import ").append(dependency.name).append("\n");
+			}else if(dependency instanceof RosettaEnumeration){
+				imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+			}
+			else if(dependency instanceof Data){
+				imports.append("from ").append(importPath).append(".").append(dependency.name).append(" import ").append(dependency.name).append("\n");      	
+			}
+		}
+		imports.append("\n")
+		imports.append('''__all__ = [«"'"+function.name+"'"»]''')
 
-    return imports.toString();
-}
+		return imports.toString();
+	}
 	
 	private def generatesOutput(Function function) {
 	    val output = function.output
@@ -157,8 +150,7 @@ class  PythonFunctionGenerator {
 	    	
 	    	return «output.name»
 	    	'''
-	    }
-		
+	    }	
 	}
 	
 	private def generatesInputs(Function function) {
@@ -244,7 +236,6 @@ class  PythonFunctionGenerator {
 	    return dependencies
 	}
 
-	
 	private def generateIfBlocks(Function function) {
 	    val levelList = newArrayList(0) // List with a single element initialized to 0
 	
@@ -301,8 +292,6 @@ class  PythonFunctionGenerator {
 	    return result.toString()
 	}
 
-
-	
 	private def generateOperations(Function function) {  
 	    val lineSeparator = System.getProperty("line.separator")
 	    var result = new StringBuilder()
@@ -349,11 +338,11 @@ class  PythonFunctionGenerator {
     	}
     	return result
 	}
+
 	private def List<Operation> getNonAddOperations(Function function) {
 	    return function.getOperations().filter[!isAdd()].toList()
-	}
-	
-	
+	}	
+
 	private def generateSetOperation(AssignPathRoot root, Operation operation, Function function, String expression, List<String> setNames){
 		var result=""
 		
@@ -386,8 +375,7 @@ class  PythonFunctionGenerator {
 	    	currentPath = currentPath.next
 	    }
 	    result.append("'")  
-	    return result
-	    
+	    return result   
 	}
 	
 	private def getNextPathElementName(Segment path) {  
@@ -425,8 +413,6 @@ class  PythonFunctionGenerator {
 	    return '''_resolve_rosetta_attr(«nextPath», '«attr.name»')'''
 	}
 
-
-	
 	private def getReversedAttributes(Segment segment) {
 	    val attributes = new ArrayList<Attribute>();
 	    var current = segment;
@@ -442,16 +428,6 @@ class  PythonFunctionGenerator {
 	
 	    return attributes;
 	}
-
-
-
-
-
-
-
-
-	
-	
 	
     /*private def generatesBody(Function function) {
  
@@ -560,8 +536,7 @@ class  PythonFunctionGenerator {
 		}
 			
 		else obj+="returnResult_"+Integer.toString(i)+"()"
-		'''«obj»'''
-		
+		'''«obj»'''		
 	}
 	
 	/* ********************************************************************** */
@@ -637,7 +612,7 @@ class  PythonFunctionGenerator {
 		«ENDIF»
 		'''
 	}
-	
+
 	/* ********************************************************************** */
 	/* ***	   ALIAS GENERATION	  										  *** */
 	/* ********************************************************************** */
@@ -699,8 +674,6 @@ class  PythonFunctionGenerator {
 		'''
 	}
 	*/
-	
-	
 
 	def addImportsFromConditions(String variable, String namespace) {
 		val import = '''from «namespace».«variable» import «variable»'''
@@ -708,10 +681,7 @@ class  PythonFunctionGenerator {
 			importsFound.add(import)
 		}
 	}
-	
 
-	
-	
 	private def generateOutput(Attribute output) {
 		var out = ""
 		val outputName = output.name
@@ -721,13 +691,11 @@ class  PythonFunctionGenerator {
 		«out»
 		'''
 	}
-	
+
 	private def boolean isList(Attribute output) {
 		return output.getCard.unbounded
 	}
-	
-	
-	
+
 	private def getImportsFromAttributes(Function function) {
 		var filteredAttributes = new ArrayList
 		for (f : function.inputs) if (!checkBasicType(f)) filteredAttributes.add(f)
@@ -748,18 +716,10 @@ class  PythonFunctionGenerator {
 		return imports.toSet.toList
 		
 	}
-	
-	
-	
+
 	def checkBasicType(Attribute attr) {
 		val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
 			'bool', 'number')
 		return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
-	}
-	
-	
- 	
-	
-	
-	
+	}	
 }

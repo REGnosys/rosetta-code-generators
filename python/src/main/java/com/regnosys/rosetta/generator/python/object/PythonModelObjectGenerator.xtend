@@ -60,7 +60,8 @@ class PythonModelObjectGenerator {
 	var List<String> importsFound = newArrayList
 	var if_cond_blocks = new ArrayList<String>()
 
-	static def toPythonBasicType(String typename) {
+	static def toPythonBasicType(ExpandedAttribute attribute) {
+		val typename = attribute.type.name;
 		switch typename {
 			case 'string':
 				'str'
@@ -83,12 +84,20 @@ class PythonModelObjectGenerator {
 			case 'eventType':
 				'str'
 			default:
-				(typename === null) ? null : typename.toFirstUpper
+				// (typename === null) ? null : typename.toFirstUpper
+				if (typename === null) {
+					return null;
+				}
+				else {
+					val nm = typename.toFirstUpper;
+					return attribute.type.model.name + '.' + nm + '.' + nm;
+				}
 		}
 	}
 
 	static def toPythonType(Data c, ExpandedAttribute attribute) throws Exception {
-		var basicType = toPythonBasicType(attribute.type.name);
+		// var basicType = toPythonBasicType(attribute.type.name);
+		var basicType = toPythonBasicType(attribute);
 		if (basicType === null) {
 			throw new Exception("Attribute type is null for " + attribute.name + " for class " + c.name)
 		}
@@ -164,7 +173,7 @@ class PythonModelObjectGenerator {
 		var List<String> enumImports = newArrayList
 		var List<String> dataImports = newArrayList
 		var List<String> classDefinitions = newArrayList
-		var List<String> updateForwardRefs = newArrayList
+		// var List<String> updateForwardRefs = newArrayList
 		var superType = rosettaClass.superType
 		if (superType !== null && superType.name === null) {
 			throw new Exception("SuperType is null for " + rosettaClass.name)
@@ -173,7 +182,7 @@ class PythonModelObjectGenerator {
 		expressionGenerator.importsFound = this.importsFound;
 		val classDefinition = generateClassDefinition(rosettaClass)
 		classDefinitions.add(classDefinition)
-		updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
+		// updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
 
 		// Remove duplicates
 		enumImports = enumImports.toSet().toList()
@@ -185,10 +194,12 @@ class PythonModelObjectGenerator {
 			
 			«classDefinition»
 			
+			import cdm
 			«FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
-			
-			«FOR updateForwardRef : updateForwardRefs SEPARATOR "\n"»«updateForwardRef»«ENDFOR»
 		'''
+		//	
+		// 	«FOR updateForwardRef : updateForwardRefs SEPARATOR "\n"»«updateForwardRef»«ENDFOR»
+		// '''
 	}
 
 	private def getImportsFromAttributes(Data rosettaClass) {
@@ -198,13 +209,13 @@ class PythonModelObjectGenerator {
 
 		val imports = newArrayList
 		for (attribute : filteredAttributes) {
-			val originalIt = attribute
+			// val originalIt = attribute
 			val model = attribute.type.model
 			if (model !== null) {
-				val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
+				// val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
+				val importStatement = '''import «model.name».«attribute.toRawType»'''
 				imports.add(importStatement)
 			}
-
 		}
 
 		// Remove duplicates by converting the list to a set and back to a list
@@ -275,7 +286,6 @@ class PythonModelObjectGenerator {
 				
 			«ENDIF»
 		'''
-
 	}
 
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {

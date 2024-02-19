@@ -38,25 +38,29 @@ class PythonModelGeneratorUtil {
 	def String createImports(String name){			
 		val imports=
 		'''
-		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
-		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
+		# pylint: disable=line-too-long, invalid-name, missing-function-docstring
+		# pylint: disable=bad-indentation, trailing-whitespace, superfluous-parens
+		# pylint: disable=wrong-import-position, unused-import, unused-wildcard-import
+		# pylint: disable=wildcard-import, wrong-import-order, missing-class-docstring
+		# pylint: disable=missing-module-docstring
 		from __future__ import annotations
 		from typing import List, Optional
 		import datetime
 		import inspect
 		from decimal import Decimal
 		from pydantic import Field
+		from rosetta.runtime.utils import (
+			BaseDataClass, rosetta_condition, _resolve_rosetta_attr
+		)
 		from rosetta.runtime.utils import *
 		
 		__all__ = [«"'"+name+"'"»]
 		
 		'''
-		
 		imports
-		
 	}
 		
-	def String createImportsFunc(String name){			
+	def String createImportsFunc(String name) {			
 		val imports=
 		'''
 		# pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
@@ -65,12 +69,11 @@ class PythonModelGeneratorUtil {
 		import datetime
 		import inspect
 		from decimal import Decimal
-		from abc import ABC,abstractmethod
-		from rosetta.runtime.utils import *		
+		from abc import ABC, abstractmethod
+		from rosetta.runtime.utils import *
+		from rosetta.runtime.func_proxy import replaceable, create_module_attr_guardian
 		'''
-		
 		imports
-		
 	}
 	
 	def String toPyFileName(String namespace, String fileName) {
@@ -99,8 +102,8 @@ class PythonModelGeneratorUtil {
 			   "version = \"" + version + "\"\n" + 
 			   "requires-python = \">= 3.10\"\n" +
 			   "dependencies = [\n" + 
-			   "   \"pydantic>=2.0.0\",\n" +
-			   "   \"rosetta.runtime==2.0.0\"\n" +
+			   "   \"pydantic>=2.6.1\",\n" +
+			   "   \"rosetta.runtime==3.0.0\"\n" +
 			   "]\n" +
 			   "[tool.setuptools.packages.find]\n" +
 			   "where = [\"src\"]"
