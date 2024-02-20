@@ -14,12 +14,12 @@ cd $MYPATH
 ACDIR=$(python -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 # rm -rf .testenv
-$PYEXE -m venv --clear .testenv
-source .testenv/$ACDIR/activate
+#$PYEXE -m venv --clear .pydevenv
+#source .pydevenv/$ACDIR/activate
 
 $PYEXE -m pip install pydantic
 $PYEXE -m pip install pytest
-$PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl 
+$PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-3.0.0-py3-none-any.whl 
 $PYEXE -m pip install $MYPATH/$PYTHONCDMDIR/python_cdm-0.0.0-py3-none-any.whl
-$PYEXE ./tests/serialization/test_trade_state_product.py
-rm -rf .testenv
+$PYEXE ./tests/serialization/check_for_valid_cdm.py
+# rm -rf .pydevenv
