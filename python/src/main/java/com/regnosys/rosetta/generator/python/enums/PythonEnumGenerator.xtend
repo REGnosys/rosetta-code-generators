@@ -16,8 +16,6 @@ class PythonEnumGenerator {
     
     @Inject
     PythonModelGeneratorUtil utils;
-    
-    
 
     def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
         val result = new HashMap
@@ -28,10 +26,11 @@ class PythonEnumGenerator {
         
             val all = 
             '''
+            # pylint: disable=missing-module-docstring, invalid-name, line-too-long
             from enum import Enum
             
-            all = ['«enum.name»']
-              
+            __all__ = ['«enum.name»']
+            
             '''
             result.put(utils.toPyFileName(namespace, enum.name), all +enums)
         }
@@ -50,7 +49,6 @@ class PythonEnumGenerator {
     }
 
     private def generateEnums(RosettaEnumeration enume, String version){
-
         '''
         «val allEnumValues = allEnumsValues(enume)»
         class «enume.name»(Enum):
@@ -63,7 +61,7 @@ class PythonEnumGenerator {
             pass
             «ELSE»
             «FOR value: allEnumValues SEPARATOR ''»
-            «EnumHelper.convertValues(value)» = "«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValues(value)»«ENDIF»"
+            «EnumHelper.convertValues(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
             «IF value.definition!==null»
             """
             «value.definition»

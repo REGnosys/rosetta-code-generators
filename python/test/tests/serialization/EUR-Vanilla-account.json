@@ -18,7 +18,7 @@
       "meta" : {
         "globalKey" : "3eac3060"
       },
-      "identifierType" : "UNIQUE_TRANSACTION_IDENTIFIER"
+      "identifierType" : "UniqueTransactionIdentifier"
     } ],
     "tradeDate" : {
       "value" : "2018-01-29",
@@ -31,7 +31,7 @@
         "contractualProduct" : {
           "productTaxonomy" : [ {
             "primaryAssetClass" : {
-              "value" : "INTEREST_RATE",
+              "value" : "InterestRate",
               "meta" : {
                 "scheme" : "http://www.fpml.org/coding-scheme/asset-class-simple"
               }
@@ -58,7 +58,7 @@
                   "scheme" : "http://www.fpml.org/coding-scheme/product-taxonomy"
                 }
               },
-              "source" : "OTHER",
+              "source" : "Other",
               "meta" : {
                 "globalKey" : "44520a9a"
               }
@@ -68,8 +68,8 @@
             "payout" : {
               "interestRatePayout" : [ {
                 "payerReceiver" : {
-                  "payer" : "PARTY_1",
-                  "receiver" : "PARTY_2"
+                  "payer" : "Party1",
+                  "receiver" : "Party2"
                 },
                 "priceQuantity" : {
                   "quantitySchedule" : {
@@ -178,7 +178,7 @@
                       "globalKey" : "78"
                     }
                   },
-                  "payRelativeTo" : "CALCULATION_PERIOD_END_DATE",
+                  "payRelativeTo" : "CalculationPeriodEndDate",
                   "paymentDatesAdjustments" : {
                     "businessDayConvention" : "MODFOLLOWING",
                     "businessCenters" : {
@@ -203,8 +203,8 @@
                 }
               }, {
                 "payerReceiver" : {
-                  "payer" : "PARTY_2",
-                  "receiver" : "PARTY_1"
+                  "payer" : "Party2",
+                  "receiver" : "Party1"
                 },
                 "priceQuantity" : {
                   "quantitySchedule" : {
@@ -311,7 +311,7 @@
                       "globalKey" : "107"
                     }
                   },
-                  "payRelativeTo" : "CALCULATION_PERIOD_END_DATE",
+                  "payRelativeTo" : "CalculationPeriodEndDate",
                   "paymentDatesAdjustments" : {
                     "businessDayConvention" : "MODFOLLOWING",
                     "businessCenters" : {
@@ -336,14 +336,14 @@
                     "globalReference" : "c7326bd8",
                     "externalReference" : "floatingCalcPeriodDates2"
                   },
-                  "resetRelativeTo" : "CALCULATION_PERIOD_START_DATE",
+                  "resetRelativeTo" : "CalculationPeriodStartDate",
                   "fixingDates" : {
                     "periodMultiplier" : -2,
                     "period" : "D",
                     "meta" : {
                       "globalKey" : "a5cb91b"
                     },
-                    "dayType" : "BUSINESS",
+                    "dayType" : "Business",
                     "businessDayConvention" : "NONE",
                     "businessCenters" : {
                       "businessCenter" : [ {
@@ -416,7 +416,7 @@
                   "value" : "EUR"
                 }
               },
-              "priceType" : "INTEREST_RATE"
+              "priceType" : "InterestRate"
             },
             "meta" : {
               "location" : [ {
@@ -492,13 +492,13 @@
         } ]
       } ],
       "counterparty" : [ {
-        "role" : "PARTY_1",
+        "role" : "Party1",
         "partyReference" : {
           "globalReference" : "b6bdbfc2",
           "externalReference" : "p1"
         }
       }, {
-        "role" : "PARTY_2",
+        "role" : "Party2",
         "partyReference" : {
           "globalReference" : "a14913ec",
           "externalReference" : "p2"
@@ -550,9 +550,9 @@
       "documentation" : [ {
         "legalAgreementIdentification" : {
           "agreementName" : {
-            "agreementType" : "MASTER_AGREEMENT",
+            "agreementType" : "MasterAgreement",
             "masterAgreementType" : {
-              "value" : "ISDA_MASTER",
+              "value" : "ISDAMaster",
               "meta" : {
                 "scheme" : "http://www.fpml.org/coding-scheme/master-agreement-type"
               }
@@ -565,7 +565,7 @@
       }, {
         "legalAgreementIdentification" : {
           "agreementName" : {
-            "agreementType" : "CONFIRMATION",
+            "agreementType" : "Confirmation",
             "contractualDefinitionsType" : [ {
               "value" : "ISDA2006",
               "meta" : {
