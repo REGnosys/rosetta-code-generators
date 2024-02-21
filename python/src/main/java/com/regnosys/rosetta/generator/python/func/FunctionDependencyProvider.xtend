@@ -33,74 +33,75 @@ import com.regnosys.rosetta.rosetta.expression.RosettaConstructorExpression
  * A class that helps determine which Rosetta dependencies a Rosetta object refers to
  */
 class FunctionDependencyProvider {
-    @Inject 
-    RObjectFactory rTypeBuilderFactory;
+    @Inject RObjectFactory rTypeBuilderFactory;
 
     private Set<EObject> visited = new HashSet<EObject>();
 
-    def Set<EObject> dependencies(EObject object) {
+    def Set<EObject> findDependencies(EObject object) {
         if (visited.contains(object)) {
             return newHashSet();
         }
-        visited.add(object);
-
-        try {
-            switch object {
-                RosettaBinaryOperation: {
-                    newHashSet(dependencies(object.left) + dependencies(object.right))
-                }
-                RosettaConditionalExpression: {
-                    newHashSet(
-                        dependencies(object.^if) + dependencies(object.ifthen) +
-                            dependencies(object.elsethen))
-                }
-                RosettaOnlyExistsExpression: {
-                    dependencies(object.args)
-                }
-                RosettaFunctionalOperation: {
-                    newHashSet(dependencies(object.argument) + dependencies(object.function))
-                }
-                RosettaUnaryOperation: {
-                    dependencies(object.argument)
-                }
-                RosettaFeatureCall:
-                    dependencies(object.receiver)
-                RosettaSymbolReference: {
-                    newHashSet(dependencies(object.symbol) + dependencies(object.args))
-                }
-                Function, Data, RosettaEnumeration: {
-                    newHashSet(object)
-                }
-                InlineFunction: {
-                    dependencies(object.body)
-                }
-                ListLiteral: {
-                    newHashSet(object.elements.flatMap[dependencies])
-                }
-                RosettaConstructorExpression: {
-                    val typeDependencies = if (object.typeCall?.type !== null) newHashSet(object.typeCall.type) else newHashSet()
-                    val keyValuePairsDependencies = object.values.map[valuePair | dependencies(valuePair.value)].flatten
-                    newHashSet(typeDependencies + keyValuePairsDependencies)
-                }
-                RosettaExternalFunction,
-                RosettaEnumValueReference,
-                RosettaLiteral,
-                RosettaReference,
-                RosettaSymbol:
-                    newHashSet()
-                default:
-                    if (object !== null)
-                        throw new IllegalArgumentException('''«object?.eClass?.name» is not covered yet.''')
-                    else
-                        newHashSet()
+        var dependencies = null as Set<EObject>;
+        switch object {
+            RosettaBinaryOperation: {
+                dependencies = newHashSet(findDependencies(object.left) +
+                    findDependencies(object.right)
+                )
             }
-        } finally {
-            visited.remove(object);
+            RosettaConditionalExpression: {
+                dependencies = newHashSet(
+                    findDependencies(object.^if) + 
+                    findDependencies(object.ifthen) +
+                    findDependencies(object.elsethen))
+            }
+            RosettaOnlyExistsExpression: {
+                dependencies = findDependenciesFromIterable(object.args)
+            }
+            RosettaFunctionalOperation: {
+                dependencies = newHashSet(findDependencies(object.argument) + findDependencies(object.function))
+            }
+            RosettaUnaryOperation: {
+                dependencies = findDependencies(object.argument)
+            }
+            RosettaFeatureCall:
+                dependencies = findDependencies(object.receiver)
+            RosettaSymbolReference: {
+                dependencies = newHashSet(findDependencies(object.symbol) + findDependenciesFromIterable(object.args))
+            }
+            Function, Data, RosettaEnumeration: {
+                dependencies = newHashSet(object)
+            }
+            InlineFunction: {
+                dependencies = findDependencies(object.body)
+            }
+            ListLiteral: {
+                dependencies = newHashSet(object.elements.flatMap[findDependencies])
+            }
+            RosettaConstructorExpression: {
+                val typeDependencies = (object.typeCall?.type !== null) ?  newHashSet(object.typeCall.type) : newHashSet()
+                val keyValuePairsDependencies = object.values.map[valuePair | findDependencies(valuePair.value)].flatten
+                dependencies = newHashSet(typeDependencies + keyValuePairsDependencies)
+            }
+            RosettaExternalFunction,
+            RosettaEnumValueReference,
+            RosettaLiteral,
+            RosettaReference,
+            RosettaSymbol:
+                dependencies = newHashSet()
+            default:
+                if (object !== null)
+                    throw new IllegalArgumentException('''«object?.eClass?.name»: the conversion for this type is not yet implemented.''')
+                else
+                    dependencies = newHashSet()
         }
+        if (dependencies !== null){
+            visited.add(object)
+        }
+        return dependencies
     }
 
-    def Set<EObject> dependencies(Iterable<? extends EObject> objects) {
-        val allDependencies = objects.map[object | dependencies(object)].flatten.toSet
+    def Set<EObject> findDependenciesFromIterable(Iterable<? extends EObject> objects) {
+        val allDependencies = objects.map[object | findDependencies(object)].flatten.toSet
         newHashSet(allDependencies)
     }
 

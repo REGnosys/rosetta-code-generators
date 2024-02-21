@@ -45,22 +45,26 @@ class  PythonFunctionGenerator {
     val Object SymbolReference = null
     
     static def toPythonBasicType(String typename) {
-        switch typename {
-           case 'string': 'str'
-            case 'time': 'datetime.time'
-            case 'date': 'datetime.date'
-            case 'dateTime': 'datetime.datetime'
-            case 'zonedDateTime': 'datetime.datetime'
-            case 'number': 'Decimal'
-            case 'boolean': 'bool'
-            case 'int': 'int'
-            case 'calculation',				
-            case 'productType',				
-            case 'eventType':
-                'str'
+        switch (typename) {
+            case 'string', 
+            case 'eventType',
+            case 'calculation',
+            case 'productType':				
+                return 'str'
+            case 'time',
+            case 'date': 
+                return 'datetime.date'
+            case 'dateTime',
+            case 'zonedDateTime':
+                return 'datetime.datetime'
+            case 'number': 
+                return 'Decimal'
+            case 'boolean': 
+                return 'bool'
+            case 'int': 
+                return 'int'
             default:
-                typename
-
+                return typename
         }
     }
     
@@ -143,7 +147,7 @@ class  PythonFunctionGenerator {
         if(output!=null){
             '''
             «IF function.operations.size==0 && function.getShortcuts().size==0»
-            «output.name» = _resolve_rosetta_attr(self, "«output.name»")
+                «output.name» = _resolve_rosetta_attr(self, "«output.name»")
             «ENDIF»
             
             «generatePostConditions(function)»
@@ -189,14 +193,14 @@ class  PythonFunctionGenerator {
         Parameters 
         ----------
         «FOR input : inputs SEPARATOR '\n'»
-        «input.getName» : «input.getTypeCall().getType().getName()»
-        «input.getDefinition()»
+            «input.getName» : «input.getTypeCall().getType().getName()»
+            «input.getDefinition()»
         «ENDFOR»
         
         Returns
         -------
         «IF output !== null»
-        «output.getName()» : «output.getTypeCall().getType().getName()»
+            «output.getName()» : «output.getTypeCall().getType().getName()»
         «ELSE»
         No Return
         «ENDIF»
@@ -210,15 +214,15 @@ class  PythonFunctionGenerator {
     
         // Add dependencies from shortcuts and operations
         func.shortcuts.forEach[shortcut |
-            dependencies.addAll(functionDependencyProvider.dependencies(shortcut.expression))
+            dependencies.addAll(functionDependencyProvider.findDependencies(shortcut.expression))
         ]
         func.operations.forEach[operation |
-            dependencies.addAll(functionDependencyProvider.dependencies(operation.expression))
+            dependencies.addAll(functionDependencyProvider.findDependencies(operation.expression))
         ]
     
         // Add dependencies from conditions and post conditions
         (func.conditions + func.postConditions).forEach[condition |
-            dependencies.addAll(functionDependencyProvider.dependencies(condition.expression))
+            dependencies.addAll(functionDependencyProvider.findDependencies(condition.expression))
         ]
     
         // Add dependencies from input types
@@ -241,10 +245,10 @@ class  PythonFunctionGenerator {
     
         ''' 
         «FOR shortcut : function.shortcuts »
-        «expressionGenerator.generateExpressionThenElse(shortcut.expression, levelList)»
+            «expressionGenerator.generateExpressionThenElse(shortcut.expression, levelList)»
         «ENDFOR»
         «FOR opeartion : function.operations »
-        «expressionGenerator.generateExpressionThenElse(opeartion.expression, levelList)»
+            «expressionGenerator.generateExpressionThenElse(opeartion.expression, levelList)»
         «ENDFOR»
         '''
     }
@@ -254,7 +258,6 @@ class  PythonFunctionGenerator {
         «IF function.conditions.size>0»
         # conditions
         «expressionGenerator.generateConditions(function.conditions)»
-        
         # Execute all registered conditions
         execute_conditions(self)
         «ENDIF»
@@ -265,8 +268,7 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.postConditions.size>0»
         # post-conditions
-        «expressionGenerator.generatePostConditions(function.postConditions)»
-        
+            «expressionGenerator.generatePostConditions(function.postConditions)»
         # Execute all registered post-conditions
         execute_post_conditions(self)
         «ENDIF»
