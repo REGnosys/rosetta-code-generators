@@ -84,13 +84,11 @@ class PythonModelObjectGenerator {
             case 'eventType':
                 'str'
             default:
-                // (typename === null) ? null : typename.toFirstUpper
                 if (typename === null) {
                     return null;
                 }
                 else {
-                    val nm = typename.toFirstUpper;
-                    return attribute.type.model.name + '.' + nm + '.' + nm;
+                    return attribute.type.model.name + '.' + typename + '.' + typename;
                 }
         }
     }
