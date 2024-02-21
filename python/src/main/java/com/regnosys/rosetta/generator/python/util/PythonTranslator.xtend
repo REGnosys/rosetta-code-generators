@@ -10,17 +10,17 @@ class PythonTranslator {
     static def toPythonBasicType(String typename) {
         switch typename {
            case 'string': 'str'
-			case 'time': 'datetime.time'
-			case 'date': 'datetime.date'
-			case 'dateTime': 'datetime.datetime'
-			case 'zonedDateTime': 'datetime.datetime'
-			case 'number': 'Decimal'
-			case 'boolean': 'bool'
-			case 'int': 'int'
-			case 'calculation',				
-			case 'productType',				
-			case 'eventType':
-				'str'
+            case 'time': 'datetime.time'
+            case 'date': 'datetime.date'
+            case 'dateTime': 'datetime.datetime'
+            case 'zonedDateTime': 'datetime.datetime'
+            case 'number': 'Decimal'
+            case 'boolean': 'bool'
+            case 'int': 'int'
+            case 'calculation',				
+            case 'productType',				
+            case 'eventType':
+                'str'
 
         }
 
@@ -32,12 +32,12 @@ class PythonTranslator {
             return basicType
         else if (type.enumeration)
             return '''«type.name.toFirstUpper»'''
-		else
+        else
         return type.name.toFirstUpper
     }
     
     def toPythonType(Attribute attr) {
- 		var type = attr.getTypeCall.type.name
+         var type = attr.getTypeCall.type.name
         val basicType = PythonTranslator.toPythonBasicType(type);
         if (basicType !== null)
             return basicType

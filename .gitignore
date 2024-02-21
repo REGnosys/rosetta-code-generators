@@ -17,3 +17,4 @@ kotlin/src/main/generated-sources
 kotlin/src/main/xtend-gen
 kotlin-feature.code-workspace
 .pydevenv
+python/.pydevproject
