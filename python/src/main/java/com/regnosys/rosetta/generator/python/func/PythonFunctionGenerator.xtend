@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.regnosys.rosetta.generator.python.expressions.PythonExpressionGenerator
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.generator.python.util.PythonTranslator
-import com.regnosys.rosetta.generator.python.util.Util
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Attribute
@@ -21,11 +20,9 @@ import java.util.Map
 import org.eclipse.emf.ecore.EObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import com.regnosys.rosetta.rosetta.RosettaType
 import java.util.Set
 import com.regnosys.rosetta.rosetta.simple.AssignPathRoot
 import java.util.Collections
-import com.regnosys.rosetta.rosetta.expression.RosettaExpression
 
 class  PythonFunctionGenerator {
     
@@ -37,36 +34,7 @@ class  PythonFunctionGenerator {
     @Inject PythonModelGeneratorUtil utils;
     @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
-    
-    
-    @Inject
-    PythonExpressionGenerator expressionGenerator;
-    
-    val Object SymbolReference = null
-    
-    static def toPythonBasicType(String typename) {
-        switch (typename) {
-            case 'string', 
-            case 'eventType',
-            case 'calculation',
-            case 'productType':				
-                return 'str'
-            case 'time',
-            case 'date': 
-                return 'datetime.date'
-            case 'dateTime',
-            case 'zonedDateTime':
-                return 'datetime.datetime'
-            case 'number': 
-                return 'Decimal'
-            case 'boolean': 
-                return 'bool'
-            case 'int': 
-                return 'int'
-            default:
-                return typename
-        }
-    }
+    @Inject PythonExpressionGenerator expressionGenerator;
     
     def Map<String, ? extends CharSequence> generate(List<Function> rosettaFunctions, String version) {
         val result = new HashMap
@@ -144,7 +112,7 @@ class  PythonFunctionGenerator {
     
     private def generatesOutput(Function function) {
         val output = function.output
-        if(output!=null){
+        if(output!==null){
             '''
             «IF function.operations.size==0 && function.getShortcuts().size==0»
                 «output.name» = _resolve_rosetta_attr(self, "«output.name»")
@@ -164,8 +132,9 @@ class  PythonFunctionGenerator {
         var result = "("
         for (input : inputs) {
             val typeName = input.getTypeCall().getType().getName()
-            val type = input.getCard().sup == 0 ? "list[" + toPythonBasicType(typeName) + "]" : toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
-    
+            val type = input.getCard().sup == 0 ? 
+                            "list[" + PythonTranslator.toPythonBasicType(typeName) + "]" : 
+                            PythonTranslator.toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
             result += input.getName() + ": " + type
             if (input.getCard().inf == 0)  // Check for optional parameter
                 result += " | None"
@@ -174,7 +143,7 @@ class  PythonFunctionGenerator {
         }
         result += ") -> "
         if (output !== null)
-            result += toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
+            result += PythonTranslator.toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
         else
             result += "None"  // Default to 'None' if output is null
         '''«result»'''
@@ -298,7 +267,7 @@ class  PythonFunctionGenerator {
         val lineSeparator = System.getProperty("line.separator")
         var result = new StringBuilder()
         var level = 0
-        if (function.output != null) {
+        if (function.output !== null) {
             val setNames = new ArrayList<String>();
             for (operation: function.getOperations()) {
                 val root = operation.getAssignRoot()
@@ -340,17 +309,17 @@ class  PythonFunctionGenerator {
         }
         return result
     }
-
+    /*
     private def List<Operation> getNonAddOperations(Function function) {
         return function.getOperations().filter[!isAdd()].toList()
     }	
-
+     */
     private def generateSetOperation(AssignPathRoot root, Operation operation, Function function, String expression, List<String> setNames){
         var result=""
         
         // Use _get_rosetta_object for setting the attribute
         val attributeRoot = root as Attribute
-        if(attributeRoot.typeCall.type instanceof RosettaEnumeration || operation.path==null){
+        if(attributeRoot.typeCall.type instanceof RosettaEnumeration || operation.path===null){
             result = '''«attributeRoot.name» =  «expression»'''
         }
         else{
@@ -369,9 +338,9 @@ class  PythonFunctionGenerator {
         var currentPath = path
         var result = new StringBuilder()
         result.append("'")
-        while(currentPath!=null){
+        while(currentPath!==null){
             result.append(currentPath.getAttribute().name)
-            if(currentPath.next!=null){
+            if(currentPath.next!==null){
                 result.append("->")
             }
             currentPath = currentPath.next
@@ -389,14 +358,14 @@ class  PythonFunctionGenerator {
     }
     
     private def buildObject(String expression, Segment path) {
-        if (path == null) {
+        if (path === null || path.next === null) {
             return expression;
         }
-    
-        if (path.next == null) {
+/*    
+        if (path.next === null) {
             return expression;
         }
-    
+ */    
         val attribute = path.getAttribute();
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
