@@ -19,7 +19,7 @@ class PythonMetaFieldGenerator {
 
         val refs = rosettaClasses
                 .flatMap[expandedAttributes]
- 				.filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
+                 .filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
 
@@ -49,14 +49,14 @@ class PythonMetaFieldGenerator {
 
     private def generateMetaFieldsImports() 
     '''
-	'''
+    '''
 
     private def generateFieldWithMeta(ExpandedType type) '''
     class FieldWithMeta«type.toMetaTypeName»:
         «generateAttribute(type)»
         meta = MetaFields()
 
-	'''
+    '''
 
     private def generateAttribute(ExpandedType type) {
         if (type.enumeration) {
@@ -74,7 +74,7 @@ class PythonMetaFieldGenerator {
         externalReference = None
         address = Reference()
 
-	'''
+    '''
     private def generateBasicReferenceWithMeta(ExpandedType type)
     '''
     class BasicReferenceWithMeta«type.toMetaTypeName»:
@@ -83,7 +83,7 @@ class PythonMetaFieldGenerator {
         externalReference = None
         address = Reference()
 
-	'''
+    '''
 
     private def genMetaFields(Iterable<RosettaMetaType> types, String version) 
     '''
@@ -111,5 +111,5 @@ class PythonMetaFieldGenerator {
         scope = None
         value = None
 
-	'''
+    '''
 }
