@@ -6,26 +6,29 @@ import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 
 class PythonTranslator {
-
     static def toPythonBasicType(String typename) {
-        switch typename {
-           case 'string': 'str'
-            case 'time': 'datetime.time'
-            case 'date': 'datetime.date'
-            case 'dateTime': 'datetime.datetime'
-            case 'zonedDateTime': 'datetime.datetime'
-            case 'number': 'Decimal'
-            case 'boolean': 'bool'
-            case 'int': 'int'
-            case 'calculation',				
-            case 'productType',				
-            case 'eventType':
-                'str'
-
+        switch (typename) {
+            case 'string', 
+            case 'eventType',
+            case 'calculation',
+            case 'productType':             
+                return 'str'
+            case 'time',
+            case 'date': 
+                return 'datetime.date'
+            case 'dateTime',
+            case 'zonedDateTime':
+                return 'datetime.datetime'
+            case 'number': 
+                return 'Decimal'
+            case 'boolean': 
+                return 'bool'
+            case 'int': 
+                return 'int'
+            default:
+                return typename
         }
-
     }
-
     static def toPythonType(ExpandedType type) {
         val basicType = PythonTranslator.toPythonBasicType(type.name);
         if (basicType !== null)
