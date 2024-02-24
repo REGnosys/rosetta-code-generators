@@ -138,6 +138,7 @@ class PythonExpressionGenerator {
                     «cond.definition»
                     """
                 «ENDIF»
+                item = self
         '''
     }
 
@@ -294,7 +295,7 @@ class PythonExpressionGenerator {
             }
             RosettaCountOperation: {
                 val argument = expr.argument as RosettaExpression
-                '''len(«generateExpression(argument, iflvl)»)'''
+                '''rosetta_count(«generateExpression(argument, iflvl)»)'''
             }
             ListLiteral: {
                 '''[«FOR arg : expr.elements SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»]'''

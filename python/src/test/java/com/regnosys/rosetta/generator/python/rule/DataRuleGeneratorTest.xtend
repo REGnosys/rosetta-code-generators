@@ -464,7 +464,7 @@ class DataRuleGeneratorTest {
 		  
 		  @rosetta_condition
 		  def condition_0_(self):
-		    return all_elements(len(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
+		    return all_elements(rosetta_count(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
 		'''
 		
 		

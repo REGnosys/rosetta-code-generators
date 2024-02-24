@@ -15,6 +15,7 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'execute_local_conditions',
            'flatten_list',
            '_resolve_rosetta_attr',
+           'rosetta_count',
            '_get_rosetta_object',
            'set_rosetta_attr',
            'add_rosetta_attr',
@@ -58,6 +59,16 @@ def _resolve_rosetta_attr(obj: Any | None,
                if item is not None]
         return res if res else None
     return getattr(obj, attrib, None)
+
+
+def rosetta_count(obj: Any | None) -> int:
+    '''Implements the lose count semantics of the rosetta DSL'''
+    if not obj:
+        return 0
+    try:
+        return len(obj)
+    except TypeError:
+        return 1
 
 
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
@@ -202,10 +213,11 @@ class BaseDataClass(BaseModel):
             thrown if a condition is not met or if a list with all encountered
             condition violations should be returned instead.
         '''
-        log.info('Checking conditions for %s ...', self)
+        self_rep = object.__repr__(self)
+        log.info('Checking conditions for %s ...', self_rep)
         exceptions = []
         for name, condition in _get_conditions(self.__class__):
-            log.info('Checking condition %s for %s...', name, self)
+            log.info('Checking condition %s for %s...', name, self_rep)
             if not condition(self):
                 msg = f'Condition "{name}" for {repr(self)} failed!'
                 log.error(msg)
@@ -214,28 +226,31 @@ class BaseDataClass(BaseModel):
                     raise exc
                 exceptions.append(exc)
             else:
-                log.info('Condition %s for %s satisfied.', name, self)
+                log.info('Condition %s for %s satisfied.', name, self_rep)
         if recursively:
             for k, v in self.__dict__.items():
-                if isinstance(v, BaseDataClass):
-                    log.info(
-                        'Invoking conditions validation on the property '
-                        '"%s" of %s', k, self
-                    )
-                    exc = v.validate_conditions(recursively=True,  # type:ignore
-                                                raise_exc=raise_exc)
-                    exceptions += exc  # type:ignore
-                    if exc:
-                        log.error(
-                            'Validation of the property "%s" of %s failed!', k,
-                            self)
+                log.info('Validating conditions of property %s', k)
+                exceptions += _validate_conditions_recursively(
+                    v, raise_exc=raise_exc)
+                # if isinstance(v, BaseDataClass):
+                #     log.info(
+                #         'Invoking conditions validation on the property '
+                #         '"%s" of %s', k, self
+                #     )
+                #     exc = v.validate_conditions(recursively=True,  # type:ignore
+                #                                 raise_exc=raise_exc)
+                #     exceptions += exc  # type:ignore
+                #     if exc:
+                #         log.error(
+                #             'Validation of the property "%s" of %s failed!', k,
+                #             self)
         err = 'with' if exceptions else 'without'
-        log.info('Done conditions checking for %s %s errors.', self, err)
+        log.info('Done conditions checking for %s %s errors.', self_rep, err)
         return exceptions
 
     def check_one_of_constraint(self, *attr_names, necessity=True) -> bool:
         """ Checks that one and only one attribute is set. """
-        values = self.dict()
+        values = self.model_dump()
         vals = [values.get(n) for n in attr_names]
         n_attr = sum(1 for v in vals if v is not None)
         if necessity and n_attr != 1:
@@ -278,6 +293,27 @@ class BaseDataClass(BaseModel):
             )
 
         attr.append(value)
+
+
+def _validate_conditions_recursively(obj, raise_exc=True):
+    '''Helper to execute conditions recursively on a model.'''
+    if not obj:
+        return []
+    if isinstance(obj, BaseDataClass):
+        return obj.validate_conditions(recursively=True,  # type:ignore
+                                       raise_exc=raise_exc)
+    if isinstance(obj, (list, tuple)):
+        exc = []
+        for item in obj:
+            exc += _validate_conditions_recursively(item, raise_exc=raise_exc)
+        return exc
+    if isinstance(obj, (AttributeWithMeta,
+                        AttributeWithAddress,
+                        AttributeWithMetaWithAddress,
+                        AttributeWithMetaWithReference,
+                        AttributeWithMetaWithAddressWithReference)):
+        return _validate_conditions_recursively(obj.value, raise_exc=raise_exc)
+    return []
 
 
 def get_allowed_types_for_list_field(model_class: type, field_name: str):
