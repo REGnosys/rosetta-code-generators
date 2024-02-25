@@ -11,11 +11,12 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
            'get_only_element', 'rosetta_filter',
            'all_elements', 'contains', 'disjoint', 'join',
-           'local_rosetta_condition',
+           'rosetta_local_condition',
            'execute_local_conditions',
            'flatten_list',
            '_resolve_rosetta_attr',
            'rosetta_count',
+           'rosetta_attr_exists',
            '_get_rosetta_object',
            'set_rosetta_attr',
            'add_rosetta_attr',
@@ -71,6 +72,13 @@ def rosetta_count(obj: Any | None) -> int:
         return 1
 
 
+def rosetta_attr_exists(val):
+    '''Implements the Rosetta semantics of property existence'''
+    if val is None or val == []:
+        return False
+    return True
+
+
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
     model_class = globals()[base_model]
     instance_kwargs = {attribute: value}
@@ -109,7 +117,7 @@ def rosetta_condition(condition):
     return wrapper
 
 
-def local_rosetta_condition(registry):
+def rosetta_local_condition(registry):
     '''Registers a condition function in a local registry.'''
     def decorator(condition):
         path_components = condition.__qualname__.split('.')
@@ -232,19 +240,7 @@ class BaseDataClass(BaseModel):
                 log.info('Validating conditions of property %s', k)
                 exceptions += _validate_conditions_recursively(
                     v, raise_exc=raise_exc)
-                # if isinstance(v, BaseDataClass):
-                #     log.info(
-                #         'Invoking conditions validation on the property '
-                #         '"%s" of %s', k, self
-                #     )
-                #     exc = v.validate_conditions(recursively=True,  # type:ignore
-                #                                 raise_exc=raise_exc)
-                #     exceptions += exc  # type:ignore
-                #     if exc:
-                #         log.error(
-                #             'Validation of the property "%s" of %s failed!', k,
-                #             self)
-        err = 'with' if exceptions else 'without'
+        err = f'with {len(exceptions)}' if exceptions else 'without'
         log.info('Done conditions checking for %s %s errors.', self_rep, err)
         return exceptions
 
@@ -252,7 +248,7 @@ class BaseDataClass(BaseModel):
         """ Checks that one and only one attribute is set. """
         values = self.model_dump()
         vals = [values.get(n) for n in attr_names]
-        n_attr = sum(1 for v in vals if v is not None)
+        n_attr = sum(1 for v in vals if v is not None and v != [])
         if necessity and n_attr != 1:
             log.error('One and only one of %s should be set!', attr_names)
             return False
@@ -390,13 +386,20 @@ class AttributeWithMetaWithAddressWithReference(BaseModel, Generic[ValueT]):
     value: ValueT
 
 
+def _ntoz(v):
+    '''Support the lose rosetta treatment of None in comparisons'''
+    if v is None:
+        return 0
+    return v
+
+
 _cmp = {
-    '=': lambda x, y: x == y,
-    '<>': lambda x, y: x != y,
-    '>=': lambda x, y: x >= y,
-    '<=': lambda x, y: x <= y,
-    '>': lambda x, y: x > y,
-    '<': lambda x, y: x < y
+    '=': lambda x, y: _ntoz(x) == _ntoz(y),
+    '<>': lambda x, y: _ntoz(x) != _ntoz(y),
+    '>=': lambda x, y: _ntoz(x) >= _ntoz(y),
+    '<=': lambda x, y: _ntoz(x) <= _ntoz(y),
+    '>': lambda x, y: _ntoz(x) > _ntoz(y),
+    '<': lambda x, y: _ntoz(x) < _ntoz(y)
 }
 
 

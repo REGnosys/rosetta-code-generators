@@ -51,7 +51,7 @@
         "contractualProduct": {
           "productTaxonomy": [
             {
-              "source": "ISDA",
+              "primaryAssetClass": "ForeignExchange",
               "productQualifier": "ForeignExchange_Spot_Forward"
             }
           ],
