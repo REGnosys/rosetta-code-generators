@@ -30,7 +30,7 @@ import java.util.HashSet
 import com.regnosys.rosetta.rosetta.expression.RosettaConstructorExpression
 
 /**
- * A class that helps determine which Rosetta dependencies a Rosetta object refers to
+ * Determine the Rosetta dependencies for a Rosetta object
  */
 class FunctionDependencyProvider {
     @Inject RObjectFactory rTypeBuilderFactory;
