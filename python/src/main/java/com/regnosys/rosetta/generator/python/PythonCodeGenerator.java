@@ -34,9 +34,13 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
     PythonFunctionGenerator funcGenerator;
     @Inject
     private PythonEnumGenerator enumGenerator;
+    @Inject PythonModelObjectGenerator pojoGenerator;
+    @Inject PythonFunctionGenerator funcGenerator;
+    @Inject private PythonEnumGenerator enumGenerator;
 
     @Inject
     PythonModelGeneratorUtil utils;
+    @Inject PythonModelGeneratorUtil utils;
 
     private List<String> subfolders;
     private AtomicReference<String> previousNamespace;
@@ -58,23 +62,35 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
     public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model,
             String version) {
         String cleanVersion = cleanVersion(version);
+    @Override
+    public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
+        String cleanVersion = cleanVersion(version);
 
         Map<String, CharSequence> result = new HashMap<>();
 
         List<Data> rosettaClasses = model.getElements().stream().filter(e -> e instanceof Data)
                 .map(Data.class::cast).collect(Collectors.toList());
+        List<Data> rosettaClasses = model.getElements().stream().filter(e -> e instanceof Data).map(Data.class::cast)
+                .collect(Collectors.toList());
 
         List<RosettaMetaType> metaTypes =
                 model.getElements().stream().filter(RosettaMetaType.class::isInstance)
                         .map(RosettaMetaType.class::cast).collect(Collectors.toList());
+        List<RosettaMetaType> metaTypes = model.getElements().stream().filter(RosettaMetaType.class::isInstance)
+                .map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
         List<RosettaEnumeration> rosettaEnums =
                 model.getElements().stream().filter(RosettaEnumeration.class::isInstance)
                         .map(RosettaEnumeration.class::cast).collect(Collectors.toList());
+        List<RosettaEnumeration> rosettaEnums = model.getElements().stream()
+                .filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
+                .collect(Collectors.toList());
 
         List<Function> rosettaFunctions =
                 model.getElements().stream().filter(t -> Function.class.isInstance(t))
                         .map(Function.class::cast).collect(Collectors.toList());
+        List<Function> rosettaFunctions = model.getElements().stream().filter(t -> Function.class.isInstance(t))
+                .map(Function.class::cast).collect(Collectors.toList());
 
         if (rosettaFunctions.size() > 0) {
             if (!subfolders.contains(model.getName())) {
@@ -141,6 +157,9 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         for (String workspace : workspaces) {
             result.put(utils.toPyFileName(workspace, "__init__"),
                     utils.createTopLevelInitFile(version));
+            result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
+        for (String workspace : workspaces) {
+            result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
             result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
 
         }

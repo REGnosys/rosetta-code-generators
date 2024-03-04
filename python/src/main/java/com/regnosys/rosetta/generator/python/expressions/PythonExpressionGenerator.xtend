@@ -60,9 +60,7 @@ class PythonExpressionGenerator {
     
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
-
-    @Inject
-    PythonModelGeneratorUtil utils;
+    @Inject PythonModelGeneratorUtil utils;
     
     public var List<String> importsFound
     public var if_cond_blocks = new ArrayList<String>()

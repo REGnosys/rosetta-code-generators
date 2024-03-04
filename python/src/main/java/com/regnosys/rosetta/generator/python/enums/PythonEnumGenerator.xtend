@@ -14,8 +14,7 @@ class PythonEnumGenerator {
 
     @Inject extension PythonModelObjectBoilerPlate
     
-    @Inject
-    PythonModelGeneratorUtil utils;
+    @Inject PythonModelGeneratorUtil utils;
 
     def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
         val result = new HashMap
