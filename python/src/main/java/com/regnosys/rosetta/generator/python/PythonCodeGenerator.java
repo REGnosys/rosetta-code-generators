@@ -28,15 +28,11 @@ import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
 public class PythonCodeGenerator extends AbstractExternalGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
 
-    @Inject
-    PythonModelObjectGenerator pojoGenerator;
-    @Inject
-    PythonFunctionGenerator funcGenerator;
-    @Inject
-    private PythonEnumGenerator enumGenerator;
+    @Inject PythonModelObjectGenerator pojoGenerator;
+    @Inject PythonFunctionGenerator funcGenerator;
+    @Inject private PythonEnumGenerator enumGenerator;
 
-    @Inject
-    PythonModelGeneratorUtil utils;
+    @Inject PythonModelGeneratorUtil utils;
 
     private List<String> subfolders;
     private AtomicReference<String> previousNamespace;
