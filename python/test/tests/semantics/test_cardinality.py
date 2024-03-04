@@ -23,13 +23,13 @@ def test_1_many_pass():
 
 
 if __name__ == "__main__":
-	print("first one")
-	test_1_many_pass()
-	print("second one")
-	test_1_many_fail()
-	print("third one")
-	test_1_many_fail_nopar()
-	
+    print("first one")
+    test_1_many_pass()
+    print("second one")
+    test_1_many_fail()
+    print("third one")
+    test_1_many_fail_nopar()
+    
 
 # EOF
 
