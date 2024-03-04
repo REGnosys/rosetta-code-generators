@@ -51,9 +51,11 @@ class PythonModelObjectGenerator {
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
 
-    @Inject PythonModelGeneratorUtil utils;
+    @Inject
+    PythonModelGeneratorUtil utils;
     
-    @Inject PythonExpressionGenerator expressionGenerator;
+    @Inject
+    PythonExpressionGenerator expressionGenerator;
 
     var List<String> importsFound = newArrayList
     var if_cond_blocks = new ArrayList<String>()

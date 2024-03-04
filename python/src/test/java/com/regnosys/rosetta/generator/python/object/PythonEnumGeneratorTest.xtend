@@ -14,19 +14,22 @@ import static org.junit.jupiter.api.Assertions.*
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class PythonEnumGeneratorTest {
-    
+	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-    @Test
+
+	
+	
+	@Test
     def void shouldGenerateEnums() {
         val python = '''
-            enum TestEnum: <"Test enum description.">
-                TestEnumValue1 <"Test enum value 1">
-                TestEnumValue2 <"Test enum value 2">
-                TestEnumValue3 <"Test enum value 3">
-                _1 displayName "1" <"Rolls on the 1st day of the month.">
-            '''.generatePython
+	        enum TestEnum: <"Test enum description.">
+	        	TestEnumValue1 <"Test enum value 1">
+	        	TestEnumValue2 <"Test enum value 2">
+	        	TestEnumValue3 <"Test enum value 3">
+	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
+	        '''.generatePython
 
         val enums = python.toString
         val expected = '''
@@ -55,7 +58,7 @@ class PythonEnumGeneratorTest {
     }
     
     def generatePython(CharSequence model) {
-        val m = model.parseRosettaWithNoErrors
+		val m = model.parseRosettaWithNoErrors
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         

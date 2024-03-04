@@ -389,7 +389,7 @@ class  PythonFunctionGenerator {
         var current = segment;
     
         // Traverse the linked list and collect attributes
-        while (current !== null) {
+        while (current != null) {
             attributes.add(current.getAttribute());
             current = current.getNext();
         }
