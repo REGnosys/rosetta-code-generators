@@ -36,24 +36,24 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class Foo(BaseDataClass):
-		  bar: Optional[str] = Field(None, description="")
-		  baz: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    def _then_fn1():
-		      return ((_resolve_rosetta_attr(self, "baz")) is None)
+		    bar: Optional[str] = Field(None, description="")
+		    baz: Optional[str] = Field(None, description="")
 		    
-		    def _else_fn1():
-		      return True
-		    
-		    def _then_fn0():
-		      return ((_resolve_rosetta_attr(self, "baz")) is not None)
-		    
-		    def _else_fn0():
-		      return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn1, _else_fn1)
-		    
-		    return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "bar"), "=", "Y"), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_(self):
+		        def _then_fn1():
+		            return ((_resolve_rosetta_attr(self, "baz")) is None)
+		        
+		        def _else_fn1():
+		            return True
+		        
+		        def _then_fn0():
+		            return ((_resolve_rosetta_attr(self, "baz")) is not None)
+		        
+		        def _else_fn0():
+		            return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn1, _else_fn1)
+		        
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "bar"), "=", "Y"), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -76,30 +76,30 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class Foo(BaseDataClass):
-		  bar: Optional[str] = Field(None, description="")
-		  baz: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    def _then_fn2():
-		      return ((_resolve_rosetta_attr(self, "baz")) is None)
+		    bar: Optional[str] = Field(None, description="")
+		    baz: Optional[str] = Field(None, description="")
 		    
-		    def _else_fn2():
-		      return True
-		    
-		    def _then_fn1():
-		      return ((_resolve_rosetta_attr(self, "baz")) is not None)
-		    
-		    def _else_fn1():
-		      return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn2, _else_fn2)
-		    
-		    def _then_fn0():
-		      return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "bar"), "=", "Y"), _then_fn1, _else_fn1)
-		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "bar")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_(self):
+		        def _then_fn2():
+		            return ((_resolve_rosetta_attr(self, "baz")) is None)
+		        
+		        def _else_fn2():
+		            return True
+		        
+		        def _then_fn1():
+		            return ((_resolve_rosetta_attr(self, "baz")) is not None)
+		        
+		        def _else_fn1():
+		            return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn2, _else_fn2)
+		        
+		        def _then_fn0():
+		            return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "bar"), "=", "Y"), _then_fn1, _else_fn1)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "bar")) is not None), _then_fn0, _else_fn0)
 		'''
 		
 		
@@ -124,24 +124,24 @@ class DataRuleGeneratorTest {
 		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
-		  quotePrice: Optional[QuotePrice] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_Quote_Price(self):
-		    def _then_fn0():
-		      return (((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice")) is not None) or ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "offerPrice")) is not None))
+		    quotePrice: Optional[com.rosetta.test.model.QuotePrice.QuotePrice] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_Quote_Price(self):
+		        def _then_fn0():
+		            return (((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice")) is not None) or ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "offerPrice")) is not None))
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
 		'''
 		
 		val expectedQuotePrice=
 		'''
 		class QuotePrice(BaseDataClass):
-		  bidPrice: Optional[Decimal] = Field(None, description="")
-		  offerPrice: Optional[Decimal] = Field(None, description="")
+		    bidPrice: Optional[Decimal] = Field(None, description="")
+		    offerPrice: Optional[Decimal] = Field(None, description="")
 		'''
 		
 		assertTrue(python.toString.contains(expectedQuote))
@@ -173,25 +173,25 @@ class DataRuleGeneratorTest {
 		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
-		  quotePrice: Optional[QuotePrice] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_Quote_Price(self):
-		    def _then_fn0():
-		      return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price1")) is not None) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price2")) is not None)) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price3")) is not None))
+		    quotePrice: Optional[com.rosetta.test.model.QuotePrice.QuotePrice] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_Quote_Price(self):
+		        def _then_fn0():
+		            return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price1")) is not None) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price2")) is not None)) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price3")) is not None))
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
 
 		'''
 		val expectedQuotePrice=
 		'''
 		class QuotePrice(BaseDataClass):
-		  price1: Optional[Decimal] = Field(None, description="")
-		  price2: Optional[Decimal] = Field(None, description="")
-		  price3: Optional[Decimal] = Field(None, description="")
+		    price1: Optional[Decimal] = Field(None, description="")
+		    price2: Optional[Decimal] = Field(None, description="")
+		    price3: Optional[Decimal] = Field(None, description="")
 		'''
 		
 		assertTrue(python.toString.contains(expectedQuote))
@@ -217,23 +217,23 @@ class DataRuleGeneratorTest {
 		val expectedQuote=
 		'''
 		class Quote(BaseDataClass):
-		  quotePrice: Optional[QuotePrice] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_Quote_Price(self):
-		    def _then_fn0():
-		      return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice"), "=", 0.0)
+		    quotePrice: Optional[com.rosetta.test.model.QuotePrice.QuotePrice] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_Quote_Price(self):
+		        def _then_fn0():
+		            return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice"), "=", 0.0)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
 		'''
 		
 		val expectedQuotePrice=
 		'''
 		class QuotePrice(BaseDataClass):
-		  bidPrice: Optional[Decimal] = Field(None, description="")
+		    bidPrice: Optional[Decimal] = Field(None, description="")
 		'''
 		
 		assertTrue(python.toString.contains(expectedQuote))
@@ -258,38 +258,23 @@ class DataRuleGeneratorTest {
 						then Foo( price ) = 5.0
 		'''.generatePython
 
-		val expectedFoo=
-		'''
-		class Foo(ABC):
-			def __init__(self,price=None):
-				self.price=price
-				
-			def evaluate(self):
-				something = self.doEvaluate()
-				return something
-			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-		'''
 		val expectedQuote='''
 		class Quote(BaseDataClass):
-		  price: Optional[Decimal] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    def _then_fn0():
-		      return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
+		    price: Optional[Decimal] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_(self):
+		        def _then_fn0():
+		            return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
 		'''
 		
 		
 		assertTrue(python.toString.contains(expectedQuote))
-		assertTrue(python.toString.contains(expectedFoo))
 		
 	}
 	
@@ -315,36 +300,19 @@ class DataRuleGeneratorTest {
 		val expectedQuoute=
 		'''
 		class Quote(BaseDataClass):
-		  price: Optional[Decimal] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    def _then_fn0():
-		      return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
+		    price: Optional[Decimal] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return False
-		    
-		    return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_(self):
+		        def _then_fn0():
+		            return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
+		        
+		        def _else_fn0():
+		            return False
+		        
+		        return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
 		'''
-		
-		val expectedFoo=
-		'''
-		class Foo(ABC):
-			def __init__(self,price=None):
-				self.price=price
-				
-			def evaluate(self):
-				something = self.doEvaluate()
-				return something
 			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-		'''
-		
-		
-		assertTrue(python.toString.contains(expectedFoo))
 		assertTrue(python.toString.contains(expectedQuoute))
 	}
 	
@@ -364,18 +332,18 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class Coin(BaseDataClass):
-		  head: Optional[bool] = Field(None, description="")
-		  tail: Optional[bool] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_CoinHeadRule(self):
-		    def _then_fn0():
-		      return all_elements(_resolve_rosetta_attr(self, "tail"), "=", False)
+		    head: Optional[bool] = Field(None, description="")
+		    tail: Optional[bool] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "head"), "=", False), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_CoinHeadRule(self):
+		        def _then_fn0():
+		            return all_elements(_resolve_rosetta_attr(self, "tail"), "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "head"), "=", False), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -396,18 +364,18 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class Coin(BaseDataClass):
-		  head: Optional[bool] = Field(None, description="")
-		  tail: Optional[bool] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_CoinTailRule(self):
-		    def _then_fn0():
-		      return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
+		    head: Optional[bool] = Field(None, description="")
+		    tail: Optional[bool] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", False), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_CoinTailRule(self):
+		        def _then_fn0():
+		            return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", False), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -428,18 +396,18 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class Coin(BaseDataClass):
-		  head: Optional[bool] = Field(None, description="")
-		  tail: Optional[bool] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_EdgeRule(self):
-		    def _then_fn0():
-		      return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
+		    head: Optional[bool] = Field(None, description="")
+		    tail: Optional[bool] = Field(None, description="")
 		    
-		    def _else_fn0():
-		      return True
-		    
-		    return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", False), _then_fn0, _else_fn0)
+		    @rosetta_condition
+		    def condition_0_EdgeRule(self):
+		        def _then_fn0():
+		            return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
+		        
+		        def _else_fn0():
+		            return True
+		        
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", False), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -460,11 +428,11 @@ class DataRuleGeneratorTest {
 		val expected=
 		'''
 		class CondTest(BaseDataClass):
-		  multiAttr: List[Decimal] = Field([], description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return all_elements(len(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
+		    multiAttr: List[Decimal] = Field([], description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return all_elements(len(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
 		'''
 		
 		
@@ -491,22 +459,22 @@ class DataRuleGeneratorTest {
 		val expectedFoo=
 		'''
 		class Foo(BaseDataClass):
-		  x: Optional[str] = Field(None, description="")
-		  y: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return ((_resolve_rosetta_attr(self, "x")) is not None)
+		    x: Optional[str] = Field(None, description="")
+		    y: Optional[str] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return ((_resolve_rosetta_attr(self, "x")) is not None)
 		'''
 		
 		val expectedBar=
 		'''
 		class Bar(Foo):
-		  z: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return ((_resolve_rosetta_attr(self, "y")) is not None)
+		    z: Optional[str] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return ((_resolve_rosetta_attr(self, "y")) is not None)
 		'''
 		
 		assertTrue(python.toString.contains(expectedFoo))
@@ -534,22 +502,25 @@ class DataRuleGeneratorTest {
 		
 		val expectedFoo=
 		'''
-		class Bar(Foo):
-		  z: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return ((_resolve_rosetta_attr(self, "y")) is not None)
+		class Foo(BaseDataClass):
+		    x: Optional[str] = Field(None, description="")
+		    y: Optional[str] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return ((_resolve_rosetta_attr(self, "x")) is not None)
+
 		'''
 		
 		val expectedBar=
 		'''
 		class Bar(Foo):
-		  z: Optional[str] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return ((_resolve_rosetta_attr(self, "y")) is not None)
+		    z: Optional[str] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return ((_resolve_rosetta_attr(self, "y")) is not None)
+
 		'''
 		
 		assertTrue(python.toString.contains(expectedFoo))
