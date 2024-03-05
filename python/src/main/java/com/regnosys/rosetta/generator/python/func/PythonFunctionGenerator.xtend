@@ -237,7 +237,7 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.postConditions.size>0»
         # post-conditions
-            «expressionGenerator.generatePostConditions(function.postConditions)»
+            «expressionGenerator.generateConditions(function.postConditions)»
         # Execute all registered post-conditions
         execute_post_conditions(self)
         «ENDIF»

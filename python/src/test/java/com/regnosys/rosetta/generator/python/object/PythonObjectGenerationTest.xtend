@@ -31,12 +31,12 @@ class PythonObjectGenerationTest {
 		val expected=
 		'''
 		class Foo(BaseDataClass):
-		  attr: int = Field(..., description="This is a multiline definition")
-		  """
-		  This is a
-		      multiline
-		      definition
-		  """
+		    attr: int = Field(..., description="This is a multiline definition")
+		    """
+		    This is a
+		        multiline
+		        definition
+		    """
 		'''
 		
 		assertTrue(python.get("src/com/rosetta/test/model/Foo.py").toString.contains(expected))
@@ -70,38 +70,39 @@ class PythonObjectGenerationTest {
 		val expectedA=
 		'''
 		class A(BaseDataClass):
-		  a0: Optional[int] = Field(None, description="")
-		  a1: Optional[int] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return self.check_one_of_constraint('a0', 'a1', necessity=True)
+		    a0: Optional[int] = Field(None, description="")
+		    a1: Optional[int] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return self.check_one_of_constraint('a0', 'a1', necessity=True)
+
 		'''
 		
 		val expectedB=
 		'''
 		class B(BaseDataClass):
-		  intValue1: Optional[int] = Field(None, description="")
-		  intValue2: Optional[int] = Field(None, description="")
-		  aValue: A = Field(..., description="")
-		  
-		  @rosetta_condition
-		  def condition_0_Rule(self):
-		    return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
-		  
-		  @rosetta_condition
-		  def condition_1_OneOrTwo(self):
-		    """
-		    Choice rule to represent an FpML choice construct.
-		    """
-		    return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
-		  
-		  @rosetta_condition
-		  def condition_2_SecondOneOrTwo(self):
-		    """
-		    FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
-		    """
-		    return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
+		    intValue1: Optional[int] = Field(None, description="")
+		    intValue2: Optional[int] = Field(None, description="")
+		    aValue: com.rosetta.test.model.A.A = Field(..., description="")
+		    
+		    @rosetta_condition
+		    def condition_0_Rule(self):
+		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
+		    
+		    @rosetta_condition
+		    def condition_1_OneOrTwo(self):
+		        """
+		        Choice rule to represent an FpML choice construct.
+		        """
+		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
+		    
+		    @rosetta_condition
+		    def condition_2_SecondOneOrTwo(self):
+		        """
+		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
+		        """
+		        return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
 		'''
 		assertTrue(python.toString.contains(expectedA))
 		assertTrue(python.toString.contains(expectedB))
@@ -132,65 +133,65 @@ class PythonObjectGenerationTest {
 		  val expectedTestType = 
 			'''
 		   class TestType(BaseDataClass):
-		     """
-		     Test type description.
-		     """
-		     testTypeValue1: str = Field(..., description="Test string")
-		     """
-		     Test string
-		     """
-		     testTypeValue2: Optional[str] = Field(None, description="Test optional string")
-		     """
-		     Test optional string
-		     """
-		     testTypeValue3: List[str] = Field([], description="Test string list")
-		     """
-		     Test string list
-		     """
-		     testTypeValue4: TestType2 = Field(..., description="Test TestType2")
-		     """
-		     Test TestType2
-		     """
-		     testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
-		     """
-		     Optional test enum
-		     """
+		       """
+		       Test type description.
+		       """
+		       testTypeValue1: str = Field(..., description="Test string")
+		       """
+		       Test string
+		       """
+		       testTypeValue2: Optional[str] = Field(None, description="Test optional string")
+		       """
+		       Test optional string
+		       """
+		       testTypeValue3: List[str] = Field([], description="Test string list")
+		       """
+		       Test string list
+		       """
+		       testTypeValue4: com.rosetta.test.model.TestType2.TestType2 = Field(..., description="Test TestType2")
+		       """
+		       Test TestType2
+		       """
+		       testEnum: Optional[com.rosetta.test.model.TestEnum.TestEnum] = Field(None, description="Optional test enum")
+		       """
+		       Optional test enum
+		       """
 			'''
 			val expectedTestType2 = 
 			'''
 		   class TestType2(BaseDataClass):
-		     testType2Value1: List[Decimal] = Field([], description="Test number list")
-		     """
-		     Test number list
-		     """
-		     @rosetta_condition
-		     def cardinality_testType2Value1(self):
-		       return check_cardinality(self.testType2Value1, 1, None)
-		     
-		     testType2Value2: Optional[datetime.date] = Field(None, description="Test date")
-		     """
-		     Test date
-		     """
-		     testEnum: Optional[TestEnum] = Field(None, description="Optional test enum")
-		     """
-		     Optional test enum
-		     """
+		       testType2Value1: List[Decimal] = Field([], description="Test number list")
+		       """
+		       Test number list
+		       """
+		       @rosetta_condition
+		       def cardinality_testType2Value1(self):
+		           return check_cardinality(self.testType2Value1, 1, None)
+		       
+		       testType2Value2: Optional[datetime.date] = Field(None, description="Test date")
+		       """
+		       Test date
+		       """
+		       testEnum: Optional[com.rosetta.test.model.TestEnum.TestEnum] = Field(None, description="Optional test enum")
+		       """
+		       Optional test enum
+		       """
 			'''
 			
 		  val expectedTestEnum = 
 			'''
 		   class TestEnum(Enum):
-		     """
-		     Test enum description.
-		     """
-		     TEST_ENUM_VALUE_1 = "TEST_ENUM_VALUE_1"
-		     """
-		     Test enum value 1
-		     """
-		     TEST_ENUM_VALUE_2 = "TEST_ENUM_VALUE_2"
-		     """
-		     Test enum value 2
-		     """
+		       """
+		       Test enum description.
+		       """
+		       TEST_ENUM_VALUE_1 = "TestEnumValue1"
+		       """
+		       Test enum value 1
+		       """
+		       TEST_ENUM_VALUE_2 = "TestEnumValue2"
+		       """
+		       Test enum value 2
+		       """
 			'''
 		assertTrue(python.toString.contains(expectedTestType))
 		assertTrue(python.toString.contains(expectedTestType2))
@@ -286,37 +287,333 @@ class PythonObjectGenerationTest {
 			one-of
 		'''.generatePython
 		
+		val expectedTestType2=
+		'''
+		class FinancialUnitEnum(Enum):
+		    """
+		    Provides enumerated values for financial units, generally used in the context of defining quantities for securities.
+		    """
+		    CONTRACT = "Contract"
+		    """
+		    Denotes financial contracts, such as listed futures and options.
+		    """
+		    CONTRACTUAL_PRODUCT = "ContractualProduct"
+		    """
+		    Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.
+		    """
+		    INDEX_UNIT = "IndexUnit"
+		    """
+		    Denotes a price expressed in index points, e.g. for a stock index.
+		    """
+		    LOG_NORMAL_VOLATILITY = "LogNormalVolatility"
+		    """
+		    Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.
+		    """
+		    SHARE = "Share"
+		    """
+		    Denotes the number of units of financial stock shares.
+		    """
+		    VALUE_PER_DAY = "ValuePerDay"
+		    """
+		    Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.
+		    """
+		    VALUE_PER_PERCENT = "ValuePerPercent"
+		    """
+		    Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.
+		    """
+		    WEIGHT = "Weight"
+		    """
+		    Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
+		    """
+    	'''
 		val expectedTestType = 
 		'''
 		class UnitType(BaseDataClass):
-		  """
-		  Defines the unit to be used for price, quantity, or other purposes
-		  """
-		  capacityUnit: Optional[CapacityUnitEnum] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
-		  """
-		  Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
-		  """
-		  weatherUnit: Optional[WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
-		  """
-		  Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
-		  """
-		  financialUnit: Optional[FinancialUnitEnum] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
-		  """
-		  Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
-		  """
-		  currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
-		  """
-		  Defines the currency to be used as a unit for a price, quantity, or other purpose.
-		  """
-		  
-		  @rosetta_condition
-		  def condition_0_UnitType(self):
 		    """
-		    Requires that a unit type must be set.
+		    Defines the unit to be used for price, quantity, or other purposes
 		    """
-		    return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
+		    capacityUnit: Optional[com.rosetta.test.model.CapacityUnitEnum.CapacityUnitEnum] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
+		    """
+		    weatherUnit: Optional[com.rosetta.test.model.WeatherUnitEnum.WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
+		    """
+		    financialUnit: Optional[com.rosetta.test.model.FinancialUnitEnum.FinancialUnitEnum] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
+		    """
+		    Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
+		    """
+		    currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		    """
+		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		    """
+		    
+		    @rosetta_condition
+		    def condition_0_UnitType(self):
+		        """
+		        Requires that a unit type must be set.
+		        """
+		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
+		'''
+		val expectedTestType3=
+		'''
+		class WeatherUnitEnum(Enum):
+		    """
+		    Provides enumerated values for weather units, generally used in the context of defining quantities for commodities.
+		    """
+		    CDD = "CDD"
+		    """
+		    Denotes Cooling Degree Days as a standard unit.
+		    """
+		    CPD = "CPD"
+		    """
+		    Denotes Critical Precipitation Day as a standard unit.
+		    """
+		    HDD = "HDD"
+		    """
+		    Heating Degree Day as a standard unit.
+		    """
+		'''
+		val expectedTestType4=
+		'''
+		class CapacityUnitEnum(Enum):
+		    """
+		    Provides enumerated values for capacity units, generally used in the context of defining quantities for commodities.
+		    """
+		    ALW = "ALW"
+		    """
+		    Denotes Allowances as standard unit.
+		    """
+		    BBL = "BBL"
+		    """
+		    Denotes a Barrel as a standard unit.
+		    """
+		    BCF = "BCF"
+		    """
+		    Denotes Billion Cubic Feet as a standard unit.
+		    """
+		    BDFT = "BDFT"
+		    """
+		    Denotes Board Feet as a standard unit.
+		    """
+		    BSH = "BSH"
+		    """
+		    Denotes a Bushel as a standard unit of weight (48 lb or 21.7725 kg).
+		    """
+		    BTU = "BTU"
+		    """
+		    Denotes British Thermal Units as a standard unit.
+		    """
+		    CBM = "CBM"
+		    """
+		    Denotes Cubic Meters as a standard unit.
+		    """
+		    CER = "CER"
+		    """
+		    Denotes Certified Emissions Reduction as a standard unit.
+		    """
+		    CRT = "CRT"
+		    """
+		    Denotes Climate Reserve Tonnes as a standard unit.
+		    """
+		    DAG = "DAG"
+		    """
+		    Denotes 10 grams as a standard unit used in precious metals contracts (e.g MCX).
+		    """
+		    DAY = "DAY"
+		    """
+		    Denotes a single day as a standard unit used in time charter trades.
+		    """
+		    DMTU = "DMTU"
+		    """
+		    Denotes Dry Metric Ton (Tonne) Units - Consists of a metric ton of mass excluding moisture.
+		    """
+		    DTH = "DTH"
+		    """
+		    Denotes a Dekatherm as a standard unit.
+		    """
+		    ENVCRD = "ENVCRD"
+		    """
+		    Denotes Environmental Credit as a standard unit.
+		    """
+		    ENVOFST = "ENVOFST"
+		    """
+		    Denotes Environmental Offset as a standard unit.
+		    """
+		    FEU = "FEU"
+		    """
+		    Denotes a 40 ft. Equivalent Unit container as a standard unit.
+		    """
+		    G = "G"
+		    """
+		    Denotes a Gram as a standard unit.
+		    """
+		    GBCWT = "GBCWT"
+		    """
+		    Denotes a GB Hundredweight unit as standard unit.
+		    """
+		    GBGAL = "GBGAL"
+		    """
+		    Denotes a GB Gallon unit as standard unit.
+		    """
+		    GBT = "GBT"
+		    """
+		    Denotes a GB Ton as a standard unit.
+		    """
+		    GJ = "GJ"
+		    """
+		    Denotes a Gigajoule as a standard unit.
+		    """
+		    GW = "GW"
+		    """
+		    Denotes a Gigawatt as a standard unit.
+		    """
+		    GWH = "GWH"
+		    """
+		    Denotes a Gigawatt-hour as a standard unit.
+		    """
+		    HL = "HL"
+		    """
+		    Denotes a Hectolitre as a standard unit.
+		    """
+		    INGOT = "INGOT"
+		    """
+		    Denotes an Ingot as a standard unit.
+		    """
+		    KG = "KG"
+		    """
+		    Denotes a Kilogram as a standard unit.
+		    """
+		    KL = "KL"
+		    """
+		    Denotes a Kilolitre as a standard unit.
+		    """
+		    KW = "KW"
+		    """
+		    Denotes a Kilowatt as a standard unit.
+		    """
+		    KWDC = "KWDC"
+		    """
+		    Denotes a Kilowatt Day Capacity as a standard unit.
+		    """
+		    KWH = "KWH"
+		    """
+		    Denotes a Kilowatt-hour as a standard unit.
+		    """
+		    KWHC = "KWHC"
+		    """
+		    Denotes a Kilowatt Hours Capacity as a standard unit.
+		    """
+		    KWMC = "KWMC"
+		    """
+		    Denotes a Kilowatt Month Capacity as a standard unit.
+		    """
+		    KWMINC = "KWMINC"
+		    """
+		    Denotes a Kilowatt Minute Capacity as a standard unit.
+		    """
+		    KWYC = "KWYC"
+		    """
+		    Denotes a Kilowatt Year Capacity as a standard unit.
+		    """
+		    L = "L"
+		    """
+		    Denotes a Litre as a standard unit.
+		    """
+		    LB = "LB"
+		    """
+		    Denotes a Pound as a standard unit.
+		    """
+		    MB = "MB"
+		    """
+		    Denotes a Thousand Barrels as a standard unit.
+		    """
+		    MBF = "MBF"
+		    """
+		    Denotes a Thousand board feet, which are used in contracts on forestry underlyers as a standard unit.
+		    """
+		    MJ = "MJ"
+		    """
+		    Denotes a Megajoule as a standard unit.
+		    """
+		    MMBBL = "MMBBL"
+		    """
+		    Denotes a Million Barrels as a standard unit.
+		    """
+		    MMBF = "MMBF"
+		    """
+		    Denotes a Million board feet, which are used in contracts on forestry underlyers as a standard unit.
+		    """
+		    MMBTU = "MMBTU"
+		    """
+		    Denotes a Million British Thermal Units as a standard unit.
+		    """
+		    MSF = "MSF"
+		    """
+		    Denotes a Thousand square feet as a standard unit.
+		    """
+		    MT = "MT"
+		    """
+		    Denotes a Metric Ton as a standard unit.
+		    """
+		    MW = "MW"
+		    """
+		    Denotes a Megawatt as a standard unit.
+		    """
+		    MWDC = "MWDC"
+		    """
+		    Denotes a Megawatt Day Capacity as a standard unit.
+		    """
+		    MWH = "MWH"
+		    """
+		    Denotes a Megawatt-hour as a standard unit.
+		    """
+		    MWHC = "MWHC"
+		    """
+		    Denotes a Megawatt Hours Capacity as a standard unit.
+		    """
+		    MWMC = "MWMC"
+		    """
+		    Denotes a Megawatt Month Capacity as a standard unit.
+		    """
+		    MWMINC = "MWMINC"
+		    """
+		    Denotes a Megawatt Minute Capacity as a standard unit.
+		    """
+		    MWYC = "MWYC"
+		    """
+		    Denotes a Megawatt Year Capacity as a standard unit.
+		    """
+		    OZT = "OZT"
+		    """
+		    Denotes a Troy Ounce as a standard unit.
+		    """
+		    TEU = "TEU"
+		    """
+		    Denotes a 20 ft. Equivalent Unit container as a standard unit.
+		    """
+		    THERM = "THERM"
+		    """
+		    Denotes a Thermal Unit as a standard unit.
+		    """
+		    USCWT = "USCWT"
+		    """
+		    Denotes US Hundredweight unit as a standard unit.
+		    """
+		    USGAL = "USGAL"
+		    """
+		    Denotes a US Gallon unit as a standard unit.
+		    """
+		    UST = "UST"
+		    """
+		    Denotes a US Ton as a standard unit.
+		    """
 		'''
 		assertTrue(python.toString.contains(expectedTestType))
+		assertTrue(python.toString.contains(expectedTestType2))
+		assertTrue(python.toString.contains(expectedTestType3))
+		assertTrue(python.toString.contains(expectedTestType4))		
 		
 	}
 	
@@ -369,55 +666,131 @@ class PythonObjectGenerationTest {
 		val expectedTestType1 = 
 		'''
 		class LegalEntity(BaseDataClass):
-		  """
-		  A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).
-		  """
-		  entityId: List[AttributeWithMeta[str] | str] = Field([], description="A legal entity identifier (e.g. RED entity code).")
-		  """
-		  A legal entity identifier (e.g. RED entity code).
-		  """
-		  name: AttributeWithMeta[str] | str = Field(..., description="The legal entity name.")
-		  """
-		  The legal entity name.
-		  """
+		    """
+		    A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).
+		    """
+		    entityId: List[AttributeWithMeta[str] | str] = Field([], description="A legal entity identifier (e.g. RED entity code).")
+		    """
+		    A legal entity identifier (e.g. RED entity code).
+		    """
+		    name: AttributeWithMeta[str] | str = Field(..., description="The legal entity name.")
+		    """
+		    The legal entity name.
+		    """
 		'''
 		val expectedTestType2 = 
 		'''
 		class TelephoneNumber(BaseDataClass):
-		  """
-		  A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.
-		  """
-		  telephoneNumberType: Optional[TelephoneTypeEnum] = Field(None, description="The type of telephone number, e.g. work, mobile.")
-		  """
-		  The type of telephone number, e.g. work, mobile.
-		  """
-		  number: str = Field(..., description="The actual telephone number.")
-		  """
-		  The actual telephone number.
-		  """
+		    """
+		    A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.
+		    """
+		    telephoneNumberType: Optional[com.rosetta.test.model.TelephoneTypeEnum.TelephoneTypeEnum] = Field(None, description="The type of telephone number, e.g. work, mobile.")
+		    """
+		    The type of telephone number, e.g. work, mobile.
+		    """
+		    number: str = Field(..., description="The actual telephone number.")
+		    """
+		    The actual telephone number.
+		    """
 		'''
 		val expectedTestType3 = 
 		'''
 		class AncillaryEntity(BaseDataClass):
-		  """
-		  Holds an identifier for an ancillary entity, either identified directly via its ancillary role or directly as a legal entity.
-		  """
-		  ancillaryParty: Optional[AncillaryRoleEnum] = Field(None, description="Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)")
-		  """
-		  Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)
-		  """
-		  legalEntity: Optional[LegalEntity] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return self.check_one_of_constraint('ancillaryParty', 'legalEntity', necessity=True)
+		    """
+		    Holds an identifier for an ancillary entity, either identified directly via its ancillary role or directly as a legal entity.
+		    """
+		    ancillaryParty: Optional[com.rosetta.test.model.AncillaryRoleEnum.AncillaryRoleEnum] = Field(None, description="Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)")
+		    """
+		    Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)
+		    """
+		    legalEntity: Optional[com.rosetta.test.model.LegalEntity.LegalEntity] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return self.check_one_of_constraint('ancillaryParty', 'legalEntity', necessity=True)
+
+		'''
+		
+		val expectedTestType4=
+		'''
+		class AncillaryRoleEnum(Enum):
+		    """
+		    Defines the enumerated values to specify the ancillary roles to the transaction. The product is agnostic to the actual parties involved in the transaction, with the party references abstracted away from the product definition and replaced by the AncillaryRoleEnum. The AncillaryRoleEnum can then be positioned in the product and the AncillaryParty type, which is positioned outside of the product definition, allows the AncillaryRoleEnum to be associated with an actual party reference.
+		    """
+		    CALCULATION_AGENT_FALLBACK = "CalculationAgentFallback"
+		    """
+		    Specifies the party responsible for deciding the fallback rate.
+		    """
+		    CALCULATION_AGENT_INDEPENDENT = "CalculationAgentIndependent"
+		    """
+		    Specifies the party responsible for performing calculation agent duties as defined in the applicable product definition.
+		    """
+		    CALCULATION_AGENT_MANDATORY_EARLY_TERMINATION = "CalculationAgentMandatoryEarlyTermination"
+		    """
+		    Specifies the party responsible for performing calculation agent duties associated with an mandatory early termination.
+		    """
+		    CALCULATION_AGENT_OPTIONAL_EARLY_TERMINATION = "CalculationAgentOptionalEarlyTermination"
+		    """
+		    Specifies the party responsible for performing calculation agent duties associated with an optional early termination.
+		    """
+		    DISRUPTION_EVENTS_DETERMINING_PARTY = "DisruptionEventsDeterminingParty"
+		    """
+		    Specifies the party which determines additional disruption events.
+		    """
+		    EXERCISE_NOTICE_RECEIVER_PARTY_CANCELABLE_PROVISION = "ExerciseNoticeReceiverPartyCancelableProvision"
+		    """
+		    Specifies the party to which notice of a cancelable provision exercise should be given.
+		    """
+		    EXERCISE_NOTICE_RECEIVER_PARTY_EXTENDIBLE_PROVISION = "ExerciseNoticeReceiverPartyExtendibleProvision"
+		    """
+		    Specifies the party to which notice of a extendible provision exercise should be given.
+		    """
+		    EXERCISE_NOTICE_RECEIVER_PARTY_MANUAL = "ExerciseNoticeReceiverPartyManual"
+		    """
+		    Specifies the party to which notice of a manual exercise should be given.
+		    """
+		    EXERCISE_NOTICE_RECEIVER_PARTY_OPTIONAL_EARLY_TERMINATION = "ExerciseNoticeReceiverPartyOptionalEarlyTermination"
+		    """
+		    Specifies the party to which notice of a optional early termination exercise should be given.
+		    """
+		    EXTRAORDINARY_DIVIDENDS_PARTY = "ExtraordinaryDividendsParty"
+		    """
+		    Specifies the party which determines if dividends are extraordinary in relation to normal levels.
+		    """
+		    PREDETERMINED_CLEARING_ORGANIZATION_PARTY = "PredeterminedClearingOrganizationParty"
+		    """
+		    Specifies the clearing organization (CCP, DCO) which the trade should be cleared.
+		    """
+		'''
+		val expectedTestType5=
+		'''
+		class TelephoneTypeEnum(Enum):
+		    """
+		    The enumerated values to specify the type of telephone number, e.g. work vs. mobile.
+		    """
+		    FAX = "Fax"
+		    """
+		    A number used primarily for work-related facsimile transmissions.
+		    """
+		    MOBILE = "Mobile"
+		    """
+		    A number on a mobile telephone that is often or usually used for work-related calls. This type of number can be used for urgent work related business when a work number is not sufficient to contact the person or firm.
+		    """
+		    PERSONAL = "Personal"
+		    """
+		    A number used primarily for non work-related calls. (Normally this type of number would be used only as an emergency backup number, not as a regular course of business).
+		    """
+		    WORK = "Work"
+		    """
+		    A number used primarily for work-related calls. Includes home office numbers used primarily for work purposes.
+		    """
 		'''
 		
 		assertTrue(python.toString.contains(expectedTestType1))   
 		assertTrue(python.toString.contains(expectedTestType2))				
-		assertTrue(python.toString.contains(expectedTestType3))  
-		
-		
+		assertTrue(python.toString.contains(expectedTestType3))
+		assertTrue(python.toString.contains(expectedTestType4))
+		assertTrue(python.toString.contains(expectedTestType5))
 	}
 	
 		
@@ -440,43 +813,44 @@ class PythonObjectGenerationTest {
 		val expectedMeasureBase=
 		'''
 		class MeasureBase(BaseDataClass):
-		  """
-		  Provides an abstract base class shared by Price and Quantity.
-		  """
-		  amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
-		  """
-		  Specifies an amount to be qualified and used in a Price or Quantity definition.
-		  """
-		  unitOfAmount: UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
-		  """
-		  Qualifies the unit by which the amount is measured.
-		  """
+		    """
+		    Provides an abstract base class shared by Price and Quantity.
+		    """
+		    amount: Decimal = Field(..., description="Specifies an amount to be qualified and used in a Price or Quantity definition.")
+		    """
+		    Specifies an amount to be qualified and used in a Price or Quantity definition.
+		    """
+		    unitOfAmount: com.rosetta.test.model.UnitType.UnitType = Field(..., description="Qualifies the unit by which the amount is measured.")
+		    """
+		    Qualifies the unit by which the amount is measured.
+		    """
 		'''
 		val expectedUnitType=
 		'''
 		class UnitType(BaseDataClass):
-		  """
-		  Defines the unit to be used for price, quantity, or other purposes
-		  """
-		  currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
-		  """
-		  Defines the currency to be used as a unit for a price, quantity, or other purpose.
-		  """
+		    """
+		    Defines the unit to be used for price, quantity, or other purposes
+		    """
+		    currency: Optional[str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		    """
+		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		    """
+
 		'''
 		val expectedQuantity=
 		'''
 		class Quantity(MeasureBase):
-		  """
-		  Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
-		  """
-		  multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
-		  """
-		  Defines the number to be multiplied by the amount to derive a total quantity.
-		  """
-		  multiplierUnit: Optional[UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
-		  """
-		  Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
-		  """
+		    """
+		    Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.
+		    """
+		    multiplier: Optional[Decimal] = Field(None, description="Defines the number to be multiplied by the amount to derive a total quantity.")
+		    """
+		    Defines the number to be multiplied by the amount to derive a total quantity.
+		    """
+		    multiplierUnit: Optional[com.rosetta.test.model.UnitType.UnitType] = Field(None, description="Qualifies the multiplier with the applicable unit. For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).")
+		    """
+		    Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).
+		    """
 		'''
 		assertTrue(python.toString.contains(expectedMeasureBase))
 		assertTrue(python.toString.contains(expectedUnitType))
@@ -506,41 +880,41 @@ class PythonObjectGenerationTest {
 		val expectedTestType=
 		'''
 		class TestType(TestType2):
-		  TestTypeValue1: str = Field(..., description="Test string")
-		  """
-		  Test string
-		  """
-		  TestTypeValue2: Optional[int] = Field(None, description="Test int")
-		  """
-		  Test int
-		  """
+		    TestTypeValue1: str = Field(..., description="Test string")
+		    """
+		    Test string
+		    """
+		    TestTypeValue2: Optional[int] = Field(None, description="Test int")
+		    """
+		    Test int
+		    """
 		'''
 		val expectedTestType2=
 		'''
 		class TestType2(TestType3):
-		  TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
-		  """
-		  Test number
-		  """
-		  TestType2Value2: List[datetime.date] = Field([], description="Test date")
-		  """
-		  Test date
-		  """
+		    TestType2Value1: Optional[Decimal] = Field(None, description="Test number")
+		    """
+		    Test number
+		    """
+		    TestType2Value2: List[datetime.date] = Field([], description="Test date")
+		    """
+		    Test date
+		    """
 		'''
 		val expectedTestType3=
 		'''
 		class TestType3(BaseDataClass):
-		  TestType3Value1: Optional[str] = Field(None, description="Test string")
-		  """
-		  Test string
-		  """
-		  TestType4Value2: List[int] = Field([], description="Test int")
-		  """
-		  Test int
-		  """
-		  @rosetta_condition
-		  def cardinality_TestType4Value2(self):
-		    return check_cardinality(self.TestType4Value2, 1, None)
+		    TestType3Value1: Optional[str] = Field(None, description="Test string")
+		    """
+		    Test string
+		    """
+		    TestType4Value2: List[int] = Field([], description="Test int")
+		    """
+		    Test int
+		    """
+		    @rosetta_condition
+		    def cardinality_TestType4Value2(self):
+		        return check_cardinality(self.TestType4Value2, 1, None)
 		'''
 		
 		assertTrue(types.contains(expectedTestType))   
@@ -651,36 +1025,364 @@ class PythonObjectGenerationTest {
 		val expectedTestType1 = 
 		'''
 		class MeasureBase(BaseDataClass):
-		  """
-		  Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.
-		  """
-		  value: Optional[Decimal] = Field(None, description="Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.")
-		  """
-		  Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.
-		  """
-		  unit: Optional[UnitType] = Field(None, description="Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).")
-		  """
-		  Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
-		  """
+		    """
+		    Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.
+		    """
+		    value: Optional[Decimal] = Field(None, description="Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.")
+		    """
+		    Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.
+		    """
+		    unit: Optional[com.rosetta.test.model.UnitType.UnitType] = Field(None, description="Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).")
+		    """
+		    Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
+		    """
 		'''
 		
 		val expectedTestType2 = 
 		'''
 		class Measure(MeasureBase):
-		  """
-		  Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional.
-		  """
-		  
-		  @rosetta_condition
-		  def condition_0_ValueExists(self):
 		    """
-		    The value attribute must be present in a concrete measure.
+		    Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional.
 		    """
-		    return ((_resolve_rosetta_attr(self, "value")) is not None)
+		    
+		    @rosetta_condition
+		    def condition_0_ValueExists(self):
+		        """
+		        The value attribute must be present in a concrete measure.
+		        """
+		        return ((_resolve_rosetta_attr(self, "value")) is not None)
+		'''
+		val expectedTestType3=
+		'''
+		class WeatherUnitEnum(Enum):
+		    """
+		    Provides enumerated values for weather units, generally used in the context of defining quantities for commodities.
+		    """
+		    CDD = "CDD"
+		    """
+		    Denotes Cooling Degree Days as a standard unit.
+		    """
+		    CPD = "CPD"
+		    """
+		    Denotes Critical Precipitation Day as a standard unit.
+		    """
+		    HDD = "HDD"
+		    """
+		    Heating Degree Day as a standard unit.
+		    """
+		'''
+		val expectedTestType4=
+		'''
+		class FinancialUnitEnum(Enum):
+		    """
+		    Provides enumerated values for financial units, generally used in the context of defining quantities for securities.
+		    """
+		    CONTRACT = "Contract"
+		    """
+		    Denotes financial contracts, such as listed futures and options.
+		    """
+		    CONTRACTUAL_PRODUCT = "ContractualProduct"
+		    """
+		    Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.
+		    """
+		    INDEX_UNIT = "IndexUnit"
+		    """
+		    Denotes a price expressed in index points, e.g. for a stock index.
+		    """
+		    LOG_NORMAL_VOLATILITY = "LogNormalVolatility"
+		    """
+		    Denotes a log normal volatility, expressed in %/month, where the percentage is represented as a decimal. For example, 0.15 means a log-normal volatility of 15% per month.
+		    """
+		    SHARE = "Share"
+		    """
+		    Denotes the number of units of financial stock shares.
+		    """
+		    VALUE_PER_DAY = "ValuePerDay"
+		    """
+		    Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.
+		    """
+		    VALUE_PER_PERCENT = "ValuePerPercent"
+		    """
+		    Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.
+		    """
+		    WEIGHT = "Weight"
+		    """
+		    Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
+		    """
+		'''
+		val expectedTestType5=
+		'''
+		class UnitType(BaseDataClass):
+		    """
+		    Defines the unit to be used for price, quantity, or other purposes
+		    """
+		    capacityUnit: Optional[com.rosetta.test.model.CapacityUnitEnum.CapacityUnitEnum] = Field(None, description="Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.
+		    """
+		    weatherUnit: Optional[com.rosetta.test.model.WeatherUnitEnum.WeatherUnitEnum] = Field(None, description="Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.")
+		    """
+		    Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.
+		    """
+		    financialUnit: Optional[com.rosetta.test.model.FinancialUnitEnum.FinancialUnitEnum] = Field(None, description="Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.")
+		    """
+		    Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.
+		    """
+		    currency: Optional[AttributeWithMeta[str] | str] = Field(None, description="Defines the currency to be used as a unit for a price, quantity, or other purpose.")
+		    """
+		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
+		    """
+		    
+		    @rosetta_condition
+		    def condition_0_UnitType(self):
+		        """
+		        Requires that a unit type must be set.
+		        """
+		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
+		
+		'''
+		val expectedTestType6=
+		'''
+		class CapacityUnitEnum(Enum):
+		    """
+		    Provides enumerated values for capacity units, generally used in the context of defining quantities for commodities.
+		    """
+		    ALW = "ALW"
+		    """
+		    Denotes Allowances as standard unit.
+		    """
+		    BBL = "BBL"
+		    """
+		    Denotes a Barrel as a standard unit.
+		    """
+		    BCF = "BCF"
+		    """
+		    Denotes Billion Cubic Feet as a standard unit.
+		    """
+		    BDFT = "BDFT"
+		    """
+		    Denotes Board Feet as a standard unit.
+		    """
+		    BSH = "BSH"
+		    """
+		    Denotes a Bushel as a standard unit of weight (48 lb or 21.7725 kg).
+		    """
+		    BTU = "BTU"
+		    """
+		    Denotes British Thermal Units as a standard unit.
+		    """
+		    CBM = "CBM"
+		    """
+		    Denotes Cubic Meters as a standard unit.
+		    """
+		    CER = "CER"
+		    """
+		    Denotes Certified Emissions Reduction as a standard unit.
+		    """
+		    CRT = "CRT"
+		    """
+		    Denotes Climate Reserve Tonnes as a standard unit.
+		    """
+		    DAG = "DAG"
+		    """
+		    Denotes 10 grams as a standard unit used in precious metals contracts (e.g MCX).
+		    """
+		    DAY = "DAY"
+		    """
+		    Denotes a single day as a standard unit used in time charter trades.
+		    """
+		    DMTU = "DMTU"
+		    """
+		    Denotes Dry Metric Ton (Tonne) Units - Consists of a metric ton of mass excluding moisture.
+		    """
+		    DTH = "DTH"
+		    """
+		    Denotes a Dekatherm as a standard unit.
+		    """
+		    ENVCRD = "ENVCRD"
+		    """
+		    Denotes Environmental Credit as a standard unit.
+		    """
+		    ENVOFST = "ENVOFST"
+		    """
+		    Denotes Environmental Offset as a standard unit.
+		    """
+		    FEU = "FEU"
+		    """
+		    Denotes a 40 ft. Equivalent Unit container as a standard unit.
+		    """
+		    G = "G"
+		    """
+		    Denotes a Gram as a standard unit.
+		    """
+		    GBCWT = "GBCWT"
+		    """
+		    Denotes a GB Hundredweight unit as standard unit.
+		    """
+		    GBGAL = "GBGAL"
+		    """
+		    Denotes a GB Gallon unit as standard unit.
+		    """
+		    GBT = "GBT"
+		    """
+		    Denotes a GB Ton as a standard unit.
+		    """
+		    GJ = "GJ"
+		    """
+		    Denotes a Gigajoule as a standard unit.
+		    """
+		    GW = "GW"
+		    """
+		    Denotes a Gigawatt as a standard unit.
+		    """
+		    GWH = "GWH"
+		    """
+		    Denotes a Gigawatt-hour as a standard unit.
+		    """
+		    HL = "HL"
+		    """
+		    Denotes a Hectolitre as a standard unit.
+		    """
+		    INGOT = "INGOT"
+		    """
+		    Denotes an Ingot as a standard unit.
+		    """
+		    KG = "KG"
+		    """
+		    Denotes a Kilogram as a standard unit.
+		    """
+		    KL = "KL"
+		    """
+		    Denotes a Kilolitre as a standard unit.
+		    """
+		    KW = "KW"
+		    """
+		    Denotes a Kilowatt as a standard unit.
+		    """
+		    KWDC = "KWDC"
+		    """
+		    Denotes a Kilowatt Day Capacity as a standard unit.
+		    """
+		    KWH = "KWH"
+		    """
+		    Denotes a Kilowatt-hour as a standard unit.
+		    """
+		    KWHC = "KWHC"
+		    """
+		    Denotes a Kilowatt Hours Capacity as a standard unit.
+		    """
+		    KWMC = "KWMC"
+		    """
+		    Denotes a Kilowatt Month Capacity as a standard unit.
+		    """
+		    KWMINC = "KWMINC"
+		    """
+		    Denotes a Kilowatt Minute Capacity as a standard unit.
+		    """
+		    KWYC = "KWYC"
+		    """
+		    Denotes a Kilowatt Year Capacity as a standard unit.
+		    """
+		    L = "L"
+		    """
+		    Denotes a Litre as a standard unit.
+		    """
+		    LB = "LB"
+		    """
+		    Denotes a Pound as a standard unit.
+		    """
+		    MB = "MB"
+		    """
+		    Denotes a Thousand Barrels as a standard unit.
+		    """
+		    MBF = "MBF"
+		    """
+		    Denotes a Thousand board feet, which are used in contracts on forestry underlyers as a standard unit.
+		    """
+		    MJ = "MJ"
+		    """
+		    Denotes a Megajoule as a standard unit.
+		    """
+		    MMBBL = "MMBBL"
+		    """
+		    Denotes a Million Barrels as a standard unit.
+		    """
+		    MMBF = "MMBF"
+		    """
+		    Denotes a Million board feet, which are used in contracts on forestry underlyers as a standard unit.
+		    """
+		    MMBTU = "MMBTU"
+		    """
+		    Denotes a Million British Thermal Units as a standard unit.
+		    """
+		    MSF = "MSF"
+		    """
+		    Denotes a Thousand square feet as a standard unit.
+		    """
+		    MT = "MT"
+		    """
+		    Denotes a Metric Ton as a standard unit.
+		    """
+		    MW = "MW"
+		    """
+		    Denotes a Megawatt as a standard unit.
+		    """
+		    MWDC = "MWDC"
+		    """
+		    Denotes a Megawatt Day Capacity as a standard unit.
+		    """
+		    MWH = "MWH"
+		    """
+		    Denotes a Megawatt-hour as a standard unit.
+		    """
+		    MWHC = "MWHC"
+		    """
+		    Denotes a Megawatt Hours Capacity as a standard unit.
+		    """
+		    MWMC = "MWMC"
+		    """
+		    Denotes a Megawatt Month Capacity as a standard unit.
+		    """
+		    MWMINC = "MWMINC"
+		    """
+		    Denotes a Megawatt Minute Capacity as a standard unit.
+		    """
+		    MWYC = "MWYC"
+		    """
+		    Denotes a Megawatt Year Capacity as a standard unit.
+		    """
+		    OZT = "OZT"
+		    """
+		    Denotes a Troy Ounce as a standard unit.
+		    """
+		    TEU = "TEU"
+		    """
+		    Denotes a 20 ft. Equivalent Unit container as a standard unit.
+		    """
+		    THERM = "THERM"
+		    """
+		    Denotes a Thermal Unit as a standard unit.
+		    """
+		    USCWT = "USCWT"
+		    """
+		    Denotes US Hundredweight unit as a standard unit.
+		    """
+		    USGAL = "USGAL"
+		    """
+		    Denotes a US Gallon unit as a standard unit.
+		    """
+		    UST = "UST"
+		    """
+		    Denotes a US Ton as a standard unit.
+		    """
 		'''
 		
 		assertTrue(python.toString.contains(expectedTestType1))   
-		assertTrue(python.toString.contains(expectedTestType2))				
+		assertTrue(python.toString.contains(expectedTestType2))	
+		assertTrue(python.toString.contains(expectedTestType3))	
+		assertTrue(python.toString.contains(expectedTestType4))	
+		assertTrue(python.toString.contains(expectedTestType5))	
+		assertTrue(python.toString.contains(expectedTestType6))				
 		
 	} 
 
@@ -702,32 +1404,32 @@ class PythonObjectGenerationTest {
 			val expected =
 			'''
 			class TestType(BaseDataClass):
-			  """
-			  Test type with one-of condition.
-			  """
-			  field1: Optional[str] = Field(None, description="Test string field 1")
-			  """
-			  Test string field 1
-			  """
-			  field2: Optional[str] = Field(None, description="Test string field 2")
-			  """
-			  Test string field 2
-			  """
-			  field3: Optional[Decimal] = Field(None, description="Test number field 3")
-			  """
-			  Test number field 3
-			  """
-			  field4: List[Decimal] = Field([], description="Test number field 4")
-			  """
-			  Test number field 4
-			  """
-			  
-			  @rosetta_condition
-			  def condition_0_BusinessCentersChoice(self):
 			    """
-			    Choice rule to represent an FpML choice construct.
+			    Test type with one-of condition.
 			    """
-			    return self.check_one_of_constraint('field1', 'field2', necessity=True)
+			    field1: Optional[str] = Field(None, description="Test string field 1")
+			    """
+			    Test string field 1
+			    """
+			    field2: Optional[str] = Field(None, description="Test string field 2")
+			    """
+			    Test string field 2
+			    """
+			    field3: Optional[Decimal] = Field(None, description="Test number field 3")
+			    """
+			    Test number field 3
+			    """
+			    field4: List[Decimal] = Field([], description="Test number field 4")
+			    """
+			    Test number field 4
+			    """
+			    
+			    @rosetta_condition
+			    def condition_0_BusinessCentersChoice(self):
+			        """
+			        Choice rule to represent an FpML choice construct.
+			        """
+			        return self.check_one_of_constraint('field1', 'field2', necessity=True)
 			'''
 			assertTrue(types.contains(expected))
 		}
@@ -750,38 +1452,38 @@ class PythonObjectGenerationTest {
 			val expected =
 			'''
 			class TestType(BaseDataClass):
-			  """
-			  Test type with one-of condition.
-			  """
-			  field1: Optional[str] = Field(None, description="Test string field 1")
-			  """
-			  Test string field 1
-			  """
-			  field2: Optional[str] = Field(None, description="Test string field 2")
-			  """
-			  Test string field 2
-			  """
-			  field3: Optional[Decimal] = Field(None, description="Test number field 3")
-			  """
-			  Test number field 3
-			  """
-			  field4: List[Decimal] = Field([], description="Test number field 4")
-			  """
-			  Test number field 4
-			  """
-			  
-			  @rosetta_condition
-			  def condition_0_BusinessCentersChoice(self):
 			    """
-			    Choice rule to represent an FpML choice construct.
+			    Test type with one-of condition.
 			    """
-			    def _then_fn0():
-			      return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			    field1: Optional[str] = Field(None, description="Test string field 1")
+			    """
+			    Test string field 1
+			    """
+			    field2: Optional[str] = Field(None, description="Test string field 2")
+			    """
+			    Test string field 2
+			    """
+			    field3: Optional[Decimal] = Field(None, description="Test number field 3")
+			    """
+			    Test number field 3
+			    """
+			    field4: List[Decimal] = Field([], description="Test number field 4")
+			    """
+			    Test number field 4
+			    """
 			    
-			    def _else_fn0():
-			      return True
-			    
-			    return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
+			    @rosetta_condition
+			    def condition_0_BusinessCentersChoice(self):
+			        """
+			        Choice rule to represent an FpML choice construct.
+			        """
+			        def _then_fn0():
+			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			        
+			        def _else_fn0():
+			            return True
+			        
+			        return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
 
 			'''
 			assertTrue(types.contains(expected))
@@ -805,38 +1507,38 @@ class PythonObjectGenerationTest {
 			val expected =
 			'''
 			class TestType(BaseDataClass):
-			  """
-			  Test type with one-of condition.
-			  """
-			  field1: Optional[str] = Field(None, description="Test string field 1")
-			  """
-			  Test string field 1
-			  """
-			  field2: Optional[str] = Field(None, description="Test string field 2")
-			  """
-			  Test string field 2
-			  """
-			  field3: Optional[Decimal] = Field(None, description="Test number field 3")
-			  """
-			  Test number field 3
-			  """
-			  field4: List[Decimal] = Field([], description="Test number field 4")
-			  """
-			  Test number field 4
-			  """
-			  
-			  @rosetta_condition
-			  def condition_0_BusinessCentersChoice(self):
 			    """
-			    Choice rule to represent an FpML choice construct.
+			    Test type with one-of condition.
 			    """
-			    def _then_fn0():
-			      return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			    field1: Optional[str] = Field(None, description="Test string field 1")
+			    """
+			    Test string field 1
+			    """
+			    field2: Optional[str] = Field(None, description="Test string field 2")
+			    """
+			    Test string field 2
+			    """
+			    field3: Optional[Decimal] = Field(None, description="Test number field 3")
+			    """
+			    Test number field 3
+			    """
+			    field4: List[Decimal] = Field([], description="Test number field 4")
+			    """
+			    Test number field 4
+			    """
 			    
-			    def _else_fn0():
-			      return all_elements(_resolve_rosetta_attr(self, "field4"), ">", 0)
-			    
-			    return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
+			    @rosetta_condition
+			    def condition_0_BusinessCentersChoice(self):
+			        """
+			        Choice rule to represent an FpML choice construct.
+			        """
+			        def _then_fn0():
+			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			        
+			        def _else_fn0():
+			            return all_elements(_resolve_rosetta_attr(self, "field4"), ">", 0)
+			        
+			        return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
 			'''
 			assertTrue(python.toString.contains(expected))
 		}
@@ -857,26 +1559,24 @@ class PythonObjectGenerationTest {
 		val expectedCondition = 
 		'''
 		class DateRange(BaseDataClass):
-		  """
-		  A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.
-		  """
-		  startDate: datetime.date = Field(..., description="The first date of a date range.")
-		  """
-		  The first date of a date range.
-		  """
-		  endDate: datetime.date = Field(..., description="The last date of a date range.")
-		  """
-		  The last date of a date range.
-		  """
-		  
-		  @rosetta_condition
-		  def condition_0_DatesOrdered(self):
 		    """
-		    The start date must fall on or before the end date (a date range of only one date is allowed).
+		    A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.
 		    """
-		    return all_elements(_resolve_rosetta_attr(self, "startDate"), "<=", _resolve_rosetta_attr(self, "endDate"))
-
-
+		    startDate: datetime.date = Field(..., description="The first date of a date range.")
+		    """
+		    The first date of a date range.
+		    """
+		    endDate: datetime.date = Field(..., description="The last date of a date range.")
+		    """
+		    The last date of a date range.
+		    """
+		    
+		    @rosetta_condition
+		    def condition_0_DatesOrdered(self):
+		        """
+		        The start date must fall on or before the end date (a date range of only one date is allowed).
+		        """
+		        return all_elements(_resolve_rosetta_attr(self, "startDate"), "<=", _resolve_rosetta_attr(self, "endDate"))
 		'''
 		assertTrue(python.toString.contains(expectedCondition))
 	}
@@ -907,45 +1607,45 @@ class PythonObjectGenerationTest {
 		val expectedA=
 		'''
 		class A(BaseDataClass):
-		  a0: Optional[int] = Field(None, description="")
-		  a1: Optional[int] = Field(None, description="")
-		  
-		  @rosetta_condition
-		  def condition_0_(self):
-		    return self.check_one_of_constraint('a0', 'a1', necessity=True)
+		    a0: Optional[int] = Field(None, description="")
+		    a1: Optional[int] = Field(None, description="")
+		    
+		    @rosetta_condition
+		    def condition_0_(self):
+		        return self.check_one_of_constraint('a0', 'a1', necessity=True)
 		'''
 		
 		val expectedB=
 		'''
 		class B(BaseDataClass):
-		  intValue1: Optional[int] = Field(None, description="")
-		  intValue2: Optional[int] = Field(None, description="")
-		  aValue: A = Field(..., description="")
-		  
-		  @rosetta_condition
-		  def condition_0_Rule(self):
-		    return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
-		  
-		  @rosetta_condition
-		  def condition_1_OneOrTwo(self):
-		    """
-		    Choice rule to represent an FpML choice construct.
-		    """
-		    return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
-		  
-		  @rosetta_condition
-		  def condition_2_ReqOneOrTwo(self):
-		    """
-		    Choice rule to represent an FpML choice construct.
-		    """
-		    return self.check_one_of_constraint('intValue1', 'intValue2', necessity=True)
-		  
-		  @rosetta_condition
-		  def condition_3_SecondOneOrTwo(self):
-		    """
-		    FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
-		    """
-		    return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
+		    intValue1: Optional[int] = Field(None, description="")
+		    intValue2: Optional[int] = Field(None, description="")
+		    aValue: com.rosetta.test.model.A.A = Field(..., description="")
+		    
+		    @rosetta_condition
+		    def condition_0_Rule(self):
+		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
+		    
+		    @rosetta_condition
+		    def condition_1_OneOrTwo(self):
+		        """
+		        Choice rule to represent an FpML choice construct.
+		        """
+		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
+		    
+		    @rosetta_condition
+		    def condition_2_ReqOneOrTwo(self):
+		        """
+		        Choice rule to represent an FpML choice construct.
+		        """
+		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=True)
+		    
+		    @rosetta_condition
+		    def condition_3_SecondOneOrTwo(self):
+		        """
+		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
+		        """
+		        return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
 		'''
 		
 		assertTrue(python.toString.contains(expectedA))
