@@ -14,50 +14,50 @@ import static org.junit.jupiter.api.Assertions.*
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class PythonMetaDataGenerationTest {
-	
+    
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-	
-	
-	@Test
+    
+    
+    @Test
     @Disabled("Test Meta Types")
-    	def void shouldGenerateMetaTypes() {
+        def void shouldGenerateMetaTypes() {
                 val python = '''
-        			metaType reference string
-        			metaType address string
-        			metaType scheme string
-        			metaType id string
+                    metaType reference string
+                    metaType address string
+                    metaType scheme string
+                    metaType id string
 
-        			type TestType:
-        				[metadata key]
-        				testTypeValue1 TestType2 (1..1)
-        					[metadata reference]
-        				testTypeValue2 TestType3 (1..1)
+                    type TestType:
+                        [metadata key]
+                        testTypeValue1 TestType2 (1..1)
+                            [metadata reference]
+                        testTypeValue2 TestType3 (1..1)
 
-        			enum TestEnum:
-        			    TestEnumValue1
-        			    TestEnumValue2
+                    enum TestEnum:
+                        TestEnumValue1
+                        TestEnumValue2
 
-        			type TestType2:
-        				testType2Value1 number (1..1)
-        					[metadata reference]
-        				testType2Value2 string (1..1)
-        					[metadata id]
-        					[metadata scheme]
-        				testType2Value3 TestEnum (1..1)
-        					[metadata scheme]
-        				testTypeValue4 TestType4 (1..1)
-        					[metadata address]
+                    type TestType2:
+                        testType2Value1 number (1..1)
+                            [metadata reference]
+                        testType2Value2 string (1..1)
+                            [metadata id]
+                            [metadata scheme]
+                        testType2Value3 TestEnum (1..1)
+                            [metadata scheme]
+                        testTypeValue4 TestType4 (1..1)
+                            [metadata address]
 
-        			type TestType3:
-        				testType3Value1 TestType4 (1..1)
-        					[metadata location]
+                    type TestType3:
+                        testType3Value1 TestType4 (1..1)
+                            [metadata location]
 
-        			type TestType4:
-        				testType4Value1 number (1..1)
+                    type TestType4:
+                        testType4Value1 number (1..1)
 
-        	        '''.generatePython
+                    '''.generatePython
 
                 val types = python.values.join('\n').toString
                 val expected1 =
@@ -216,8 +216,8 @@ class PythonMetaDataGenerationTest {
         
     }  
             
-	def generatePython(CharSequence model) {
-		val m = model.parseRosettaWithNoErrors
+    def generatePython(CharSequence model) {
+        val m = model.parseRosettaWithNoErrors
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         
@@ -230,5 +230,5 @@ class PythonMetaDataGenerationTest {
         
         result
     }
-	
+    
 }

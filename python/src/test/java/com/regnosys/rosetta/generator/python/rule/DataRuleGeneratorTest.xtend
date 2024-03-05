@@ -15,23 +15,23 @@ import static org.junit.jupiter.api.Assertions.*
 @InjectWith(RosettaInjectorProvider)
 
 class DataRuleGeneratorTest {
-	
+
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
     
-	
-	@Test
-	def void shouldGenerateConditionWithIfElseIf() {
-		val python = '''
-			type Foo:
-				bar string (0..1)
-				baz string (0..1)
-			
-			    condition:
-			        if bar="Y" then baz exists
-			        else if (bar="I" or bar="N") then baz is absent
-		'''.generatePython
+
+    @Test
+    def void shouldGenerateConditionWithIfElseIf() {
+        val python = '''
+            type Foo:
+                bar string (0..1)
+                baz string (0..1)
+
+                condition:
+                    if bar="Y" then baz exists
+                    else if (bar="I" or bar="N") then baz is absent
+        '''.generatePython
 
 		val expected=
 		'''
@@ -41,14 +41,15 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        def _then_fn1():
-		            return ((_resolve_rosetta_attr(self, "baz")) is None)
+		            return (not rosetta_attr_exists(_resolve_rosetta_attr(self, "baz")))
 		        
 		        def _else_fn1():
 		            return True
 		        
 		        def _then_fn0():
-		            return ((_resolve_rosetta_attr(self, "baz")) is not None)
+		            return rosetta_attr_exists(_resolve_rosetta_attr(self, "baz"))
 		        
 		        def _else_fn0():
 		            return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn1, _else_fn1)
@@ -59,18 +60,18 @@ class DataRuleGeneratorTest {
 		assertTrue(python.toString.contains(expected))
 	}
 
-	@Test
-	def void shouldGenerateConditionWithNestedIfElseIf() {
-		val python = '''
-			type Foo:
-				bar string (0..1)
-				baz string (0..1)
-			
-			    condition:
-			    	if bar exists then
-				        if bar="Y" then baz exists
-				        else if (bar="I" or bar="N") then baz is absent
-		'''.generatePython
+    @Test
+    def void shouldGenerateConditionWithNestedIfElseIf() {
+        val python = '''
+            type Foo:
+                bar string (0..1)
+                baz string (0..1)
+
+                condition:
+                    if bar exists then
+                        if bar="Y" then baz exists
+                        else if (bar="I" or bar="N") then baz is absent
+        '''.generatePython
 
 		
 		val expected=
@@ -81,14 +82,15 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        def _then_fn2():
-		            return ((_resolve_rosetta_attr(self, "baz")) is None)
+		            return (not rosetta_attr_exists(_resolve_rosetta_attr(self, "baz")))
 		        
 		        def _else_fn2():
 		            return True
 		        
 		        def _then_fn1():
-		            return ((_resolve_rosetta_attr(self, "baz")) is not None)
+		            return rosetta_attr_exists(_resolve_rosetta_attr(self, "baz"))
 		        
 		        def _else_fn1():
 		            return if_cond_fn((all_elements(_resolve_rosetta_attr(self, "bar"), "=", "I") or all_elements(_resolve_rosetta_attr(self, "bar"), "=", "N")), _then_fn2, _else_fn2)
@@ -99,7 +101,7 @@ class DataRuleGeneratorTest {
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "bar")) is not None), _then_fn0, _else_fn0)
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "bar")), _then_fn0, _else_fn0)
 		'''
 		
 		
@@ -128,15 +130,16 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
+		        item = self
 		        def _then_fn0():
-		            return (((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice")) is not None) or ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "offerPrice")) is not None))
+		            return (rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice")) or rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "offerPrice")))
 		        
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "quotePrice")), _then_fn0, _else_fn0)
 		'''
-		
+
 		val expectedQuotePrice=
 		'''
 		class QuotePrice(BaseDataClass):
@@ -149,25 +152,25 @@ class DataRuleGeneratorTest {
 		
 	}
 
-	@Test
-	def void nestedAnds() {
-		val python = '''
-				type Quote:
-					quotePrice QuotePrice (0..1)
-					condition Quote_Price:
-						if quotePrice exists
-						then (
-							quotePrice -> price1 exists
-							and quotePrice -> price2 exists
-							and quotePrice -> price3 exists
-						)
-				
-				type QuotePrice:
-					price1 number (0..1)
-					price2 number (0..1)
-					price3 number (0..1)
-				
-		'''.generatePython
+    @Test
+    def void nestedAnds() {
+        val python = '''
+                type Quote:
+                    quotePrice QuotePrice (0..1)
+                    condition Quote_Price:
+                        if quotePrice exists
+                        then (
+                            quotePrice -> price1 exists
+                            and quotePrice -> price2 exists
+                            and quotePrice -> price3 exists
+                        )
+
+                type QuotePrice:
+                    price1 number (0..1)
+                    price2 number (0..1)
+                    price3 number (0..1)
+
+        '''.generatePython
 
 		
 		val expectedQuote=
@@ -177,14 +180,15 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
+		        item = self
 		        def _then_fn0():
-		            return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price1")) is not None) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price2")) is not None)) and ((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price3")) is not None))
+		            return ((rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price1")) and rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price2"))) and rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "price3")))
 		        
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
-
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "quotePrice")), _then_fn0, _else_fn0)
+		
 		'''
 		val expectedQuotePrice=
 		'''
@@ -199,18 +203,18 @@ class DataRuleGeneratorTest {
 		
 	}
 
-	@Test
-	def void numberAttributeisHandled() {
-		val python = '''
-				type Quote:
-					quotePrice QuotePrice (0..1)
-					condition Quote_Price:
-						if quotePrice exists
-						then quotePrice -> bidPrice = 0.0
-				
-				type QuotePrice:
-					bidPrice number (0..1)
-		'''.generatePython
+    @Test
+    def void numberAttributeisHandled() {
+        val python = '''
+                type Quote:
+                    quotePrice QuotePrice (0..1)
+                    condition Quote_Price:
+                        if quotePrice exists
+                        then quotePrice -> bidPrice = 0.0
+
+                type QuotePrice:
+                    bidPrice number (0..1)
+        '''.generatePython
 
 	
 		
@@ -221,15 +225,17 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Quote_Price(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quotePrice"), "bidPrice"), "=", 0.0)
 		        
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "quotePrice")) is not None), _then_fn0, _else_fn0)
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "quotePrice")), _then_fn0, _else_fn0)
+
 		'''
-		
+
 		val expectedQuotePrice=
 		'''
 		class QuotePrice(BaseDataClass):
@@ -258,43 +264,44 @@ class DataRuleGeneratorTest {
 						then Foo( price ) = 5.0
 		'''.generatePython
 
-		val expectedQuote='''
+        val expectedQuote='''
 		class Quote(BaseDataClass):
 		    price: Optional[Decimal] = Field(None, description="")
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
 		        
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "price")), _then_fn0, _else_fn0)
 		'''
-		
-		
+
+
 		assertTrue(python.toString.contains(expectedQuote))
-		
-	}
-	
-	@Test
-	def void dataRuleWithDoIfAndFunctionAndElse() {
-		val python = '''
-				func Foo:
-					inputs:
-						price number (0..1)
-					output:
-						something number (1..1)
-				
-				type Quote:
-					price number (0..1)
-					
-					condition:
-						if price exists
-						then Foo( price ) = 5.0
-						else True
-		'''.generatePython
+
+    }
+
+    @Test
+    def void dataRuleWithDoIfAndFunctionAndElse() {
+        val python = '''
+                func Foo:
+                    inputs:
+                        price number (0..1)
+                    output:
+                        something number (1..1)
+
+                type Quote:
+                    price number (0..1)
+
+                    condition:
+                        if price exists
+                        then Foo( price ) = 5.0
+                        else True
+        '''.generatePython
 
 		
 		val expectedQuoute=
@@ -304,15 +311,16 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
 		        
 		        def _else_fn0():
 		            return False
 		        
-		        return if_cond_fn(((_resolve_rosetta_attr(self, "price")) is not None), _then_fn0, _else_fn0)
+		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "price")), _then_fn0, _else_fn0)
 		'''
-			
+
 		assertTrue(python.toString.contains(expectedQuoute))
 	}
 	
@@ -337,6 +345,7 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_CoinHeadRule(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(_resolve_rosetta_attr(self, "tail"), "=", False)
 		        
@@ -349,17 +358,17 @@ class DataRuleGeneratorTest {
 		assertTrue(python.toString.contains(expected))
 	}
 
-	@Test
-	def void dataRuleCoinTail() {
-		val python = '''
-			type Coin:
-				head boolean (0..1)
-				tail boolean (0..1)
-				
-				condition CoinTailRule:
-					if tail = True
-					then head = False
-		'''.generatePython
+    @Test
+    def void dataRuleCoinTail() {
+        val python = '''
+            type Coin:
+                head boolean (0..1)
+                tail boolean (0..1)
+
+                condition CoinTailRule:
+                    if tail = True
+                    then head = False
+        '''.generatePython
 
 		val expected=
 		'''
@@ -369,6 +378,7 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_CoinTailRule(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
 		        
@@ -401,6 +411,7 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_EdgeRule(self):
+		        item = self
 		        def _then_fn0():
 		            return all_elements(_resolve_rosetta_attr(self, "head"), "=", False)
 		        
@@ -413,16 +424,16 @@ class DataRuleGeneratorTest {
 		assertTrue(python.toString.contains(expected))
 	}
 
-	
-	@Test
-	def void conditionCount() {
-		val python = '''
-			type CondTest:
-				multiAttr number (0..*)
-				
-				condition:
-					multiAttr count >= 0
-		'''.generatePython
+
+    @Test
+    def void conditionCount() {
+        val python = '''
+            type CondTest:
+                multiAttr number (0..*)
+
+                condition:
+                    multiAttr count >= 0
+        '''.generatePython
 
 		
 		val expected=
@@ -432,29 +443,30 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return all_elements(len(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
-		'''
-		
-		
-		assertTrue(python.toString.contains(expected))
-	}
-	
-	@Test
-	def void shouldCheckConditionWithInheritedAttribute() {
-		val python = '''
-			type Foo:
-				x string (0..1)
-				y string (0..1)
-				
-				condition:
-					x exists
-			
-			type Bar extends Foo:
-				z string (0..1)
-				
-				condition:
-					y exists
-		'''.generatePython
+		        item = self
+		        return all_elements(rosetta_count(_resolve_rosetta_attr(self, "multiAttr")), ">=", 0)
+        '''
+
+
+        assertTrue(python.toString.contains(expected))
+    }
+
+    @Test
+    def void shouldCheckConditionWithInheritedAttribute() {
+        val python = '''
+            type Foo:
+                x string (0..1)
+                y string (0..1)
+
+                condition:
+                    x exists
+
+            type Bar extends Foo:
+                z string (0..1)
+
+                condition:
+                    y exists
+        '''.generatePython
 
 		val expectedFoo=
 		'''
@@ -464,9 +476,10 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return ((_resolve_rosetta_attr(self, "x")) is not None)
+		        item = self
+		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "x"))
 		'''
-		
+
 		val expectedBar=
 		'''
 		class Bar(Foo):
@@ -474,32 +487,33 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return ((_resolve_rosetta_attr(self, "y")) is not None)
+		        item = self
+		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "y"))
 		'''
-		
+
 		assertTrue(python.toString.contains(expectedFoo))
 		assertTrue(python.toString.contains(expectedBar))
-		
+
 	}
-	
-	
+
+
 	@Test
 	def void shouldCheckInheritedCondition() {
 		val python = '''
 			type Foo:
 				x string (0..1)
 				y string (0..1)
-				
+
 				condition:
 					x exists
-			
+
 			type Bar extends Foo:
 				z string (0..1)
-				
+
 				condition:
 					y exists
 		'''.generatePython
-		
+
 		val expectedFoo=
 		'''
 		class Foo(BaseDataClass):
@@ -508,10 +522,10 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return ((_resolve_rosetta_attr(self, "x")) is not None)
+		        item = self
+		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "x"))
+        '''
 
-		'''
-		
 		val expectedBar=
 		'''
 		class Bar(Foo):
@@ -519,8 +533,8 @@ class DataRuleGeneratorTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
-		        return ((_resolve_rosetta_attr(self, "y")) is not None)
-
+		        item = self
+		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "y"))
 		'''
 		
 		assertTrue(python.toString.contains(expectedFoo))

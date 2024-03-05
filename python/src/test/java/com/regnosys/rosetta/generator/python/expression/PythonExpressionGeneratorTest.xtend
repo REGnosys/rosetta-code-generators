@@ -48,7 +48,9 @@ class PythonExpressionGeneratorTest {
 			    
 			    @rosetta_condition
 			    def condition_0_TestChoice(self):
+			        item = self
 			        return self.check_one_of_constraint('field1', 'field2', 'field3', necessity=False)
+
 	     '''
 	     assertTrue(python.toString.contains(expected))
 	     

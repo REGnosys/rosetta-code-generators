@@ -232,7 +232,6 @@ class PythonModelObjectGenerator {
                 «expressionGenerator.generateConditions(rosettaClass)»
         '''
     }
-
     
     private def generateAttributes(Data c) {
         val attr = c.allExpandedAttributes.filter[enclosingType == c.name].filter [

@@ -38,33 +38,33 @@ class PythonFunctionsTest {
 		
 		val expected = 
 		'''
-		@replacable
-		def Abs(arg: number) -> number:
-			"""
-			Returns the absolute value of a number. If the argument is not negative, the argument is returned. If the argument is negative, the negation of the argument is returned.
-			
-			Parameters 
-			----------
-			arg : number
-			
-			Returns
-			-------
-			result : number
-			
-			"""
-			self = inspect.currentframe()
-			
-			
+		@replaceable
+		def Abs(arg: Decimal) -> Decimal:
+		    """
+		    Returns the absolute value of a number. If the argument is not negative, the argument is returned. If the argument is negative, the negation of the argument is returned.
+		    
+		    Parameters 
+		    ----------
+		    arg : number
+		    
+		    Returns
+		    -------
+		    result : number
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
 		    def _then_fn0():
-		    	return (-1 * _resolve_rosetta_attr(self, "arg"))
+		        return (-1 * _resolve_rosetta_attr(self, "arg"))
 		    
 		    def _else_fn0():
-		    	return _resolve_rosetta_attr(self, "arg")				
-		    		
-			result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
-			
-			
-			return result
+		        return _resolve_rosetta_attr(self, "arg")
+		    
+		    result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
+		    
+		    
+		    return result
 		'''
 		assertTrue(python.toString.contains(expected))
 	
@@ -89,39 +89,34 @@ class PythonFunctionsTest {
 		
 		val expected =
 		'''
-		class AppendToVector(ABC):
-		"""
-		Append a single value to a vector (list of numbers).
-		"""
-			def __init__(self,value, vector=None):
-				self.vector=vector
-				self.value=value
-				
-			def evaluate(self):
-				resultVector = self.doEvaluate()
-				return resultVector
-			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-			
-			
+		@replaceable
+		def AppendToVector(vector: list[Decimal] | None, value: Decimal) -> Decimal:
+		    """
+		    Append a single value to a vector (list of numbers).
+		    
+		    Parameters 
+		    ----------
+		    vector : number
+		    Input vector.
+		    
+		    value : number
+		    Value to add to the vector.
+		    
+		    Returns
+		    -------
+		    resultVector : number
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    resultVector = _resolve_rosetta_attr(self, "vector")
+		    resultVector.add_rosetta_attr(self, _resolve_rosetta_attr(self, "value"))
+		    
+		    
+		    return resultVector
 		
-		class AppendToVectorDefault(AppendToVector):
-			def doEvaluate(self):
-				resultVector=[]
-				return self.assignOutput(resultVector)
-							
-			def assignOutput(self,resultVector):
-				def returnResult_0():
-					return _resolve_rosetta_attr(self, "vector")
-				
-				resultVector.extend(returnResult_0)
-				def returnResult_1():
-					return _resolve_rosetta_attr(self, "value")
-				
-				resultVector.extend(returnResult_1)
-				return resultVector
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
 	  	
@@ -237,41 +232,40 @@ class PythonFunctionsTest {
 		
 		val expected =
 		'''
-		class Create_UnitType(ABC):
-		"""
-		Create UnitType with given currency or financial unit.
-		"""
-			def __init__(self,currency=None, financialUnit=None):
-				self.currency=currency
-				self.financialUnit=financialUnit
-				
-			def evaluate(self):
-				def CurrencyOrFinancialUnitExists():
-					return (((_resolve_rosetta_attr(self, "currency")) is not None) or ((_resolve_rosetta_attr(self, "financialUnit")) is not None))
-				validateCondition(CurrencyOrFinancialUnitExists(),"Error")
-				unitType = self.doEvaluate()
-				return unitType
-			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-			
-			
+		@replaceable
+		def Create_UnitType(currency: str | None, financialUnit: FinancialUnitEnum | None) -> UnitType:
+		    """
+		    Create UnitType with given currency or financial unit.
+		    
+		    Parameters 
+		    ----------
+		    currency : string
+		    
+		    financialUnit : FinancialUnitEnum
+		    
+		    Returns
+		    -------
+		    unitType : UnitType
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    # conditions
+		    
+		    @rosetta_condition
+		    def condition_0_CurrencyOrFinancialUnitExists(self):
+		        item = self
+		        return (rosetta_attr_exists(_resolve_rosetta_attr(self, "currency")) or rosetta_attr_exists(_resolve_rosetta_attr(self, "financialUnit")))
+		    # Execute all registered conditions
+		    execute_conditions(self)
+		    
+		    unitType = _get_rosetta_object('UnitType', 'currency', _resolve_rosetta_attr(self, "currency"))
+		    unitType = set_rosetta_attr(_resolve_rosetta_attr(self, 'unitType'), 'financialUnit', _resolve_rosetta_attr(self, "financialUnit"))
+		    
+		    
+		    return unitType
 		
-		class Create_UnitTypeDefault(Create_UnitType):
-			def doEvaluate(self):
-				unitType=None
-				return self.assignOutput(unitType)
-							
-			def assignOutput(self,unitType):
-				def returnResult_0():
-					return _resolve_rosetta_attr(self, "currency")
-				
-				def returnResult_1():
-					return _resolve_rosetta_attr(self, "financialUnit")
-				
-				unitType = UnitType(currency = returnResult_0(), financialUnit = FinancialUnitEnum.returnResult_1())
-				return unitType
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
     }
@@ -309,29 +303,35 @@ class PythonFunctionsTest {
     	
 		val expected = 
 		'''
-		class ResolvePerformanceResetDefault(ResolvePerformanceReset):
-			def doEvaluate(self):
-				reset=None
-				return self.assignOutput(reset)
-							
-			def assignOutput(self,reset):
-				def returnResult_0():
-				"""
-				Assigns the observed value to the reset value.
-				"""
-					return _resolve_rosetta_attr(_resolve_rosetta_attr(self, "observation"), "observedValue")
-				
-				def returnResult_1():
-					return _resolve_rosetta_attr(self, "date")
-				
-				def returnResult_2():
-				"""
-				Assigns the observation required to compute the rest value as audit.
-				"""
-					return _resolve_rosetta_attr(self, "observation")
-				
-				reset = Reset(resetValue = returnResult_0(), resetDate = returnResult_1(), observations = returnResult_2())
-				return reset
+		@replaceable
+		def ResolvePerformanceReset(observation: Observation, date: datetime.date) -> Reset:
+		    """
+		    Defines how to resolve the reset value for a performance payout.
+		    
+		    Parameters 
+		    ----------
+		    observation : Observation
+		    Represents the observation that will be used to compute the reset value.
+		    
+		    date : date
+		    Specifies the date of the reset.
+		    
+		    Returns
+		    -------
+		    reset : Reset
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    reset = _get_rosetta_object('Reset', 'resetValue', _resolve_rosetta_attr(_resolve_rosetta_attr(self, "observation"), "observedValue"))
+		    reset = set_rosetta_attr(_resolve_rosetta_attr(self, 'reset'), 'resetDate', _resolve_rosetta_attr(self, "date"))
+		    reset.add_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(self, reset), 'observations'), _resolve_rosetta_attr(self, "observation"))
+		    
+		    
+		    return reset
+		
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
 		
@@ -360,17 +360,33 @@ class PythonFunctionsTest {
 		
 		val expected =
 		'''
-		class FilterQuantityDefault(FilterQuantity):
-			def doEvaluate(self):
-				filteredQuantities=[]
-				return self.assignOutput(filteredQuantities)
-							
-			def assignOutput(self,filteredQuantities):
-				def returnResult_0():
-					return list(filter(lambda _resolve_rosetta_attr(self, "quantities"):all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quantities"), "unit"), "=", _resolve_rosetta_attr(self, "unit")),_resolve_rosetta_attr(self, "quantities")))
-				
-				filteredQuantities.extend(returnResult_0)
-				return filteredQuantities
+		@replaceable
+		def FilterQuantity(quantities: list[Quantity] | None, unit: UnitType) -> Quantity:
+		    """
+		    Filter list of quantities based on unit type.
+		    
+		    Parameters 
+		    ----------
+		    quantities : Quantity
+		    List of quantities to filter.
+		    
+		    unit : UnitType
+		    Currency unit type.
+		    
+		    Returns
+		    -------
+		    filteredQuantities : Quantity
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    filteredQuantities = rosetta_filter(_resolve_rosetta_attr(self, "quantities"), lambda item: all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quantities"), "unit"), "=", _resolve_rosetta_attr(self, "unit")))
+		    
+		    
+		    return filteredQuantities
+		
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
 		
@@ -415,62 +431,73 @@ class PythonFunctionsTest {
 
 		val expected =
 		'''
-		class ArithmeticOperation(ABC):
-			def __init__(self,n1, op, n2):
-				self.n1=n1
-				self.op=op
-				self.n2=n2
-				
-			def evaluate(self):
-				result = self.doEvaluate()
-				return result
-			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-			
-			
+		@replaceable
+		def ArithmeticOperation(n1: Decimal, op: ArithmeticOperationEnum, n2: Decimal) -> Decimal:
+		    """
+		    
+		    Parameters 
+		    ----------
+		    n1 : number
+		    
+		    op : ArithmeticOperationEnum
+		    
+		    n2 : number
+		    
+		    Returns
+		    -------
+		    result : number
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    def _then_fn5():
+		        return Min(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn5():
+		        return True
+		    
+		    def _then_fn4():
+		        return Max(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn4():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MIN")), _then_fn5, _else_fn5)
+		    
+		    def _then_fn3():
+		        return (_resolve_rosetta_attr(self, "n1") / _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn3():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MAX")), _then_fn4, _else_fn4)
+		    
+		    def _then_fn2():
+		        return (_resolve_rosetta_attr(self, "n1") * _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn2():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "DIVIDE")), _then_fn3, _else_fn3)
+		    
+		    def _then_fn1():
+		        return (_resolve_rosetta_attr(self, "n1") - _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn1():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MULTIPLY")), _then_fn2, _else_fn2)
+		    
+		    def _then_fn0():
+		        return (_resolve_rosetta_attr(self, "n1") + _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn0():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "SUBTRACT")), _then_fn1, _else_fn1)
+		    
+		    result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "ADD")), _then_fn0, _else_fn0)
+		    
+		    
+		    return result
 		
-		class ArithmeticOperationDefault(ArithmeticOperation):
-			def doEvaluate(self):
-				result=None
-				return self.assignOutput(result)
-							
-			def assignOutput(self,result):
-				def returnResult_0():
-					def _then_fn5():
-						return Min(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
-					def _else_fn5():
-						return True	
-					def _then_fn4():
-						return Max(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
-					def _else_fn4():
-						return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MIN")), _then_fn5, _else_fn5)	
-					def _then_fn3():
-						return (_resolve_rosetta_attr(self, "n1") / _resolve_rosetta_attr(self, "n2"))
-					def _else_fn3():
-						return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MAX")), _then_fn4, _else_fn4)	
-					def _then_fn2():
-						return (_resolve_rosetta_attr(self, "n1") * _resolve_rosetta_attr(self, "n2"))
-					def _else_fn2():
-						return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "DIVIDE")), _then_fn3, _else_fn3)	
-					def _then_fn1():
-						return (_resolve_rosetta_attr(self, "n1") - _resolve_rosetta_attr(self, "n2"))
-					def _else_fn1():
-						return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MULTIPLY")), _then_fn2, _else_fn2)	
-					def _then_fn0():
-						return (_resolve_rosetta_attr(self, "n1") + _resolve_rosetta_attr(self, "n2"))
-					def _else_fn0():
-						return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "SUBTRACT")), _then_fn1, _else_fn1)	
-					return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "ADD")), _then_fn0, _else_fn0)
-				
-				result = returnResult_0()
-				return result
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
     	assertTrue(python.toString.contains(expected))
     }
      
-    @Disabled
+    @Test
     def void testFilterOperation2() {
     	val python =
     	'''
@@ -489,6 +516,37 @@ class PythonFunctionsTest {
     	type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
     	  		currency string(0..1)
     	'''.generatePython
+    	
+    	
+    	val expected =
+    	'''
+    	@replaceable
+    	def FilterQuantityByCurrencyExists(quantities: list[QuantitySchedule] | None) -> QuantitySchedule:
+    	    """
+    	    Filter list of quantities based on unit type.
+    	    
+    	    Parameters 
+    	    ----------
+    	    quantities : QuantitySchedule
+    	    List of quantities to filter.
+    	    
+    	    Returns
+    	    -------
+    	    filteredQuantities : QuantitySchedule
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    
+    	    filteredQuantities = rosetta_filter(_resolve_rosetta_attr(self, "quantities"), lambda item: rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(item, "unit"), "currency")))
+    	    
+    	    
+    	    return filteredQuantities
+    	
+    	sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
+    	'''
+    	assertTrue(python.toString.contains(expected))
+    	
     }
     
     
@@ -512,24 +570,37 @@ class PythonFunctionsTest {
  
 		val expected =
 		'''
-		class testAliasDefault(testAlias):
-			def doEvaluate(self):
-				result=None
-				return self.assignOutput(result)
-							
-			def assignOutput(self,result):
-				def returnResult_0():
-					return self.Alias()
-				
-				result = returnResult_0()
-				return result
-				
-			def Alias(self):
-				def _then_fn0():
-					return _resolve_rosetta_attr(self, "inp1")
-				def _else_fn0():
-					return True	
-				return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "inp1"), "<", 0), _then_fn0, _else_fn0)
+		@replaceable
+		def testAlias(inp1: Decimal, inp2: Decimal) -> Decimal:
+		    """
+		    
+		    Parameters 
+		    ----------
+		    inp1 : number
+		    
+		    inp2 : number
+		    
+		    Returns
+		    -------
+		    result : number
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    def _then_fn0():
+		        return _resolve_rosetta_attr(self, "inp1")
+		    
+		    def _else_fn0():
+		        return True
+		    
+		    Alias = if_cond_fn(all_elements(_resolve_rosetta_attr(self, "inp1"), "<", 0), _then_fn0, _else_fn0)
+		    result =  _resolve_rosetta_attr(self, "Alias")
+		    
+		    
+		    return result
+		
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
     	
@@ -542,44 +613,56 @@ class PythonFunctionsTest {
     	val python =
     	'''
     	type A:
-    	    		valueA number(1..1)
-    	    	type B:
-    	        	valueB number(1..1)
-    	    	type C:
-    	    	    valueC number(1..1)
-    	    	func testAlias:
-    	       		inputs:
-    	 	  			a A (1..1)
-    	    	    	b B (1..1)
-    	    	    output:
-    	    	    	c C (1..1)
-    	    	    alias Alias1:
-    	    	    	a->valueA
-    	    	    alias Alias2:
-    	    	    	b->valueB
-    	    	    set c->valueC:
-    	    	    	Alias1*Alias2
+    		valueA number(1..1)
+    		
+    	type B:
+    		valueB number(1..1)
+    		
+    	type C:
+    	    valueC number(1..1)
+    	    
+    	func testAlias:
+    		inputs:
+    			a A (1..1)
+    	    	b B (1..1)
+    	    output:
+    	    	c C (1..1)
+    	    alias Alias1:
+    	    	a->valueA
+    	    alias Alias2:
+    	    	b->valueB
+    	    set c->valueC:
+    	    	Alias1*Alias2
     	'''.generatePython
     	
     	val expected = 
     	'''
-    	class testAliasDefault(testAlias):
-    		def doEvaluate(self):
-    			c=None
-    			return self.assignOutput(c)
-    						
-    		def assignOutput(self,c):
-    			def returnResult_0():
-    				return (self.Alias1() * self.Alias2())
-    			
-    			c = C(valueC = returnResult_0())
-    			return c
-    			
-    		def Alias1(self):
-    			return _resolve_rosetta_attr(_resolve_rosetta_attr(self, "a"), "valueA")
-    		
-    		def Alias2(self):
-    			return _resolve_rosetta_attr(_resolve_rosetta_attr(self, "b"), "valueB")
+    	@replaceable
+    	def testAlias(a: A, b: B) -> C:
+    	    """
+    	    
+    	    Parameters 
+    	    ----------
+    	    a : A
+    	    
+    	    b : B
+    	    
+    	    Returns
+    	    -------
+    	    c : C
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    
+    	    Alias1 = _resolve_rosetta_attr(_resolve_rosetta_attr(self, "a"), "valueA")
+    	    Alias2 = _resolve_rosetta_attr(_resolve_rosetta_attr(self, "b"), "valueB")
+    	    c = _get_rosetta_object('C', 'valueC', (_resolve_rosetta_attr(self, "Alias1") * _resolve_rosetta_attr(self, "Alias2")))
+    	    
+    	    
+    	    return c
+    	
+    	sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
     	'''
     	
     	assertTrue(python.toString.contains(expected))
@@ -631,38 +714,32 @@ class PythonFunctionsTest {
 
 		val expected = 
 		'''
-		class ResolveInterestRateObservationIdentifiers(ABC):
-		"""
-		Defines which attributes on the InterestRatePayout should be used to locate and resolve the underlier's price, for example for the reset process.
-		"""
-			def __init__(self,payout, date):
-				self.payout=payout
-				self.date=date
-				
-			def evaluate(self):
-				identifiers = self.doEvaluate()
-				return identifiers
-			
-			@abstractmethod
-			def doEvaluate(self):
-				pass
-			
-			
+		@replaceable
+		def ResolveInterestRateObservationIdentifiers(payout: InterestRatePayout, date: datetime.date) -> ObservationIdentifier:
+		    """
+		    Defines which attributes on the InterestRatePayout should be used to locate and resolve the underlier's price, for example for the reset process.
+		    
+		    Parameters 
+		    ----------
+		    payout : InterestRatePayout
+		    
+		    date : date
+		    
+		    Returns
+		    -------
+		    identifiers : ObservationIdentifier
+		    
+		    """
+		    self = inspect.currentframe()
+		    
+		    
+		    identifiers = _get_rosetta_object('ObservationIdentifier', 'observable', _get_rosetta_object('Observable', 'rateOption', _resolve_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "payout"), "rateSpecification"), "floatingRate"), "rateOption")))
+		    identifiers = set_rosetta_attr(_resolve_rosetta_attr(self, 'identifiers'), 'observationDate', _resolve_rosetta_attr(self, "date"))
+		    
+		    
+		    return identifiers
 		
-		class ResolveInterestRateObservationIdentifiersDefault(ResolveInterestRateObservationIdentifiers):
-			def doEvaluate(self):
-				identifiers=None
-				return self.assignOutput(identifiers)
-							
-			def assignOutput(self,identifiers):
-				def returnResult_0():
-					return _resolve_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "payout"), "rateSpecification"), "floatingRate"), "rateOption")
-				
-				def returnResult_1():
-					return _resolve_rosetta_attr(self, "date")
-				
-				identifiers = ObservationIdentifier(observable = _get_rosetta_object("Observable","rateOption", returnResult_0()), observationDate = returnResult_1())
-				return identifiers
+		sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
 		'''
 		assertTrue(python.toString.contains(expected))
     	
@@ -688,22 +765,40 @@ class PythonFunctionsTest {
 
     	val expected = 
     	'''
-    	class RoundToNearest(ABC):
-    		def __init__(self,value, nearest, roundingMode):
-    			self.value=value
-    			self.nearest=nearest
-    			self.roundingMode=roundingMode
-    			
-    		def evaluate(self):
-    			def PositiveNearest():
-    				return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
-    			validateCondition(PositiveNearest(),"Error")
-    			roundedValue = self.doEvaluate()
-    			return roundedValue
-    		
-    		@abstractmethod
-    		def doEvaluate(self):
-    			pass
+    	@replaceable
+    	def RoundToNearest(value: Decimal, nearest: Decimal, roundingMode: RoundingModeEnum) -> Decimal:
+    	    """
+    	    
+    	    Parameters 
+    	    ----------
+    	    value : number
+    	    
+    	    nearest : number
+    	    
+    	    roundingMode : RoundingModeEnum
+    	    
+    	    Returns
+    	    -------
+    	    roundedValue : number
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    # conditions
+    	    
+    	    @rosetta_condition
+    	    def condition_0_PositiveNearest(self):
+    	        item = self
+    	        return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
+    	    # Execute all registered conditions
+    	    execute_conditions(self)
+    	    
+    	    roundedValue = _resolve_rosetta_attr(self, "roundedValue")
+    	    
+    	    
+    	    return roundedValue
+    	
+    	sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
     	'''
     	assertTrue(python.toString.contains(expected))
     }
@@ -730,25 +825,45 @@ class PythonFunctionsTest {
     	
     	val expected =
     	'''
-    	class RoundToNearest(ABC):
-    		def __init__(self,value, nearest, roundingMode):
-    			self.value=value
-    			self.nearest=nearest
-    			self.roundingMode=roundingMode
-    			
-    		def evaluate(self):
-    			def PositiveNearest():
-    				return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
-    			def valueNegative():
-    				return all_elements(_resolve_rosetta_attr(self, "value"), "<", 0)
-    			validateCondition(PositiveNearest(),"Error")
-    			validateCondition(valueNegative(),"Error")
-    			roundedValue = self.doEvaluate()
-    			return roundedValue
-    		
-    		@abstractmethod
-    		def doEvaluate(self):
-    			pass
+    	@replaceable
+    	def RoundToNearest(value: Decimal, nearest: Decimal, roundingMode: RoundingModeEnum) -> Decimal:
+    	    """
+    	    
+    	    Parameters 
+    	    ----------
+    	    value : number
+    	    
+    	    nearest : number
+    	    
+    	    roundingMode : RoundingModeEnum
+    	    
+    	    Returns
+    	    -------
+    	    roundedValue : number
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    # conditions
+    	    
+    	    @rosetta_condition
+    	    def condition_0_PositiveNearest(self):
+    	        item = self
+    	        return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
+    	    
+    	    @rosetta_condition
+    	    def condition_1_valueNegative(self):
+    	        item = self
+    	        return all_elements(_resolve_rosetta_attr(self, "value"), "<", 0)
+    	    # Execute all registered conditions
+    	    execute_conditions(self)
+    	    
+    	    roundedValue = _resolve_rosetta_attr(self, "roundedValue")
+    	    
+    	    
+    	    return roundedValue
+    	
+    	sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
     	'''
     	assertTrue(python.toString.contains(expected))
     }
@@ -775,27 +890,46 @@ class PythonFunctionsTest {
 
     	val expected =
     	'''
-    	class NewFloatingPayout(ABC):
-    	"""
-    	Function specification to create the interest rate (floating) payout part of an Equity Swap according to the 2018 ISDA CDM Equity Confirmation template.
-    	"""
-    		def __init__(self,masterConfirmation=None):
-    			self.masterConfirmation=masterConfirmation
-    			
-    		def evaluate(self):
-    			interestRatePayout = self.doEvaluate()
-    			def InterestRatePayoutTerms():
-    				def _then_fn0():
-    					return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "interestRatePayout"), "paymentDates"), "=", _resolve_rosetta_attr(_resolve_rosetta_attr(self, "masterConfirmation"), "equityCashSettlementDates"))
-    				def _else_fn0():
-    					return True	
-    				return if_cond_fn(((_resolve_rosetta_attr(self, "masterConfirmation")) is not None), _then_fn0, _else_fn0)
-    			validateCondition(InterestRatePayoutTerms(),"Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.")
-    			return interestRatePayout
-    		
-    		@abstractmethod
-    		def doEvaluate(self):
-    			pass
+    	@replaceable
+    	def NewFloatingPayout(masterConfirmation: EquitySwapMasterConfirmation2018 | None) -> InterestRatePayout:
+    	    """
+    	    Function specification to create the interest rate (floating) payout part of an Equity Swap according to the 2018 ISDA CDM Equity Confirmation template.
+    	    
+    	    Parameters 
+    	    ----------
+    	    masterConfirmation : EquitySwapMasterConfirmation2018
+    	    
+    	    Returns
+    	    -------
+    	    interestRatePayout : InterestRatePayout
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    
+    	    interestRatePayout = _resolve_rosetta_attr(self, "interestRatePayout")
+    	    
+    	    # post-conditions
+    	        
+    	        @rosetta_condition
+    	        def condition_0_InterestRatePayoutTerms(self):
+    	            """
+    	            Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.
+    	            """
+    	            item = self
+    	            def _then_fn0():
+    	                return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "interestRatePayout"), "paymentDates"), "=", _resolve_rosetta_attr(_resolve_rosetta_attr(self, "masterConfirmation"), "equityCashSettlementDates"))
+    	            
+    	            def _else_fn0():
+    	                return True
+    	            
+    	            return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "masterConfirmation")), _then_fn0, _else_fn0)
+    	    # Execute all registered post-conditions
+    	    execute_post_conditions(self)
+    	    
+    	    return interestRatePayout
+    	
+    	sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
     	'''
     	assertTrue(python.toString.contains(expected))
     	
@@ -806,48 +940,60 @@ class PythonFunctionsTest {
     	val python = 
     	'''
     	type InterestRatePayout: <" A class to specify all of the terms necessary to define and calculate a cash flow based on a fixed, a floating or an inflation index rate. The interest rate payout can be applied to interest rate swaps and FRA (which both have two associated interest rate payouts), credit default swaps (to represent the fee leg when subject to periodic payments) and equity swaps (to represent the funding leg). The associated globalKey denotes the ability to associate a hash value to the InterestRatePayout instantiations for the purpose of model cross-referencing, in support of functionality such as the event effect and the lineage.">
-    	    		[metadata key]
-    	    		rateSpecification RateSpecification (0..1) <"The specification of the rate value(s) applicable to the contract using either a floating rate calculation, a single fixed rate, a fixed rate schedule, or an inflation rate calculation.">
-    	    	
-    	    	type RateSpecification: <" A class to specify the fixed interest rate, floating interest rate or inflation rate.">
-    	    		floatingRate FloatingRateSpecification (0..1) <"The floating interest rate specification, which includes the definition of the floating rate index. the tenor, the initial value, and, when applicable, the spread, the rounding convention, the averaging method and the negative interest rate treatment.">
-    	    	
-    	    	type FloatingRateSpecification: <"A class defining a floating interest rate through the specification of the floating rate index, the tenor, the multiplier schedule, the spread, the qualification of whether a specific rate treatment and/or a cap or floor apply.">
-    	    		[metadata key]
-    	    	
-    	    	    rateOption FloatingRateOption (0..1)
-    	    	
-    	    	type FloatingRateOption: <"Specification of a floating rate option as a floating rate index and tenor.">
-    	    		value int(1..1)
-    	func FixedAmount:
-    	  [calculation]
-    	  inputs:
-    	    interestRatePayout InterestRatePayout (1..1)
-    	    date date (1..1)
-    	  output:
-    	    fixedAmount number (1..1)
-
-    	  alias dayCountFraction: DayCountFraction(interestRatePayout, date)
-    	func DayCountFraction:
- 			inputs:
- 				interestRatePayout InterestRatePayout (1..1)
- 				date date(1..1)
- 			output:
- 				a number(1..1)
+    	    	    		[metadata key]
+    	    	    		rateSpecification RateSpecification (0..1) <"The specification of the rate value(s) applicable to the contract using either a floating rate calculation, a single fixed rate, a fixed rate schedule, or an inflation rate calculation.">
+    	    	    	
+    	    	    	type RateSpecification: <" A class to specify the fixed interest rate, floating interest rate or inflation rate.">
+    	    	    		floatingRate FloatingRateSpecification (0..1) <"The floating interest rate specification, which includes the definition of the floating rate index. the tenor, the initial value, and, when applicable, the spread, the rounding convention, the averaging method and the negative interest rate treatment.">
+    	    	    	
+    	    	    	type FloatingRateSpecification: <"A class defining a floating interest rate through the specification of the floating rate index, the tenor, the multiplier schedule, the spread, the qualification of whether a specific rate treatment and/or a cap or floor apply.">
+    	    	    		[metadata key]
+    	    	    	
+    	    	    	    rateOption FloatingRateOption (0..1)
+    	    	    	
+    	    	    	type FloatingRateOption: <"Specification of a floating rate option as a floating rate index and tenor.">
+    	    	    		value int(1..1)
+    	    	func FixedAmount:
+    	    	  [calculation]
+    	    	  inputs:
+    	    	    interestRatePayout InterestRatePayout (1..1)
+    	    	    date date (1..1)
+    	    	  output:
+    	    	    fixedAmount number (1..1)
+    	
+    	    	  alias dayCountFraction: DayCountFraction(interestRatePayout, date)
+    	    	func DayCountFraction:
+    	 			inputs:
+    	 				interestRatePayout InterestRatePayout (1..1)
+    	 				date date(1..1)
+    	 			output:
+    	 				a number(1..1)
     	'''.generatePython
     	
     	val expected = 
     	'''
-    	class FixedAmountDefault(FixedAmount):
-    		def doEvaluate(self):
-    			fixedAmount=None
-    			return self.assignOutput(fixedAmount)
-    						
-    		def assignOutput(self,fixedAmount):
-    			return fixedAmount
-    			
-    		def dayCountFraction(self):
-    			return DayCountFractionDefault(interestRatePayout, date).evaluate()
+    	@replaceable
+    	def DayCountFraction(interestRatePayout: InterestRatePayout, date: datetime.date) -> Decimal:
+    	    """
+    	    
+    	    Parameters 
+    	    ----------
+    	    interestRatePayout : InterestRatePayout
+    	    
+    	    date : date
+    	    
+    	    Returns
+    	    -------
+    	    a : number
+    	    
+    	    """
+    	    self = inspect.currentframe()
+    	    
+    	    
+    	    a = _resolve_rosetta_attr(self, "a")
+    	    
+    	    
+    	    return a
     	'''
     	assertTrue(python.toString.contains(expected))
     }

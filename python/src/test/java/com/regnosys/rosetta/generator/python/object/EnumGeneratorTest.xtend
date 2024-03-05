@@ -25,15 +25,15 @@ class EnumGeneratorTest {
 
     
    
-	@Test
+    @Test
     def void shouldGenerateEnums() {
         val python = '''
-	        enum TestEnum: <"Test enum description.">
-	        	TestEnumValue1 <"Test enum value 1">
-	        	TestEnumValue2 <"Test enum value 2">
-	        	TestEnumValue3 <"Test enum value 3">
-	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
-	        '''.generatePython
+            enum TestEnum: <"Test enum description.">
+                TestEnumValue1 <"Test enum value 1">
+                TestEnumValue2 <"Test enum value 2">
+                TestEnumValue3 <"Test enum value 3">
+                _1 displayName "1" <"Rolls on the 1st day of the month.">
+            '''.generatePython
 
         val expected = '''
         class TestEnum(Enum):
@@ -60,21 +60,21 @@ class EnumGeneratorTest {
         assertTrue(python.toString.contains(expected))
         
     }
-	
-	
+
+
     @Test //not developed at the moment
     @Disabled
     def void shouldGenerateAnnotationForEnumSynonyms() {
         
         /*
         val code = '''
-        	synonym source FpML
+            synonym source FpML
             enum TestEnum:
-            	one <"Some description"> [synonym FpML value "oneSynonym"]
-            	two <"Some other description"> [synonym FpML value "twoSynonym"]
+                one <"Some description"> [synonym FpML value "oneSynonym"]
+                two <"Some other description"> [synonym FpML value "twoSynonym"]
         '''.generatePython
-		
-		
+
+
         val testEnumCode = code.get(rootPackage.name + ".TestEnum")
         assertThat(testEnumCode, containsString('''RosettaSynonym(value = "oneSynonym", source = "FpML")'''))
 
@@ -86,12 +86,12 @@ class EnumGeneratorTest {
     @Test
     def void shouldGenerateEnums2() {
         val python = '''
-	        enum TestEnum: <"Test enum description.">
-	        	TestEnumValue1 <"Test enum value 1">
-	        	TestEnumValue2 <"Test enum value 2">
-	        	TestEnumValue3 <"Test enum value 3">
-	        	_1 displayName "1" <"Rolls on the 1st day of the month.">
-	        '''.generatePython
+            enum TestEnum: <"Test enum description.">
+                TestEnumValue1 <"Test enum value 1">
+                TestEnumValue2 <"Test enum value 2">
+                TestEnumValue3 <"Test enum value 3">
+                _1 displayName "1" <"Rolls on the 1st day of the month.">
+            '''.generatePython
 
 
         val expected = '''
@@ -121,11 +121,11 @@ class EnumGeneratorTest {
     
     @Test
     def void shouldGenerateEnums3() {
-    	val python = 
-     	'''enum ConfirmationStatusEnum: <"Enumeration for the different types of confirmation status.">
-			Confirmed
-			Unconfirmed
-		'''.generatePython
+        val python =
+         '''enum ConfirmationStatusEnum: <"Enumeration for the different types of confirmation status.">
+            Confirmed
+            Unconfirmed
+        '''.generatePython
 
 		
 		val expected = '''
@@ -135,8 +135,8 @@ class EnumGeneratorTest {
 		    """
 		    CONFIRMED = "Confirmed"
 		    UNCONFIRMED = "Unconfirmed"
-		'''
-		assertTrue(python.toString.contains(expected))
+        '''
+        assertTrue(python.toString.contains(expected))
     }
     
     @Test
@@ -244,12 +244,12 @@ class EnumGeneratorTest {
     @Disabled
     def void shouldGenerateAllDisplayName() {
         '''
-        	synonym source FpML
-        	enum TestEnumWithDisplay:
-        		one displayName "uno" <"Some description"> [synonym FpML value "oneSynonym"]
-        		two <"Some other description"> [synonym FpML value "twoSynonym"]
-        		three displayName "tria" <"Some description"> [synonym FpML value "threeSynonym"]
-        		four  displayName "tessera" <"Some description"> [synonym FpML value "fourSynonym"]
+            synonym source FpML
+            enum TestEnumWithDisplay:
+                one displayName "uno" <"Some description"> [synonym FpML value "oneSynonym"]
+                two <"Some other description"> [synonym FpML value "twoSynonym"]
+                three displayName "tria" <"Some description"> [synonym FpML value "threeSynonym"]
+                four  displayName "tessera" <"Some description"> [synonym FpML value "fourSynonym"]
         '''.generatePython
        
         /*assertThat(testEnumCode,
@@ -293,15 +293,15 @@ class EnumGeneratorTest {
     def void shouldAllowDeprectedAnnotationForEnum() {
         '''
             enum TestEnumDeprecated:
-            	[deprecated]
-            	one
-            	two
+                [deprecated]
+                one
+                two
         '''.generatePython
 
     }
     
     def generatePython(CharSequence model) {
-		val m = model.parseRosettaWithNoErrors
+        val m = model.parseRosettaWithNoErrors
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         

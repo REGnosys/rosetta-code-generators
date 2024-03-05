@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class PythonObjectGenerationTest {
-	
-	@Inject extension ModelHelper
-	@Inject PythonCodeGenerator generator;
+
+    @Inject extension ModelHelper
+    @Inject PythonCodeGenerator generator;
 
 	@Test
 	def void testMultilineAttributeDefinition() {
@@ -50,16 +50,16 @@ class PythonObjectGenerationTest {
 				a1 int (0..1)
 				condition: one-of
 
-			type B:
-				intValue1 int (0..1)
-				intValue2 int (0..1)
-				aValue A (1..1)
+            type B:
+                intValue1 int (0..1)
+                intValue2 int (0..1)
+                aValue A (1..1)
 
-				condition Rule:
-					intValue1 < 100
+                condition Rule:
+                    intValue1 < 100
 
-				condition OneOrTwo: <"Choice rule to represent an FpML choice construct.">
-					optional choice intValue1, intValue2
+                condition OneOrTwo: <"Choice rule to represent an FpML choice construct.">
+                    optional choice intValue1, intValue2
 
 				condition SecondOneOrTwo: <"FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].">
 					aValue->a0 exists
@@ -75,10 +75,10 @@ class PythonObjectGenerationTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        return self.check_one_of_constraint('a0', 'a1', necessity=True)
+        '''
 
-		'''
-		
 		val expectedB=
 		'''
 		class B(BaseDataClass):
@@ -88,6 +88,7 @@ class PythonObjectGenerationTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Rule(self):
+		        item = self
 		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
 		    
 		    @rosetta_condition
@@ -95,6 +96,7 @@ class PythonObjectGenerationTest {
 		        """
 		        Choice rule to represent an FpML choice construct.
 		        """
+		        item = self
 		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
 		    
 		    @rosetta_condition
@@ -102,7 +104,8 @@ class PythonObjectGenerationTest {
 		        """
 		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
 		        """
-		        return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
+		        item = self
+		        return ((rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and (not rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))))
 		'''
 		assertTrue(python.toString.contains(expectedA))
 		assertTrue(python.toString.contains(expectedB))
@@ -119,10 +122,10 @@ class PythonObjectGenerationTest {
 			testTypeValue4 TestType2 (1..1) <"Test TestType2">
 			testEnum TestEnum (0..1) <"Optional test enum">
 
-		type TestType2:
-			testType2Value1 number(1..*) <"Test number list">
-			testType2Value2 date(0..1) <"Test date">
-			testEnum TestEnum (0..1) <"Optional test enum">
+        type TestType2:
+            testType2Value1 number(1..*) <"Test number list">
+            testType2Value2 date(0..1) <"Test date">
+            testEnum TestEnum (0..1) <"Optional test enum">
 
 		enum TestEnum: <"Test enum description.">
 			TestEnumValue1 <"Test enum value 1">
@@ -157,7 +160,7 @@ class PythonObjectGenerationTest {
 		       Optional test enum
 		       """
 			'''
-			val expectedTestType2 = 
+			val expectedTestType2 =
 			'''
 		   class TestType2(BaseDataClass):
 		       testType2Value1: List[Decimal] = Field([], description="Test number list")
@@ -177,8 +180,8 @@ class PythonObjectGenerationTest {
 		       Optional test enum
 		       """
 			'''
-			
-		  val expectedTestEnum = 
+
+		  val expectedTestEnum =
 			'''
 		   class TestEnum(Enum):
 		       """
@@ -283,11 +286,11 @@ class PythonObjectGenerationTest {
 			currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
 			[metadata scheme]
 
-		condition UnitType: <"Requires that a unit type must be set.">
-			one-of
-		'''.generatePython
-		
-		val expectedTestType2=
+        condition UnitType: <"Requires that a unit type must be set.">
+            one-of
+        '''.generatePython
+
+        val expectedTestType2=
 		'''
 		class FinancialUnitEnum(Enum):
 		    """
@@ -326,7 +329,7 @@ class PythonObjectGenerationTest {
 		    Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.
 		    """
     	'''
-		val expectedTestType = 
+		val expectedTestType =
 		'''
 		class UnitType(BaseDataClass):
 		    """
@@ -354,6 +357,7 @@ class PythonObjectGenerationTest {
 		        """
 		        Requires that a unit type must be set.
 		        """
+		        item = self
 		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
 		'''
 		val expectedTestType3=
@@ -613,14 +617,14 @@ class PythonObjectGenerationTest {
 		assertTrue(python.toString.contains(expectedTestType))
 		assertTrue(python.toString.contains(expectedTestType2))
 		assertTrue(python.toString.contains(expectedTestType3))
-		assertTrue(python.toString.contains(expectedTestType4))		
-		
+		assertTrue(python.toString.contains(expectedTestType4))
+
 	}
-	
-	
+
+
 	@Test
 	def void shouldGenerateTypes3() {
-		val python = 
+		val python =
 		'''
 		enum AncillaryRoleEnum: <"Defines the enumerated values to specify the ancillary roles to the transaction. The product is agnostic to the actual parties involved in the transaction, with the party references abstracted away from the product definition and replaced by the AncillaryRoleEnum. The AncillaryRoleEnum can then be positioned in the product and the AncillaryParty type, which is positioned outside of the product definition, allows the AncillaryRoleEnum to be associated with an actual party reference.">
 			DisruptionEventsDeterminingParty <"Specifies the party which determines additional disruption events.">
@@ -634,36 +638,36 @@ class PythonObjectGenerationTest {
 			CalculationAgentOptionalEarlyTermination <"Specifies the party responsible for performing calculation agent duties associated with an optional early termination.">
 			CalculationAgentMandatoryEarlyTermination <"Specifies the party responsible for performing calculation agent duties associated with an mandatory early termination.">
 			CalculationAgentFallback <"Specifies the party responsible for deciding the fallback rate.">
-			
+
 		enum TelephoneTypeEnum: <"The enumerated values to specify the type of telephone number, e.g. work vs. mobile.">
 			Work <"A number used primarily for work-related calls. Includes home office numbers used primarily for work purposes.">
 			Mobile <"A number on a mobile telephone that is often or usually used for work-related calls. This type of number can be used for urgent work related business when a work number is not sufficient to contact the person or firm.">
 			Fax <"A number used primarily for work-related facsimile transmissions.">
 			Personal <"A number used primarily for non work-related calls. (Normally this type of number would be used only as an emergency backup number, not as a regular course of business).">
-		
+
 		type LegalEntity: <"A class to specify a legal entity, with a required name and an optional entity identifier (such as the LEI).">
 			[metadata key]
-		
+
 			entityId string (0..*) <"A legal entity identifier (e.g. RED entity code).">
 				[metadata scheme]
 			name string (1..1) <"The legal entity name.">
 				[metadata scheme]
-		
+
 		type TelephoneNumber: <"A class to specify a telephone number as a type of phone number (e.g. work, personal, ...) alongside with the actual number.">
-		
+
 			telephoneNumberType TelephoneTypeEnum (0..1) <"The type of telephone number, e.g. work, mobile.">
 			number string (1..1) <"The actual telephone number.">
-		
+
 		type AncillaryEntity: <"Holds an identifier for an ancillary entity, either identified directly via its ancillary role or directly as a legal entity.">
-		
+
 			ancillaryParty AncillaryRoleEnum (0..1) <"Identifies a party via its ancillary role on a transaction (e.g. CCP or DCO through which the trade should be cleared.)">
 			legalEntity LegalEntity (0..1)
-		
+
 			condition: one-of
 		'''.generatePython
-		
-		
-		val expectedTestType1 = 
+
+
+		val expectedTestType1 =
 		'''
 		class LegalEntity(BaseDataClass):
 		    """
@@ -678,7 +682,7 @@ class PythonObjectGenerationTest {
 		    The legal entity name.
 		    """
 		'''
-		val expectedTestType2 = 
+		val expectedTestType2 =
 		'''
 		class TelephoneNumber(BaseDataClass):
 		    """
@@ -693,7 +697,7 @@ class PythonObjectGenerationTest {
 		    The actual telephone number.
 		    """
 		'''
-		val expectedTestType3 = 
+		val expectedTestType3 =
 		'''
 		class AncillaryEntity(BaseDataClass):
 		    """
@@ -707,10 +711,10 @@ class PythonObjectGenerationTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        return self.check_one_of_constraint('ancillaryParty', 'legalEntity', necessity=True)
+        '''
 
-		'''
-		
 		val expectedTestType4=
 		'''
 		class AncillaryRoleEnum(Enum):
@@ -785,30 +789,30 @@ class PythonObjectGenerationTest {
 		    A number used primarily for work-related calls. Includes home office numbers used primarily for work purposes.
 		    """
 		'''
-		
-		assertTrue(python.toString.contains(expectedTestType1))   
-		assertTrue(python.toString.contains(expectedTestType2))				
+
+		assertTrue(python.toString.contains(expectedTestType1))
+		assertTrue(python.toString.contains(expectedTestType2))
 		assertTrue(python.toString.contains(expectedTestType3))
 		assertTrue(python.toString.contains(expectedTestType4))
-		assertTrue(python.toString.contains(expectedTestType5))
-	}
-	
-		
-	
-	@Test
-	def void shouldGenerateTypesMethod2() {
-		val python = '''
-		type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">	  
-			currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
-		
-		type MeasureBase: <"Provides an abstract base class shared by Price and Quantity.">		
-			amount number (1..1) <"Specifies an amount to be qualified and used in a Price or Quantity definition.">
-			unitOfAmount UnitType (1..1) <"Qualifies the unit by which the amount is measured.">
-		
-		type Quantity extends MeasureBase: <"Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.">	   
-			multiplier number (0..1) <"Defines the number to be multiplied by the amount to derive a total quantity.">
-			multiplierUnit UnitType (0..1) <"Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).">
-		'''.generatePython
+        assertTrue(python.toString.contains(expectedTestType5))
+    }
+
+
+
+    @Test
+    def void shouldGenerateTypesMethod2() {
+        val python = '''
+        type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
+            currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
+
+        type MeasureBase: <"Provides an abstract base class shared by Price and Quantity.">
+            amount number (1..1) <"Specifies an amount to be qualified and used in a Price or Quantity definition.">
+            unitOfAmount UnitType (1..1) <"Qualifies the unit by which the amount is measured.">
+
+        type Quantity extends MeasureBase: <"Specifies a quantity to be associated to a financial product, for example a trade amount or a cashflow amount resulting from a trade.">
+            multiplier number (0..1) <"Defines the number to be multiplied by the amount to derive a total quantity.">
+            multiplierUnit UnitType (0..1) <"Qualifies the multiplier with the applicable unit.  For example in the case of the Coal (API2) CIF ARA (ARGUS-McCloskey) Futures Contract on the CME, where the unitOfAmount would be contracts, the multiplier would 1,000 and the mulitiplier Unit would be 1,000 MT (Metric Tons).">
+        '''.generatePython
 
 		val expectedMeasureBase=
 		'''
@@ -836,7 +840,7 @@ class PythonObjectGenerationTest {
 		    Defines the currency to be used as a unit for a price, quantity, or other purpose.
 		    """
 
-		'''
+        '''
 		val expectedQuantity=
 		'''
 		class Quantity(MeasureBase):
@@ -858,21 +862,21 @@ class PythonObjectGenerationTest {
 		
 	}
 
-	@Test
-	def void shouldGenerateTypesExtends1() {
-		val python = '''
-		type TestType extends TestType2:
-			TestTypeValue1 string (1..1) <"Test string">
-			TestTypeValue2 int (0..1) <"Test int">
+    @Test
+    def void shouldGenerateTypesExtends1() {
+        val python = '''
+        type TestType extends TestType2:
+            TestTypeValue1 string (1..1) <"Test string">
+            TestTypeValue2 int (0..1) <"Test int">
 
-		type TestType2 extends TestType3:
-			TestType2Value1 number (0..1) <"Test number">
-			TestType2Value2 date (0..*) <"Test date">
+        type TestType2 extends TestType3:
+            TestType2Value1 number (0..1) <"Test number">
+            TestType2Value2 date (0..*) <"Test date">
 
-		type TestType3:
-			TestType3Value1 string (0..1) <"Test string">
-			TestType4Value2 int (1..*) <"Test int">
-		'''.generatePython
+        type TestType3:
+            TestType3Value1 string (0..1) <"Test string">
+            TestType4Value2 int (1..*) <"Test int">
+        '''.generatePython
 
 
 		val types = python.toString
@@ -916,16 +920,16 @@ class PythonObjectGenerationTest {
 		    def cardinality_TestType4Value2(self):
 		        return check_cardinality(self.TestType4Value2, 1, None)
 		'''
-		
-		assertTrue(types.contains(expectedTestType))   
-		assertTrue(types.contains(expectedTestType2))				
-		assertTrue(types.contains(expectedTestType3))		
-			 
+
+		assertTrue(types.contains(expectedTestType))
+		assertTrue(types.contains(expectedTestType2))
+		assertTrue(types.contains(expectedTestType3))
+
 	}
-	
+
 	@Test
 	def void shouldGenerateTypesExtends2() {
-		val python = 
+		val python =
 		'''
 		enum CapacityUnitEnum: <"Provides enumerated values for capacity units, generally used in the context of defining quantities for commodities.">
 					ALW <"Denotes Allowances as standard unit.">
@@ -985,12 +989,12 @@ class PythonObjectGenerationTest {
 					USCWT <"Denotes US Hundredweight unit as a standard unit.">
 					USGAL <"Denotes a US Gallon unit as a standard unit.">
 					UST <"Denotes a US Ton as a standard unit.">
-				
+
 				enum WeatherUnitEnum: <"Provides enumerated values for weather units, generally used in the context of defining quantities for commodities.">
 					CDD <"Denotes Cooling Degree Days as a standard unit.">
 					CPD <"Denotes Critical Precipitation Day as a standard unit.">
 					HDD <"Heating Degree Day as a standard unit.">
-				
+
 				enum FinancialUnitEnum: <"Provides enumerated values for financial units, generally used in the context of defining quantities for securities.">
 					Contract <"Denotes financial contracts, such as listed futures and options.">
 					ContractualProduct <"Denotes a Contractual Product as defined in the CDM.  This unit type would be used when the price applies to the whole product, for example, in the case of a premium expressed as a cash amount.">
@@ -1000,29 +1004,29 @@ class PythonObjectGenerationTest {
 					ValuePerDay <"Denotes a value (expressed in currency units) for a one day change in a valuation date, which is typically used for expressing sensitivity to the passage of time, also known as theta risk, or carry, or other names.">
 					ValuePerPercent <"Denotes a value (expressed in currency units) per percent change in the underlying rate which is typically used for expressing sensitivity to volatility changes, also known as vega risk.">
 					Weight <"Denotes a quantity (expressed as a decimal value) represented the weight of a component in a basket.">
-		
+
 		type UnitType: <"Defines the unit to be used for price, quantity, or other purposes">
 			capacityUnit CapacityUnitEnum (0..1) <"Provides an enumerated value for a capacity unit, generally used in the context of defining quantities for commodities.">
 			weatherUnit WeatherUnitEnum (0..1) <"Provides an enumerated values for a weather unit, generally used in the context of defining quantities for commodities.">
 			financialUnit FinancialUnitEnum (0..1) <"Provides an enumerated value for financial units, generally used in the context of defining quantities for securities.">
 			currency string (0..1) <"Defines the currency to be used as a unit for a price, quantity, or other purpose.">
 				[metadata scheme]
-		
+
 			condition UnitType: <"Requires that a unit type must be set.">
 				one-of
-		
+
 		type Measure extends MeasureBase: <"Defines a concrete measure as a number associated to a unit. It extends MeasureBase by requiring the value attribute to be present. A measure may be unit-less so the unit attribute is still optional.">
-		
+
 			condition ValueExists: <"The value attribute must be present in a concrete measure.">
 				value exists
-				
+
 		type MeasureBase: <"Provides an abstract type to define a measure as a number associated to a unit. This type is abstract because all its attributes are optional. The types that extend it can specify further existence constraints.">
-			
+
 			value number (0..1) <"Specifies the value of the measure as a number. Optional because in a measure vector or schedule, this single value may be omitted.">
 			unit UnitType (0..1) <"Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).">
 		'''.generatePython
-		
-		val expectedTestType1 = 
+
+		val expectedTestType1 =
 		'''
 		class MeasureBase(BaseDataClass):
 		    """
@@ -1037,8 +1041,8 @@ class PythonObjectGenerationTest {
 		    Qualifies the unit by which the amount is measured. Optional because a measure may be unit-less (e.g. when representing a ratio between amounts in the same unit).
 		    """
 		'''
-		
-		val expectedTestType2 = 
+
+		val expectedTestType2 =
 		'''
 		class Measure(MeasureBase):
 		    """
@@ -1050,7 +1054,8 @@ class PythonObjectGenerationTest {
 		        """
 		        The value attribute must be present in a concrete measure.
 		        """
-		        return ((_resolve_rosetta_attr(self, "value")) is not None)
+		        item = self
+		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "value"))
 		'''
 		val expectedTestType3=
 		'''
@@ -1138,8 +1143,8 @@ class PythonObjectGenerationTest {
 		        """
 		        Requires that a unit type must be set.
 		        """
+		        item = self
 		        return self.check_one_of_constraint('capacityUnit', 'weatherUnit', 'financialUnit', 'currency', necessity=True)
-		
 		'''
 		val expectedTestType6=
 		'''
@@ -1376,64 +1381,67 @@ class PythonObjectGenerationTest {
 		    Denotes a US Ton as a standard unit.
 		    """
 		'''
-		
-		assertTrue(python.toString.contains(expectedTestType1))   
-		assertTrue(python.toString.contains(expectedTestType2))	
-		assertTrue(python.toString.contains(expectedTestType3))	
-		assertTrue(python.toString.contains(expectedTestType4))	
-		assertTrue(python.toString.contains(expectedTestType5))	
-		assertTrue(python.toString.contains(expectedTestType6))				
+
+		assertTrue(python.toString.contains(expectedTestType1))
+		assertTrue(python.toString.contains(expectedTestType2))
+		assertTrue(python.toString.contains(expectedTestType3))
+		assertTrue(python.toString.contains(expectedTestType4))
+		assertTrue(python.toString.contains(expectedTestType5))
+		assertTrue(python.toString.contains(expectedTestType6))
 		
 	} 
 
 
-	@Test
-		def void shouldGenerateTypesChoiceCondition() {
-			val python = '''
-				type TestType: <"Test type with one-of condition.">
-					field1 string (0..1) <"Test string field 1">
-					field2 string (0..1) <"Test string field 2">
-					field3 number (0..1) <"Test number field 3">
-					field4 number (0..*) <"Test number field 4">
-					condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
-							required choice field1, field2
-				'''.generatePython
+    @Test
+        def void shouldGenerateTypesChoiceCondition() {
+            val python = '''
+                type TestType: <"Test type with one-of condition.">
+                    field1 string (0..1) <"Test string field 1">
+                    field2 string (0..1) <"Test string field 2">
+                    field3 number (0..1) <"Test number field 3">
+                    field4 number (0..*) <"Test number field 4">
+                    condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
+                            required choice field1, field2
+                '''.generatePython
 
-			val types = python.toString
+            val types = python.toString
 
-			val expected =
-			'''
-			class TestType(BaseDataClass):
-			    """
-			    Test type with one-of condition.
-			    """
-			    field1: Optional[str] = Field(None, description="Test string field 1")
-			    """
-			    Test string field 1
-			    """
-			    field2: Optional[str] = Field(None, description="Test string field 2")
-			    """
-			    Test string field 2
-			    """
-			    field3: Optional[Decimal] = Field(None, description="Test number field 3")
-			    """
-			    Test number field 3
-			    """
-			    field4: List[Decimal] = Field([], description="Test number field 4")
-			    """
-			    Test number field 4
-			    """
-			    
-			    @rosetta_condition
-			    def condition_0_BusinessCentersChoice(self):
-			        """
-			        Choice rule to represent an FpML choice construct.
-			        """
-			        return self.check_one_of_constraint('field1', 'field2', necessity=True)
-			'''
-			assertTrue(types.contains(expected))
-		}
-		
+            val expected =
+            '''
+            class TestType(BaseDataClass):
+                """
+                Test type with one-of condition.
+                """
+                field1: Optional[str] = Field(None, description="Test string field 1")
+                """
+                Test string field 1
+                """
+                field2: Optional[str] = Field(None, description="Test string field 2")
+                """
+                Test string field 2
+                """
+                field3: Optional[Decimal] = Field(None, description="Test number field 3")
+                """
+                Test number field 3
+                """
+                field4: List[Decimal] = Field([], description="Test number field 4")
+                """
+                Test number field 4
+                """
+                
+                @rosetta_condition
+                def condition_0_BusinessCentersChoice(self):
+                    """
+                    Choice rule to represent an FpML choice construct.
+                    """
+                    item = self
+                    return self.check_one_of_constraint('field1', 'field2', necessity=True)
+            '''
+            assertTrue(types.contains(expected))
+        }
+
+        
+
 		@Test
 		def void shouldGenerateIfThenCondition() {
 			val python = '''
@@ -1447,7 +1455,7 @@ class PythonObjectGenerationTest {
 									then field3 > 0
 				'''.generatePython
 
-			val types = python.toString
+            val types = python.toString
 
 			val expected =
 			'''
@@ -1477,32 +1485,33 @@ class PythonObjectGenerationTest {
 			        """
 			        Choice rule to represent an FpML choice construct.
 			        """
+			        item = self
 			        def _then_fn0():
 			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
 			        
 			        def _else_fn0():
 			            return True
 			        
-			        return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
+			        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+			
+            '''
+            assertTrue(types.contains(expected))
+        }
 
-			'''
-			assertTrue(types.contains(expected))
-		}
-		
-		
-	@Test
-	def void shouldGenerateIfThenElseCondition() {
-			val python = '''
-				type TestType: <"Test type with one-of condition.">
-					field1 string (0..1) <"Test string field 1">
-					field2 string (0..1) <"Test string field 2">
-					field3 number (0..1) <"Test number field 3">
-					field4 number (0..*) <"Test number field 4">
-					condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
-							if field1 exists
-									then field3 > 0
-							else field4 > 0
-				'''.generatePython
+
+    @Test
+    def void shouldGenerateIfThenElseCondition() {
+            val python = '''
+                type TestType: <"Test type with one-of condition.">
+                    field1 string (0..1) <"Test string field 1">
+                    field2 string (0..1) <"Test string field 2">
+                    field3 number (0..1) <"Test number field 3">
+                    field4 number (0..*) <"Test number field 4">
+                    condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
+                            if field1 exists
+                                    then field3 > 0
+                            else field4 > 0
+                '''.generatePython
 
 			val expected =
 			'''
@@ -1532,31 +1541,33 @@ class PythonObjectGenerationTest {
 			        """
 			        Choice rule to represent an FpML choice construct.
 			        """
+			        item = self
 			        def _then_fn0():
 			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
 			        
 			        def _else_fn0():
 			            return all_elements(_resolve_rosetta_attr(self, "field4"), ">", 0)
 			        
-			        return if_cond_fn(((_resolve_rosetta_attr(self, "field1")) is not None), _then_fn0, _else_fn0)
+			        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+			
 			'''
 			assertTrue(python.toString.contains(expected))
 		}
-		
-	@Test	
+
+	@Test
 	def void testConditionLessOrEqual() {
-		val python = 
+		val python =
 		'''
 		type DateRange: <"A class defining a contiguous series of calendar dates. The date range is defined as all the dates between and including the start and the end date. The start date must fall on or before the end date.">
-		
+
 			startDate date (1..1) <"The first date of a date range.">
 			endDate date (1..1) <"The last date of a date range.">
-		
+
 			condition DatesOrdered: <"The start date must fall on or before the end date (a date range of only one date is allowed).">
 				startDate <= endDate
 		'''.generatePython
-		
-		val expectedCondition = 
+
+		val expectedCondition =
 		'''
 		class DateRange(BaseDataClass):
 		    """
@@ -1576,6 +1587,7 @@ class PythonObjectGenerationTest {
 		        """
 		        The start date must fall on or before the end date (a date range of only one date is allowed).
 		        """
+		        item = self
 		        return all_elements(_resolve_rosetta_attr(self, "startDate"), "<=", _resolve_rosetta_attr(self, "endDate"))
 		'''
 		assertTrue(python.toString.contains(expectedCondition))
@@ -1612,9 +1624,10 @@ class PythonObjectGenerationTest {
 		    
 		    @rosetta_condition
 		    def condition_0_(self):
+		        item = self
 		        return self.check_one_of_constraint('a0', 'a1', necessity=True)
 		'''
-		
+
 		val expectedB=
 		'''
 		class B(BaseDataClass):
@@ -1624,6 +1637,7 @@ class PythonObjectGenerationTest {
 		    
 		    @rosetta_condition
 		    def condition_0_Rule(self):
+		        item = self
 		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
 		    
 		    @rosetta_condition
@@ -1631,6 +1645,7 @@ class PythonObjectGenerationTest {
 		        """
 		        Choice rule to represent an FpML choice construct.
 		        """
+		        item = self
 		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=False)
 		    
 		    @rosetta_condition
@@ -1638,6 +1653,7 @@ class PythonObjectGenerationTest {
 		        """
 		        Choice rule to represent an FpML choice construct.
 		        """
+		        item = self
 		        return self.check_one_of_constraint('intValue1', 'intValue2', necessity=True)
 		    
 		    @rosetta_condition
@@ -1645,7 +1661,9 @@ class PythonObjectGenerationTest {
 		        """
 		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
 		        """
-		        return ((((_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) is not None) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is not None))) or ((((_resolve_rosetta_attr(self, "intValue2")) is not None) and ((_resolve_rosetta_attr(self, "intValue1")) is not None)) and ((_resolve_rosetta_attr(self, "intValue1")) is None)))
+		        item = self
+		        return ((rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and (not rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))))
+		
 		'''
 		
 		assertTrue(python.toString.contains(expectedA))

@@ -11,10 +11,12 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
            'get_only_element', 'rosetta_filter',
            'all_elements', 'contains', 'disjoint', 'join',
-           'local_rosetta_condition',
+           'rosetta_local_condition',
            'execute_local_conditions',
            'flatten_list',
            '_resolve_rosetta_attr',
+           'rosetta_count',
+           'rosetta_attr_exists',
            '_get_rosetta_object',
            'set_rosetta_attr',
            'add_rosetta_attr',
@@ -48,6 +50,14 @@ def _to_list(obj) -> list | tuple:
     return (obj,)
 
 
+def _is_meta(obj: Any) -> bool:
+    '''Returns true if it is a meta data with embedded rosetta type.'''
+    return isinstance(
+        obj, (AttributeWithMeta, AttributeWithAddress,
+              AttributeWithMetaWithAddress, AttributeWithMetaWithReference,
+              AttributeWithMetaWithAddressWithReference))
+
+
 def _resolve_rosetta_attr(obj: Any | None,
                           attrib: str) -> Any | list[Any] | None:
     if obj is None:
@@ -57,7 +67,29 @@ def _resolve_rosetta_attr(obj: Any | None,
                for item in _to_list(_resolve_rosetta_attr(elem, attrib))
                if item is not None]
         return res if res else None
+    if _is_meta(obj):
+        # NOTE: ignores (for now) all meta attributes in the expressions.
+        # In the future one might want to check if the attrib is contained 
+        # in the metadata and return it instead of failing.
+        obj = obj.value
     return getattr(obj, attrib, None)
+
+
+def rosetta_count(obj: Any | None) -> int:
+    '''Implements the lose count semantics of the rosetta DSL'''
+    if not obj:
+        return 0
+    try:
+        return len(obj)
+    except TypeError:
+        return 1
+
+
+def rosetta_attr_exists(val: Any) -> bool:
+    '''Implements the Rosetta semantics of property existence'''
+    if val is None or val == []:
+        return False
+    return True
 
 
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
@@ -98,7 +130,7 @@ def rosetta_condition(condition):
     return wrapper
 
 
-def local_rosetta_condition(registry):
+def rosetta_local_condition(registry: dict):
     '''Registers a condition function in a local registry.'''
     def decorator(condition):
         path_components = condition.__qualname__.split('.')
@@ -113,7 +145,7 @@ def local_rosetta_condition(registry):
     return decorator
 
 
-def execute_local_conditions(registry, cond_type):
+def execute_local_conditions(registry: dict, cond_type: str):
     '''Executes all registered in a local registry.'''
     for condition_path, condition_func in registry.items():
         if not condition_func():
@@ -202,10 +234,11 @@ class BaseDataClass(BaseModel):
             thrown if a condition is not met or if a list with all encountered
             condition violations should be returned instead.
         '''
-        log.info('Checking conditions for %s ...', self)
+        self_rep = object.__repr__(self)
+        log.info('Checking conditions for %s ...', self_rep)
         exceptions = []
         for name, condition in _get_conditions(self.__class__):
-            log.info('Checking condition %s for %s...', name, self)
+            log.info('Checking condition %s for %s...', name, self_rep)
             if not condition(self):
                 msg = f'Condition "{name}" for {repr(self)} failed!'
                 log.error(msg)
@@ -214,30 +247,21 @@ class BaseDataClass(BaseModel):
                     raise exc
                 exceptions.append(exc)
             else:
-                log.info('Condition %s for %s satisfied.', name, self)
+                log.info('Condition %s for %s satisfied.', name, self_rep)
         if recursively:
             for k, v in self.__dict__.items():
-                if isinstance(v, BaseDataClass):
-                    log.info(
-                        'Invoking conditions validation on the property '
-                        '"%s" of %s', k, self
-                    )
-                    exc = v.validate_conditions(recursively=True,  # type:ignore
-                                                raise_exc=raise_exc)
-                    exceptions += exc  # type:ignore
-                    if exc:
-                        log.error(
-                            'Validation of the property "%s" of %s failed!', k,
-                            self)
-        err = 'with' if exceptions else 'without'
-        log.info('Done conditions checking for %s %s errors.', self, err)
+                log.info('Validating conditions of property %s', k)
+                exceptions += _validate_conditions_recursively(
+                    v, raise_exc=raise_exc)
+        err = f'with {len(exceptions)}' if exceptions else 'without'
+        log.info('Done conditions checking for %s %s errors.', self_rep, err)
         return exceptions
 
     def check_one_of_constraint(self, *attr_names, necessity=True) -> bool:
         """ Checks that one and only one attribute is set. """
-        values = self.dict()
+        values = self.model_dump()
         vals = [values.get(n) for n in attr_names]
-        n_attr = sum(1 for v in vals if v is not None)
+        n_attr = sum(1 for v in vals if v is not None and v != [])
         if necessity and n_attr != 1:
             log.error('One and only one of %s should be set!', attr_names)
             return False
@@ -278,6 +302,23 @@ class BaseDataClass(BaseModel):
             )
 
         attr.append(value)
+
+
+def _validate_conditions_recursively(obj, raise_exc=True):
+    '''Helper to execute conditions recursively on a model.'''
+    if not obj:
+        return []
+    if isinstance(obj, BaseDataClass):
+        return obj.validate_conditions(recursively=True,  # type:ignore
+                                       raise_exc=raise_exc)
+    if isinstance(obj, (list, tuple)):
+        exc = []
+        for item in obj:
+            exc += _validate_conditions_recursively(item, raise_exc=raise_exc)
+        return exc
+    if _is_meta(obj):
+        return _validate_conditions_recursively(obj.value, raise_exc=raise_exc)
+    return []
 
 
 def get_allowed_types_for_list_field(model_class: type, field_name: str):
@@ -354,13 +395,20 @@ class AttributeWithMetaWithAddressWithReference(BaseModel, Generic[ValueT]):
     value: ValueT
 
 
+def _ntoz(v):
+    '''Support the lose rosetta treatment of None in comparisons'''
+    if v is None:
+        return 0
+    return v
+
+
 _cmp = {
-    '=': lambda x, y: x == y,
-    '<>': lambda x, y: x != y,
-    '>=': lambda x, y: x >= y,
-    '<=': lambda x, y: x <= y,
-    '>': lambda x, y: x > y,
-    '<': lambda x, y: x < y
+    '=': lambda x, y: _ntoz(x) == _ntoz(y),
+    '<>': lambda x, y: _ntoz(x) != _ntoz(y),
+    '>=': lambda x, y: _ntoz(x) >= _ntoz(y),
+    '<=': lambda x, y: _ntoz(x) <= _ntoz(y),
+    '>': lambda x, y: _ntoz(x) > _ntoz(y),
+    '<': lambda x, y: _ntoz(x) < _ntoz(y)
 }
 
 

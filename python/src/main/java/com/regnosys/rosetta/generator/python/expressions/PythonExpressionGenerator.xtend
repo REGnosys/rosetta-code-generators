@@ -133,6 +133,7 @@ class PythonExpressionGenerator {
                     «cond.definition»
                     """
                 «ENDIF»
+                item = self
         '''
     }
 
@@ -261,14 +262,14 @@ class PythonExpressionGenerator {
             }
             RosettaExistsExpression: {
                 val argument = expr.argument as RosettaExpression
-                '''((«generateExpression(argument, iflvl)») is not None)'''
+                '''rosetta_attr_exists(«generateExpression(argument, iflvl)»)'''
             }
             RosettaBinaryOperation: {
                 binaryExpr(expr, iflvl)
             }
             RosettaAbsentExpression: {
                 val argument = expr.argument as RosettaExpression
-                '''((«generateExpression(argument, iflvl)») is None)'''
+                '''(not rosetta_attr_exists(«generateExpression(argument, iflvl)»))'''
             }
             RosettaReference: {
                 reference(expr, iflvl)
@@ -302,7 +303,7 @@ class PythonExpressionGenerator {
             }
             RosettaCountOperation: {
                 val argument = expr.argument as RosettaExpression
-                '''len(«generateExpression(argument, iflvl)»)'''
+                '''rosetta_count(«generateExpression(argument, iflvl)»)'''
             }
             ListLiteral: {
                 '''[«FOR arg : expr.elements SEPARATOR ', '»«generateExpression(arg, iflvl)»«ENDFOR»]'''
