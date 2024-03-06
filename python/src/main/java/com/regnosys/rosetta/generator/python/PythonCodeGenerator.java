@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
     @Inject PythonModelObjectGenerator pojoGenerator;
     @Inject PythonFunctionGenerator funcGenerator;
     @Inject private PythonEnumGenerator enumGenerator;
-
     @Inject PythonModelGeneratorUtil utils;
 
     private List<String> subfolders;

@@ -85,7 +85,7 @@ class PythonFilesGeneratorTest {
     }
     //@Disabled("File Generation")
     @Test
-    def void generatePython () {
+    def void generatePythonFromCDMRosetta () {
         // the process 
         // 1) get directory information from the ini file
         // 2) loop through each of the rosetta dsl definitions
@@ -98,7 +98,7 @@ class PythonFilesGeneratorTest {
             val properties    = getProperties ()
             val rosettaSource = properties.get ('rosetta.source.path') as String
             // Create a resource set and add the common Rosetta models to it
-            LOGGER.info("generatePython ... get resource set")
+            LOGGER.info("generatePythonFromCDMRosetta ... get resource set")
             val resourceSet   = resourceSetProvider.get	
             parse(ModelHelper.commonTestTypes, resourceSet)
             resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
@@ -115,36 +115,36 @@ class PythonFilesGeneratorTest {
             val rosettaModels  = resources
                 .flatMap[contents.filter(RosettaModel)]
                 .toList as Collection<RosettaModel>
-            LOGGER.info ("generatePython ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
+            LOGGER.info ("generatePythonFromCDMRosetta ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)					
             val generatedFiles = newHashMap
             for (model : rosettaModels) {
-                LOGGER.info ("generatePython ... processing model: {}", model.name)
-                val python = generatePython (model, resourceSet);
+                LOGGER.info ("generatePythonFromCDMRosetta ... processing model: {}", model.name)
+                val python = generatePythonFromRosetta (model, resourceSet);
                 generatedFiles.putAll (python)
             }
             val outputPath     = properties.getProperty ('codebase.outputpath')
             deleteFolderContent(outputPath)
             writeFiles(outputPath, generatedFiles)
-            LOGGER.info ("generatePython ... done")
+            LOGGER.info ("generatePythonFromCDMRosetta ... done")
         } 
         catch (IOException ioE) {
-            LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an IO Exception')
+            LOGGER.error ('PythonFilesGeneratorTest::generatePythonFromCDMRosetta ... processing failed with an IO Exception')
             LOGGER.error ('\n' + ioE.toString ())
             ioE.printStackTrace ()
         }
         catch (ClassCastException ccE) {
-            LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with a ClassCastException')
+            LOGGER.error ('PythonFilesGeneratorTest::generatePythonFromCDMRosetta ... processing failed with a ClassCastException')
             LOGGER.error ('\n' + ccE.toString ())
             ccE.printStackTrace ()
         }
         catch(Exception e) {
-            LOGGER.error ('PythonFilesGeneratorTest::generatePython ... processing failed with an Exception')
+            LOGGER.error ('PythonFilesGeneratorTest::generatePythonFromCDMRosetta ... processing failed with an Exception')
             LOGGER.error ('\n' + e.toString ())
             e.printStackTrace ()
         }
     }
     
-    def generatePython(RosettaModel m, org.eclipse.emf.ecore.resource.ResourceSet resourceSet) {
+    def generatePythonFromRosetta(RosettaModel m, org.eclipse.emf.ecore.resource.ResourceSet resourceSet) {
         val version = m.version
         val result = newHashMap
         result.putAll(generator.beforeAllGenerate(resourceSet, #{m}, version))
@@ -170,7 +170,7 @@ class PythonFilesGeneratorTest {
             if (filePath !== null) {
                 val m 			 = model.parseRosettaWithNoErrors
                 val resourceSet  = m.eResource.resourceSet
-                val results 	 = generatePython (m, resourceSet)
+                val results 	 = generatePythonFromRosetta (m, resourceSet)
                 writeFiles (filePath, results)
             }
         } catch (Throwable t) {

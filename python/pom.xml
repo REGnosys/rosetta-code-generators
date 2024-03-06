@@ -18,6 +18,7 @@
 		<!-- used by PythonFilesGeneratorTest::generatePython to generate python from a rosetta source --> 
 		<rosetta.source.path>build/resources/rosetta/cdm_5.2.0</rosetta.source.path>
 		<codebase.outputpath>target/python</codebase.outputpath>
+		<generated.python.path>target/python-unit-tests/</generated.python.path>
 	</properties>
 	<build>
 		<plugins>
