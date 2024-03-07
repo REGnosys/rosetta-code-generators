@@ -123,6 +123,7 @@ class PythonFunctionsTest {
                 resultVector.extend(returnResult_1)
                 return resultVector
         '''
+        println('test simple add: ' + python.toString)
         assertTrue(python.toString.contains(expected))
           
     }

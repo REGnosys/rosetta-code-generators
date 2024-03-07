@@ -8,7 +8,6 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.rosetta.expression.AsKeyOperation
 import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
 import com.regnosys.rosetta.rosetta.expression.ClosureParameter
 import com.regnosys.rosetta.rosetta.expression.DistinctOperation
@@ -51,6 +50,8 @@ import java.util.ArrayList
 import java.util.List
 import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.expression.EqualityOperation
+import com.regnosys.rosetta.rosetta.expression.impl.AsKeyOperationImpl
+
 class PythonExpressionGenerator {
 
 //    @Inject extension RosettaExtensions
@@ -60,7 +61,7 @@ class PythonExpressionGenerator {
     public var List<String> importsFound
     public var if_cond_blocks = new ArrayList<String>()
     
-    public def generateConditions(Data cls) {
+    def String generateConditions(Data cls) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -75,7 +76,7 @@ class PythonExpressionGenerator {
         return res
     }
 
-    public def generateConditions(List<Condition> conditions) {
+    def String generateConditions(List<Condition> conditions) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -92,7 +93,7 @@ class PythonExpressionGenerator {
         return res
     }
 
-    public def generatePostConditions(List<Condition> conditions) {
+    def String generatePostConditions(List<Condition> conditions) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -437,10 +438,6 @@ class PythonExpressionGenerator {
             ClosureParameter:{
                 '''_resolve_rosetta_attr(self, "«s.name»")'''
             }
-<<<<<<< Updated upstream
-            
-=======
->>>>>>> Stashed changes
             default:
                 throw new UnsupportedOperationException("Unsupported callable type of " + s.class.simpleName)
         }
@@ -493,7 +490,7 @@ class PythonExpressionGenerator {
 
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
-        if(importsFound!=null){
+        if(importsFound!==null){
             if (!importsFound.contains(import)) {
                 importsFound.add(import)
             }

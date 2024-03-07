@@ -62,9 +62,12 @@ class PythonTranslator {
         return type.toFirstUpper
     }
     static def boolean checkBasicType(ExpandedAttribute attr) {
-        return (attr !== null && attr.type !== null) ? checkBasicType (attr.type.toString) : false
+        return (attr !== null && attr.type !== null && checkBasicType (attr.type.toString))
     }
+    static def boolean checkBasicType(Attribute attr) {
+        return (attr !== null && checkBasicType(attr.toString))
+    }   
     static def boolean checkBasicType(String attr) {
-        return (attr !== toPythonBasicType (attr))
+        return (toPythonBasicTypeInnerFunction (attr) !== null)
     }
 }

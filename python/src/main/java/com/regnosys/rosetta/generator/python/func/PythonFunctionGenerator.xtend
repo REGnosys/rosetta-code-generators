@@ -15,6 +15,7 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import java.util.HashMap
 import java.util.List
 import java.util.Map
+import java.util.ArrayList
 import org.eclipse.emf.ecore.EObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,6 +27,7 @@ class  PythonFunctionGenerator {
     
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
     var List<String> importsFound = newArrayList
+//    @Inject PythonTranslator translator;
     @Inject PythonModelGeneratorUtil utils;
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
@@ -646,8 +648,6 @@ class  PythonFunctionGenerator {
             importsFound.add(import)
         }
     }
-<<<<<<< Updated upstream
-
     private def generateOutput(Attribute output) {
         var out = ""
         val outputName = output.name
@@ -664,15 +664,16 @@ class  PythonFunctionGenerator {
 
     private def getImportsFromAttributes(Function function) {
         var filteredAttributes = new ArrayList
-        for (f : function.inputs) if (!checkBasicType(f)) filteredAttributes.add(f)
-        if (!checkBasicType(function.output)) filteredAttributes.add(function.output)
-        
+        for (f : function.inputs) 
+            if (!PythonTranslator::checkBasicType(f)) filteredAttributes.add(f)
+        if (!PythonTranslator::checkBasicType(function.output)) 
+            filteredAttributes.add(function.output)
         val imports = newArrayList
         for (attribute : filteredAttributes) {
             val originalIt = attribute
             val model = function.model
             if (model !== null) {
-                val importStatement = '''from «model.name».«translator.toPythonType(originalIt)» import «translator.toPythonType(originalIt)»'''
+                val importStatement = '''from «model.name».«PythonTranslator::toPythonType(originalIt)» import «PythonTranslator::toPythonType(originalIt)»'''
                 imports.add(importStatement)
             }
 
@@ -683,11 +684,4 @@ class  PythonFunctionGenerator {
         
     }
 
-    def checkBasicType(Attribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
-    }	
-=======
->>>>>>> Stashed changes
 }
