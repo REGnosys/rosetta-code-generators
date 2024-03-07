@@ -6,31 +6,30 @@ import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.generator.python.util.PythonTranslator
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
+import com.regnosys.rosetta.rosetta.simple.AssignPathRoot
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
-import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import java.util.ArrayList
 import java.util.Arrays
+import java.util.Collections
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import java.util.ArrayList
+import java.util.Set
 import org.eclipse.emf.ecore.EObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.Set
-import com.regnosys.rosetta.rosetta.simple.AssignPathRoot
-import java.util.Collections
 
 class  PythonFunctionGenerator {
     
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
     
     var List<String> importsFound = newArrayList
-//    @Inject PythonTranslator translator;
+    var if_cond_blocks = new ArrayList<String>()
+    
     @Inject PythonModelGeneratorUtil utils;
     @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
@@ -84,6 +83,8 @@ class  PythonFunctionGenerator {
             «generateAlias(function)»
             «generateOperations(function)»
             «generatesOutput(function)»
+        
+        sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
         '''
     }
     
@@ -237,7 +238,7 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.postConditions.size>0»
         # post-conditions
-            «expressionGenerator.generatePostConditions(function.postConditions)»
+            «expressionGenerator.generateConditions(function.postConditions)»
         # Execute all registered post-conditions
         execute_post_conditions(self)
         «ENDIF»
@@ -361,11 +362,7 @@ class  PythonFunctionGenerator {
         if (path === null || path.next === null) {
             return expression;
         }
-/*    
-        if (path.next === null) {
-            return expression;
-        }
- */    
+
         val attribute = path.getAttribute();
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
@@ -399,293 +396,20 @@ class  PythonFunctionGenerator {
     
         return attributes;
     }
-    
-    /*private def generatesBody(Function function) {
- 
-        val output = function.output
-        val defaultClassName = function.name+"Default"
-        '''
-        class «function.name»(ABC):
-            def __init__(self,«generatesInputs(function)»):
-                «FOR inp : function.inputs SEPARATOR "\n"»self.«inp.name»=«inp.name»«ENDFOR»
-                
-            def evaluate(self):
-                «IF function.conditions !== null»
-                    «generateFuncConditions(function,function.conditions)»
-                «ENDIF»
-                «output.name» = self.doEvaluate()
-                «IF function.postConditions !== null»	
-                    «generateFuncConditions(function,function.postConditions)»	
-                «ENDIF»
-                return «output.name»
-            
-            @abstractmethod
-            def doEvaluate(self):
-                pass
-            
-            «getAliases(function)»	
-            
-
-        class «defaultClassName»(«function.name»):
-            def doEvaluate(self):
-                «generateOutput(output)»
-                return self.assignOutput(«output.name»)
-                            
-            def assignOutput(self,«output.name»):
-                «generateConditions(function)»  
-                «IF !checkBasicType(function.output) && !isList(function.output)»
-                «output.name» = «output.typeCall.type.name»(«createObject(function)»)
-                «ENDIF»
-                return «output.name»
-                
-            «IF function.shortcuts !== null»
-            «FOR shortcut : function.shortcuts»
-            def «shortcut.name»(self):
-            «generateAliasCondition(shortcut,function, 0)»
-            «ENDFOR»
-            «ENDIF»	
-        '''
-    }
-    * 
-    */
-    
-    /* ********************************************************************** */
-    /* ***	   OUTPUT GENERATION	  										*** */
-    /* ********************************************************************** */
-    
-    private def createObject(Function f) {
-        var obj = ""
-        for (var i = 0;i < f.operations.size;i++) {
-            var attr = f.operations.get(i).path.attribute
-            var typeName = attr.name
-            var param = attr.typeCall.type instanceof RosettaEnumeration ?
-            attr.typeCall.type.name+".returnResult_"+Integer.toString(i)+"()":getObjects(f.operations.get(i).path,i,"",0)
-            obj+=typeName+" = "+param
-            if (i!=f.operations.size-1) obj+=", "
-        }
-        '''«obj»'''
-    }
-    
-    //Iterative versionn
-    /*/private def getObjects(Operation op,int i) {
-        var s = op.path
-        var obj = ""
-        if (s.next !== null) {
-            var parenthesis = 0
-            obj+="_get_rosetta_object("+'"'+s.attribute.typeCall.type.name+'"'+","+'"'+
-                                         s.next.attribute.name+'"'
-            while (s.next !== null) {
-                if (s.next.next===null) obj+=", returnResult_"+Integer.toString(i)+")"
-                else {
-                    obj+= ", _get_rosetta_object("+'"'+s.attribute.typeCall.type.name+'"'+","+
-                                             '"'+s.next.attribute.name+'"'
-                    parenthesis++
-                }
-                s = s.next
-            }
-            for (var j = 0;j < parenthesis;j++) obj+=")"
-            
-        }
-        else obj+="returnResult_"+Integer.toString(i)
-        '''«obj»'''
-    } */
-    
-    //Recursive version
-    private def String getObjects(Segment s,int i,String object,int parenthesis) {
-        var obj = object
-        if (s.next !== null) {
-            obj+="_get_rosetta_object("+'"'+s.attribute.typeCall.type.name+'"'+","+'"'+
-                                         s.next.attribute.name+'"'
-            if (s.next.next===null) {
-                obj+=", returnResult_"+Integer.toString(i)+"())"
-                for (var j = 0;j < parenthesis;j++) obj+=")"
-            }
-            else {
-                obj+= ", "+getObjects(s.next,i,obj,parenthesis+1)
-            }
-    
-        }
-            
-        else obj+="returnResult_"+Integer.toString(i)+"()"
-        '''«obj»'''		
-    }
-    
-    /* ********************************************************************** */
-    /* ***	              END  OUTPUT GENERATION	  					   *** */
-    /* ********************************************************************** */
-    
-    /* ********************************************************************** */
-    /* ***	    Generation of function conditions and postcondition		  *** */
-    /* ********************************************************************** */
-    
-    
-    /*private def generateFuncConditions(Function function,EList<Condition> cond) {
-        var n_condition = 0;
-        var res = "";
-        for (Condition c : cond) {
-            res += generateFuncConditionBoilerplate(c,n_condition)+
-            generateFuncExpressionCondition(function,c.expression,n_condition).toString
-        }
-        for (Condition c: cond) {
-            var msg = c.definition !== null?c.definition:"Error"
-            res+="validateCondition("+c.name+"()"+","+'"'+msg+'"'+")\n"
-        }
-        return res
-    }
-    
-    private def generateFuncConditionBoilerplate(Condition c,int n_condition) {
-        '''
-        def «c.name»():
-        '''
-    }
-    * 
-    */
-    
-    /*private def generateFuncExpressionCondition(Function function,RosettaExpression exp,int n_condition) {
-        if_cond_blocks = new ArrayList<String>()
-        var expr = generateExpression(exp,function, 0)
-        var blocks = ""
-        if (!if_cond_blocks.isEmpty()) {
-            blocks = '''	«FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
-        }
-        '''
-        «blocks»	return «expr»
-        '''	
-        
-    }
-    * 
-    */
-    
-    /* ********************************************************************** */
-    /* ***	   END of function conditions and postcondition		  *** */
-    /* ********************************************************************** */
-    
-    
-    /*private def generateConditions(Function function) {
-        var n_condition = 0;
-        var res = '';
-        for (Operation op : function.operations) {
-            res += generateConditionBoilerPlate(op, n_condition)+generateExpressionCondition(function,op,n_condition)
-            n_condition += 1;
-        }
-        return res
-    }
-    * 
-    */
-
-    private def generateConditionBoilerPlate(Operation op, int n_condition) {
-        '''
-        def returnResult_«n_condition»():
-        «IF op.definition!==null»
-            """
-            «op.definition»
-            """
-        «ENDIF»
-        '''
-    }
-
-    /* ********************************************************************** */
-    /* ***	   ALIAS GENERATION	  										  *** */
-    /* ********************************************************************** */
-    
-    /*private def generateAliasCondition(ShortcutDeclaration s,Function function,int n_condition) {
-        if_cond_blocks = new ArrayList<String>()
-        var expr = generateExpression(s.expression,function, 0)
-        var blocks = ""
-        if (!if_cond_blocks.isEmpty()) {
-            blocks = '''	«FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
-        }
-        return 
-        '''
-        «blocks»	return «expr»
-        
-        '''
-    }
-    
-    private def getAliases(Function function) {
-        var out = ""
-        for (shortcuts: function.shortcuts) {
-            out+=getAlias(function,shortcuts)
-        }
-        '''
-        «out»
-        '''
-    }
-    * 
-    */
-    
-    private def getAlias(Function function,ShortcutDeclaration s) {
-        '''
-        @abstractmethod
-        def «s.name»(self):
-            pass
-        '''
-    }
-    
-    /* ********************************************************************** */
-    /* ***	  END ALIAS GENERATION	  										*** */
-    /* ********************************************************************** */
-    
-    /*private def generateExpressionCondition(Function function, Operation op,int n_condition) {
-        if_cond_blocks = new ArrayList<String>()
-        var expr = generateExpression(op.expression,function, 0)
-        var blocks = ""
-        if (!if_cond_blocks.isEmpty()) {
-            blocks = '''	«FOR arg : if_cond_blocks»«arg»«ENDFOR»'''
-        }
-        return 
-        '''
-        «blocks»	return «expr»
-        
-        «IF isList(function.output)» 
-        «function.output.name».extend(returnResult_«n_condition»)
-        «ELSEIF checkBasicType(function.output)»
-        «function.output.name» = returnResult_«n_condition»()
-        «ENDIF»
-        '''
-    }
-    */
-
+     
+  
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
         if (!importsFound.contains(import)) {
             importsFound.add(import)
         }
     }
-    private def generateOutput(Attribute output) {
-        var out = ""
-        val outputName = output.name
-        if (output.getCard.unbounded) out = outputName+"=[]"
-        else out = outputName+"=None"
-        '''
-        «out»
-        '''
-    }
 
-    private def boolean isList(Attribute output) {
-        return output.getCard.unbounded
-    }
 
-    private def getImportsFromAttributes(Function function) {
-        var filteredAttributes = new ArrayList
-        for (f : function.inputs) 
-            if (!PythonTranslator::checkBasicType(f)) filteredAttributes.add(f)
-        if (!PythonTranslator::checkBasicType(function.output)) 
-            filteredAttributes.add(function.output)
-        val imports = newArrayList
-        for (attribute : filteredAttributes) {
-            val originalIt = attribute
-            val model = function.model
-            if (model !== null) {
-                val importStatement = '''from «model.name».«PythonTranslator::toPythonType(originalIt)» import «PythonTranslator::toPythonType(originalIt)»'''
-                imports.add(importStatement)
-            }
 
-        }
-
-        // Remove duplicates by converting the list to a set and back to a list
-        return imports.toSet.toList
-        
-    }
-
+    def checkBasicType(Attribute attr) {
+        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
+            'bool', 'number')
+        return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
+    }	
 }

@@ -21,7 +21,6 @@ class RosettaExistsExpressionTest {
 
 
     @Test
-    @Disabled
     def void setUp() {
         '''
             type Foo:

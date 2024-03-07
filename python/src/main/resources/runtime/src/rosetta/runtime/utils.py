@@ -50,6 +50,14 @@ def _to_list(obj) -> list | tuple:
     return (obj,)
 
 
+def _is_meta(obj: Any) -> bool:
+    '''Returns true if it is a meta data with embedded rosetta type.'''
+    return isinstance(
+        obj, (AttributeWithMeta, AttributeWithAddress,
+              AttributeWithMetaWithAddress, AttributeWithMetaWithReference,
+              AttributeWithMetaWithAddressWithReference))
+
+
 def _resolve_rosetta_attr(obj: Any | None,
                           attrib: str) -> Any | list[Any] | None:
     if obj is None:
@@ -59,6 +67,11 @@ def _resolve_rosetta_attr(obj: Any | None,
                for item in _to_list(_resolve_rosetta_attr(elem, attrib))
                if item is not None]
         return res if res else None
+    if _is_meta(obj):
+        # NOTE: ignores (for now) all meta attributes in the expressions.
+        # In the future one might want to check if the attrib is contained 
+        # in the metadata and return it instead of failing.
+        obj = obj.value
     return getattr(obj, attrib, None)
 
 
@@ -72,7 +85,7 @@ def rosetta_count(obj: Any | None) -> int:
         return 1
 
 
-def rosetta_attr_exists(val):
+def rosetta_attr_exists(val: Any) -> bool:
     '''Implements the Rosetta semantics of property existence'''
     if val is None or val == []:
         return False
@@ -117,7 +130,7 @@ def rosetta_condition(condition):
     return wrapper
 
 
-def rosetta_local_condition(registry):
+def rosetta_local_condition(registry: dict):
     '''Registers a condition function in a local registry.'''
     def decorator(condition):
         path_components = condition.__qualname__.split('.')
@@ -132,7 +145,7 @@ def rosetta_local_condition(registry):
     return decorator
 
 
-def execute_local_conditions(registry, cond_type):
+def execute_local_conditions(registry: dict, cond_type: str):
     '''Executes all registered in a local registry.'''
     for condition_path, condition_func in registry.items():
         if not condition_func():
@@ -303,11 +316,7 @@ def _validate_conditions_recursively(obj, raise_exc=True):
         for item in obj:
             exc += _validate_conditions_recursively(item, raise_exc=raise_exc)
         return exc
-    if isinstance(obj, (AttributeWithMeta,
-                        AttributeWithAddress,
-                        AttributeWithMetaWithAddress,
-                        AttributeWithMetaWithReference,
-                        AttributeWithMetaWithAddressWithReference)):
+    if _is_meta(obj):
         return _validate_conditions_recursively(obj.value, raise_exc=raise_exc)
     return []
 
