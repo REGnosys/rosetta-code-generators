@@ -1,6 +1,10 @@
 package com.regnosys.rosetta.generator.python.expressions
 
+import com.google.inject.Inject
+import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
+import com.regnosys.rosetta.generator.python.object.PythonModelObjectBoilerPlate
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
@@ -41,6 +45,7 @@ import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.SortOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ThenOperation
+import com.regnosys.rosetta.rosetta.expression.impl.AsKeyOperationImpl
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -50,14 +55,17 @@ import java.util.ArrayList
 import java.util.List
 import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.expression.EqualityOperation
+
 import com.regnosys.rosetta.rosetta.expression.impl.AsKeyOperationImpl
 
 class PythonExpressionGenerator {
+    
+    @Inject extension RosettaExtensions
+    @Inject extension PythonModelObjectBoilerPlate
 
-//    @Inject extension RosettaExtensions
-//    @Inject extension PythonModelObjectBoilerPlate
-//    @Inject PythonModelGeneratorUtil utils;
-
+    @Inject
+    PythonModelGeneratorUtil utils;
+    
     public var List<String> importsFound
     public var if_cond_blocks = new ArrayList<String>()
     

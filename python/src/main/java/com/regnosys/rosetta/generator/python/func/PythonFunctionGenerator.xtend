@@ -12,6 +12,8 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
+import java.util.ArrayList
+import java.util.Arrays
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -26,9 +28,11 @@ import java.util.Collections
 class  PythonFunctionGenerator {
     
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
+    
     var List<String> importsFound = newArrayList
 //    @Inject PythonTranslator translator;
     @Inject PythonModelGeneratorUtil utils;
+    @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
     
@@ -353,7 +357,7 @@ class  PythonFunctionGenerator {
         return null // or an appropriate default value
     }
     
-    private def String buildObject(String expression, Segment path) {
+    private def buildObject(String expression, Segment path) {
         if (path === null || path.next === null) {
             return expression;
         }
@@ -366,7 +370,7 @@ class  PythonFunctionGenerator {
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
     
-    private def String generateFullPath(Iterable<Attribute> attrs, String root) {
+    private def generateFullPath(Iterable<Attribute> attrs, String root) {
         // Base case: if there are no attributes, return "self" or appropriate root object
         if (attrs.isEmpty) {
             return "self" // or appropriate root object
