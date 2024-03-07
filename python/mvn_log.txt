@@ -1,0 +1,442 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------< com.regnosys.rosetta.code-generators:python >-------------
+[INFO] Building code-gen-python 0.0.0.master
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from regnosys-release: https://regnosys.jfrog.io/regnosys/libs-release/com/google/code/gson/gson/maven-metadata.xml
+Downloading from regnosys-snapshots: https://regnosys.jfrog.io/regnosys/libs-snapshot/com/google/code/gson/gson/maven-metadata.xml
+[WARNING] Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-release (https://regnosys.jfrog.io/regnosys/libs-release): status code: 401, reason phrase:  (401)
+[WARNING] Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-snapshots (https://regnosys.jfrog.io/regnosys/libs-snapshot): status code: 401, reason phrase:  (401)
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-release during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-release has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-release (https://regnosys.jfrog.io/regnosys/libs-release): status code: 401, reason phrase:  (401)
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-snapshot during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-snapshots has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-snapshots (https://regnosys.jfrog.io/regnosys/libs-snapshot): status code: 401, reason phrase:  (401)
+[INFO] 
+[INFO] --- clean:3.1.0:clean (default-clean) @ python ---
+[INFO] Deleting /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target
+[INFO] 
+[INFO] --- enforcer:3.2.1:enforce (enforce-java) @ python ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-release during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-release has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-release (https://regnosys.jfrog.io/regnosys/libs-release): status code: 401, reason phrase:  (401)
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-snapshot during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-snapshots has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-snapshots (https://regnosys.jfrog.io/regnosys/libs-snapshot): status code: 401, reason phrase:  (401)
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-release during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-release has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-release (https://regnosys.jfrog.io/regnosys/libs-release): status code: 401, reason phrase:  (401)
+[WARNING] com.google.code.gson:gson/maven-metadata.xml failed to transfer from https://regnosys.jfrog.io/regnosys/libs-snapshot during a previous attempt. This failure was cached in the local repository and resolution will not be reattempted until the update interval of regnosys-snapshots has elapsed or updates are forced. Original error: Could not transfer metadata com.google.code.gson:gson/maven-metadata.xml from/to regnosys-snapshots (https://regnosys.jfrog.io/regnosys/libs-snapshot): status code: 401, reason phrase:  (401)
+[INFO] Rule 1: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --- xtend:2.27.0:compile (Generate xtend sources) @ python ---
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+187: The value of the local variable expression is not used
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+239: Unnecessary cast from RosettaFeature to RosettaFeature
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+257: Unnecessary cast from RosettaExpression to RosettaExpression
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+264: Unnecessary cast from RosettaExpression to RosettaExpression
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+286: Unnecessary cast from RosettaExpression to RosettaExpression
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+294: Unnecessary cast from RosettaOnlyExistsExpression to RosettaOnlyExistsExpression
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+298: Unnecessary cast from RosettaExpression to RosettaExpression
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+371: Unnecessary cast from InlineFunction to InlineFunction
+[WARNING] 
+WARNING: 	PythonExpressionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/expressions/PythonExpressionGenerator.xtend
+372: The value of the local variable funcParameters is not used
+[WARNING] 
+WARNING: 	PythonFunctionGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/func/PythonFunctionGenerator.xtend
+357: Cannot infer type from recursive usage. Type 'Object' is used.
+[WARNING] 
+WARNING: 	PythonModelObjectGenerator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/object/PythonModelObjectGenerator.xtend
+31: The value of the field PythonModelObjectGenerator.if_cond_blocks is not used
+[WARNING] 
+WARNING: 	PythonTranslator.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/main/java/com/regnosys/rosetta/generator/python/util/PythonTranslator.xtend
+7: The import 'java.util.Arrays' is never used.
+[INFO] 
+[INFO] --- resources:3.1.0:resources (default-resources) @ python ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 8 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ python ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 11 source files to /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/classes
+[INFO] 
+[INFO] --- xtend:2.27.0:testCompile (Generate xtend test sources) @ python ---
+[WARNING] 
+WARNING: 	PythonFilesGeneratorTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.xtend
+27: The import 'org.junit.jupiter.api.Disabled' is never used.
+[WARNING] 
+WARNING: 	PythonFilesGeneratorTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.xtend
+24: The import 'org.junit.jupiter.api.Assertions' is never used.
+[WARNING] 
+WARNING: 	PythonFilesGeneratorTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.xtend
+165: Unnecessary cast from CharSequence to CharSequence
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+53: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+54: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+55: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+56: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+58: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+59: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+61: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+62: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+125: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+126: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+127: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+128: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+289: Inconsistent indentation
+[WARNING] 
+WARNING: 	PythonObjectGenerationTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/object/PythonObjectGenerationTest.xtend
+290: Inconsistent indentation
+[WARNING] 
+WARNING: 	RosettaExistsExpressionTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/expression/RosettaExistsExpressionTest.xtend
+9: The import 'org.junit.jupiter.api.Disabled' is never used.
+[WARNING] 
+WARNING: 	PythonFunctionsTest.xtend - /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/src/test/java/com/regnosys/rosetta/generator/python/func/PythonFunctionsTest.xtend
+13: The import 'org.junit.jupiter.api.Disabled' is never used.
+[INFO] 
+[INFO] --- resources:3.1.0:testResources (default-testResources) @ python ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 5 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ python ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 13 source files to /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/test-classes
+[INFO] /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/test/generated/xtend/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.java: /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/test/generated/xtend/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.java uses unchecked or unsafe operations.
+[INFO] /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/test/generated/xtend/com/regnosys/rosetta/generator/python/PythonFilesGeneratorTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:2.22.2:test (default-test) @ python ---
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.regnosys.rosetta.generator.python.PythonFilesGeneratorTest
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generateClassMemberAccessOperatorPython ... generating files to: null
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... get resource set
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... found 86 rosetta files in build/resources/rosetta/cdm_5.2.0
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.datetime
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.datetime
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.position
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.position
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.fpml.confirmation.tradestate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.fpml.confirmation.tradestate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.fro
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.fro
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset.floatingrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset.floatingrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.math
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.math
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.calculatedrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.calculatedrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.fro
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.fro
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.schedule
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.schedule
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.math
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.math
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.math
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.math
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.calculatedrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.calculatedrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.schedule
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.schedule
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.datetime
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.datetime
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.position
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.position
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.regulation
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.regulation
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset.floatingrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset.floatingrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.calculatedrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.calculatedrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.contract
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.contract
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.dtcc
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.dtcc
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset.calculation
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset.calculation
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.schedule
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.schedule
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset.fro
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset.fro
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset.floatingrate
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset.floatingrate
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.datetime
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.datetime
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.position
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.position
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.cme
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.cme
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset.credit
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset.credit
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.ore
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.ore
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.template
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.template
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.qualification
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.qualification
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.fpml.confirmation.workflowstep
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.fpml.confirmation.workflowstep
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.master
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.master
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.collateral
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.collateral
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.workflow
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.workflow
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.qualification
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.qualification
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.party
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.party
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.csa
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.csa
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.identifier
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.identifier
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.event
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.event
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset.credit
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset.credit
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.template
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.template
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.settlement
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.settlement
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.datetime.daycount
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.datetime.daycount
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.collateral
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.collateral
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.master
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.master
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.party
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.party
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.identifier
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.identifier
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.workflow
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.workflow
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.collateral
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.collateral
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.settlement
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.settlement
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.event
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.event
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.party
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.party
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.asset
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.asset
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.workflow
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.workflow
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.config
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.config
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.staticdata.asset.rates
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.staticdata.asset.rates
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.legaldocumentation.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.legaldocumentation.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.template
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.template
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common.settlement
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common.settlement
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.mapping.fis
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.mapping.fis
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.product.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.product.common
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.base.datetime.daycount
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.base.datetime.daycount
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.observable.event
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.observable.event
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... processing model: cdm.event.common
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: cdm.event.common
+ERROR c.r.r.g.p.PythonFilesGeneratorTest - target/python does not exist or is not a directory
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - Write Files ... wrote: 1164
+INFO  c.r.r.g.p.PythonFilesGeneratorTest - generatePython ... done
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.435 s - in com.regnosys.rosetta.generator.python.PythonFilesGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.exceptions.PythonExceptionsTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s - in com.regnosys.rosetta.generator.python.exceptions.PythonExceptionsTest
+[INFO] Running com.regnosys.rosetta.generator.python.rule.DataRuleGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.254 s - in com.regnosys.rosetta.generator.python.rule.DataRuleGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.ModelObjectGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[WARNING] Tests run: 28, Failures: 0, Errors: 0, Skipped: 9, Time elapsed: 0.314 s - in com.regnosys.rosetta.generator.python.object.ModelObjectGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.PythonEnumGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s - in com.regnosys.rosetta.generator.python.object.PythonEnumGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.RosettaObjectInheritanceGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in com.regnosys.rosetta.generator.python.object.RosettaObjectInheritanceGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.EnumGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[WARNING] Tests run: 9, Failures: 0, Errors: 0, Skipped: 3, Time elapsed: 0.049 s - in com.regnosys.rosetta.generator.python.object.EnumGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.PythonObjectGenerationTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.162 s - in com.regnosys.rosetta.generator.python.object.PythonObjectGenerationTest
+[INFO] Running com.regnosys.rosetta.generator.python.object.RosettaExtensionsTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: test
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: test
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s - in com.regnosys.rosetta.generator.python.object.RosettaExtensionsTest
+[INFO] Running com.regnosys.rosetta.generator.python.expression.RosettaExistsExpressionTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s - in com.regnosys.rosetta.generator.python.expression.RosettaExistsExpressionTest
+[INFO] Running com.regnosys.rosetta.generator.python.expression.PythonExpressionGeneratorTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in com.regnosys.rosetta.generator.python.expression.PythonExpressionGeneratorTest
+[INFO] Running com.regnosys.rosetta.generator.python.PythonMetaDataGenerationTest
+[WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 0.002 s - in com.regnosys.rosetta.generator.python.PythonMetaDataGenerationTest
+[INFO] Running com.regnosys.rosetta.generator.python.func.PythonFunctionsTest
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+DEBUG c.r.r.g.p.PythonCodeGenerator - processing module: com.rosetta.test.model
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s - in com.regnosys.rosetta.generator.python.func.PythonFunctionsTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[WARNING] Tests run: 90, Failures: 0, Errors: 0, Skipped: 14
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.1.1:jar (default-jar) @ python ---
+[INFO] Building jar: /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/python-0.0.0.master.jar
+[INFO] 
+[INFO] --- checkstyle:3.1.0:check (checkstyle) @ python ---
+[WARNING] checkstyle:check violations detected but failOnViolation set to false
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ python ---
+[INFO] Installing /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/target/python-0.0.0.master.jar to /Users/dls/.m2/repository/com/regnosys/rosetta/code-generators/python/0.0.0.master/python-0.0.0.master.jar
+[INFO] Installing /Users/dls/projects/cdm/rosetta-code-generators/CloudRisk/rosetta-code-generators/python/pom.xml to /Users/dls/.m2/repository/com/regnosys/rosetta/code-generators/python/0.0.0.master/python-0.0.0.master.pom
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  13.486 s
+[INFO] Finished at: 2024-03-07T13:06:49Z
+[INFO] ------------------------------------------------------------------------

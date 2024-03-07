@@ -27,8 +27,6 @@ class  PythonFunctionGenerator {
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
     
     var List<String> importsFound = newArrayList
-    var if_cond_blocks = new ArrayList<String>()
-    
     @Inject PythonModelGeneratorUtil utils;
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
@@ -356,7 +354,7 @@ class  PythonFunctionGenerator {
         return null // or an appropriate default value
     }
     
-    private def buildObject(String expression, Segment path) {
+    private def String buildObject(String expression, Segment path) {
         if (path === null || path.next === null) {
             return expression;
         }
@@ -365,7 +363,7 @@ class  PythonFunctionGenerator {
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
     
-    private def generateFullPath(Iterable<Attribute> attrs, String root) {
+    private def String generateFullPath(Iterable<Attribute> attrs, String root) {
         // Base case: if there are no attributes, return "self" or appropriate root object
         if (attrs.isEmpty) {
             return "self" // or appropriate root object

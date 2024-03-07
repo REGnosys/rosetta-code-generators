@@ -4,7 +4,6 @@ package com.regnosys.rosetta.generator.python.util
 import com.regnosys.rosetta.generator.object.ExpandedType
 
 import com.regnosys.rosetta.rosetta.simple.Attribute
-import java.util.Arrays
 
 class PythonTranslator {
     static private def String toPythonBasicTypeInnerFunction (String rosettaType) {
