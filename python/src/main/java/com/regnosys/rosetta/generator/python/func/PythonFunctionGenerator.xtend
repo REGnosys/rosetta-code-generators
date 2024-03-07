@@ -13,7 +13,6 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Collections
 import java.util.HashMap
 import java.util.List
@@ -31,7 +30,6 @@ class  PythonFunctionGenerator {
     var if_cond_blocks = new ArrayList<String>()
     
     @Inject PythonModelGeneratorUtil utils;
-    @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
     
@@ -134,8 +132,8 @@ class  PythonFunctionGenerator {
         for (input : inputs) {
             val typeName = input.getTypeCall().getType().getName()
             val type = input.getCard().sup == 0 ? 
-                            "list[" + PythonTranslator.toPythonBasicType(typeName) + "]" : 
-                            PythonTranslator.toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
+                            "list[" + PythonTranslator::toPythonBasicType(typeName) + "]" : 
+                            PythonTranslator::toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
             result += input.getName() + ": " + type
             if (input.getCard().inf == 0)  // Check for optional parameter
                 result += " | None"
@@ -144,7 +142,7 @@ class  PythonFunctionGenerator {
         }
         result += ") -> "
         if (output !== null)
-            result += PythonTranslator.toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
+            result += PythonTranslator::toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
         else
             result += "None"  // Default to 'None' if output is null
         '''«result»'''
@@ -404,12 +402,4 @@ class  PythonFunctionGenerator {
             importsFound.add(import)
         }
     }
-
-
-
-    def checkBasicType(Attribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
-    }	
 }
