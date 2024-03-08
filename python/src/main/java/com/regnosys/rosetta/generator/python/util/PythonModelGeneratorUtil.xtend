@@ -94,12 +94,12 @@ class PythonModelGeneratorUtil {
                 "__version__ = '"+version+"'\n"+
                 "__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'"		 	
     }
-    def String createPYProjectTomlFile (String version) {
+    def String createPYProjectTomlFile (String namespace, String version) {
         return "[build-system]\n" + 
                "requires = [\"setuptools>=62.0\"]\n" +
                "build-backend = \"setuptools.build_meta\"\n\n" +
                "[project]\n" + 
-               "name = \"python-cdm\"\n" + 
+               "name = \"python-" + namespace + "\"\n" + 
                "version = \"" + version + "\"\n" + 
                "requires-python = \">= 3.10\"\n" +
                "dependencies = [\n" + 

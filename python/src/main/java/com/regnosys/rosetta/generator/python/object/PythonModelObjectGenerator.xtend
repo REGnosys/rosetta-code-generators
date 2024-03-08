@@ -8,6 +8,7 @@ import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Data
+import com.regnosys.rosetta.generator.python.util.PythonTranslator
 import java.util.Arrays
 import java.util.HashMap
 import java.util.List
@@ -19,52 +20,15 @@ class PythonModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
-
-    @Inject
-    PythonModelGeneratorUtil utils;
-    
-    @Inject
-    PythonExpressionGenerator expressionGenerator;
+    @Inject PythonModelGeneratorUtil utils;
+    @Inject PythonExpressionGenerator expressionGenerator;
 
     var List<String> importsFound = newArrayList
 //    var if_cond_blocks = new ArrayList<String>()
 
-    static def toPythonBasicType(ExpandedAttribute attribute) {
-        val typename = attribute.type.name;
-        switch typename {
-            case 'string':
-                'str'
-            case 'time':
-                'datetime.time'
-            case 'date':
-                'datetime.date'
-            case 'dateTime':
-                'datetime.datetime'
-            case 'zonedDateTime':
-                'datetime.datetime'
-            case 'number':
-                'Decimal'
-            case 'boolean':
-                'bool'
-            case 'int':
-                'int'
-            case 'calculation',
-            case 'productType',
-            case 'eventType':
-                'str'
-            default:
-                if (typename === null) {
-                    return null;
-                }
-                else {
-                    return attribute.type.model.name + '.' + typename + '.' + typename;
-                }
-        }
-    }
 
     static def toPythonType(Data c, ExpandedAttribute attribute) throws Exception {
-        // var basicType = toPythonBasicType(attribute.type.name);
-        var basicType = toPythonBasicType(attribute);
+        var basicType = PythonTranslator::toPythonType(attribute);
         if (basicType === null) {
             throw new Exception("Attribute type is null for " + attribute.name + " for class " + c.name)
         }

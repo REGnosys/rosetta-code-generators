@@ -1,0 +1,11 @@
+namespace unittests.foo: <"sample unit test">
+version "${project.version}"
+type Foo:
+    [metadata key]
+    one int (1..1)
+    two int (0..1)
+    three int (0..*)
+type Foo3:
+    one int (1..1)
+    two int (0..1)
+    three int (0..*)

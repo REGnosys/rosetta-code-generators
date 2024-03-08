@@ -4,6 +4,7 @@ package com.regnosys.rosetta.generator.python.util
 import com.regnosys.rosetta.generator.object.ExpandedType
 
 import com.regnosys.rosetta.rosetta.simple.Attribute
+import com.regnosys.rosetta.generator.object.ExpandedAttribute
 
 class PythonTranslator {
     static private def String toPythonBasicTypeInnerFunction (String rosettaType) {
@@ -15,7 +16,8 @@ class PythonTranslator {
             case 'calculation',
             case 'productType':             
                 return 'str'
-            case 'time',
+            case 'time':
+                return 'datetime.time'
             case 'date': 
                 return 'datetime.date'
             case 'dateTime',
@@ -51,19 +53,24 @@ class PythonTranslator {
                          rosettaExpandedType.name.toFirstUpper
         return pythonType
     }
-    
+    static def String toPythonType (ExpandedAttribute rosettaAttribute) {
+        if (rosettaAttribute === null || rosettaAttribute.type === null || rosettaAttribute.type.name === null)
+            return null
+        val rosettaType = rosettaAttribute.type.name;
+        val pythonType  = toPythonBasicTypeInnerFunction (rosettaType);
+        return (pythonType === null) ? rosettaAttribute.type.model.name + '.' + rosettaType + '.' + rosettaType : pythonType
+    }
     static def String toPythonType(Attribute rosettaAttributeType) {
         // conversion from Rosetta type as an Attribute to Python type
         // returns rosettaAttributeType.getTypeCall.type.name if unable to convert
         if (rosettaAttributeType === null)
             return null;
         val rosettaType = rosettaAttributeType.getTypeCall.type.name
-        val pythonType = toPythonBasicTypeInnerFunction (rosettaType)
+        val pythonType  = toPythonBasicTypeInnerFunction (rosettaType)
         return (pythonType === null) ? rosettaType.toFirstUpper : pythonType
     }
     static def boolean checkBasicType(Attribute rosettaAttributeType) {
         // check if rosettaAttributeType is valid
         return (rosettaAttributeType !== null && toPythonBasicTypeInnerFunction (rosettaAttributeType.getTypeCall.type.name) !== null)
-    }	    
-
+    }
 }
