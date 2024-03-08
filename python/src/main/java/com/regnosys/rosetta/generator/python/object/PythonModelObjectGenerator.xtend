@@ -9,7 +9,7 @@ import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.generator.python.util.PythonTranslator
-import java.util.Arrays
+import com.regnosys.rosetta.generator.python.util.Util
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -76,23 +76,20 @@ class PythonModelObjectGenerator {
 
         for (Data type : rosettaClasses) {
             val model = type.eContainer as RosettaModel
-            val classes = type.generateClasses(version).replaceTabsWithSpaces
+            val namespace = Util::getNamespace (model)
+            if (!namespace.equals ('cdm')) {
+                println ('namespace is not cdm: ' + namespace)
+            }
+            val classes = type.generateClasses(namespace, version).replaceTabsWithSpaces
             result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
         }
 
         result;
     }
 
-    def boolean checkBasicType(ExpandedAttribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && attr.toRawType !== null) ? types.contains(attr.toRawType.toString()) : false
-    }
-
-    def boolean checkBasicType(String attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return types.contains(attr)
+    def boolean checkBasicType(ExpandedAttribute rosettaAttribute) {
+        val rosettaType = (rosettaAttribute !== null) ? rosettaAttribute.toRawType : null;
+        return (rosettaType !== null && PythonTranslator::checkPythonType (rosettaType.toString()))
     }
 
     /**
@@ -100,7 +97,7 @@ class PythonModelObjectGenerator {
      */
     // TODO remove Date implementation in beginning
     // TODO removed one-of condition due to limitations after instantiation of objects
-    private def generateClasses(Data rosettaClass, String version) {
+    private def generateClasses(Data rosettaClass, String namespace, String version) {
         var List<String> enumImports = newArrayList
         var List<String> dataImports = newArrayList
         var List<String> classDefinitions = newArrayList
@@ -125,7 +122,7 @@ class PythonModelObjectGenerator {
             
             «classDefinition»
             
-            import cdm
+            import «namespace» 
             «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
         '''
         //	

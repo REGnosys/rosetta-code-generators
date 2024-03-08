@@ -2,9 +2,9 @@ package com.regnosys.rosetta.generator.python.util
 
 
 import com.regnosys.rosetta.generator.object.ExpandedType
-
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import java.util.Arrays
 
 class PythonTranslator {
     static private def String toPythonBasicTypeInnerFunction (String rosettaType) {
@@ -73,4 +73,20 @@ class PythonTranslator {
         // check if rosettaAttributeType is valid
         return (rosettaAttributeType !== null && toPythonBasicTypeInnerFunction (rosettaAttributeType.getTypeCall.type.name) !== null)
     }
+    static def boolean checkBasicType(String rosettaType) {
+        return (rosettaType !== null && toPythonBasicTypeInnerFunction (rosettaType) !== null)
+    }
+    static def boolean checkPythonType (String pythonType) {
+        val types = Arrays.asList('int', 
+                                  'str', 
+                                  'Decimal', 
+                                  'date', 
+                                  'datetime', 
+                                  'datetime.datetime', 
+                                  'datetime.date', 
+                                  'datetime.time', 
+                                  'time',
+                                  'bool')
+        return types.contains (pythonType)
+    }   
 }
