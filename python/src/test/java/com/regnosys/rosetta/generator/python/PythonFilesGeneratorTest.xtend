@@ -80,15 +80,10 @@ class PythonFilesGeneratorTest {
         val version = m.version
         val result  = newHashMap
         result.putAll(generator.beforeAllGenerate(resourceSet, #{m}, version))
-        println ('****** count after beforeAllGenerate:' + result.size)
         result.putAll(generator.beforeGenerate(m.eResource, m, version))
-        println ('****** count after beforeGenerate:' + result.size)
         result.putAll(generator.generate(m.eResource, m, version))
-        println ('****** count after generate:' + result.size)
         result.putAll(generator.afterGenerate(m.eResource, m, version))
-        println ('****** count after afterGenerate:' + result.size)
         result.putAll(generator.afterAllGenerate(resourceSet, #{m}, version))
-        println ('****** count after afterAllGenerate:' + result.size)
         result
     }
     def void generatePythonFromRosettaFiles (String rosettaSource, String outputPath){
@@ -119,7 +114,6 @@ class PythonFilesGeneratorTest {
         for (model : rosettaModels) {
             LOGGER.info ("generatePythonFromRosettaFiles ... processing model: {}", model.name)
             val python = generatePythonFromRosettaModel (model, resourceSet);
-            println ('generated files count: ' + python.size)
             generatedFiles.putAll (python)
         }
         println("number of python files: " + generatedFiles.size())

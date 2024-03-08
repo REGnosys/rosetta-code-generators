@@ -25,6 +25,7 @@ import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
 import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
 import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
+import com.regnosys.rosetta.generator.python.util.Util;
 
 public class PythonCodeGenerator extends AbstractExternalGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
@@ -87,8 +88,6 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
             previousNamespace.set(model.getName());
             LOGGER.debug("processing module: {}", model.getName());
         }
-        LOGGER.debug("##### rosettaClasses count: {}", rosettaClasses.size());
-
         result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, cleanVersion));
         result.putAll(enumGenerator.generate(rosettaEnums, cleanVersion));
         result.putAll(funcGenerator.generate(rosettaFunctions, cleanVersion));
@@ -121,9 +120,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         if (namespace == null) {
             Iterator<? extends RosettaModel> iterator = models.iterator();
             if (iterator.hasNext()) {
-            	RosettaModel firstElement = iterator.next();
-            	String[] modelParts = firstElement.getName().split("\\.");
-            	namespace = modelParts[0];
+            	namespace = Util.getNamespace(iterator.next());
             }
         }
         if (namespace != null) {

@@ -77,9 +77,6 @@ class PythonModelObjectGenerator {
         for (Data type : rosettaClasses) {
             val model = type.eContainer as RosettaModel
             val namespace = Util::getNamespace (model)
-            if (!namespace.equals ('cdm')) {
-                println ('namespace is not cdm: ' + namespace)
-            }
             val classes = type.generateClasses(namespace, version).replaceTabsWithSpaces
             result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
         }
