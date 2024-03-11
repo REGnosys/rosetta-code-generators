@@ -54,16 +54,6 @@ class  PythonFunctionGenerator {
     }
 
     private def generateFunctions(Function function,String version) {
-        // importsFound = getImportsFromAttributes(function)
-        // //var List<String> updateForwardRefs = newArrayList
-        // //updateForwardRefs.add('''«function.name».update_forward_refs()''')
-        
-        // '''
-        // «generatesBody(function)»
-        
-        // «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
-                    
-        // '''	
         val dependencies = collectFunctionDependencies(function);
 
         '''

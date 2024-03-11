@@ -1,10 +1,6 @@
 package com.regnosys.rosetta.generator.python.expressions
 
-import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
-import com.regnosys.rosetta.generator.python.object.PythonModelObjectBoilerPlate
-import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
@@ -46,7 +42,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.SortOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ThenOperation
-import com.regnosys.rosetta.rosetta.expression.impl.AsKeyOperationImpl
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -54,8 +49,6 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 import java.util.ArrayList
 import java.util.List
-import com.regnosys.rosetta.rosetta.simple.Segment
-import com.regnosys.rosetta.rosetta.expression.EqualityOperation
 
 class PythonExpressionGenerator {
 
@@ -147,34 +140,6 @@ class PythonExpressionGenerator {
 				«ENDIF»
 		'''
 	}
-
-/*
-	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
-    private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
-		'''
-
-			@local_rosetta_condition(«condition_type»)
-			def condition_«n_condition»_«cond.name»(self):
-				«IF cond.definition!==null»
-					"""
-					«cond.definition»
-					"""
-				«ENDIF»
-		'''
-	}
-
-	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
-        '''
-
-            @rosetta_condition
-            def post_condition_«n_condition»_«cond.name»(self):
-                «IF cond.definition!==null»
-                    """
-                    «cond.definition»
-                    """
-                «ENDIF»
-        '''
-    }
 
     private def generateConstraintCondition(Data cls, Condition cond) {
         val expression = cond.expression
