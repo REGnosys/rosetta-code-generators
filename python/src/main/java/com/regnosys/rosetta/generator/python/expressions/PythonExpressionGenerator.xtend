@@ -1,6 +1,10 @@
 package com.regnosys.rosetta.generator.python.expressions
 
+import com.google.inject.Inject
+import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.java.enums.EnumHelper
+import com.regnosys.rosetta.generator.python.object.PythonModelObjectBoilerPlate
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
@@ -42,6 +46,7 @@ import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.SortOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ThenOperation
+import com.regnosys.rosetta.rosetta.expression.impl.AsKeyOperationImpl
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -49,6 +54,8 @@ import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
 import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
 import java.util.ArrayList
 import java.util.List
+import com.regnosys.rosetta.rosetta.simple.Segment
+import com.regnosys.rosetta.rosetta.expression.EqualityOperation
 
 class PythonExpressionGenerator {
 
@@ -56,7 +63,6 @@ class PythonExpressionGenerator {
     //@Inject extension PythonModelObjectBoilerPlate
 
     //@Inject PythonModelGeneratorUtil utils;
-
     public var List<String> importsFound
     public var if_cond_blocks = new ArrayList<String>()
 
@@ -144,6 +150,20 @@ class PythonExpressionGenerator {
 
 /*
 	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
+    private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
+		'''
+
+			@local_rosetta_condition(«condition_type»)
+			def condition_«n_condition»_«cond.name»(self):
+				«IF cond.definition!==null»
+					"""
+					«cond.definition»
+					"""
+				«ENDIF»
+		'''
+	}
+
+	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
         '''
 
             @rosetta_condition
@@ -155,7 +175,7 @@ class PythonExpressionGenerator {
                 «ENDIF»
         '''
     }
- */
+
     private def generateConstraintCondition(Data cls, Condition cond) {
         val expression = cond.expression
         var attributes = cls.attributes
@@ -186,7 +206,6 @@ class PythonExpressionGenerator {
         if_cond_blocks = new ArrayList<String>()
         //val expression = generateExpression(expr, iflvl.get(0))
         generateExpression(expr, iflvl.get(0))
-
         var blocks = ""
         if (!if_cond_blocks.isEmpty()) {
             iflvl.set(0, iflvl.get(0) + 1)
@@ -370,6 +389,7 @@ class PythonExpressionGenerator {
 
             MapOperation: {
                 val inlineFunc = expr.function as InlineFunction;
+                val funcParameters = inlineFunc.parameters.map[it.name].join(", ");
                 val funcBody = generateExpression(inlineFunc.body, iflvl);
                 // Construct the Python lambda function
                 val lambdaFunction = "lambda item: " + funcBody;

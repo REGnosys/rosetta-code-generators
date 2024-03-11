@@ -14,6 +14,8 @@ import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
 import java.util.ArrayList
 import java.util.Collections
+import java.util.Arrays
+import java.util.Collections
 import java.util.HashMap
 import java.util.List
 import java.util.Map
@@ -79,7 +81,7 @@ class  PythonFunctionGenerator {
             «generateAlias(function)»
             «generateOperations(function)»
             «generatesOutput(function)»
-        
+
         sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
         '''
     }
@@ -130,8 +132,8 @@ class  PythonFunctionGenerator {
         for (input : inputs) {
             val typeName = input.getTypeCall().getType().getName()
             val type = input.getCard().sup == 0 ? 
-                            "list[" + PythonTranslator::toPythonBasicType(typeName) + "]" : 
-                            PythonTranslator::toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
+                            "list[" + PythonTranslator.toPythonBasicType(typeName) + "]" : 
+                            PythonTranslator.toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
             result += input.getName() + ": " + type
             if (input.getCard().inf == 0)  // Check for optional parameter
                 result += " | None"
@@ -140,7 +142,7 @@ class  PythonFunctionGenerator {
         }
         result += ") -> "
         if (output !== null)
-            result += PythonTranslator::toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
+            result += PythonTranslator.toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
         else
             result += "None"  // Default to 'None' if output is null
         '''«result»'''
@@ -392,8 +394,8 @@ class  PythonFunctionGenerator {
     
         return attributes;
     }
-     
-  
+
+
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
         if (!importsFound.contains(import)) {
