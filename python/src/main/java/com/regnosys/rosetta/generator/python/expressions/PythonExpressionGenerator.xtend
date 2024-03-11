@@ -12,6 +12,7 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
+import com.regnosys.rosetta.rosetta.expression.AsKeyOperation
 import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
 import com.regnosys.rosetta.rosetta.expression.ClosureParameter
 import com.regnosys.rosetta.rosetta.expression.DistinctOperation
@@ -55,20 +56,17 @@ import java.util.ArrayList
 import java.util.List
 import com.regnosys.rosetta.rosetta.simple.Segment
 import com.regnosys.rosetta.rosetta.expression.EqualityOperation
-import com.regnosys.rosetta.rosetta.expression.AsKeyOperation
 
 class PythonExpressionGenerator {
 
-    @Inject extension RosettaExtensions
-    @Inject extension PythonModelObjectBoilerPlate
+    //@Inject extension RosettaExtensions
+    //@Inject extension PythonModelObjectBoilerPlate
 
-    @Inject
-    PythonModelGeneratorUtil utils;
-
+    //@Inject PythonModelGeneratorUtil utils;
     public var List<String> importsFound
     public var if_cond_blocks = new ArrayList<String>()
 
-    public def generateConditions(Data cls) {
+    def String generateConditions(Data cls) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -83,7 +81,7 @@ class PythonExpressionGenerator {
         return res
     }
 
-    public def generateConditions(List<Condition> conditions) {
+    def generateConditions(List<Condition> conditions) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -96,7 +94,7 @@ class PythonExpressionGenerator {
         return res
     }
 
-    public def generateFunctionConditions(List<Condition> conditions, String condition_type) {
+    def generateFunctionConditions(List<Condition> conditions, String condition_type) {
         // Move your condition and expression-related logic here
         var n_condition = 0;
         var res = '';
@@ -137,6 +135,21 @@ class PythonExpressionGenerator {
         '''
     }
 
+    private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
+		'''
+
+			@local_rosetta_condition(«condition_type»)
+			def condition_«n_condition»_«cond.name»(self):
+				«IF cond.definition!==null»
+					"""
+					«cond.definition»
+					"""
+				«ENDIF»
+		'''
+	}
+
+/*
+	private def generatePostConditionBoilerPlate(Condition cond, int n_condition) {
     private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
 		'''
 
@@ -191,8 +204,8 @@ class PythonExpressionGenerator {
 
     def generateExpressionThenElse(RosettaExpression expr, List<Integer> iflvl) {
         if_cond_blocks = new ArrayList<String>()
-        val expression = generateExpression(expr, iflvl.get(0))
-
+        //val expression = generateExpression(expr, iflvl.get(0))
+        generateExpression(expr, iflvl.get(0))
         var blocks = ""
         if (!if_cond_blocks.isEmpty()) {
             iflvl.set(0, iflvl.get(0) + 1)
@@ -504,7 +517,7 @@ class PythonExpressionGenerator {
 
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
-        if(importsFound!=null){
+        if(importsFound!==null){
             if (!importsFound.contains(import)) {
                 importsFound.add(import)
             }

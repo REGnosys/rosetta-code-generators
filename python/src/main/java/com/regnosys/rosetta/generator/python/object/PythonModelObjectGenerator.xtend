@@ -2,100 +2,33 @@ package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
 import com.regnosys.rosetta.RosettaExtensions
-import com.regnosys.rosetta.generator.java.enums.EnumHelper
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.generator.python.expressions.PythonExpressionGenerator
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
-import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
-import com.regnosys.rosetta.rosetta.RosettaEnumValue
-import com.regnosys.rosetta.rosetta.RosettaEnumValueReference
-import com.regnosys.rosetta.rosetta.RosettaEnumeration
-import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaModel
-import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
-import com.regnosys.rosetta.rosetta.expression.ListLiteral
-import com.regnosys.rosetta.rosetta.expression.ModifiableBinaryOperation
-import com.regnosys.rosetta.rosetta.expression.Necessity
-import com.regnosys.rosetta.rosetta.expression.OneOfOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaAbsentExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaBinaryOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaBooleanLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaConditionalExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaCountOperation
-import com.regnosys.rosetta.rosetta.expression.RosettaExistsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaFeatureCall
-import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
-import com.regnosys.rosetta.rosetta.expression.RosettaIntLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
-import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
-import com.regnosys.rosetta.rosetta.expression.RosettaStringLiteral
-import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
-import com.regnosys.rosetta.rosetta.simple.Attribute
-import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
-import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
-import java.util.ArrayList
-import java.util.Arrays
+import com.regnosys.rosetta.generator.python.util.PythonTranslator
+import com.regnosys.rosetta.generator.python.util.Util
 import java.util.HashMap
 import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import com.regnosys.rosetta.generator.python.expressions.PythonExpressionGenerator
 
 class PythonModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
-
-    @Inject
-    PythonModelGeneratorUtil utils;
-    
-    @Inject
-    PythonExpressionGenerator expressionGenerator;
+    @Inject PythonModelGeneratorUtil utils;
+    @Inject PythonExpressionGenerator expressionGenerator;
 
     var List<String> importsFound = newArrayList
-    var if_cond_blocks = new ArrayList<String>()
+//    var if_cond_blocks = new ArrayList<String>()
 
-    static def toPythonBasicType(ExpandedAttribute attribute) {
-        val typename = attribute.type.name;
-        switch typename {
-            case 'string':
-                'str'
-            case 'time':
-                'datetime.time'
-            case 'date':
-                'datetime.date'
-            case 'dateTime':
-                'datetime.datetime'
-            case 'zonedDateTime':
-                'datetime.datetime'
-            case 'number':
-                'Decimal'
-            case 'boolean':
-                'bool'
-            case 'int':
-                'int'
-            case 'calculation',
-            case 'productType',
-            case 'eventType':
-                'str'
-            default:
-                if (typename === null) {
-                    return null;
-                }
-                else {
-                    return attribute.type.model.name + '.' + typename + '.' + typename;
-                }
-        }
-    }
 
     static def toPythonType(Data c, ExpandedAttribute attribute) throws Exception {
-        // var basicType = toPythonBasicType(attribute.type.name);
-        var basicType = toPythonBasicType(attribute);
+        var basicType = PythonTranslator::toPythonType(attribute);
         if (basicType === null) {
             throw new Exception("Attribute type is null for " + attribute.name + " for class " + c.name)
         }
@@ -143,23 +76,17 @@ class PythonModelObjectGenerator {
 
         for (Data type : rosettaClasses) {
             val model = type.eContainer as RosettaModel
-            val classes = type.generateClasses(version).replaceTabsWithSpaces
+            val namespace = Util::getNamespace (model)
+            val classes = type.generateClasses(namespace, version).replaceTabsWithSpaces
             result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
         }
 
         result;
     }
 
-    def boolean checkBasicType(ExpandedAttribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && attr.toRawType !== null) ? types.contains(attr.toRawType.toString()) : false
-    }
-
-    def boolean checkBasicType(String attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return types.contains(attr)
+    def boolean checkBasicType(ExpandedAttribute rosettaAttribute) {
+        val rosettaType = (rosettaAttribute !== null) ? rosettaAttribute.toRawType : null;
+        return (rosettaType !== null && PythonTranslator::checkPythonType (rosettaType.toString()))
     }
 
     /**
@@ -167,7 +94,7 @@ class PythonModelObjectGenerator {
      */
     // TODO remove Date implementation in beginning
     // TODO removed one-of condition due to limitations after instantiation of objects
-    private def generateClasses(Data rosettaClass, String version) {
+    private def generateClasses(Data rosettaClass, String namespace, String version) {
         var List<String> enumImports = newArrayList
         var List<String> dataImports = newArrayList
         var List<String> classDefinitions = newArrayList
@@ -192,7 +119,7 @@ class PythonModelObjectGenerator {
             
             «classDefinition»
             
-            import cdm
+            import «namespace» 
             «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
         '''
         //	

@@ -1,0 +1,26 @@
+namespace cdm.observable.asset : <"Observable concepts applicable to assets: price, reference price, valuation method etc.">
+version "${project.version}"
+
+import cdm.base.math.*
+
+func FilterPrice: <"Filter list of prices based on price type.">
+    inputs:
+        prices PriceSchedule (0..*) <"List of prices to filter.">
+        priceType PriceTypeEnum (1..1) <"The price type to filter by: asset price, cash price, exchange rate etc.">
+        arithmeticOperators ArithmeticOperationEnum (0..*) <"Optionally filter based on the type of operator, e.g. if price is specified as a spread or a multiplier. Several operators can be passed as arguments (e.g. [ Add, Subtract ]).">
+        priceExpression PriceExpressionEnum (0..1) <"Optionally filter by type of price expression: percentage of notional, par value fraction">
+    output:
+        price PriceSchedule (0..1)
+
+    set price: <"Return as single element rather than a list.">
+        prices
+            filter item -> priceType = priceType
+            then filter
+                if arithmeticOperators exists
+                then arithmeticOperators contains item -> arithmeticOperator
+                else True
+            then filter
+                if priceExpression exists
+                then item -> priceExpression = priceExpression
+                else True
+            then only-element

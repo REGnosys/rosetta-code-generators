@@ -66,6 +66,7 @@ class PythonModelGeneratorUtil {
         # pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
         # pylint: disable=wrong-import-position, unused-import, unused-wildcard-import, wildcard-import, wrong-import-order, missing-class-docstring
         from __future__ import annotations
+        import sys
         import datetime
         import inspect
         from decimal import Decimal
@@ -93,12 +94,12 @@ class PythonModelGeneratorUtil {
                 "__version__ = '"+version+"'\n"+
                 "__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'"		 	
     }
-    def String createPYProjectTomlFile (String version) {
+    def String createPYProjectTomlFile (String namespace, String version) {
         return "[build-system]\n" + 
                "requires = [\"setuptools>=62.0\"]\n" +
                "build-backend = \"setuptools.build_meta\"\n\n" +
                "[project]\n" + 
-               "name = \"python-cdm\"\n" + 
+               "name = \"python-" + namespace + "\"\n" + 
                "version = \"" + version + "\"\n" + 
                "requires-python = \">= 3.10\"\n" +
                "dependencies = [\n" + 

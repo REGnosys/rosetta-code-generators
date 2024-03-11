@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,6 +25,7 @@ import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
 import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
 import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
+import com.regnosys.rosetta.generator.python.util.Util;
 
 public class PythonCodeGenerator extends AbstractExternalGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
@@ -36,7 +38,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     private List<String> subfolders;
     private AtomicReference<String> previousNamespace;
-
+    private static String namespace;
     public PythonCodeGenerator() {
         super("Python");
     }
@@ -44,15 +46,16 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
     @Override
     public Map<String, ? extends CharSequence> beforeAllGenerate(ResourceSet set,
             Collection<? extends RosettaModel> models, String version) {
-        subfolders = new ArrayList<String>();
+        subfolders        = new ArrayList<String>();
         previousNamespace = new AtomicReference<>("");
-
+        namespace         = null;
         return Collections.emptyMap();
     }
 
     @Override
-    public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model,
-            String version) {
+    public Map<String, ? extends CharSequence> generate(Resource resource, 
+    													RosettaModel model,
+    													String version) {
         String cleanVersion = cleanVersion(version);
 
         Map<String, CharSequence> result = new HashMap<>();
@@ -106,14 +109,23 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Override
     public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
-            Collection<? extends RosettaModel> models, String version) {
+            													Collection<? extends RosettaModel> models, 
+            													String version) {
         String cleanVersion = cleanVersion(version);
         Map<String, CharSequence> result = new HashMap<>();
 
         List<String> workspaces = getWorkspaces(subfolders);
         result.putAll(generateWorkspaces(workspaces, cleanVersion));
         result.putAll(generateInits(subfolders));
-        result.put("pyproject.toml", utils.createPYProjectTomlFile(cleanVersion));
+        if (namespace == null) {
+            Iterator<? extends RosettaModel> iterator = models.iterator();
+            if (iterator.hasNext()) {
+            	namespace = Util.getNamespace(iterator.next());
+            }
+        }
+        if (namespace != null) {
+        	result.put("pyproject.toml", utils.createPYProjectTomlFile(namespace, cleanVersion));
+        }
         return result;
     }
 
@@ -135,10 +147,8 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         Map<String, String> result = new HashMap<>();
 
         for (String workspace : workspaces) {
-            result.put(utils.toPyFileName(workspace, "__init__"),
-                    utils.createTopLevelInitFile(version));
+            result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
             result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
-
         }
 
         return result;

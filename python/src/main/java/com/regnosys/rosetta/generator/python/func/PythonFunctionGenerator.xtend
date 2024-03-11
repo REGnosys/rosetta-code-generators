@@ -13,6 +13,7 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
 import java.util.ArrayList
+import java.util.Collections
 import java.util.Arrays
 import java.util.Collections
 import java.util.HashMap
@@ -28,10 +29,7 @@ class  PythonFunctionGenerator {
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
     
     var List<String> importsFound = newArrayList
-    var if_cond_blocks = new ArrayList<String>()
-    
     @Inject PythonModelGeneratorUtil utils;
-    @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
     
@@ -83,7 +81,7 @@ class  PythonFunctionGenerator {
             «generateAlias(function)»
             «generateOperations(function)»
             «generatesOutput(function)»
-        
+
         sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
         '''
     }
@@ -358,7 +356,7 @@ class  PythonFunctionGenerator {
         return null // or an appropriate default value
     }
     
-    private def buildObject(String expression, Segment path) {
+    private def String buildObject(String expression, Segment path) {
         if (path === null || path.next === null) {
             return expression;
         }
@@ -367,7 +365,7 @@ class  PythonFunctionGenerator {
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
     
-    private def generateFullPath(Iterable<Attribute> attrs, String root) {
+    private def String generateFullPath(Iterable<Attribute> attrs, String root) {
         // Base case: if there are no attributes, return "self" or appropriate root object
         if (attrs.isEmpty) {
             return "self" // or appropriate root object
@@ -396,20 +394,12 @@ class  PythonFunctionGenerator {
     
         return attributes;
     }
-     
-  
+
+
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
         if (!importsFound.contains(import)) {
             importsFound.add(import)
         }
     }
-
-
-
-    def checkBasicType(Attribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
-    }	
 }
