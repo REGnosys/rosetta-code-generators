@@ -76,10 +76,15 @@ class PythonModelGeneratorUtil {
         '''
         imports
     }
+
+    def String toFileName(String namespace, String fileName) {
+        '''src/«namespace.replace(".", "/")»/«fileName»''';
+    }
     
     def String toPyFileName(String namespace, String fileName) {
-        '''src/«namespace.replace(".", "/")»/«fileName».py''';
+        '''«toFileName(namespace, fileName)».py''';
     }
+
     def String toPyFunctionFileName(String namespace, String fileName) {
         '''src/«namespace.replace(".", "/")»/functions/«fileName».py''';
     }
@@ -87,6 +92,7 @@ class PythonModelGeneratorUtil {
     def String createTopLevelInitFile (String version) {
         return "from .version import __version__"
     }
+
     def String createVersionFile (String version) {
         val versionComma	 = version.replace ('.', ',')
         return "version = ("+versionComma+",0)\n"+
@@ -94,6 +100,7 @@ class PythonModelGeneratorUtil {
                 "__version__ = '"+version+"'\n"+
                 "__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'"		 	
     }
+
     def String createPYProjectTomlFile (String namespace, String version) {
         return "[build-system]\n" + 
                "requires = [\"setuptools>=62.0\"]\n" +
@@ -104,7 +111,7 @@ class PythonModelGeneratorUtil {
                "requires-python = \">= 3.10\"\n" +
                "dependencies = [\n" + 
                "   \"pydantic>=2.6.1\",\n" +
-               "   \"rosetta.runtime==3.0.0\"\n" +
+               "   \"rosetta.runtime==2.0.0\"\n" +
                "]\n" +
                "[tool.setuptools.packages.find]\n" +
                "where = [\"src\"]"

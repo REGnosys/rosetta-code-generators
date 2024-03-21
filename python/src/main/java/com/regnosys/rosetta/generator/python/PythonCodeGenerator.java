@@ -149,6 +149,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         for (String workspace : workspaces) {
             result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
             result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
+            result.put(utils.toFileName(workspace, "py.typed"), "");
         }
 
         return result;
