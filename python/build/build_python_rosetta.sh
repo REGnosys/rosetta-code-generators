@@ -33,7 +33,7 @@ $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
 $PYEXE -m pip install "pydantic>=2.0.0" || processError
 $PYEXE -m pip install jsonpickle || processError
-$PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-3.0.0-py3-none-any.whl || processError
+$PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl || processError
 
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 
