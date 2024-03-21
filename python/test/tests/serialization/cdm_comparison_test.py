@@ -10,6 +10,7 @@ sys.path.append(os.path.join(dirPath))
 
 from dict_comp import dict_comp
 from cdm.version import __build_time__
+from cdm.event.common.TradeState import TradeState
 
 def cdm_comparison_test_from_file(path, class_name):
     '''loads the json from a file and runs the comparison'''
