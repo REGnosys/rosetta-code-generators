@@ -1,7 +1,7 @@
 '''Tests of the local registration of conditions'''
 import inspect
 import pytest
-from rosetta.runtime.utils import local_rosetta_condition
+from rosetta.runtime.utils import rosetta_local_condition
 from rosetta.runtime.utils import execute_local_conditions
 from rosetta.runtime.utils import ConditionViolationError
 
@@ -13,13 +13,13 @@ def test_pre_post_conditions():
     self = inspect.currentframe()
 
     # A local PRE condition
-    @local_rosetta_condition(_pre_registry)
+    @rosetta_local_condition(_pre_registry)
     def some_local_condition():
         print(f'Pre {self}')
         return True
 
     # A local POST condition
-    @local_rosetta_condition(_post_registry)
+    @rosetta_local_condition(_post_registry)
     def some_local_post_condition():
         print(f'Post {self}')
         return True
@@ -36,7 +36,7 @@ def test_pre_post_conditions():
 def test_raise_local_cond():
     '''checks if exception is raised and it is of the correct type'''
     _registry = {}
-    @local_rosetta_condition(_registry)
+    @rosetta_local_condition(_registry)
     def some_failing_local_post_condition():
         return False
 
