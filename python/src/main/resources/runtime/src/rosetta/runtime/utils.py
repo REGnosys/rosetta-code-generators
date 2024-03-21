@@ -5,7 +5,7 @@ from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
 from collections import defaultdict
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, ConfigDict
 
 __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'BaseDataClass', 'ConditionViolationError', 'any_elements',
@@ -69,7 +69,7 @@ def _resolve_rosetta_attr(obj: Any | None,
         return res if res else None
     if _is_meta(obj):
         # NOTE: ignores (for now) all meta attributes in the expressions.
-        # In the future one might want to check if the attrib is contained 
+        # In the future one might want to check if the attrib is contained
         # in the metadata and return it instead of failing.
         obj = obj.value
     return getattr(obj, attrib, None)
@@ -186,17 +186,15 @@ class BaseDataClass(BaseModel):
         but is left to the user to determine when to check the validity of the
         cdm model.
     '''
+    model_config = ConfigDict(extra='forbid', revalidate_instances='always')
 
     meta: dict | None = None
     address: MetaAddress | None = None
 
-    class Config:  # pylint: disable=too-few-public-methods
-        '''Disables the validity of extra parameters'''
-        extra = 'forbid'
-
     def validate_model(self,
                        recursively: bool = True,
-                       raise_exc: bool = True) -> list:
+                       raise_exc: bool = True,
+                       strict: bool = True) -> list:
         ''' This method performs full model validation. It will validate all
             attributes and it will also invoke `validate_conditions` to check
             all conditions and the cardinality of all attributes of this object.
@@ -204,18 +202,18 @@ class BaseDataClass(BaseModel):
             thrown if a validation or condition is violated or if a list with
             all encountered violations should be returned instead.
         '''
-        att_errors = self.validate_attribs(raise_exc=raise_exc)
+        att_errors = self.validate_attribs(raise_exc=raise_exc, strict=strict)
         return att_errors + self.validate_conditions(recursively=recursively,
                                                      raise_exc=raise_exc)
 
-    def validate_attribs(self, raise_exc: bool = True) -> list:
+    def validate_attribs(self, raise_exc: bool = True, strict: bool = True) -> list:
         ''' This method performs attribute type validation.
             The parameter `raise_exc` controls whether an exception should be
             thrown if a validation or condition is violated or if a list with
             all encountered violations should be returned instead.
         '''
         try:
-            self.model_validate(self)
+            self.model_validate(self, strict=strict)
         except ValidationError as validation_error:
             if raise_exc and validation_error:
                 raise validation_error

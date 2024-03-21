@@ -1,4 +1,4 @@
-# pylint: disable=unused-import,missing-function-docstring,invalid-name
+# pylint: disable=missing-function-docstring,missing-module-docstring,invalid-name
 from datetime import date
 import logging
 import os
@@ -44,25 +44,24 @@ def test_trade():
               tradableProduct=tradableProduct,
               tradeIdentifier=tradeIdentifier)
     exceptions = t.validate_model(raise_exc=False)
-    print(exceptions)
-    print('Done!')
+    assert not exceptions
 
 
 def test_fx():
     path = os.path.join(os.path.dirname(__file__), '..', 'serialization',
                         'fx-ex03-fx-fwd.json')
-    json_str = Path(path).read_text()
+    json_str = Path(path).read_text(encoding='utf8')
     ts = TradeState.model_validate_json(json_str)
     print(repr(ts))
 
     exceptions = ts.validate_model(raise_exc=False)
-    print(exceptions)
-    print('Done!')
+    assert not exceptions
 
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
-    # test_trade()
+    test_trade()
     test_fx()
+    print('Done!')
 
 # EOF
