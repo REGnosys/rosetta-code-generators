@@ -247,16 +247,16 @@ class PythonFunctionsTest {
 		    unitType : UnitType
 		    
 		    """
+		    _pre_registry = {}
 		    self = inspect.currentframe()
 		    
 		    # conditions
 		    
-		    @rosetta_condition
+		    @rosetta_local_condition(_pre_registry)
 		    def condition_0_CurrencyOrFinancialUnitExists(self):
-		        item = self
 		        return (rosetta_attr_exists(_resolve_rosetta_attr(self, "currency")) or rosetta_attr_exists(_resolve_rosetta_attr(self, "financialUnit")))
 		    # Execute all registered conditions
-		    execute_conditions(self)
+		    execute_local_conditions(_pre_registry, 'Pre-condition')
 		    
 		    unitType = _get_rosetta_object('UnitType', 'currency', _resolve_rosetta_attr(self, "currency"))
 		    unitType = set_rosetta_attr(_resolve_rosetta_attr(self, 'unitType'), 'financialUnit', _resolve_rosetta_attr(self, "financialUnit"))
@@ -781,16 +781,16 @@ class PythonFunctionsTest {
     	    roundedValue : number
     	    
     	    """
+    	    _pre_registry = {}
     	    self = inspect.currentframe()
     	    
     	    # conditions
     	    
-    	    @rosetta_condition
+    	    @rosetta_local_condition(_pre_registry)
     	    def condition_0_PositiveNearest(self):
-    	        item = self
     	        return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
     	    # Execute all registered conditions
-    	    execute_conditions(self)
+    	    execute_local_conditions(_pre_registry, 'Pre-condition')
     	    
     	    roundedValue = _resolve_rosetta_attr(self, "roundedValue")
     	    
@@ -841,21 +841,20 @@ class PythonFunctionsTest {
     	    roundedValue : number
     	    
     	    """
+    	    _pre_registry = {}
     	    self = inspect.currentframe()
     	    
     	    # conditions
     	    
-    	    @rosetta_condition
+    	    @rosetta_local_condition(_pre_registry)
     	    def condition_0_PositiveNearest(self):
-    	        item = self
     	        return all_elements(_resolve_rosetta_attr(self, "nearest"), ">", 0)
     	    
-    	    @rosetta_condition
+    	    @rosetta_local_condition(_pre_registry)
     	    def condition_1_valueNegative(self):
-    	        item = self
     	        return all_elements(_resolve_rosetta_attr(self, "value"), "<", 0)
     	    # Execute all registered conditions
-    	    execute_conditions(self)
+    	    execute_local_conditions(_pre_registry, 'Pre-condition')
     	    
     	    roundedValue = _resolve_rosetta_attr(self, "roundedValue")
     	    
@@ -903,28 +902,28 @@ class PythonFunctionsTest {
     	    interestRatePayout : InterestRatePayout
     	    
     	    """
+    	    _post_registry = {}
     	    self = inspect.currentframe()
     	    
     	    
     	    interestRatePayout = _resolve_rosetta_attr(self, "interestRatePayout")
     	    
     	    # post-conditions
+    	    
+    	    @rosetta_local_condition(_post_registry)
+    	    def condition_0_InterestRatePayoutTerms(self):
+    	    	"""
+    	    	Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.
+    	    	"""
+    	        def _then_fn0():
+    	            return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "interestRatePayout"), "paymentDates"), "=", _resolve_rosetta_attr(_resolve_rosetta_attr(self, "masterConfirmation"), "equityCashSettlementDates"))
     	        
-    	        @rosetta_condition
-    	        def condition_0_InterestRatePayoutTerms(self):
-    	            """
-    	            Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.
-    	            """
-    	            item = self
-    	            def _then_fn0():
-    	                return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "interestRatePayout"), "paymentDates"), "=", _resolve_rosetta_attr(_resolve_rosetta_attr(self, "masterConfirmation"), "equityCashSettlementDates"))
-    	            
-    	            def _else_fn0():
-    	                return True
-    	            
-    	            return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "masterConfirmation")), _then_fn0, _else_fn0)
+    	        def _else_fn0():
+    	            return True
+    	        
+    	        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "masterConfirmation")), _then_fn0, _else_fn0)
     	    # Execute all registered post-conditions
-    	    execute_post_conditions(self)
+    	    execute_local_conditions(_post_registry, 'Post-condition')
     	    
     	    return interestRatePayout
     	
