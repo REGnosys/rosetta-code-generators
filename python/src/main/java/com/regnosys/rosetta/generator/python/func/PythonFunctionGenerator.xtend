@@ -63,6 +63,12 @@ class  PythonFunctionGenerator {
         @replaceable
         def «function.name»«generatesInputs(function)»:
             «generateDescription(function)»
+            «IF function.conditions.size()>0»    
+            _pre_registry = {}
+            «ENDIF»
+            «IF function.postConditions.size()>0»    
+            _post_registry = {}
+            «ENDIF»
             self = inspect.currentframe()
             
             «generateConditions(function)»
@@ -215,9 +221,9 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.conditions.size>0»
         # conditions
-        «expressionGenerator.generateConditions(function.conditions)»
+        «expressionGenerator.generateFunctionConditions(function.conditions, "_pre_registry")»
         # Execute all registered conditions
-        execute_conditions(self)
+        execute_local_conditions(_pre_registry, 'Pre-condition')
         «ENDIF»
         '''
     }
@@ -226,9 +232,9 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.postConditions.size>0»
         # post-conditions
-            «expressionGenerator.generateConditions(function.postConditions)»
+        «expressionGenerator.generateFunctionConditions(function.postConditions, "_post_registry")»
         # Execute all registered post-conditions
-        execute_post_conditions(self)
+        execute_local_conditions(_post_registry, 'Post-condition')
         «ENDIF»
         '''
     }

@@ -131,7 +131,7 @@ class PythonExpressionGenerator {
     private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
 		'''
 
-			@local_rosetta_condition(«condition_type»)
+			@rosetta_local_condition(«condition_type»)
 			def condition_«n_condition»_«cond.name»(self):
 				«IF cond.definition!==null»
 					"""
