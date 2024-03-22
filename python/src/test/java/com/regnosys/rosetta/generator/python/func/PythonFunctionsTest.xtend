@@ -912,9 +912,9 @@ class PythonFunctionsTest {
     	    
     	    @rosetta_local_condition(_post_registry)
     	    def condition_0_InterestRatePayoutTerms(self):
-    	    	"""
-    	    	Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.
-    	    	"""
+    	        """
+    	        Interest rate payout must inherit terms from the Master Confirmation Agreement when it exists.
+    	        """
     	        def _then_fn0():
     	            return all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "interestRatePayout"), "paymentDates"), "=", _resolve_rosetta_attr(_resolve_rosetta_attr(self, "masterConfirmation"), "equityCashSettlementDates"))
     	        
