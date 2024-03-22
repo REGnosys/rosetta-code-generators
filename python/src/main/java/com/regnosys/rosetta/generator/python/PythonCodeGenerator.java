@@ -54,8 +54,8 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Override
     public Map<String, ? extends CharSequence> generate(Resource resource, 
-    													RosettaModel model,
-    													String version) {
+                                                        RosettaModel model,
+                                                        String version) {
         String cleanVersion = cleanVersion(version);
 
         Map<String, CharSequence> result = new HashMap<>();
@@ -109,8 +109,8 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Override
     public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
-            													Collection<? extends RosettaModel> models, 
-            													String version) {
+                                                                Collection<? extends RosettaModel> models, 
+                                                                String version) {
         String cleanVersion = cleanVersion(version);
         Map<String, CharSequence> result = new HashMap<>();
 
@@ -120,11 +120,11 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         if (namespace == null) {
             Iterator<? extends RosettaModel> iterator = models.iterator();
             if (iterator.hasNext()) {
-            	namespace = Util.getNamespace(iterator.next());
+                namespace = Util.getNamespace(iterator.next());
             }
         }
         if (namespace != null) {
-        	result.put("pyproject.toml", utils.createPYProjectTomlFile(namespace, cleanVersion));
+            result.put("pyproject.toml", utils.createPYProjectTomlFile(namespace, cleanVersion));
         }
         return result;
     }

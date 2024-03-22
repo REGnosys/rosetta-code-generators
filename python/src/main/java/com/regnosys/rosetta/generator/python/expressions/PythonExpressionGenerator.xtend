@@ -129,17 +129,17 @@ class PythonExpressionGenerator {
     }
 
     private def generateFunctionConditionBoilerPlate(Condition cond, int n_condition, String condition_type) {
-		'''
+        '''
 
-			@rosetta_local_condition(«condition_type»)
-			def condition_«n_condition»_«cond.name»(self):
-				«IF cond.definition!==null»
-					"""
-					«cond.definition»
-					"""
-				«ENDIF»
-		'''
-	}
+            @rosetta_local_condition(«condition_type»)
+            def condition_«n_condition»_«cond.name»(self):
+                «IF cond.definition!==null»
+                    """
+                    «cond.definition»
+                    """
+                «ENDIF»
+        '''
+    }
 
     private def generateConstraintCondition(Data cls, Condition cond) {
         val expression = cond.expression
@@ -366,7 +366,7 @@ class PythonExpressionGenerator {
                 return pythonMapOperation;
             }
             AsKeyOperation: {
-	            // Assuming AsKeyOperationImpl has a 'key' (possibly the 'operator' attribute) and an 'argument' property
+                // Assuming AsKeyOperationImpl has a 'key' (possibly the 'operator' attribute) and an 'argument' property
                 val argument = generateExpression(expr.argument, iflvl)
 
                 return '''{«argument»: True}''' // Example: creating a dictionary entry in Python
