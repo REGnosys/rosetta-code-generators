@@ -21,7 +21,7 @@ def cdm_comparison_test_from_file(path, class_name):
     print('json_dict["trade"]["tradeDate"]: ' + json.dumps(json_dict["trade"]["tradeDate"]))
     try:
         print('raw parse from json_str')
-        cdm_object     = class_name.parse_raw(json_str)
+        cdm_object     = class_name.model_validate_json(json_str)
         trade          = cdm_object.trade
         print('trade.tradeDate: ' + str(trade.tradeDate))
         json_data_out  = cdm_object.model_dump_json(indent=4, exclude_defaults=True)

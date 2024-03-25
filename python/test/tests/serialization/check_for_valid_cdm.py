@@ -9,15 +9,12 @@ from cdm.event.common.TradeState import TradeState
 from cdm.version import __build_time__, __version__
 from dict_comp import dict_comp
 
-dirPath = os.path.dirname(__file__)
-sys.path.append(os.path.join(dirPath))
-
 def cdm_comparison_test_from_file(file_name, class_name):
     '''loads the json from a file and runs the comparison'''
     json_str  = Path(file_name).read_text()
     json_dict = json.loads (json_str)
     try:
-        cdm_object = class_name.parse_raw(json_str)
+        cdm_object = class_name.model_validate_json(json_str)
         json_data_out = cdm_object.json(exclude_defaults=True, indent=4)
         generated_dict = json.loads(json_data_out)
         if dict_comp(json_dict, generated_dict):
