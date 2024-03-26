@@ -13,7 +13,6 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.Operation
 import com.regnosys.rosetta.rosetta.simple.Segment
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Collections
 import java.util.HashMap
 import java.util.List
@@ -28,10 +27,6 @@ class  PythonFunctionGenerator {
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);
     
     var List<String> importsFound = newArrayList
-    var if_cond_blocks = new ArrayList<String>()
-    
-    @Inject PythonModelGeneratorUtil utils;
-    @Inject PythonTranslator translator
     @Inject FunctionDependencyProvider functionDependencyProvider
     @Inject PythonExpressionGenerator expressionGenerator;
     
@@ -44,8 +39,8 @@ class  PythonFunctionGenerator {
                 val namespace = tr.name
                 try{
                     val funcs = func.generateFunctions(version)			
-                    result.put(utils.toPyFunctionFileName(namespace, func.name), 
-                        utils.createImportsFunc(func.name) + funcs)
+                    result.put(PythonModelGeneratorUtil::toPyFunctionFileName(namespace, func.name), 
+           				PythonModelGeneratorUtil::createImportsFunc(func.name) + funcs);
                 }
                 catch(Exception ex){
                     LOGGER.error("Exception occurred generating func {}", func.name, ex)	
@@ -56,16 +51,6 @@ class  PythonFunctionGenerator {
     }
 
     private def generateFunctions(Function function,String version) {
-        // importsFound = getImportsFromAttributes(function)
-        // //var List<String> updateForwardRefs = newArrayList
-        // //updateForwardRefs.add('''«function.name».update_forward_refs()''')
-        
-        // '''
-        // «generatesBody(function)»
-        
-        // «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
-                    
-        // '''	
         val dependencies = collectFunctionDependencies(function);
 
         '''
@@ -75,6 +60,12 @@ class  PythonFunctionGenerator {
         @replaceable
         def «function.name»«generatesInputs(function)»:
             «generateDescription(function)»
+            «IF function.conditions.size()>0»    
+            _pre_registry = {}
+            «ENDIF»
+            «IF function.postConditions.size()>0»    
+            _post_registry = {}
+            «ENDIF»
             self = inspect.currentframe()
             
             «generateConditions(function)»
@@ -83,7 +74,7 @@ class  PythonFunctionGenerator {
             «generateAlias(function)»
             «generateOperations(function)»
             «generatesOutput(function)»
-        
+
         sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
         '''
     }
@@ -92,8 +83,6 @@ class  PythonFunctionGenerator {
         val imports = new StringBuilder();
 
         for (EObject dependency : dependencies) {
-            // Assuming a simple mapping from class names to import paths
-            // This mapping needs to be defined based on your project structure
             val tr = dependency.eContainer as RosettaModel
             val importPath = tr.name;
             if(dependency instanceof Function){
@@ -135,18 +124,18 @@ class  PythonFunctionGenerator {
             val typeName = input.getTypeCall().getType().getName()
             val type = input.getCard().sup == 0 ? 
                             "list[" + PythonTranslator.toPythonBasicType(typeName) + "]" : 
-                            PythonTranslator.toPythonBasicType(typeName)  // Adding List[type] if card.sup > 1
+                            PythonTranslator.toPythonBasicType(typeName)  
             result += input.getName() + ": " + type
-            if (input.getCard().inf == 0)  // Check for optional parameter
+            if (input.getCard().inf == 0)  
                 result += " | None"
             if (inputs.indexOf(input) < inputs.size() - 1)
                 result += ", "
         }
         result += ") -> "
         if (output !== null)
-            result += PythonTranslator.toPythonBasicType(output.getTypeCall().getType().getName())  // Append the return type of the function
+            result += PythonTranslator.toPythonBasicType(output.getTypeCall().getType().getName())  
         else
-            result += "None"  // Default to 'None' if output is null
+            result += "None"  
         '''«result»'''
     }
     
@@ -182,7 +171,6 @@ class  PythonFunctionGenerator {
     private def collectFunctionDependencies(Function func) {
         val Set<EObject> dependencies = newHashSet()
     
-        // Add dependencies from shortcuts and operations
         func.shortcuts.forEach[shortcut |
             dependencies.addAll(functionDependencyProvider.findDependencies(shortcut.expression))
         ]
@@ -190,19 +178,16 @@ class  PythonFunctionGenerator {
             dependencies.addAll(functionDependencyProvider.findDependencies(operation.expression))
         ]
     
-        // Add dependencies from conditions and post conditions
         (func.conditions + func.postConditions).forEach[condition |
             dependencies.addAll(functionDependencyProvider.findDependencies(condition.expression))
         ]
     
-        // Add dependencies from input types
         func.inputs.forEach[input |
             if (input.getTypeCall()?.getType() !== null) {
                 dependencies.add(input.getTypeCall().getType())
             }
         ]
     
-        // Add dependency from output type if it exists
         if (func.output?.getTypeCall()?.getType() !== null) {
             dependencies.add(func.output.getTypeCall().getType())
         }
@@ -211,7 +196,7 @@ class  PythonFunctionGenerator {
     }
 
     private def generateIfBlocks(Function function) {
-        val levelList = newArrayList(0) // List with a single element initialized to 0
+        val levelList = newArrayList(0) 
     
         ''' 
         «FOR shortcut : function.shortcuts »
@@ -227,9 +212,9 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.conditions.size>0»
         # conditions
-        «expressionGenerator.generateConditions(function.conditions)»
+        «expressionGenerator.generateFunctionConditions(function.conditions, "_pre_registry")»
         # Execute all registered conditions
-        execute_conditions(self)
+        execute_local_conditions(_pre_registry, 'Pre-condition')
         «ENDIF»
         '''
     }
@@ -238,9 +223,9 @@ class  PythonFunctionGenerator {
         '''     
         «IF function.postConditions.size>0»
         # post-conditions
-            «expressionGenerator.generateConditions(function.postConditions)»
+        «expressionGenerator.generateFunctionConditions(function.postConditions, "_post_registry")»
         # Execute all registered post-conditions
-        execute_post_conditions(self)
+        execute_local_conditions(_post_registry, 'Post-condition')
         «ENDIF»
         '''
     }
@@ -273,7 +258,6 @@ class  PythonFunctionGenerator {
             for (operation: function.getOperations()) {
                 val root = operation.getAssignRoot()
                 val expression = expressionGenerator.generateExpression(operation.getExpression(), level)
-                // Generate the full path using _resolve_rosetta_attr recursively
                 val if_cond_blocks = expressionGenerator.if_cond_blocks;
                 val isEmpty = if_cond_blocks.isEmpty();
                 if (!isEmpty) {
@@ -318,7 +302,6 @@ class  PythonFunctionGenerator {
     private def generateSetOperation(AssignPathRoot root, Operation operation, Function function, String expression, List<String> setNames){
         var result=""
         
-        // Use _get_rosetta_object for setting the attribute
         val attributeRoot = root as Attribute
         if(attributeRoot.typeCall.type instanceof RosettaEnumeration || operation.path===null){
             result = '''«attributeRoot.name» =  «expression»'''
@@ -355,10 +338,10 @@ class  PythonFunctionGenerator {
             val attribute = path.getAttribute()
             return "'" + attribute.name + "'"
         }
-        return null // or an appropriate default value
+        return null 
     }
     
-    private def buildObject(String expression, Segment path) {
+    private def String buildObject(String expression, Segment path) {
         if (path === null || path.next === null) {
             return expression;
         }
@@ -367,14 +350,13 @@ class  PythonFunctionGenerator {
         return '''_get_rosetta_object('«attribute.typeCall.type.name»', «getNextPathElementName(path.next)», «buildObject(expression, path.next)»)'''
     }
     
-    private def generateFullPath(Iterable<Attribute> attrs, String root) {
-        // Base case: if there are no attributes, return "self" or appropriate root object
+    private def String generateFullPath(Iterable<Attribute> attrs, String root) {
         if (attrs.isEmpty) {
-            return "self" // or appropriate root object
+            return "self" 
         }
     
         val attr = attrs.head
-        val remainingAttrs = attrs.tail.toList // Convert Iterable to List
+        val remainingAttrs = attrs.tail.toList 
     
         val nextPath = if (remainingAttrs.isEmpty) '''_resolve_rosetta_attr(self, «root»)''' else generateFullPath(remainingAttrs, root)
     
@@ -385,31 +367,21 @@ class  PythonFunctionGenerator {
         val attributes = new ArrayList<Attribute>();
         var current = segment;
     
-        // Traverse the linked list and collect attributes
         while (current !== null) {
             attributes.add(current.getAttribute());
             current = current.getNext();
         }
     
-        // Reverse the collected list of attributes
         Collections.reverse(attributes);
     
         return attributes;
     }
-     
-  
+
+
     def addImportsFromConditions(String variable, String namespace) {
         val import = '''from «namespace».«variable» import «variable»'''
         if (!importsFound.contains(import)) {
             importsFound.add(import)
         }
     }
-
-
-
-    def checkBasicType(Attribute attr) {
-        val types = Arrays.asList('int', 'str', 'Decimal', 'date', 'datetime', 'datetime.date', 'datetime.time', 'time',
-            'bool', 'number')
-        return (attr !== null && translator.toPythonType(attr) !== null) ? types.contains(translator.toPythonType(attr).toString()) : false
-    }	
 }

@@ -5,12 +5,12 @@ import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.List
 
-import static com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.python.object.PythonModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.python.util.PythonTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.Util.*
+import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 
 class PythonMetaFieldGenerator {
 
@@ -44,7 +44,7 @@ class PythonMetaFieldGenerator {
 
         val metaFields = genMetaFields(metaTypes.filter[t|t.name!="id" && t.name!="key" && t.name!="reference" && t.name!="address"], version)
 
-        return fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
+        return PythonModelGeneratorUtil::fileComment(version) + metaFieldsImports + referenceWithMeta + metaFields
     }
 
     private def generateMetaFieldsImports() 

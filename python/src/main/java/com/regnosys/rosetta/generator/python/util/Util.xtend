@@ -4,6 +4,7 @@ import java.util.function.Function
 import java.util.Iterator
 import java.util.NoSuchElementException
 import com.regnosys.rosetta.rosetta.RosettaType
+import com.regnosys.rosetta.rosetta.RosettaModel
 
 class Util {
     
@@ -14,8 +15,11 @@ class Util {
         return new DistinctByIterator(parentIterable, extractFunction)
     }
     
-    def static <T> boolean exists(Iterable<? super T> iter, Class<T> clazz) {
+    static def <T> boolean exists(Iterable<? super T> iter, Class<T> clazz) {
         !iter.filter(clazz).empty
+    }
+    static def String getNamespace (RosettaModel rm) {
+        return rm.getName.split("\\.").get(0)
     }
     
     private static class DistinctByIterator<T, U> implements Iterable<T>{
@@ -33,7 +37,6 @@ class Util {
                 val read = newHashSet
                 var T readNext;
                 override hasNext() {
-                    //by the ime this method is finished readNext will contain the next readable element or this returns false
                     if (readNext!==null) return true;
                     while (true){
                         if (!parentIterator.hasNext) return false
@@ -61,6 +64,6 @@ class Util {
         }
     }
     
-    def static String fullname(RosettaType clazz) '''«clazz.model.name».«clazz.name»'''
-    def static String packageName(RosettaType clazz)  {clazz.model.name}
+    static def String fullname(RosettaType clazz) '''«clazz.model.name».«clazz.name»'''
+    static def String packageName(RosettaType clazz)  {clazz.model.name}
 }
