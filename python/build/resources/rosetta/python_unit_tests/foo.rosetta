@@ -1,0 +1,7 @@
+namespace unittests : <"generate Python unit tests from Rosetta.">
+
+type Foo:
+    attr int (1..1) 
+    <"This is a
+    multiline
+    definition">
