@@ -34,16 +34,10 @@ class PythonTranslator {
         }
     }
     static def String toPythonBasicType(String rosettaType) {
-        // basic conversion from Rosetta type as a string to Python type
-        // returns rosettaType if unable to convert
         val pythonType = toPythonBasicTypeInnerFunction (rosettaType)
         return (pythonType === null) ? rosettaType : pythonType
     }
     static def String toPythonType(ExpandedType rosettaExpandedType) {
-        // conversion from Rosetta type as an ExpandedType to Python type
-        // if unable to convert returns
-        //      '''«rosettaExpandedType.name.toFirstUpper»''' for an enumeration or 
-        //      returns rosettaExpandedType.name.toFirstUpper  otherwise
         if (rosettaExpandedType === null)
             return null
         var pythonType = toPythonBasicTypeInnerFunction (rosettaExpandedType.name)
@@ -61,8 +55,6 @@ class PythonTranslator {
         return (pythonType === null) ? rosettaAttribute.type.model.name + '.' + rosettaType + '.' + rosettaType : pythonType
     }
     static def String toPythonType(Attribute rosettaAttributeType) {
-        // conversion from Rosetta type as an Attribute to Python type
-        // returns rosettaAttributeType.getTypeCall.type.name if unable to convert
         if (rosettaAttributeType === null)
             return null;
         val rosettaType = rosettaAttributeType.getTypeCall.type.name
@@ -70,7 +62,6 @@ class PythonTranslator {
         return (pythonType === null) ? rosettaType.toFirstUpper : pythonType
     }
     static def boolean checkBasicType(Attribute rosettaAttributeType) {
-        // check if rosettaAttributeType is valid
         return (rosettaAttributeType !== null && toPythonBasicTypeInnerFunction (rosettaAttributeType.getTypeCall.type.name) !== null)
     }
     static def boolean checkBasicType(String rosettaType) {

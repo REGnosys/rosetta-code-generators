@@ -117,7 +117,6 @@ class FunctionDependencyProvider {
         newHashSet(allFunctionDependencies)
     }
 
-    // Reset the visited set if you want to reuse this provider
     def void reset() {
         visited.clear();
     }

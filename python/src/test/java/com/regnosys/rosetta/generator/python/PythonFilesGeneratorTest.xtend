@@ -121,7 +121,7 @@ class PythonFilesGeneratorTest {
         writeFiles(outputPath, generatedFiles)
         LOGGER.info ("generatePythonFromRosettaFiles ... done")
     } 
-    //@Disabled("Generate CDM from Rosetta Files")
+    @Disabled("Generate CDM from Rosetta Files")
     @Test
     def void generateCDMPythonFromRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results

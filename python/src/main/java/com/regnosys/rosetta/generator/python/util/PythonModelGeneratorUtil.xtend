@@ -35,7 +35,7 @@ class PythonModelGeneratorUtil {
         «ENDIF»
         '''
         
-    def String createImports(String name){			
+    static def String createImports(String name){			
         val imports=
         '''
         # pylint: disable=line-too-long, invalid-name, missing-function-docstring
@@ -60,7 +60,7 @@ class PythonModelGeneratorUtil {
         imports
     }
         
-    def String createImportsFunc(String name) {			
+    static def String createImportsFunc(String name) {			
         val imports=
         '''
         # pylint: disable=line-too-long, invalid-name, missing-function-docstring, missing-module-docstring, superfluous-parens
@@ -77,23 +77,23 @@ class PythonModelGeneratorUtil {
         imports
     }
 
-    def String toFileName(String namespace, String fileName) {
+    static def String toFileName(String namespace, String fileName) {
         '''src/«namespace.replace(".", "/")»/«fileName»''';
     }
     
-    def String toPyFileName(String namespace, String fileName) {
+    static def String toPyFileName(String namespace, String fileName) {
         '''«toFileName(namespace, fileName)».py''';
     }
 
-    def String toPyFunctionFileName(String namespace, String fileName) {
+    static def String toPyFunctionFileName(String namespace, String fileName) {
         '''src/«namespace.replace(".", "/")»/functions/«fileName».py''';
     }
     
-    def String createTopLevelInitFile (String version) {
+    static def String createTopLevelInitFile (String version) {
         return "from .version import __version__"
     }
 
-    def String createVersionFile (String version) {
+    static def String createVersionFile (String version) {
         val versionComma	 = version.replace ('.', ',')
         return "version = ("+versionComma+",0)\n"+
                 "version_str = '"+version+"-0'\n"+
@@ -101,7 +101,7 @@ class PythonModelGeneratorUtil {
                 "__build_time__ = '"+LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"'"		 	
     }
 
-    def String createPYProjectTomlFile (String namespace, String version) {
+    static def String createPYProjectTomlFile (String namespace, String version) {
         return "[build-system]\n" + 
                "requires = [\"setuptools>=62.0\"]\n" +
                "build-backend = \"setuptools.build_meta\"\n\n" +

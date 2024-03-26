@@ -20,11 +20,9 @@ class PythonModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
-    @Inject PythonModelGeneratorUtil utils;
     @Inject PythonExpressionGenerator expressionGenerator;
 
     var List<String> importsFound = newArrayList
-//    var if_cond_blocks = new ArrayList<String>()
 
 
     static def toPythonType(Data c, ExpandedAttribute attribute) throws Exception {
@@ -39,7 +37,7 @@ class PythonModelObjectGenerator {
             var is_meta = false;
             for (ExpandedAttribute meta : attribute.getMetas()) {
                 val mname = meta.getName();
-                if (mname == "reference") { // what about location?!?
+                if (mname == "reference") { 
                     is_ref = true;
                 } else if (mname == "address") {
                     is_address = true;
@@ -77,7 +75,7 @@ class PythonModelObjectGenerator {
             val model = type.eContainer as RosettaModel
             val namespace = Util::getNamespace (model)
             val classes = type.generateClasses(namespace, version).replaceTabsWithSpaces
-            result.put(utils.toPyFileName(model.name, type.name), utils.createImports(type.name) + classes)
+            result.put(PythonModelGeneratorUtil::toPyFileName(model.name, type.name), PythonModelGeneratorUtil::createImports(type.name) + classes)
         }
 
         result;
@@ -91,13 +89,10 @@ class PythonModelObjectGenerator {
     /**
      * Generate the classes
      */
-    // TODO remove Date implementation in beginning
-    // TODO removed one-of condition due to limitations after instantiation of objects
     private def generateClasses(Data rosettaClass, String namespace, String version) {
         var List<String> enumImports = newArrayList
         var List<String> dataImports = newArrayList
         var List<String> classDefinitions = newArrayList
-        // var List<String> updateForwardRefs = newArrayList
         var superType = rosettaClass.superType
         if (superType !== null && superType.name === null) {
             throw new Exception("SuperType is null for " + rosettaClass.name)
@@ -106,13 +101,10 @@ class PythonModelObjectGenerator {
         expressionGenerator.importsFound = this.importsFound;
         val classDefinition = generateClassDefinition(rosettaClass)
         classDefinitions.add(classDefinition)
-        // updateForwardRefs.add('''«rosettaClass.name».update_forward_refs()''')
 
-        // Remove duplicates
         enumImports = enumImports.toSet().toList()
         dataImports = dataImports.toSet().toList()
 
-        // Return generated classes
         return '''
             «IF superType!==null»from «(superType.eContainer as RosettaModel).name».«superType.name» import «superType.name»«ENDIF»
             
@@ -120,10 +112,7 @@ class PythonModelObjectGenerator {
             
             import «namespace» 
             «FOR dataImport : importsFound SEPARATOR "\n"»«dataImport»«ENDFOR»
-        '''
-        //	
-        // 	«FOR updateForwardRef : updateForwardRefs SEPARATOR "\n"»«updateForwardRef»«ENDFOR»
-        // '''
+        '''      
     }
 
     private def getImportsFromAttributes(Data rosettaClass) {
@@ -133,16 +122,13 @@ class PythonModelObjectGenerator {
 
         val imports = newArrayList
         for (attribute : filteredAttributes) {
-            // val originalIt = attribute
             val model = attribute.type.model
             if (model !== null) {
-                // val importStatement = '''from «model.name».«originalIt.toRawType» import «originalIt.toRawType»'''
                 val importStatement = '''import «model.name».«attribute.toRawType»'''
                 imports.add(importStatement)
             }
         }
 
-        // Remove duplicates by converting the list to a set and back to a list
         return imports.toSet.toList
     }
 

@@ -37,7 +37,6 @@ class Util {
                 val read = newHashSet
                 var T readNext;
                 override hasNext() {
-                    //by the ime this method is finished readNext will contain the next readable element or this returns false
                     if (readNext!==null) return true;
                     while (true){
                         if (!parentIterator.hasNext) return false

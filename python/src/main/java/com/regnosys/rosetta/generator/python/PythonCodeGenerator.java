@@ -32,9 +32,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
     @Inject PythonModelObjectGenerator pojoGenerator;
     @Inject PythonFunctionGenerator funcGenerator;
-    @Inject private PythonEnumGenerator enumGenerator;
-
-    @Inject PythonModelGeneratorUtil utils;
+    @Inject PythonEnumGenerator enumGenerator;
 
     private List<String> subfolders;
     private AtomicReference<String> previousNamespace;
@@ -124,7 +122,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
             }
         }
         if (namespace != null) {
-            result.put("pyproject.toml", utils.createPYProjectTomlFile(namespace, cleanVersion));
+            result.put("pyproject.toml", PythonModelGeneratorUtil.createPYProjectTomlFile(namespace, cleanVersion));
         }
         return result;
     }
@@ -147,9 +145,9 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         Map<String, String> result = new HashMap<>();
 
         for (String workspace : workspaces) {
-            result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
-            result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
-            result.put(utils.toFileName(workspace, "py.typed"), "");
+            result.put(PythonModelGeneratorUtil.toPyFileName(workspace, "__init__"), PythonModelGeneratorUtil.createTopLevelInitFile(version));
+            result.put(PythonModelGeneratorUtil.toPyFileName(workspace, "version"), PythonModelGeneratorUtil.createVersionFile(version));
+            result.put(PythonModelGeneratorUtil.toFileName(workspace, "py.typed"), "");
         }
 
         return result;
@@ -165,7 +163,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
                 for (int j = 1; j <= i; j++) {
                     keyBuilder.append(".").append(parts[j]);
                 }
-                String key = utils.toPyFileName(keyBuilder.toString(), "__init__");
+                String key = PythonModelGeneratorUtil.toPyFileName(keyBuilder.toString(), "__init__");
                 result.putIfAbsent(key, " ");
             }
         }
