@@ -8,8 +8,8 @@ fi
 
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
-$PYEXE -m venv --clear .pydevenv || processError
-source .pydevenv/$ACDIR/activate || processError
+$PYEXE -m venv --clear .pydevenv
+source .pydevenv/$ACDIR/activate
 
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROSETTARUNTIMEDIR="../src/main/resources/runtime"
