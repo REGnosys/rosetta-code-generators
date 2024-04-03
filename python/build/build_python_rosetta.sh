@@ -1,11 +1,12 @@
 #!/bin/sh
 function processError() {
+  rm -rf .pydevenv
   echo ""
   echo ""
   echo "***************************************************************************"
   echo "*                                                                         *"
   echo "*                         INITIALISATION FAILED!                          *"
-  echo "*                  -- must be run from root directory --                  *"
+  echo "*               -- note: must be run from root directory --               *"
   echo "*                                                                         *"
   echo "***************************************************************************"
   echo ""
@@ -21,14 +22,14 @@ fi
 
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
-$PYEXE -m venv --clear .pydevenv || processError
-source .pydevenv/$ACDIR/activate || processError
 
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROSETTARUNTIMEDIR=$MYPATH/"../src/main/resources/runtime"
 PYTHONSOURCEDIR=$MYPATH/"../target/python"
 cd $PYTHONSOURCEDIR
 rm python_cdm-*.*.*-py3-none-any.whl
+$PYEXE -m venv --clear .pydevenv || processError
+source .pydevenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
 $PYEXE -m pip install "pydantic>=2.0.0" || processError
@@ -37,7 +38,7 @@ $PYEXE -m pip install $ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl 
 
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 
-#rm -rf  .pyenv target/python/.pydevenv
+rm -rf  .pydevenv target/python/.pydevenv
 echo ""
 echo ""
 echo "***************************************************************************"

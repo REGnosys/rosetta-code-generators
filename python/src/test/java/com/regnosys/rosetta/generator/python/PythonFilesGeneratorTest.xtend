@@ -50,7 +50,7 @@ class PythonFilesGeneratorTest {
         var model      = reader.read(new FileReader("pom.xml"))
         return model.getProperties();
     }
-    def private void deleteFolderContent(String folderPath) {
+    def private void cleanSrcFolder(String folderPath) {
         val folder = new File(folderPath + File.separator + "src")
         if (folder.exists() && folder.isDirectory()) {
             try {
@@ -117,7 +117,7 @@ class PythonFilesGeneratorTest {
             generatedFiles.putAll (python)
         }
         println("number of python files: " + generatedFiles.size())
-        deleteFolderContent(outputPath)
+        cleanSrcFolder(outputPath)
         writeFiles(outputPath, generatedFiles)
         LOGGER.info ("generatePythonFromRosettaFiles ... done")
     } 
@@ -127,6 +127,7 @@ class PythonFilesGeneratorTest {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
         
         try {
+            LOGGER.info('generateCDMPythonFromRosetta ... start')
             val properties    = getProperties ()
             val rosettaSource = properties.getProperty ('cdm.rosetta.source.path') as String
             if (rosettaSource === null){
@@ -137,6 +138,7 @@ class PythonFilesGeneratorTest {
                 throw new Exception('Initialization failure: Python target not specified')
             }
             generatePythonFromRosettaFiles (rosettaSource, outputPath)
+            LOGGER.info('generateCDMPythonFromRosetta ... done')
         } 
         catch (IOException ioE) {
             LOGGER.error ('PythonFilesGeneratorTest::generateCDMPythonFromRosetta ... processing failed with an IO Exception')
@@ -154,7 +156,7 @@ class PythonFilesGeneratorTest {
             e.printStackTrace ()
         }
     }
-    //@Disabled("Generate Python Unit Tests from Rosetta Files")
+    @Disabled("Generate Python Unit Tests from Rosetta Files")
     @Test
     def void generatePythonFromGenericRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
@@ -168,7 +170,6 @@ class PythonFilesGeneratorTest {
             } else if (outputPath === null) {
                 LOGGER.debug ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... target directory not specified')
             } else {
-//#### not working yet for one rosetta file
                 generatePythonFromRosettaFiles (rosettaSource, outputPath)
             }
         } 
