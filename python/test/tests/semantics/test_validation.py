@@ -16,7 +16,7 @@ from cdm.base.staticdata.party.CounterpartyRoleEnum import CounterpartyRoleEnum
 from cdm.base.staticdata.asset.common.Index import Index
 from cdm.base.staticdata.identifier.AssignedIdentifier import AssignedIdentifier
 from cdm.event.common.TradeState import TradeState
-
+from test_config import CDM_JSON_SAMPLE_SOURCE
 
 def test_trade():
     priceQuantity = PriceQuantity()
@@ -48,8 +48,7 @@ def test_trade():
 
 
 def test_fx():
-    path = os.path.join(os.path.dirname(__file__), '..', 'serialization',
-                        'fx-ex03-fx-fwd.json')
+    path = os.path.join(os.path.dirname(__file__), CDM_JSON_SAMPLE_SOURCE, 'fx-ex03-fx-fwd.json')
     json_str = Path(path).read_text(encoding='utf8')
     ts = TradeState.model_validate_json(json_str)
     print(repr(ts))

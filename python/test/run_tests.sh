@@ -7,14 +7,13 @@ if ! $PYEXE -c 'import sys; assert sys.version_info >= (3,10)' > /dev/null 2>&1;
 fi
 
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
-export PYTHONDONTWRITEBYTECODE=1
+$PYEXE -m venv --clear .pydevenv
+source .pydevenv/$ACDIR/activate
 
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 ROSETTARUNTIMEDIR="../src/main/resources/runtime"
 PYTHONCDMDIR="../target/python"
 cd $MYPATH
-$PYEXE -m venv --clear .pydevenv
-source .pydevenv/$ACDIR/activate
 $PYEXE -m pip install pydantic
 $PYEXE -m pip install pytest
 $PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-2.0.0-py3-none-any.whl 

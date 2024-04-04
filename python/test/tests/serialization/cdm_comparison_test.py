@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from cdm.version import __build_time__
 from cdm.event.common.TradeState import TradeState
 from dict_comp import dict_comp
+from test_config import CDM_JSON_SAMPLE_SOURCE
 
 def cdm_comparison_test_from_file(path, class_name):
     '''loads the json from a file and runs the comparison'''
@@ -37,7 +38,7 @@ def test_trade_state (cdm_sample_in=None):
     dir_path = os.path.dirname(__file__)
     if cdm_sample_in is None:
         sys.path.append(os.path.join(dir_path))
-        cdm_sample_in = os.path.join(dir_path, 'EUR-Vanilla-account.json')
+        cdm_sample_in = os.path.join(dir_path, CDM_JSON_SAMPLE_SOURCE, 'EUR-Vanilla-account.json')
     cdm_comparison_test_from_file (cdm_sample_in, TradeState)
 
 # EOF
