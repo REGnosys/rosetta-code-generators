@@ -24,7 +24,7 @@ table {
 }
 </style>
 
-| Rosetta Syntax | Description | Supported | Python Syntax |
+| Rosetta Syntax | Description | Supported | Equivalent Python Syntax |
 |:---|:---|:---:|:---|
 | RosettaExpression | The base type for all expressions in the Rosetta DSL. | :white_check_mark: ||
 | RosettaLiteral | Represents constant values directly in the code. | :x: ||
@@ -36,7 +36,7 @@ table {
 
 ### Reference and Feature Call Expressions
 
-| Rosetta Syntax | Description | Supported | Python Syntax |
+| Rosetta Syntax | Description | Supported | Equivalent Python Syntax |
 |:---|:---|:---:|:---|
 | RosettaFeatureCall | Calls a feature (attribute or method) of an object or data type. | :white_check_mark: | _resolve_rosetta_attr(object, "attribute") |
 | RosettaReference | A reference to another part of the model or DSL. | :white_check_mark: | referenceElement.name or SymbolReference |
@@ -47,7 +47,7 @@ table {
 
 ### Operation Expressions
 
-| Rosetta Syntax | Description | Supported | Python Syntax |
+| Rosetta Syntax | Description | Supported | Equivalent Python Syntax |
 |:---|:---|:---:|:---|
 | RosettaUnaryOperation | An operation that takes a single operand, like negation. | :x: |
 | RosettaBinaryOperation | An operation that takes two operands, such as addition or logical 'and'. | :white_check_mark: | expression1 == expression2 (other operators: <>,<, >,...) |
@@ -75,7 +75,7 @@ table {
 
 ### Conditional and Specialized Expressions
 
-| Rosetta Syntax | Description | Supported | Python Syntax |
+| Rosetta Syntax | Description | Supported | Equivalent Python Syntax |
 |:---|:---|:---:|:---|
 | RosettaConditionalExpression | An expression that evaluates a condition and branches accordingly. | :white_check_mark: | if_cond_fn(ifexpr, _then_fn, _else_fn) |
 | RosettaContainsExpression | Checks if a collection contains a given element. | :white_check_mark: | contains() |
@@ -89,7 +89,7 @@ table {
 
 ### Conversion Operations
 
-| Rosetta Syntax | Description | Supported | Python Syntax |
+| Rosetta Syntax | Description | Supported | Equivalent Python Syntax |
 |:---|:---|:---:|:---|
 | ToEnumOperation | Converts a value to an enumeration type. | :x: |
 | ToIntOperation | Converts a value to an integer. | :white_check_mark: | int() |
