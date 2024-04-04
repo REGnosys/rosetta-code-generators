@@ -26,11 +26,11 @@ def test_1_many_pass():
 
 
 if __name__ == "__main__":
-    print("first one")
+    print("test_1_many_pass")
     test_1_many_pass()
-    print("second one")
+    print("test_1_many_fail")
     test_1_many_fail()
-    print("third one")
+    print("test_1_many_fail_empty_constructor")
     test_1_many_fail_empty_constructor()
 
 

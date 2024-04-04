@@ -1,7 +1,8 @@
 # pylint: disable=missing-function-docstring,missing-module-docstring,invalid-name
+import os
+import sys
 from datetime import date
 import logging
-import os
 from pathlib import Path
 from cdm.event.common.Trade import Trade
 from cdm.event.common.TradeIdentifier import TradeIdentifier
@@ -16,7 +17,8 @@ from cdm.base.staticdata.party.CounterpartyRoleEnum import CounterpartyRoleEnum
 from cdm.base.staticdata.asset.common.Index import Index
 from cdm.base.staticdata.identifier.AssignedIdentifier import AssignedIdentifier
 from cdm.event.common.TradeState import TradeState
-from test_config import CDM_JSON_SAMPLE_SOURCE
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)))
+from test_helpers.config import CDM_JSON_SAMPLE_SOURCE
 
 def test_trade():
     priceQuantity = PriceQuantity()
@@ -48,7 +50,7 @@ def test_trade():
 
 
 def test_fx():
-    path = os.path.join(os.path.dirname(__file__), CDM_JSON_SAMPLE_SOURCE, 'fx-ex03-fx-fwd.json')
+    path = os.path.join(os.path.dirname(__file__), CDM_JSON_SAMPLE_SOURCE, 'fx', 'fx-ex03-fx-fwd.json')
     json_str = Path(path).read_text(encoding='utf8')
     ts = TradeState.model_validate_json(json_str)
     print(repr(ts))

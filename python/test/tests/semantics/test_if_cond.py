@@ -45,7 +45,10 @@ def test_if_direct():
         'True',  T())
 
 if __name__ == "__main__":
-	test_if_cond_literals()
-	test_if_direct()
+    print('test_if_cond_literals',end='')
+    test_if_cond_literals()
+    print('...passed\ntest_if_direct', end='')
+    test_if_direct()
+    print('...passed')
 
 # EOF
