@@ -18,12 +18,6 @@ Future releases will:
 
 ### Basic Expressions
 
-<style scoped>
-table {
-  font-size: 11px;
-}
-</style>
-
 | Rosetta Syntax | Description | Supported |
 |:---|:---|:---:|
 | RosettaExpression | The base type for all expressions in the Rosetta DSL.|
