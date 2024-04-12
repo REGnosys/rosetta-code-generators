@@ -57,13 +57,15 @@ def test_trade():
     assert not exceptions
 
 
-def test_fx():
+def test_rates():
     ''' The below sample json is conform to CDM 5.8.0, the python library
         generated for earlier or newer versions of CDM might fail to parse
         it correctly.
     '''
-    path = os.path.join(os.path.dirname(__file__), CDM_JSON_SAMPLE_SOURCE,
-                        'fx', 'fx-ex03-fx-fwd.json')
+    path = os.path.join(os.path.dirname(__file__), 
+                        CDM_JSON_SAMPLE_SOURCE,
+                        'rates', 
+                        'bond-option-uti.json')
     json_str = Path(path).read_text(encoding='utf8')
     ts = TradeState.model_validate_json(json_str)
     print(repr(ts))
@@ -75,7 +77,7 @@ def test_fx():
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
     test_trade()
-    test_fx()
+    test_rates()
     print('Done!')
 
 # EOF
