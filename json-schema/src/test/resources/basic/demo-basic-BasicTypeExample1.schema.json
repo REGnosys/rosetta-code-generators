@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.basic",
+  "type": "object",
+  "title": "BasicTypeExample1",
+  "description": "Example with one required string",
+  "properties": {
+    "stringExample": {
+      "description": "Comment 1",
+      "type": "string"
+    }
+  },
+  "required": [
+    "stringExample"
+  ]
+}

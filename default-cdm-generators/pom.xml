@@ -126,6 +126,12 @@
 			<artifactId>excel</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta.code-generators</groupId>
+			<artifactId>json-schema</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

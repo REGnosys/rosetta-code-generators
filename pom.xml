@@ -31,7 +31,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>9.3.0</rosetta.dsl.version>
+                <rosetta.dsl.version>9.7.0</rosetta.dsl.version>
                 <rosetta.bundle.version>0.0.0.master</rosetta.bundle.version>
             </properties>
         </profile>
@@ -41,8 +41,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>9.3.0</rosetta.dsl.version>
-                <rosetta.bundle.version>10.0.0</rosetta.bundle.version>
+                <rosetta.dsl.version>9.7.0</rosetta.dsl.version>
+                <rosetta.bundle.version>10.15.0</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
@@ -63,7 +63,7 @@
         <logback.version>1.4.7</logback.version>
 
         <!-- test -->
-        <junit.version>5.10.1</junit.version>
+        <junit.version>5.8.1</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
 
         <!-- plugin -->
@@ -91,6 +91,7 @@
         <module>python</module>
         <module>csv</module>
         <module>excel</module>
+        <module>json-schema</module>
     </modules>
 
     <dependencyManagement>

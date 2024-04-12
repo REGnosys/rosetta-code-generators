@@ -1,0 +1,12 @@
+namespace demo.enumeration
+version "${project.version}"
+
+enum ExampleEnum1: <"Example Enum 1">
+    Example1 <"Comment 1">
+    Example2 <"Comment 2">
+    Exmaple3 <"Comment 3">
+
+enum ExampleEnum2: <"Example Enum 2">
+    Example1 displayName "EG1" <"Comment 1">
+    Example2 displayName "EG2" <"Comment 2">
+    Exmaple3 displayName "EG3" <"Comment 3">

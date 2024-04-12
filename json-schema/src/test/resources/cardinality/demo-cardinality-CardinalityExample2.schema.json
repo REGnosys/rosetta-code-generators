@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.cardinality",
+  "type": "object",
+  "title": "CardinalityExample2",
+  "description": "Example with an optional basic types",
+  "properties": {
+    "optionalListExample": {
+      "description": "Comment 1",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0
+    }
+  }
+}

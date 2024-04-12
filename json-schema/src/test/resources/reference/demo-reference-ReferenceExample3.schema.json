@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "ReferenceExample3",
+  "properties": {
+    "locationExample": {
+      "$ref": "demo-reference-LocationExample3.schema.json"
+    },
+    "addressExample": {
+      "$ref": "demo-reference-AddressExample3.schema.json"
+    }
+  },
+  "required": [
+    "locationExample",
+    "addressExample"
+  ]
+}

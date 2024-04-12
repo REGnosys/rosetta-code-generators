@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex.namespace1",
+  "type": "object",
+  "title": "AnotherNamespaceExample1",
+  "description": "Example with a simple type",
+  "properties": {
+    "basicString": {
+      "description": "Comment 1",
+      "type": "string"
+    }
+  }
+}

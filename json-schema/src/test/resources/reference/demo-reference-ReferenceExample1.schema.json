@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "ReferenceExample1",
+  "properties": {
+    "exampleString1": {
+      "$ref": "com-rosetta-model-metafields-FieldWithMetaString.schema.json"
+    },
+    "exampleString1Reference": {
+      "$ref": "com-rosetta-model-metafields-ReferenceWithMetaString.schema.json"
+    }
+  },
+  "required": [
+    "exampleString1",
+    "exampleString1Reference"
+  ]
+}

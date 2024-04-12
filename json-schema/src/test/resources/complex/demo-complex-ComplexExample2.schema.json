@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.complex",
+  "type": "object",
+  "title": "ComplexExample2",
+  "description": "Example with an complex type from another namespace",
+  "properties": {
+    "nestedLevel1Example": {
+      "description": "Comment 1",
+      "$ref": "demo-complex-namespace1-AnotherNamespaceExample1.schema.json"
+    }
+  }
+}

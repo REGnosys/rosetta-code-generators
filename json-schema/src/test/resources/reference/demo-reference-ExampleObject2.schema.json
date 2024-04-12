@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "ExampleObject2",
+  "properties": {
+    "basicString": {
+      "description": "Comment 1",
+      "type": "string"
+    }
+  }
+}

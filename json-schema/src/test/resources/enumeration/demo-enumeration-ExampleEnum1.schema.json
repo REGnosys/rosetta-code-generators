@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.enumeration",
+  "type": "string",
+  "title": "ExampleEnum1",
+  "description": "Example Enum 1",
+  "enum": [
+    "Example1",
+    "Example2",
+    "Exmaple3"
+  ],
+  "oneOf": [
+    {
+      "enum": [
+        "Example1"
+      ],
+      "title": "Example1",
+      "description": "Comment 1"
+    },
+    
+    {
+      "enum": [
+        "Example2"
+      ],
+      "title": "Example2",
+      "description": "Comment 2"
+    },
+    
+    {
+      "enum": [
+        "Exmaple3"
+      ],
+      "title": "Exmaple3",
+      "description": "Comment 3"
+    }
+  ]
+}

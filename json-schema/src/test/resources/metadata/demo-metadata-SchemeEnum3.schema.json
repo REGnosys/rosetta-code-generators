@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.metadata",
+  "type": "string",
+  "title": "SchemeEnum3",
+  "enum": [
+    "A",
+    "B",
+    "C"
+  ],
+  "oneOf": [
+    {
+      "enum": [
+        "A"
+      ],
+      "title": "A"
+    },
+    
+    {
+      "enum": [
+        "B"
+      ],
+      "title": "B"
+    },
+    
+    {
+      "enum": [
+        "C"
+      ],
+      "title": "C"
+    }
+  ]
+}

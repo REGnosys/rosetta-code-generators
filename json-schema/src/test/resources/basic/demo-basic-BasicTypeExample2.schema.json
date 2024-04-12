@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.basic",
+  "type": "object",
+  "title": "BasicTypeExample2",
+  "description": "Example with all required basic types",
+  "properties": {
+    "stringExample": {
+      "description": "Comment 1",
+      "type": "string"
+    },
+    "numberExample": {
+      "description": "Comment 2",
+      "type": "number"
+    },
+    "intExample": {
+      "description": "Comment 3",
+      "type": "integer"
+    },
+    "timeExample": {
+      "description": "Comment 4",
+      "type": "string"
+    },
+    "dateExample": {
+      "description": "Comment 5",
+      "type": "string"
+    },
+    "dateTimeExample": {
+      "description": "Comment 6",
+      "type": "string"
+    },
+    "zonedDateTimeExample": {
+      "description": "Comment 7",
+      "type": "string"
+    },
+    "booleanExample": {
+      "description": "Comment 8",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "stringExample",
+    "numberExample",
+    "intExample",
+    "timeExample",
+    "dateExample",
+    "dateTimeExample",
+    "zonedDateTimeExample",
+    "booleanExample"
+  ]
+}

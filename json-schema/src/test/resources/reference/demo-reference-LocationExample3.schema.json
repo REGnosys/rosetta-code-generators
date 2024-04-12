@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$anchor": "demo.reference",
+  "type": "object",
+  "title": "LocationExample3",
+  "properties": {
+    "exampleObject3": {
+      "$ref": "demo-reference-metafields-FieldWithMetaExampleObject3.schema.json"
+    }
+  },
+  "required": [
+    "exampleObject3"
+  ]
+}
