@@ -51,4 +51,4 @@ target/python/build/
 python_cdm.egg-info
 build/runtime/build
 rosetta_runtime.egg-info
-#build/resources/rosetta/cdm
+build/resources/rosetta/cdm
