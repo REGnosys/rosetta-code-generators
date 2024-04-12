@@ -1,5 +1,6 @@
 #!/bin/sh
 function processError() {
+  rm -rf .pydevenv
   echo ""
   echo ""
   echo "***************************************************************************"
@@ -22,7 +23,7 @@ MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $MYPATH
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
-$PYEXE -m venv --clear .pyenv || processError
+$PYEXE -m venv --clear .pydevenv || processError
 source .pyenv/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
@@ -35,7 +36,7 @@ rm -rf build
 rm rosetta_runtime-2.0.0-py3-none-any.whl
 $PYEXE -m pip install -e . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
-rm -rf build
+rm -rf build .pydevenv
 echo ""
 echo ""
 echo "***************************************************************************"

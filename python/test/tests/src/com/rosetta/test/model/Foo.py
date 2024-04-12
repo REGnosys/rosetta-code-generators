@@ -17,5 +17,4 @@ class Foo(BaseDataClass):
     three: List[int] = Field([], description="")
     two: Optional[int] = Field(None, description="")
 
-
-Foo.update_forward_refs()
+#EOF

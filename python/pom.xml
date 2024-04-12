@@ -16,15 +16,11 @@
     <description>Generators to create python for rosetta</description>
     <properties>
         <!-- used by PythonFilesGeneratorTest::generatePython to generate python from a rosetta source --> 
-        <!--
-        <cdm.rosetta.source.path>build/resources/rosetta/jbziade-PortfolioPriceReturnTerms_FRAGMOS_Prod-fix-mappings</cdm.rosetta.source.path>
-        -->
-        <cdm.rosetta.source.path>build/resources/rosetta/cdm_5.2.0</cdm.rosetta.source.path>
+        <cdm.rosetta.source.path>build/resources/rosetta/cdm/5_8_0</cdm.rosetta.source.path>
         <cdm.python.output.path>target/python</cdm.python.output.path>
         <unit.test.rosetta.source.path>build/resources/rosetta/python_unit_tests</unit.test.rosetta.source.path>
         <unit.test.python.output.path>target/python_unit_tests</unit.test.python.output.path>
         <generated.python.path>target/python_test</generated.python.path>
-        
     </properties>
     <build>
         <plugins>

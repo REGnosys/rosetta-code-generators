@@ -44,12 +44,11 @@ Thumbs.db
 *._trace
 # Python
 __pycache__
-.pyenv/
+.pydevenv/
 .pytest_cache/
 # project
 target/python/build/
 python_cdm.egg-info
-.testenv
-build/testenv
 build/runtime/build
 rosetta_runtime.egg-info
+#build/resources/rosetta/cdm

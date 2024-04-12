@@ -27,6 +27,7 @@ import org.junit.jupiter.api.^extension.ExtendWith
 import org.junit.jupiter.api.Disabled
 import java.util.Collection
 import org.slf4j.LoggerFactory
+import java.nio.file.Paths
 
 /*
  * Test Principal
@@ -50,7 +51,7 @@ class PythonFilesGeneratorTest {
         var model      = reader.read(new FileReader("pom.xml"))
         return model.getProperties();
     }
-    def private void deleteFolderContent(String folderPath) {
+    def private void cleanSrcFolder(String folderPath) {
         val folder = new File(folderPath + File.separator + "src")
         if (folder.exists() && folder.isDirectory()) {
             try {
@@ -91,9 +92,13 @@ class PythonFilesGeneratorTest {
         //  - produce new python from the dsl definitions 
         //  - delete any existing directory and create a new one
         
+        if (!Files.exists(Paths.get(rosettaSource))){
+            throw new Exception ("Unable to generate Python from non-existant Rosetta source directory: " + rosettaSource)
+        }
+        LOGGER.info("generatePython ... creating Python from Rosetta found in {}", rosettaSource)
+        LOGGER.info("generatePython ... creating resource set and adding common Rosetta models")
         // Create a resource set and add the common Rosetta models to it
-        LOGGER.info("generatePython ... get resource set from {}", rosettaSource)
-        val resourceSet   = resourceSetProvider.get 
+        val resourceSet = resourceSetProvider.get 
         parse(ModelHelper.commonTestTypes, resourceSet)
         resourceSet.getResource(URI.createURI('classpath:/model/basictypes.rosetta'), true)
         resourceSet.getResource(URI.createURI('classpath:/model/annotations.rosetta'), true)
@@ -103,58 +108,59 @@ class PythonFilesGeneratorTest {
             .map[listFiles[name.endsWith("rosetta")].toList]
             .flatten
             .map[toPath]
+        LOGGER.info ("generatePythonFromRosettaFiles ... found {} rosetta files in {}", rosettaFilePaths.length.toString (), rosettaSource)                  
         val resources      = rosettaFilePaths
             .map[resourceSet.getResource(URI.createURI(it.toString()), true)]
             .toList
+        LOGGER.info ("generatePythonFromRosettaFiles ... converted to resources")                  
         val rosettaModels  = resources
             .flatMap[contents.filter(RosettaModel)]
             .toList as Collection<RosettaModel>
-        LOGGER.info ("generatePythonFromRosettaFiles ... found {} rosetta files in {}", rosettaModels.length.toString (), rosettaSource)                  
+        LOGGER.info ("generatePythonFromRosettaFiles ... created {} rosetta models", rosettaModels.length.toString ())                  
         val generatedFiles = newHashMap
         for (model : rosettaModels) {
             LOGGER.info ("generatePythonFromRosettaFiles ... processing model: {}", model.name)
             val python = generatePythonFromRosettaModel (model, resourceSet);
             generatedFiles.putAll (python)
         }
-        println("number of python files: " + generatedFiles.size())
-        deleteFolderContent(outputPath)
+        cleanSrcFolder(outputPath)
         writeFiles(outputPath, generatedFiles)
         LOGGER.info ("generatePythonFromRosettaFiles ... done")
     } 
+    
     //@Disabled("Generate CDM from Rosetta Files")
     @Test
     def void generateCDMPythonFromRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
         
         try {
+            LOGGER.info('generateCDMPythonFromRosetta ... start')
             val properties    = getProperties ()
             val rosettaSource = properties.getProperty ('cdm.rosetta.source.path') as String
             if (rosettaSource === null){
-                throw new Exception ('Initialization failure: Rosetta path not specified')
+                throw new Exception ('Initialization failure: source Rosetta path not specified')
             }
             val outputPath    = properties.getProperty ('cdm.python.output.path') as String
             if (outputPath === null) {
                 throw new Exception('Initialization failure: Python target not specified')
             }
             generatePythonFromRosettaFiles (rosettaSource, outputPath)
+            LOGGER.info('generateCDMPythonFromRosetta ... done')
         } 
         catch (IOException ioE) {
             LOGGER.error ('PythonFilesGeneratorTest::generateCDMPythonFromRosetta ... processing failed with an IO Exception')
-            LOGGER.error ('\n' + ioE.toString ())
             ioE.printStackTrace ()
         }
         catch (ClassCastException ccE) {
             LOGGER.error ('PythonFilesGeneratorTest::generateCDMPythonFromRosetta ... processing failed with a ClassCastException')
-            LOGGER.error ('\n' + ccE.toString ())
             ccE.printStackTrace ()
         }
         catch(Exception e) {
             LOGGER.error ('PythonFilesGeneratorTest::generateCDMPythonFromRosetta ... processing failed with an Exception')
-            LOGGER.error ('\n' + e.toString ())
             e.printStackTrace ()
         }
     }
-    //@Disabled("Generate Python Unit Tests from Rosetta Files")
+    @Disabled("Generate Python Unit Tests from Rosetta Files")
     @Test
     def void generatePythonFromGenericRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
@@ -168,7 +174,6 @@ class PythonFilesGeneratorTest {
             } else if (outputPath === null) {
                 LOGGER.debug ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... target directory not specified')
             } else {
-//#### not working yet for one rosetta file
                 generatePythonFromRosettaFiles (rosettaSource, outputPath)
             }
         } 

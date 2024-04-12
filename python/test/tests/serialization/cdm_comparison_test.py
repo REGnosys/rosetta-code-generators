@@ -6,7 +6,9 @@ import os
 from pydantic import ValidationError
 from cdm.version import __build_time__
 from cdm.event.common.TradeState import TradeState
-from dict_comp import dict_comp
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir)))
+from serialization.dict_comp import dict_comp
+from test_helpers.config import CDM_JSON_SAMPLE_SOURCE
 
 def cdm_comparison_test_from_file(path, class_name):
     '''loads the json from a file and runs the comparison'''
@@ -31,13 +33,5 @@ def cdm_comparison_test_from_file(path, class_name):
     except ValidationError as e:
         print('failed to parse')
         print(e)
-
-def test_trade_state (cdm_sample_in=None):
-    '''test trade state'''
-    dir_path = os.path.dirname(__file__)
-    if cdm_sample_in is None:
-        sys.path.append(os.path.join(dir_path))
-        cdm_sample_in = os.path.join(dir_path, 'EUR-Vanilla-account.json')
-    cdm_comparison_test_from_file (cdm_sample_in, TradeState)
 
 # EOF

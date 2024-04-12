@@ -32,18 +32,6 @@ class PythonModelObjectBoilerPlate {
     }
 
     def toRawType(ExpandedAttribute attribute) {
-        /*if (!attribute.hasMetas)
-            attribute.type.toPythonType
-        else if (attribute.refIndex >= 0) {
-            if (attribute.type.isType)
-                attribute.type.toReferenceWithMetaTypeName
-            else
-                attribute.type.toBasicReferenceWithMetaTypeName
-        }
-        else
-            attribute.type.toFieldWithMetaTypeName
-        * 
-        */
         attribute.type.toPythonType
     }
 
