@@ -316,7 +316,7 @@ class DataRuleGeneratorTest {
 		            return all_elements(Foo(_resolve_rosetta_attr(self, "price")), "=", 5.0)
 		        
 		        def _else_fn0():
-		            return False
+		            return True
 		        
 		        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "price")), _then_fn0, _else_fn0)
 		'''
@@ -352,7 +352,7 @@ class DataRuleGeneratorTest {
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "head"), "=", False), _then_fn0, _else_fn0)
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "head"), "=", True), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))
@@ -385,7 +385,7 @@ class DataRuleGeneratorTest {
 		        def _else_fn0():
 		            return True
 		        
-		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", False), _then_fn0, _else_fn0)
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "tail"), "=", True), _then_fn0, _else_fn0)
 		'''
 		
 		assertTrue(python.toString.contains(expected))

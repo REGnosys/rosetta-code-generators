@@ -52,7 +52,6 @@ class  PythonFunctionGenerator {
 
     private def generateFunctions(Function function,String version) {
         val dependencies = collectFunctionDependencies(function);
-
         '''
         «generateImports(dependencies, function)»
         
