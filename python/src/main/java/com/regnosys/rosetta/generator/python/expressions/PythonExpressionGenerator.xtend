@@ -245,10 +245,13 @@ class PythonExpressionGenerator {
                 '''«expr.value»'''
             }
             RosettaBooleanLiteral: {
-                if (expr.value == "true")
-                    '''True'''
-                else
-                    '''False'''
+            	val trimmedValue = expr.value.toString()
+				if (trimmedValue.equals("true")) {
+				    '''True'''
+				} else {
+				    '''False'''
+				}
+
             }
             RosettaIntLiteral: {
                 '''«expr.value»'''

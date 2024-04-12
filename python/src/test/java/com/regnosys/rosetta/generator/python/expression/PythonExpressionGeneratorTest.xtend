@@ -208,7 +208,7 @@ class PythonExpressionGeneratorTest {
 	                def _else_fn0():
 	                    return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 5)
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", False), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
 	        '''
        	assertTrue(python.toString.contains(expected))
 	                
@@ -251,7 +251,7 @@ class PythonExpressionGeneratorTest {
 	                def _else_fn0():
 	                    return (not rosetta_attr_exists(_resolve_rosetta_attr(self, "field2")))
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", False), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
 	        '''
        	assertTrue(python.toString.contains(expected))
 	                
@@ -506,7 +506,7 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return False
+	                    return True
 	                
 	                def _else_fn0():
 	                    return False
@@ -968,7 +968,7 @@ class PythonExpressionGeneratorTest {
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field3"), "=", False), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field3"), "=", True), _then_fn0, _else_fn0)
 	        '''
 	        val expectedClassA='''
 	        class A(BaseDataClass):
@@ -1058,7 +1058,7 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn1():
-	                    return all_elements(_resolve_rosetta_attr(self, "field3"), "=", False)
+	                    return all_elements(_resolve_rosetta_attr(self, "field3"), "=", True)
 	                
 	                def _else_fn1():
 	                    return True
