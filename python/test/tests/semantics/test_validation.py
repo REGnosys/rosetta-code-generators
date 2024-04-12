@@ -50,7 +50,9 @@ def test_trade():
 
 
 def test_fx():
-    path = os.path.join(os.path.dirname(__file__), CDM_JSON_SAMPLE_SOURCE, 'fx', 'fx-ex03-fx-fwd.json')
+    path = os.path.join(os.path.dirname(__file__), 
+                        CDM_JSON_SAMPLE_SOURCE, 
+                        'fx', 'fx-ex03-fx-fwd.json')
     json_str = Path(path).read_text(encoding='utf8')
     ts = TradeState.model_validate_json(json_str)
     print(repr(ts))
