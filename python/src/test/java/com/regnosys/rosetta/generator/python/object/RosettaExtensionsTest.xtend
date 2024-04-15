@@ -18,89 +18,91 @@ class RosettaExtensionsTest {
 
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
-	
-	@Test
-	def testSuperClasses() {
-		val python = '''
-			namespace test
-			
-			type Foo extends Bar:
-			type Bar extends Baz:
-			type Baz:
-		'''.generatePython
+
+
+    @Test
+    def testSuperClasses() {
+        val python = '''
+            namespace test
+
+            type Foo extends Bar:
+            type Bar extends Baz:
+            type Baz:
+        '''.generatePython
 
 		
 		val expectedBaz=
 		'''
 		class Baz(BaseDataClass):
-		  pass
+		    pass
 		'''
-		
+
 		val expectedBar=
 		'''
 		class Bar(Baz):
-		  pass
+		    pass
 		'''
-		
+
 		val expectedFoo=
 		'''
 		class Foo(Bar):
-		  pass
+		    pass
 		'''
-		
+
 		assertTrue(python.toString.contains(expectedBaz))
-		assertTrue(python.toString.contains(expectedBar))	
+		assertTrue(python.toString.contains(expectedBar))
 		assertTrue(python.toString.contains(expectedFoo))
-		
+
 	}
-	
-	
-	@Test 
+
+
+	@Test
 	def testEnumValue() {
 		val python = '''
 			namespace test
 			version "1.2.3"
-			
+
 			enum Foo:
 				foo0 foo1
-			
+
 			enum Bar extends Foo:
 				bar
 			enum Baz extends Bar:
 				baz
 		'''.generatePython
-		
+
 		val expectedBar=
 		'''
 		class Bar(Enum):
-		  BAR = "bar"
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
+		    BAR = "bar"
+		    FOO_0 = "foo0"
+		    FOO_1 = "foo1"
 		'''
-		
+
 		val expectedBaz=
 		'''
 		class Baz(Enum):
-		  BAR = "bar"
-		  BAZ = "baz"
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
+		    BAR = "bar"
+		    BAZ = "baz"
+		    FOO_0 = "foo0"
+		    FOO_1 = "foo1"
 		'''
-		
+
 		val expectedFoo=
 		'''
 		class Foo(Enum):
-		  FOO_0 = "foo0"
-		  FOO_1 = "foo1"
-		'''
-		assertTrue(python.toString.contains(expectedBar))
-		assertTrue(python.toString.contains(expectedBaz))
-		assertTrue(python.toString.contains(expectedFoo))
-	}
-	
-	
-	def generatePython(CharSequence model) {
-		val m = model.parseRosettaWithNoErrors
+		    FOO_0 = "foo0"
+		    FOO_1 = "foo1"
+        '''
+
+        assertTrue(python.toString.contains(expectedBar))
+        assertTrue(python.toString.contains(expectedBaz))
+        assertTrue(python.toString.contains(expectedFoo))
+    }
+
+
+    def generatePython(CharSequence model) {
+        val m = model.parseRosettaWithNoErrors
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         

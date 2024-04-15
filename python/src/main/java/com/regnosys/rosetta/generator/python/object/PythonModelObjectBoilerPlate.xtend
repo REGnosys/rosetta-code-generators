@@ -10,7 +10,7 @@ class PythonModelObjectBoilerPlate {
     def toAttributeName(ExpandedAttribute attribute) {
         if (attribute.name == "val")
         '''`val`'''
-		else
+        else
         attribute.name.toFirstLower
     }
 
@@ -25,25 +25,13 @@ class PythonModelObjectBoilerPlate {
     def toType(ExpandedAttribute attribute) {
         if (attribute.multiple)
             '''MutableList<«attribute.toRawType»>'''
-		else if (attribute.singleOptional)
+        else if (attribute.singleOptional)
             '''«attribute.toRawType»'''
-		else
+        else
         '''«attribute.toRawType»'''
     }
 
     def toRawType(ExpandedAttribute attribute) {
-        /*if (!attribute.hasMetas)
-            attribute.type.toPythonType
-        else if (attribute.refIndex >= 0) {
-            if (attribute.type.isType)
-                attribute.type.toReferenceWithMetaTypeName
-            else
-                attribute.type.toBasicReferenceWithMetaTypeName
-        }
-        else
-            attribute.type.toFieldWithMetaTypeName
-        * 
-        */
         attribute.type.toPythonType
     }
 
