@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,141 +25,149 @@ import com.regnosys.rosetta.generator.python.enums.PythonEnumGenerator;
 import com.regnosys.rosetta.generator.python.object.PythonModelObjectGenerator;
 import com.regnosys.rosetta.generator.python.func.PythonFunctionGenerator;
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil;
+import com.regnosys.rosetta.generator.python.util.Util;
 
 public class PythonCodeGenerator extends AbstractExternalGenerator {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
 
-	@Inject
-	PythonModelObjectGenerator pojoGenerator;
-	@Inject
-	PythonFunctionGenerator funcGenerator;
-	@Inject
-	private PythonEnumGenerator enumGenerator;
+    @Inject PythonModelObjectGenerator pojoGenerator;
+    @Inject PythonFunctionGenerator funcGenerator;
+    @Inject PythonEnumGenerator enumGenerator;
 
-	@Inject
-	PythonModelGeneratorUtil utils;
+    private List<String> subfolders;
+    private AtomicReference<String> previousNamespace;
+    private static String namespace;
+    public PythonCodeGenerator() {
+        super("Python");
+    }
 
-	private List<String> subfolders;
-	private AtomicReference<String> previousNamespace;
+    @Override
+    public Map<String, ? extends CharSequence> beforeAllGenerate(ResourceSet set,
+            Collection<? extends RosettaModel> models, String version) {
+        subfolders        = new ArrayList<String>();
+        previousNamespace = new AtomicReference<>("");
+        namespace         = null;
+        return Collections.emptyMap();
+    }
 
-	public PythonCodeGenerator() {
-		super("Python");
-	}
+    @Override
+    public Map<String, ? extends CharSequence> generate(Resource resource, 
+                                                        RosettaModel model,
+                                                        String version) {
+        String cleanVersion = cleanVersion(version);
 
-	@Override
-	public Map<String, ? extends CharSequence> beforeAllGenerate(ResourceSet set,
-			Collection<? extends RosettaModel> models, String version) {
-		subfolders = new ArrayList<String>();
-		previousNamespace = new AtomicReference<>("");
+        Map<String, CharSequence> result = new HashMap<>();
 
-		return Collections.emptyMap();
-	}
+        List<Data> rosettaClasses = model.getElements().stream().filter(e -> e instanceof Data)
+                .map(Data.class::cast).collect(Collectors.toList());
 
-	@Override
-	public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
-		String cleanVersion = cleanVersion(version);
+        List<RosettaMetaType> metaTypes =
+                model.getElements().stream().filter(RosettaMetaType.class::isInstance)
+                        .map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
-		Map<String, CharSequence> result = new HashMap<>();
+        List<RosettaEnumeration> rosettaEnums =
+                model.getElements().stream().filter(RosettaEnumeration.class::isInstance)
+                        .map(RosettaEnumeration.class::cast).collect(Collectors.toList());
 
-		List<Data> rosettaClasses = model.getElements().stream().filter(e -> e instanceof Data).map(Data.class::cast)
-				.collect(Collectors.toList());
+        List<Function> rosettaFunctions =
+                model.getElements().stream().filter(t -> Function.class.isInstance(t))
+                        .map(Function.class::cast).collect(Collectors.toList());
 
-		List<RosettaMetaType> metaTypes = model.getElements().stream().filter(RosettaMetaType.class::isInstance)
-				.map(RosettaMetaType.class::cast).collect(Collectors.toList());
+        if (rosettaFunctions.size() > 0) {
+            if (!subfolders.contains(model.getName())) {
+                subfolders.add(model.getName());
+            }
+            if (!subfolders.contains(model.getName() + ".functions")) {
+                subfolders.add(model.getName() + ".functions");
+            }
+        }
 
-		List<RosettaEnumeration> rosettaEnums = model.getElements().stream()
-				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
-				.collect(Collectors.toList());
+        if (!model.getName().equals(previousNamespace.get())) {
+            previousNamespace.set(model.getName());
+            LOGGER.debug("processing module: {}", model.getName());
+        }
+        result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, cleanVersion));
+        result.putAll(enumGenerator.generate(rosettaEnums, cleanVersion));
+        result.putAll(funcGenerator.generate(rosettaFunctions, cleanVersion));
 
-		List<Function> rosettaFunctions = model.getElements().stream().filter(t -> Function.class.isInstance(t))
-				.map(Function.class::cast).collect(Collectors.toList());
+        return result;
+    }
 
-		if (rosettaFunctions.size() > 0) {
-			if (!subfolders.contains(model.getName())) {
-				subfolders.add(model.getName());
-			}
-			if (!subfolders.contains(model.getName() + ".functions")) {
-				subfolders.add(model.getName() + ".functions");
-			}
-		}
+    private String cleanVersion(String version) {
+        String cleanVersion = "0.0.0";
+        if (version != null && !version.equals("${project.version}")) {
+            String[] versionParts = version.split("\\.");
+            if (versionParts.length > 2) {
+                String thirdPart = versionParts[2].replaceAll("[^\\d]", "");
+                cleanVersion = versionParts[0] + "." + versionParts[1] + "." + thirdPart;
+            }
+        }
+        return cleanVersion;
+    }
 
-		if (!model.getName().equals(previousNamespace.get())) {
-			previousNamespace.set(model.getName());
-			LOGGER.debug("processing module: {}", model.getName());
-		}
-		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, cleanVersion));
-		result.putAll(enumGenerator.generate(rosettaEnums, cleanVersion));
-		result.putAll(funcGenerator.generate(rosettaFunctions, cleanVersion));
+    @Override
+    public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
+                                                                Collection<? extends RosettaModel> models, 
+                                                                String version) {
+        String cleanVersion = cleanVersion(version);
+        Map<String, CharSequence> result = new HashMap<>();
 
-		return result;
-	}
+        List<String> workspaces = getWorkspaces(subfolders);
+        result.putAll(generateWorkspaces(workspaces, cleanVersion));
+        result.putAll(generateInits(subfolders));
+        if (namespace == null) {
+            Iterator<? extends RosettaModel> iterator = models.iterator();
+            if (iterator.hasNext()) {
+                namespace = Util.getNamespace(iterator.next());
+            }
+        }
+        if (namespace != null) {
+            result.put("pyproject.toml", PythonModelGeneratorUtil.createPYProjectTomlFile(namespace, cleanVersion));
+        }
+        return result;
+    }
 
-	private String cleanVersion(String version) {
-		String cleanVersion = "0.0.0";
-		if (version != null && !version.equals("${project.version}")) {
-			String[] versionParts = version.split("\\.");
-			if (versionParts.length > 2) {
-				String thirdPart = versionParts[2].replaceAll("[^\\d]", "");
-				cleanVersion = versionParts[0] + "." + versionParts[1] + "." + thirdPart;
-			}
-		}
-		return cleanVersion;
-	}
+    private ArrayList<String> getWorkspaces(List<String> subfolders) {
+        ArrayList<String> firstElements = new ArrayList<>();
 
-	@Override
-	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
-			Collection<? extends RosettaModel> models, String version) {
-		String cleanVersion = cleanVersion(version);
-		Map<String, CharSequence> result = new HashMap<>();
+        for (String subfolder : subfolders) {
+            String[] parts = subfolder.split("\\.");
+            if (parts.length > 0) {
+                if (!firstElements.contains(parts[0]))
+                    firstElements.add(parts[0]);
+            }
+        }
 
-		List<String> workspaces = getWorkspaces(subfolders);
-		result.putAll(generateWorkspaces(workspaces, cleanVersion));
-		result.putAll(generateInits(subfolders));
-		result.put("pyproject.toml", utils.createPYProjectTomlFile(cleanVersion));
-		return result;
-	}
+        return firstElements;
+    }
 
-	private ArrayList<String> getWorkspaces(List<String> subfolders) {
-		ArrayList<String> firstElements = new ArrayList<>();
+    private Map<String, String> generateWorkspaces(List<String> workspaces, String version) {
+        Map<String, String> result = new HashMap<>();
 
-		for (String subfolder : subfolders) {
-			String[] parts = subfolder.split("\\.");
-			if (parts.length > 0) {
-				if (!firstElements.contains(parts[0]))
-					firstElements.add(parts[0]);
-			}
-		}
+        for (String workspace : workspaces) {
+            result.put(PythonModelGeneratorUtil.toPyFileName(workspace, "__init__"), PythonModelGeneratorUtil.createTopLevelInitFile(version));
+            result.put(PythonModelGeneratorUtil.toPyFileName(workspace, "version"), PythonModelGeneratorUtil.createVersionFile(version));
+            result.put(PythonModelGeneratorUtil.toFileName(workspace, "py.typed"), "");
+        }
 
-		return firstElements;
-	}
+        return result;
+    }
 
-	private Map<String, String> generateWorkspaces(List<String> workspaces, String version) {
-		Map<String, String> result = new HashMap<>();
+    public Map<String, String> generateInits(List<String> subfolders) {
+        Map<String, String> result = new HashMap<>();
 
-		for (String workspace : workspaces) {
-			result.put(utils.toPyFileName(workspace, "__init__"), utils.createTopLevelInitFile(version));
-			result.put(utils.toPyFileName(workspace, "version"), utils.createVersionFile(version));
+        for (String subfolder : subfolders) {
+            String[] parts = subfolder.split("\\.");
+            for (int i = 1; i < parts.length; i++) {
+                StringBuilder keyBuilder = new StringBuilder(parts[0]);
+                for (int j = 1; j <= i; j++) {
+                    keyBuilder.append(".").append(parts[j]);
+                }
+                String key = PythonModelGeneratorUtil.toPyFileName(keyBuilder.toString(), "__init__");
+                result.putIfAbsent(key, " ");
+            }
+        }
 
-		}
-
-		return result;
-	}
-
-	public Map<String, String> generateInits(List<String> subfolders) {
-		Map<String, String> result = new HashMap<>();
-
-		for (String subfolder : subfolders) {
-			String[] parts = subfolder.split("\\.");
-			for (int i = 1; i < parts.length; i++) {
-				StringBuilder keyBuilder = new StringBuilder(parts[0]);
-				for (int j = 1; j <= i; j++) {
-					keyBuilder.append(".").append(parts[j]);
-				}
-				String key = utils.toPyFileName(keyBuilder.toString(), "__init__");
-				result.putIfAbsent(key, " ");
-			}
-		}
-
-		return result;
-	}
+        return result;
+    }
 }

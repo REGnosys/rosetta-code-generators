@@ -14,50 +14,50 @@ import static org.junit.jupiter.api.Assertions.*
 @ExtendWith(InjectionExtension)
 @InjectWith(RosettaInjectorProvider)
 class PythonMetaDataGenerationTest {
-	
+    
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
 
-	
-	
-	@Test
+    
+    
+    @Test
     @Disabled("Test Meta Types")
-    	def void shouldGenerateMetaTypes() {
+        def void shouldGenerateMetaTypes() {
                 val python = '''
-        			metaType reference string
-        			metaType address string
-        			metaType scheme string
-        			metaType id string
+                    metaType reference string
+                    metaType address string
+                    metaType scheme string
+                    metaType id string
 
-        			type TestType:
-        				[metadata key]
-        				testTypeValue1 TestType2 (1..1)
-        					[metadata reference]
-        				testTypeValue2 TestType3 (1..1)
+                    type TestType:
+                        [metadata key]
+                        testTypeValue1 TestType2 (1..1)
+                            [metadata reference]
+                        testTypeValue2 TestType3 (1..1)
 
-        			enum TestEnum:
-        			    TestEnumValue1
-        			    TestEnumValue2
+                    enum TestEnum:
+                        TestEnumValue1
+                        TestEnumValue2
 
-        			type TestType2:
-        				testType2Value1 number (1..1)
-        					[metadata reference]
-        				testType2Value2 string (1..1)
-        					[metadata id]
-        					[metadata scheme]
-        				testType2Value3 TestEnum (1..1)
-        					[metadata scheme]
-        				testTypeValue4 TestType4 (1..1)
-        					[metadata address]
+                    type TestType2:
+                        testType2Value1 number (1..1)
+                            [metadata reference]
+                        testType2Value2 string (1..1)
+                            [metadata id]
+                            [metadata scheme]
+                        testType2Value3 TestEnum (1..1)
+                            [metadata scheme]
+                        testTypeValue4 TestType4 (1..1)
+                            [metadata address]
 
-        			type TestType3:
-        				testType3Value1 TestType4 (1..1)
-        					[metadata location]
+                    type TestType3:
+                        testType3Value1 TestType4 (1..1)
+                            [metadata location]
 
-        			type TestType4:
-        				testType4Value1 number (1..1)
+                    type TestType4:
+                        testType4Value1 number (1..1)
 
-        	        '''.generatePython
+                    '''.generatePython
 
                 val types = python.values.join('\n').toString
                 val expected1 =
@@ -177,10 +177,47 @@ class PythonMetaDataGenerationTest {
                 assertTrue(types.contains(expected12))*/
             }
             
+    @Disabled   
+    @Test
+    def void func() {
+        val python = 
+        '''
+        func Create_RejectedWorkflowStep: 
+            [creation WorkflowStep]
+            inputs:
+                messageInformation MessageInformation (0..1) <"Contains all information pertaining the messaging header">
+                timestamp EventTimestamp (1..*) <"The dateTime and qualifier associated with this event.">
+                eventIdentifier Identifier (1..*) <"The identifiers that uniquely identify this lifecycle event.">
+                proposedWorkflowStep WorkflowStep (1..1) <"Required previous WorkflowStep that provides lineage to WorkflowStep that precedes it.">
+        
+            output:
+                rejectedWorkflowStep WorkflowStep (1..1) <"Rejected WorkflowStep with lineage to the proposed step that preceded it.">
+        
+            condition ProposedEventExists: <"The previous proposed step being rejected must exist">
+                proposedWorkflowStep -> proposedEvent exists
             
+            set rejectedWorkflowStep -> messageInformation: <"Assign the workflowStep action.">
+                messageInformation
+        
+            add rejectedWorkflowStep -> timestamp: <"Assign the dateTime and qualifier associated with this event.">
+                timestamp
+        
+            add rejectedWorkflowStep -> eventIdentifier: <"Assign the identifiers that uniquely identify this lifecycle event.">
+                eventIdentifier
+        
+            set rejectedWorkflowStep -> previousWorkflowStep: <"Set the reference to the previous WorkflowStep to provide lineage">
+                proposedWorkflowStep as-key
+        
+            set rejectedWorkflowStep -> rejected: <"Set the rejected flag to True">
+                True
+        '''.generatePython
+        println(python)
+    
+        
+    }  
             
-	def generatePython(CharSequence model) {
-		val m = model.parseRosettaWithNoErrors
+    def generatePython(CharSequence model) {
+        val m = model.parseRosettaWithNoErrors
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         
@@ -193,5 +230,5 @@ class PythonMetaDataGenerationTest {
         
         result
     }
-	
+    
 }
