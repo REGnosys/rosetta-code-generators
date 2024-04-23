@@ -169,30 +169,35 @@ class  PythonFunctionGenerator {
     
     private def collectFunctionDependencies(Function func) {
         val Set<EObject> dependencies = newHashSet()
-    
+
         func.shortcuts.forEach[shortcut |
             dependencies.addAll(functionDependencyProvider.findDependencies(shortcut.expression))
         ]
         func.operations.forEach[operation |
             dependencies.addAll(functionDependencyProvider.findDependencies(operation.expression))
         ]
-    
+
         (func.conditions + func.postConditions).forEach[condition |
             dependencies.addAll(functionDependencyProvider.findDependencies(condition.expression))
         ]
-    
+
         func.inputs.forEach[input |
             if (input.getTypeCall()?.getType() !== null) {
                 dependencies.add(input.getTypeCall().getType())
             }
         ]
-    
+
         if (func.output?.getTypeCall()?.getType() !== null) {
             dependencies.add(func.output.getTypeCall().getType())
         }
-    
+        
+        dependencies.removeIf[
+		    it instanceof Function && (it as Function).name == func.name
+		]
+
         return dependencies
     }
+
 
     private def generateIfBlocks(Function function) {
         val levelList = newArrayList(0) 
