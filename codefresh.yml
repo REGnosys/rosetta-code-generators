@@ -4,14 +4,22 @@ stages:
   - build
   - finalise
 steps:
+  main_clone:
+    title: Cloning main repository...
+    stage: 'setup'
+    type: git-clone
+    git: github
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    revision: "${{CF_REVISION}}"
+
   SetProperties:
     title: Setup build
     stage: 'setup'
     image: alpine/git
     commands:
-      - cf_export MVN_DEPLOY_FLAGS="-s ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/settings.xml -Dmaven.repo.local=${{CF_VOLUME_PATH}}/.m2 -Denv.CI_DEPLOY_PASSWORD=${{CI_DEPLOY_PASSWORD}} -Denv.CI_DEPLOY_USERNAME=${{CI_DEPLOY_USERNAME}} -Denv.GPG_KEYNAME=${{GPG_KEYNAME}} -Denv.GPG_PASSPHRASE=${{GPG_PASSPHRASE}}"
-      - cf_export MVN_BUILD_FLAGS="-Dmaven.repo.local=${{CF_VOLUME_PATH}}/.m2"
+      - cf_export CICD_REPO="${{CF_VOLUME_PATH}}/m2_repository"
       - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import"
+      - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
   ReleaseProperties:
     title: Setup release build
@@ -23,8 +31,6 @@ steps:
           releaseNameNotDefined: "${{TAG_REPO}} == true"
     commands:
       - cf_export RELEASE_NAME=${{TAG_NAME}}
-      - cf_export MAVEN_BUILD_PROFILES="gpg"
-      - cf_export MVN_DEPLOY_FILE_FLAGS="${{MVN_BUILD_FLAGS}} ${{MVN_DEPLOY_FLAGS}} -Durl=https://s01.oss.sonatype.org/service/local/staging/deploy/maven2 -DrepositoryId=ossrh-distro -Dgpg.passphrase=${{GPG_PASSPHRASE}}"
 
   SnapshotProperties:
     title: Setup snapshot build
@@ -36,8 +42,6 @@ steps:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
       - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
-      - cf_export MAVEN_BUILD_PROFILES="gpg"
-      - cf_export MVN_DEPLOY_FILE_FLAGS="${{MVN_BUILD_FLAGS}} ${{MVN_DEPLOY_FLAGS}} -Durl=https://s01.oss.sonatype.org/content/repositories/snapshots -DrepositoryId=ossrh -Dgpg.passphrase=${{GPG_PASSPHRASE}}"
 
   Build:
     title: Maven build
@@ -47,8 +51,8 @@ steps:
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn ${{MVN_BUILD_FLAGS}} versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true
-      - mvn ${{MVN_DEPLOY_FLAGS}} clean deploy -P "${{MAVEN_BUILD_PROFILES}}"
+      - mvn versions:set -DnewVersion="${{RELEASE_NAME}}" -DallowSnapshots=true -DallowDowngrade=true
+      - mvn -s settings.xml -U -B clean deploy -Denv.CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}" -Denv.CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}" -Denv.GPG_KEYNAME="${{GPG_KEYNAME}}" -Denv.GPG_PASSPHRASE="${{GPG_PASSPHRASE}}" -Denv.CICD_REPO="${{CICD_REPO}}" -P "${{MAVEN_BUILD_PROFILES}}"
 
   TagRepo:
     title: Tag git repo with release name
