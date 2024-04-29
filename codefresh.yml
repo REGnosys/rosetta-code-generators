@@ -1,7 +1,29 @@
 version: "1.0"
+stages:
+  - setup
+  - build
+  - finalise
 steps:
+  main_clone:
+    title: Cloning main repository...
+    stage: 'setup'
+    type: git-clone
+    git: github
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    revision: "${{CF_REVISION}}"
+
+  SetProperties:
+    title: Setup build
+    stage: 'setup'
+    image: alpine/git
+    commands:
+      - cf_export CICD_REPO="${{CF_VOLUME_PATH}}/m2_repository"
+      - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import"
+      - cf_export MAVEN_BUILD_PROFILES="regnosys"
+
   TagReleaseName:
     title: Setup RELEASE_NAME variable with tag
+    stage: 'setup'
     image: alpine/git
     when:
       condition:
@@ -12,16 +34,18 @@ steps:
 
   BranchReleaseName:
     title: Setup RELEASE_NAME variable with branch name
+    stage: 'setup'
     image: alpine/git
     when:
       condition:
         all:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
-      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}
+      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
 
   ReleaseProperties:
     title: Setup release build
+    stage: 'setup'
     image: alpine/git
     when:
       condition:
@@ -32,6 +56,7 @@ steps:
 
   BranchProperties:
     title: Setup branch build
+    stage: 'setup'
     image: alpine/git
     when:
       condition:
@@ -42,17 +67,19 @@ steps:
 
   Build:
     title: Maven build
+    stage: 'build'
     fail_fast: true
-    image: regnosys-docker-registry.jfrog.io/regnosys/rosetta-products-deps:java-17
+    image: maven:3.8.5-openjdk-17
     working_directory: ./
     commands:
-      - rm -rf /codefresh/volume/.m2/com/regnosys
-      - mvn -s /settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
-      - mvn -s /settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
-      - mvn -U -s /settings.xml -Pregnosys clean deploy
+      - bash -c "${{GPG_IMPORT_COMMAND}}"
+      - mvn -s settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
+      - mvn -s settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
+      - mvn -s settings.xml -U -B clean deploy -Denv.CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}" -Denv.CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}" -Denv.GPG_KEYNAME="${{GPG_KEYNAME}}" -Denv.GPG_PASSPHRASE="${{GPG_PASSPHRASE}}" -Denv.CICD_REPO="${{CICD_REPO}}" -P "${{MAVEN_BUILD_PROFILES}}"
 
   TagRepo:
     title: Tag git repo with release name
+    stage: 'finalise'
     image: alpine/git
     when:
       condition:
