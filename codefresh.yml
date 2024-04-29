@@ -73,8 +73,8 @@ steps:
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn -s /settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
-      - mvn -s /settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
+      - mvn -s settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
+      - mvn -s settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
       - mvn -s settings.xml -U -B clean deploy -Denv.CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}" -Denv.CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}" -Denv.GPG_KEYNAME="${{GPG_KEYNAME}}" -Denv.GPG_PASSPHRASE="${{GPG_PASSPHRASE}}" -Denv.CICD_REPO="${{CICD_REPO}}" -P "${{MAVEN_BUILD_PROFILES}}"
 
   TagRepo:
