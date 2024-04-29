@@ -35,7 +35,7 @@ steps:
 
   SnapshotProperties:
     title: Setup snapshot properties
-    stage: 'build'
+    stage: 'setup'
     image: alpine/git
     when:
       condition:
@@ -43,7 +43,7 @@ steps:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
       - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
-      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion='${{RELEASE_NAME}}' -DallowSnapshots=true -DallowDowngrade=true"
+      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -DallowDowngrade=true"
 
   Build:
     title: Maven build
