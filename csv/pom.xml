@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.regnosys.rosetta.code-generators</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.0.story8454383-SNAPSHOT</version>
+    <version>0.0.0.master-SNAPSHOT</version>
   </parent>
   <artifactId>csv</artifactId>
   
