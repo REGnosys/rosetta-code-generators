@@ -22,36 +22,39 @@ steps:
       - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
   ReleaseProperties:
-    title: Setup release build
-    stage: 'setup'
-    image: alpine/git
-    when:
-      condition:
-        all:
-          releaseNameNotDefined: "${{TAG_REPO}} == true"
-    commands:
-      - cf_export RELEASE_NAME=${{TAG_NAME}}
+      title: Setup release build
+      stage: 'setup'
+      image: alpine/git
+      when:
+        condition:
+          all:
+            releaseNameNotDefined: "${{TAG_REPO}} == true"
+      commands:
+        - cf_export RELEASE_NAME=${{TAG_NAME}}
+        - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion=${{RELEASE_NAME}}"
 
   SnapshotProperties:
-    title: Setup snapshot build
-    stage: 'setup'
+    title: Setup RELEASE_NAME variable with branch name
+    stage: 'build'
     image: alpine/git
     when:
       condition:
         all:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
-      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
+      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}
+      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true"
 
   Build:
     title: Maven build
     stage: 'build'
-    fail_fast: false
-    image: maven:3.8.5-openjdk-17
+    fail_fast: true
+    image: regnosys-docker-registry.jfrog.io/regnosys/rosetta-products-deps:java-17
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn versions:set -DnewVersion="${{RELEASE_NAME}}" -DallowSnapshots=true -DallowDowngrade=true
+      - mvn -s /settings.xml versions:set -DnewVersion=${{RELEASE_NAME}}
+      - mvn -s /settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
       - mvn -s settings.xml -U -B clean deploy -Denv.CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}" -Denv.CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}" -Denv.GPG_KEYNAME="${{GPG_KEYNAME}}" -Denv.GPG_PASSPHRASE="${{GPG_PASSPHRASE}}" -Denv.CICD_REPO="${{CICD_REPO}}" -P "${{MAVEN_BUILD_PROFILES}}"
 
   TagRepo:
