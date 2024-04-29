@@ -21,20 +21,19 @@ steps:
       - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import"
       - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
-  ReleaseProperties:
-      title: Setup release properties
-      stage: 'setup'
-      image: alpine/git
-      when:
-        condition:
-          all:
-            releaseNameNotDefined: "${{TAG_REPO}} == true"
-      commands:
-        - cf_export RELEASE_NAME=${{TAG_NAME}}
-        - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion='${{RELEASE_NAME}}'"
+  TagReleaseName:
+    title: Setup RELEASE_NAME variable with tag
+    stage: 'setup'
+    image: alpine/git
+    when:
+      condition:
+        all:
+          releaseNameNotDefined: "${{TAG_REPO}} == true"
+    commands:
+      - cf_export RELEASE_NAME=${{TAG_NAME}}
 
-  SnapshotProperties:
-    title: Setup snapshot properties
+  BranchReleaseName:
+    title: Setup RELEASE_NAME variable with branch name
     stage: 'setup'
     image: alpine/git
     when:
@@ -43,13 +42,34 @@ steps:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
       - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
-      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -DallowDowngrade=true"
+
+  ReleaseProperties:
+    title: Setup release build
+    stage: 'setup'
+    image: alpine/git
+    when:
+      condition:
+        all:
+          releaseNameNotDefined: "${{TAG_REPO}} == true"
+    commands:
+      - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion=${{RELEASE_NAME}}"
+
+  BranchProperties:
+    title: Setup branch build
+    stage: 'setup'
+    image: alpine/git
+    when:
+      condition:
+        all:
+          releaseNameNotDefined: "${{TAG_REPO}} == false"
+    commands:
+      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true"
 
   Build:
     title: Maven build
     stage: 'build'
     fail_fast: true
-    image: regnosys-docker-registry.jfrog.io/regnosys/rosetta-products-deps:java-17
+    image: maven:3.8.5-openjdk-17
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
