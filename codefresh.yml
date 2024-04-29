@@ -22,7 +22,7 @@ steps:
       - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
   ReleaseProperties:
-      title: Setup release build
+      title: Setup release properties
       stage: 'setup'
       image: alpine/git
       when:
@@ -31,10 +31,10 @@ steps:
             releaseNameNotDefined: "${{TAG_REPO}} == true"
       commands:
         - cf_export RELEASE_NAME=${{TAG_NAME}}
-        - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion=${{RELEASE_NAME}}"
+        - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion='${{RELEASE_NAME}}'"
 
   SnapshotProperties:
-    title: Setup RELEASE_NAME variable with branch name
+    title: Setup snapshot properties
     stage: 'build'
     image: alpine/git
     when:
@@ -42,8 +42,8 @@ steps:
         all:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
-      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}
-      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true"
+      - cf_export RELEASE_NAME=${{GLOBAL_RELEASE_VERSION}}.${{CF_BRANCH_TAG_NORMALIZED}}-SNAPSHOT
+      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion='${{RELEASE_NAME}}' -DallowSnapshots=true -DallowDowngrade=true"
 
   Build:
     title: Maven build
