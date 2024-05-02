@@ -3,7 +3,7 @@ import sys
 import inspect
 import datetime
 from rosetta.runtime.func_proxy import replaceable, create_module_attr_guardian
-from rosetta.runtime.utils import if_cond_fn, _resolve_rosetta_attr
+from rosetta.runtime.utils import if_cond_fn, rosetta_resolve_attr
 from cdm.base.datetime.BusinessCenterEnum import BusinessCenterEnum
 from cdm.base.datetime.functions.IsBusinessDay import IsBusinessDay
 from cdm.base.datetime.functions.AddDays import AddDays
@@ -43,7 +43,7 @@ def AddBusinessDays(originalDate: datetime.date, offsetBusinessDays: int,
         return 1
 
     def _then_fn1():
-        return _resolve_rosetta_attr(self, "shift")
+        return rosetta_resolve_attr(self, "shift")
 
     def _else_fn1():
         return 0
@@ -52,24 +52,24 @@ def AddBusinessDays(originalDate: datetime.date, offsetBusinessDays: int,
         return 0
 
     def _else_fn2():
-        return _resolve_rosetta_attr(self, "offsetBusinessDays") - _resolve_rosetta_attr(self, "newShift")
+        return rosetta_resolve_attr(self, "offsetBusinessDays") - rosetta_resolve_attr(self, "newShift")
 
     def _then_fn3():
-        return _resolve_rosetta_attr(self, "originalDate")
+        return rosetta_resolve_attr(self, "originalDate")
 
     def _else_fn3():
-        return AddBusinessDays(_resolve_rosetta_attr(self, "shiftedByOne"), _resolve_rosetta_attr(self, "newOffset"), _resolve_rosetta_attr(self, "businessCenters"))
+        return AddBusinessDays(rosetta_resolve_attr(self, "shiftedByOne"), rosetta_resolve_attr(self, "newOffset"), rosetta_resolve_attr(self, "businessCenters"))
 
-    isGoodBusinessDay = IsBusinessDay(_resolve_rosetta_attr(self, "originalDate"), _resolve_rosetta_attr(self, "businessCenters"))
-    shift = if_cond_fn(((_resolve_rosetta_attr(self, "offsetBusinessDays")) < 0), _then_fn0, _else_fn0)
-    shiftedByOne = AddDays(_resolve_rosetta_attr(self, "originalDate"), _resolve_rosetta_attr(self, "shift"))
-    isShiftedGood = IsBusinessDay(_resolve_rosetta_attr(self, "shiftedByOne"), _resolve_rosetta_attr(self, "businessCenters"))
-    newShift = if_cond_fn((_resolve_rosetta_attr(self, "isShiftedGood")), _then_fn1, _else_fn1)
-    newOffset = if_cond_fn(((_resolve_rosetta_attr(self, "offsetBusinessDays")) == 0), _then_fn2, _else_fn2)
-    done = ((_resolve_rosetta_attr(self, "offsetBusinessDays") == 0) and (_resolve_rosetta_attr(ctx.f_locals, "isGoodBusinessDay") == True))
-    newDate = if_cond_fn((_resolve_rosetta_attr(self, "done")), _then_fn3, _else_fn3)
-    shiftedDate = _resolve_rosetta_attr(self, "newDate")
-    return _resolve_rosetta_attr(self, "shiftedDate")
+    isGoodBusinessDay = IsBusinessDay(rosetta_resolve_attr(self, "originalDate"), rosetta_resolve_attr(self, "businessCenters"))
+    shift = if_cond_fn(((rosetta_resolve_attr(self, "offsetBusinessDays")) < 0), _then_fn0, _else_fn0)
+    shiftedByOne = AddDays(rosetta_resolve_attr(self, "originalDate"), rosetta_resolve_attr(self, "shift"))
+    isShiftedGood = IsBusinessDay(rosetta_resolve_attr(self, "shiftedByOne"), rosetta_resolve_attr(self, "businessCenters"))
+    newShift = if_cond_fn((rosetta_resolve_attr(self, "isShiftedGood")), _then_fn1, _else_fn1)
+    newOffset = if_cond_fn(((rosetta_resolve_attr(self, "offsetBusinessDays")) == 0), _then_fn2, _else_fn2)
+    done = ((rosetta_resolve_attr(self, "offsetBusinessDays") == 0) and (rosetta_resolve_attr(ctx.f_locals, "isGoodBusinessDay") == True))
+    newDate = if_cond_fn((rosetta_resolve_attr(self, "done")), _then_fn3, _else_fn3)
+    shiftedDate = rosetta_resolve_attr(self, "newDate")
+    return rosetta_resolve_attr(self, "shiftedDate")
 
 
 sys.modules[__name__].__class__ = create_module_attr_guardian(sys.modules[__name__].__class__)
