@@ -173,7 +173,7 @@ class PythonModelObjectGenerator {
             field_default = '[]'
         }
 
-        var attrName        = (attribute.name == "global") ? "_global" : attribute.name
+        var attrName        = (attribute.name == "global") ? "rosetta_attr_global" : attribute.name
         var need_card_check = !((attribute.inf == 0 && attribute.sup == 1) || 
                                 (attribute.inf == 1 && attribute.sup == 1) ||
                                 (attribute.inf == 0 && attribute.unbound))
