@@ -14,7 +14,7 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'rosetta_local_condition',
            'execute_local_conditions',
            'flatten_list',
-           '_resolve_rosetta_attr',
+           'rosetta_resolve_attr',
            'rosetta_count',
            'rosetta_attr_exists',
            '_get_rosetta_object',
@@ -58,20 +58,30 @@ def _is_meta(obj: Any) -> bool:
               AttributeWithMetaWithAddressWithReference))
 
 
-def _resolve_rosetta_attr(obj: Any | None,
-                          attrib: str) -> Any | list[Any] | None:
+_NAME_MANGLE_MAP = {'global': 'rosetta_attr_global'}
+
+
+def rosetta_resolve_attr(obj: Any | None,
+                         attrib: str) -> Any | list[Any] | None:
+    ''' Rosetta semantics compliant attribute resolver.
+        Lists and mangled attributes are treated as defined by
+        the rosetta definition (list flattening).
+    '''
     if obj is None:
         return None
     if isinstance(obj, (list, tuple)):
-        res = [item for elem in obj
-               for item in _to_list(_resolve_rosetta_attr(elem, attrib))
-               if item is not None]
+        res = [
+            item for elem in obj
+            for item in _to_list(rosetta_resolve_attr(elem, attrib))
+            if item is not None
+        ]
         return res if res else None
     if _is_meta(obj):
         # NOTE: ignores (for now) all meta attributes in the expressions.
         # In the future one might want to check if the attrib is contained
         # in the metadata and return it instead of failing.
         obj = obj.value
+    attrib = _NAME_MANGLE_MAP.get(attrib, attrib)
     return getattr(obj, attrib, None)
 
 
@@ -521,7 +531,7 @@ def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
 
     # Iterate through the path components, except the last one
     for attrib in path_components[:-1]:
-        parent_obj = _resolve_rosetta_attr(parent_obj, attrib)
+        parent_obj = rosetta_resolve_attr(parent_obj, attrib)
         if parent_obj is None:
             raise ValueError(
                 f"Attribute '{attrib}' in the path is None, cannot "
