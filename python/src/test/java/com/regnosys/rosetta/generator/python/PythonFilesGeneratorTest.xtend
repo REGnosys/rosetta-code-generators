@@ -159,7 +159,7 @@ class PythonFilesGeneratorTest {
             e.printStackTrace ()
         }
     }
-    @Disabled("Generate Python Unit Tests from Rosetta Files")
+    //@Disabled("Generate Python Unit Tests from Rosetta Files")
     @Test
     def void generatePythonFromGenericRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
@@ -182,31 +182,6 @@ class PythonFilesGeneratorTest {
             LOGGER.error ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... processing failed with an Exception')
             LOGGER.error ('\n' + e.toString ())
             e.printStackTrace ()
-        }
-    }
-    
-    @Test 
-    def void generateClassMemberAccessOperatorPython () {
-        val model = '''
-            type Foo:
-                one int (1..1)
-                two int (0..1)
-                three int (0..*)
-''' as CharSequence
-        try {
-            val properties = getProperties ()
-            val filePath   = properties.get ('generated.python.path') as String
-            LOGGER.info ('generateClassMemberAccessOperatorPython ... generating files to: ' + filePath)
-            if (filePath !== null) {
-                val m 			 = model.parseRosettaWithNoErrors
-                val resourceSet  = m.eResource.resourceSet
-                val results 	 = generatePythonFromRosettaModel (m, resourceSet)
-                writeFiles (filePath, results)
-            }
-        } catch (Throwable t) {
-            LOGGER.info ('generateClassMemberAccessOperatorPython ... processing failed with an Exception')
-            LOGGER.info (t.toString ())
-            t.printStackTrace ()
         }
     }
 }

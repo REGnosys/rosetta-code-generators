@@ -80,7 +80,7 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
             if (!subfolders.contains(model.getName())) {
                 subfolders.add(model.getName());
             }
-            if (!subfolders.contains(model.getName() + ".functions")) {
+            if (rosettaFunctions.size()> 0 && !subfolders.contains(model.getName() + ".functions")) {
                 subfolders.add(model.getName() + ".functions");
             }
         }
