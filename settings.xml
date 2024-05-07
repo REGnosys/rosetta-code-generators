@@ -18,7 +18,7 @@
     </servers>
     <profiles>
         <profile>
-            <id>gpg</id>
+            <id>regnosys</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
