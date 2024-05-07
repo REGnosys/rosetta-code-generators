@@ -1,6 +1,6 @@
 # ISDA CDM Python Implementation
 
-This repository contains both a Python CDM implementation and the code to generate the package from Regnosys' Rosetta specifications.  
+This repository contains both a Python CDM implementation and the code to generate the package from Regnosys' [Rune](https://github.com/finos/rune-dsl) specifications.  
  
 The Python package can both deserialize CDM into objects and serialize objects with a caveat.  Ingestion of CDM flattens any use of metadata abstraction and, as a result, serialized CDM will not match a source which makes use of metadata objects.
 
@@ -8,7 +8,7 @@ The implementation follows the same approach as those completed for other langua
 
 The Python package supports CDM version XXX and requires Python version 3.9+.
 
-The code to create the Python package supports Rosetta DSL version 4.44.0 and Rosetta Bundle version 3.13.0.
+The code to create the Python package supports Rune DSL version 4.44.0 and Rune Bundle version 3.13.0.
 
 ## License
 
@@ -21,42 +21,38 @@ The code to create the Python package supports Rosetta DSL version 4.44.0 and Ro
 
 ## Repository Organization
 
-Root (this README, project configuration files)
-  - dist (Python code to read and write CDM, Unit and Functional tests)
-  - docker 
-  - documentation 
-  - src  (Java code to generate Python from the Rosetta CDM definitions) 
+- `README.md` - this file, for documentation purposes
+- `dist` - Python code to read and write CDM, Unit and Functional tests
+- `src`  - Java code to generate Python from the Rosetta CDM definitions
+- `build/Dockerfile-Python-Rosetta-Build` - Defines the runnable Docker image
 
 # Python Package
 
-The dist directory contains the generated Python code in the src subdirectory, a script to build the Python package (build.sh), unit tests in the test directory and a script to execute these tests. 
+The `dist` directory contains the generated Python code in the src subdirectory, a script to build the Python package (`build.sh`), unit tests in the test directory and a script to execute these tests. 
 
-The unit tests in the pytests directory leverage the pytest package to confirm that the implementation successfully supports Rosetta semantics.  Additionally, the pytests directory contain tests that confirm that certain CDM functionality works as expected.
+The unit tests in the pytests directory leverage the pytest package to confirm that the implementation successfully supports Rune semantics.  Additionally, the pytests directory contain tests that confirm that certain CDM functionality works as expected.
 
 ## Installation, Unit and Functional Tests 
 
-Executing build.sh will create a python package (i.e., python_cdm-2.182.3-py3-none-any.whl) which can then be instaalled using pip.
-Executing pytests.sh will run the above unit tests. 
+> [!NOTE]  
+> Scripts assume access to Python (version `3.9` or above).
 
-The scripts assume access to Python (ver 3.9+).
+Executing `build/build_python_rosetta.sh` will create a python package (i.e., `python_cdm-2.182.3-py3-none-any.whl`) which can then be instaalled using `pip`.
+Executing `test/run_tests.sh` will run the above unit tests. 
 
 ## Containerized build and tests of the Python package
 
-The Root directory contains Dockerfile definition to containerize the build, intallation and testing processes of the generated Python code.
+The `build/Dockerfile-Python-Rosetta-Build` file contains the definition to containerize the build, intallation and testing processes of the generated Python code.
 
-Requires generated python code under dist/src
-From Root directory:
-- Run 'docker build -t image:tag .'
-- Run 'docker run -it image:tag sh' to enter the container in interactive mode
-- Run 'docker run image:tag
-
-For example:
-
+In order to build the Docker image, you need to run the build steps documented above, then run:
 ```
 docker build -t rosetta-codegen:0.0.1 .
 docker run rosetta-codegen:0.0.1
 ```
 This should result in the unit tests having been sucessfully run.
+
+If you want to interact with a running container, you can login using `docker run -it rosetta-codegen:0.0.1 sh`.
+
 
 ## Example
 
@@ -86,15 +82,13 @@ The following instructions are based on directions found at:
 
 1. Create a directory structure hereafter referred to as [CODEGEN]
 ```
-mkdir [CODEGEN]
-mkdir [CODEGEN]/.m2
-mkdir [CODEGEN]/github
-mkdir [CODEGEN]/github/REGnosys
+mkdir -p [CODEGEN]/.m2
+mkdir -p [CODEGEN]/github/REGnosys
 ```
 
 2. Fork and clone the Rosetta CDM repository 
 
-Fork a copy from https://github.com/REGnosys/rosetta-code-generators ([MYREPO])
+Fork a copy from `https://github.com/REGnosys/rosetta-code-generators` ([MYREPO])
 
 ```
 cd [CODEGEN]/github/REGnosys/
@@ -149,15 +143,15 @@ mvn -s [CODEGEN]/.m2/settings.xml clean install
 ```
 (tbc but likely to fail)
 
-7. Update properties in the parent pom.xml (located in [CODEGEN]/github/REGnosys/rosetta-code-generators)
+7. Update properties in the parent `pom.xml` (located in `[CODEGEN]/github/REGnosys/rosetta-code-generators`)
 
 Change the Rosetta versions to those currently supported in the Python code:
 
-- set rosetta.dsl.version to 4.44.0 in all places
-  <rosetta.dsl.version>4.44.0</rosetta.dsl.version>
+- set `rosetta.dsl.version` to 4.44.0 in all places
+  `<rosetta.dsl.version>4.44.0</rosetta.dsl.version>`
         
-- set rosetta.bundle.version to 3.13.0  
-  <rosetta.bundle.version>3.13.0</rosetta.bundle.version>
+- set `rosetta.bundle.version` to `3.13.0`
+  `<rosetta.bundle.version>3.13.0</rosetta.bundle.version>`
 
 Optionally comment out modules for other languages to speed up compilation and runtime
 
@@ -173,11 +167,11 @@ Optionally comment out modules for other languages to speed up compilation and r
 8. Open in eclipse  
 
 - Import an existing maven project
-- Update maven user preferences to use settings.xml as created above: [CODEGEN]/.m2/settings.xml
+- Update maven user preferences to use settings.xml as created above: `[CODEGEN]/.m2/settings.xml`
 - Update java version to 11
 
 8. To generate the Python implementation of CDM
 
-Run PythonFilesGeneratorTest.xtend as a JUnit test
+Run `PythonFilesGeneratorTest.xtend` as a JUnit test
 
 There should be one test which passes
