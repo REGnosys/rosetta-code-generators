@@ -82,7 +82,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>9.8.0</rosetta.dsl.version>
+                <rosetta.dsl.version>0.0.0.choice-types-SNAPSHOT</rosetta.dsl.version>
                 <rosetta.bundle.version>0.0.0.master-SNAPSHOT</rosetta.bundle.version>
             </properties>
             <build>
@@ -100,8 +100,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>9.8.0</rosetta.dsl.version>
-                <rosetta.bundle.version>10.16.0</rosetta.bundle.version>
+                <rosetta.dsl.version>0.0.0.choice-types-SNAPSHOT</rosetta.dsl.version>
+                <rosetta.bundle.version>0.0.0.choice-types-SNAPSHOT</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
