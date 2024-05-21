@@ -18,7 +18,7 @@ steps:
     image: alpine/git
     commands:
       - cf_export CICD_REPO="${{CF_VOLUME_PATH}}/m2_repository"
-      - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import"
+      - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import" --mask
       - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
   TagReleaseName:
