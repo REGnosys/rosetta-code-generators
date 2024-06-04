@@ -50,7 +50,11 @@ class PythonModelGeneratorUtil {
         from decimal import Decimal
         from pydantic import Field
         from rosetta.runtime.utils import (
+<<<<<<< HEAD
             BaseDataClass, rosetta_condition, rosetta_resolve_attr
+=======
+            BaseDataClass, rosetta_condition, _resolve_rosetta_attr
+>>>>>>> master
         )
         from rosetta.runtime.utils import *
         
@@ -70,6 +74,10 @@ class PythonModelGeneratorUtil {
         import datetime
         import inspect
         from decimal import Decimal
+<<<<<<< HEAD
+=======
+        from abc import ABC, abstractmethod
+>>>>>>> master
         from rosetta.runtime.utils import *
         from rosetta.runtime.func_proxy import replaceable, create_module_attr_guardian
         '''

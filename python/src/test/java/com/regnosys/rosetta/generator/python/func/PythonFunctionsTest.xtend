@@ -55,12 +55,21 @@ class PythonFunctionsTest {
 		    
 		    
 		    def _then_fn0():
+<<<<<<< HEAD
 		        return (-1 * rosetta_resolve_attr(self, "arg"))
 		    
 		    def _else_fn0():
 		        return rosetta_resolve_attr(self, "arg")
 		    
 		    result =  if_cond_fn(all_elements(rosetta_resolve_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
+=======
+		        return (-1 * _resolve_rosetta_attr(self, "arg"))
+		    
+		    def _else_fn0():
+		        return _resolve_rosetta_attr(self, "arg")
+		    
+		    result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "arg"), "<", 0), _then_fn0, _else_fn0)
+>>>>>>> master
 		    
 		    
 		    return result
@@ -109,8 +118,13 @@ class PythonFunctionsTest {
 		    self = inspect.currentframe()
 		    
 		    
+<<<<<<< HEAD
 		    resultVector = rosetta_resolve_attr(self, "vector")
 		    resultVector.add_rosetta_attr(self, rosetta_resolve_attr(self, "value"))
+=======
+		    resultVector = _resolve_rosetta_attr(self, "vector")
+		    resultVector.add_rosetta_attr(self, _resolve_rosetta_attr(self, "value"))
+>>>>>>> master
 		    
 		    
 		    return resultVector
@@ -254,12 +268,21 @@ class PythonFunctionsTest {
 		    
 		    @rosetta_local_condition(_pre_registry)
 		    def condition_0_CurrencyOrFinancialUnitExists(self):
+<<<<<<< HEAD
 		        return (rosetta_attr_exists(rosetta_resolve_attr(self, "currency")) or rosetta_attr_exists(rosetta_resolve_attr(self, "financialUnit")))
 		    # Execute all registered conditions
 		    execute_local_conditions(_pre_registry, 'Pre-condition')
 		    
 		    unitType = _get_rosetta_object('UnitType', 'currency', rosetta_resolve_attr(self, "currency"))
 		    unitType = set_rosetta_attr(rosetta_resolve_attr(self, 'unitType'), 'financialUnit', rosetta_resolve_attr(self, "financialUnit"))
+=======
+		        return (rosetta_attr_exists(_resolve_rosetta_attr(self, "currency")) or rosetta_attr_exists(_resolve_rosetta_attr(self, "financialUnit")))
+		    # Execute all registered conditions
+		    execute_local_conditions(_pre_registry, 'Pre-condition')
+		    
+		    unitType = _get_rosetta_object('UnitType', 'currency', _resolve_rosetta_attr(self, "currency"))
+		    unitType = set_rosetta_attr(_resolve_rosetta_attr(self, 'unitType'), 'financialUnit', _resolve_rosetta_attr(self, "financialUnit"))
+>>>>>>> master
 		    
 		    
 		    return unitType
@@ -323,9 +346,15 @@ class PythonFunctionsTest {
 		    self = inspect.currentframe()
 		    
 		    
+<<<<<<< HEAD
 		    reset = _get_rosetta_object('Reset', 'resetValue', rosetta_resolve_attr(rosetta_resolve_attr(self, "observation"), "observedValue"))
 		    reset = set_rosetta_attr(rosetta_resolve_attr(self, 'reset'), 'resetDate', rosetta_resolve_attr(self, "date"))
 		    reset.add_rosetta_attr(rosetta_resolve_attr(rosetta_resolve_attr(self, reset), 'observations'), rosetta_resolve_attr(self, "observation"))
+=======
+		    reset = _get_rosetta_object('Reset', 'resetValue', _resolve_rosetta_attr(_resolve_rosetta_attr(self, "observation"), "observedValue"))
+		    reset = set_rosetta_attr(_resolve_rosetta_attr(self, 'reset'), 'resetDate', _resolve_rosetta_attr(self, "date"))
+		    reset.add_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(self, reset), 'observations'), _resolve_rosetta_attr(self, "observation"))
+>>>>>>> master
 		    
 		    
 		    return reset
@@ -380,7 +409,11 @@ class PythonFunctionsTest {
 		    self = inspect.currentframe()
 		    
 		    
+<<<<<<< HEAD
 		    filteredQuantities = rosetta_filter(rosetta_resolve_attr(self, "quantities"), lambda item: all_elements(rosetta_resolve_attr(rosetta_resolve_attr(self, "quantities"), "unit"), "=", rosetta_resolve_attr(self, "unit")))
+=======
+		    filteredQuantities = rosetta_filter(_resolve_rosetta_attr(self, "quantities"), lambda item: all_elements(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "quantities"), "unit"), "=", _resolve_rosetta_attr(self, "unit")))
+>>>>>>> master
 		    
 		    
 		    return filteredQuantities
@@ -451,12 +484,17 @@ class PythonFunctionsTest {
 		    
 		    
 		    def _then_fn5():
+<<<<<<< HEAD
 		        return Min(rosetta_resolve_attr(self, "n1"), rosetta_resolve_attr(self, "n2"))
+=======
+		        return Min(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
+>>>>>>> master
 		    
 		    def _else_fn5():
 		        return True
 		    
 		    def _then_fn4():
+<<<<<<< HEAD
 		        return Max(rosetta_resolve_attr(self, "n1"), rosetta_resolve_attr(self, "n2"))
 		    
 		    def _else_fn4():
@@ -487,6 +525,38 @@ class PythonFunctionsTest {
 		        return if_cond_fn(all_elements(rosetta_resolve_attr(self, "op"), "=", rosetta_resolve_attr(ArithmeticOperationEnum, "SUBTRACT")), _then_fn1, _else_fn1)
 		    
 		    result =  if_cond_fn(all_elements(rosetta_resolve_attr(self, "op"), "=", rosetta_resolve_attr(ArithmeticOperationEnum, "ADD")), _then_fn0, _else_fn0)
+=======
+		        return Max(_resolve_rosetta_attr(self, "n1"), _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn4():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MIN")), _then_fn5, _else_fn5)
+		    
+		    def _then_fn3():
+		        return (_resolve_rosetta_attr(self, "n1") / _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn3():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MAX")), _then_fn4, _else_fn4)
+		    
+		    def _then_fn2():
+		        return (_resolve_rosetta_attr(self, "n1") * _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn2():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "DIVIDE")), _then_fn3, _else_fn3)
+		    
+		    def _then_fn1():
+		        return (_resolve_rosetta_attr(self, "n1") - _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn1():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "MULTIPLY")), _then_fn2, _else_fn2)
+		    
+		    def _then_fn0():
+		        return (_resolve_rosetta_attr(self, "n1") + _resolve_rosetta_attr(self, "n2"))
+		    
+		    def _else_fn0():
+		        return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "SUBTRACT")), _then_fn1, _else_fn1)
+		    
+		    result =  if_cond_fn(all_elements(_resolve_rosetta_attr(self, "op"), "=", _resolve_rosetta_attr(ArithmeticOperationEnum, "ADD")), _then_fn0, _else_fn0)
+>>>>>>> master
 		    
 		    
 		    return result
@@ -537,7 +607,11 @@ class PythonFunctionsTest {
     	    self = inspect.currentframe()
     	    
     	    
+<<<<<<< HEAD
     	    filteredQuantities = rosetta_filter(rosetta_resolve_attr(self, "quantities"), lambda item: rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(item, "unit"), "currency")))
+=======
+    	    filteredQuantities = rosetta_filter(_resolve_rosetta_attr(self, "quantities"), lambda item: rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(item, "unit"), "currency")))
+>>>>>>> master
     	    
     	    
     	    return filteredQuantities
@@ -588,13 +662,22 @@ class PythonFunctionsTest {
 		    
 		    
 		    def _then_fn0():
+<<<<<<< HEAD
 		        return rosetta_resolve_attr(self, "inp1")
+=======
+		        return _resolve_rosetta_attr(self, "inp1")
+>>>>>>> master
 		    
 		    def _else_fn0():
 		        return True
 		    
+<<<<<<< HEAD
 		    Alias = if_cond_fn(all_elements(rosetta_resolve_attr(self, "inp1"), "<", 0), _then_fn0, _else_fn0)
 		    result =  rosetta_resolve_attr(self, "Alias")
+=======
+		    Alias = if_cond_fn(all_elements(_resolve_rosetta_attr(self, "inp1"), "<", 0), _then_fn0, _else_fn0)
+		    result =  _resolve_rosetta_attr(self, "Alias")
+>>>>>>> master
 		    
 		    
 		    return result
@@ -654,9 +737,15 @@ class PythonFunctionsTest {
     	    self = inspect.currentframe()
     	    
     	    
+<<<<<<< HEAD
     	    Alias1 = rosetta_resolve_attr(rosetta_resolve_attr(self, "a"), "valueA")
     	    Alias2 = rosetta_resolve_attr(rosetta_resolve_attr(self, "b"), "valueB")
     	    c = _get_rosetta_object('C', 'valueC', (rosetta_resolve_attr(self, "Alias1") * rosetta_resolve_attr(self, "Alias2")))
+=======
+    	    Alias1 = _resolve_rosetta_attr(_resolve_rosetta_attr(self, "a"), "valueA")
+    	    Alias2 = _resolve_rosetta_attr(_resolve_rosetta_attr(self, "b"), "valueB")
+    	    c = _get_rosetta_object('C', 'valueC', (_resolve_rosetta_attr(self, "Alias1") * _resolve_rosetta_attr(self, "Alias2")))
+>>>>>>> master
     	    
     	    
     	    return c
