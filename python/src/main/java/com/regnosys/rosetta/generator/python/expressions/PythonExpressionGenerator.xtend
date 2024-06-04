@@ -224,7 +224,11 @@ class PythonExpressionGenerator {
                 if (receiver === null) {
                     '''«right»'''
                 } else {
+<<<<<<< HEAD
+                    '''rosetta_resolve_attr(«receiver», "«right»")'''
+=======
                     '''_resolve_rosetta_attr(«receiver», "«right»")'''
+>>>>>>> master
                 }
             }
             RosettaExistsExpression: {
@@ -381,7 +385,11 @@ class PythonExpressionGenerator {
                 '''«s.name»'''
             }
             Attribute: {
+<<<<<<< HEAD
+                '''rosetta_resolve_attr(self, "«s.name»")'''
+=======
                 '''_resolve_rosetta_attr(self, "«s.name»")'''
+>>>>>>> master
             }
             RosettaEnumeration: {
                 '''«s.name»'''
@@ -390,10 +398,17 @@ class PythonExpressionGenerator {
                 callableWithArgsCall(s, expr, iflvl)
             }
             ShortcutDeclaration:{
+<<<<<<< HEAD
+                '''rosetta_resolve_attr(self, "«s.name»")'''
+            }
+            ClosureParameter:{
+                '''rosetta_resolve_attr(self, "«s.name»")'''
+=======
                 '''_resolve_rosetta_attr(self, "«s.name»")'''
             }
             ClosureParameter:{
                 '''_resolve_rosetta_attr(self, "«s.name»")'''
+>>>>>>> master
             }
 
             default:

@@ -1,161 +1,136 @@
 {
-    "trade" : {
-      "tradeIdentifier" : [ {
-        "issuer" : {
-          "value" : "54930084UKLVMY22DS16",
-          "meta" : {
-            "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
-          }
-        },
-        "assignedIdentifier" : [ {
-          "identifier" : {
-            "value" : "UITD7895394",
-            "meta" : {
-              "scheme" : "http://www.fpml.org/coding-scheme/external/uti"
-            }
-          }
-        } ],
+  "trade" : {
+    "tradeIdentifier" : [ {
+      "issuer" : {
+        "value" : "54930084UKLVMY22DS16",
         "meta" : {
-          "globalKey" : "3eac3060"
-        },
-        "identifierType" : "UniqueTransactionIdentifier"
-      } ],
-      "tradeDate" : {
-        "value" : "2006-05-10",
-        "meta" : {
-          "globalKey" : "3eb14a",
-          "externalKey" : "TRADEDATE"
+          "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
         }
       },
-      "tradableProduct" : {
-        "product" : {
-          "contractualProduct" : {
-            "productTaxonomy" : [ {
-              "source" : "ISDA",
-              "productQualifier" : "InterestRate_Option_DebtOption"
-            } ],
-            "economicTerms" : {
-              "payout" : {
-                "optionPayout" : [ {
-                  "payerReceiver" : {
-                    "payer" : "Party2",
-                    "receiver" : "Party1"
-                  },
-                  "priceQuantity" : {
-                    "quantitySchedule" : {
-                      "address" : {
-                        "scope" : "DOCUMENT",
-                        "value" : "quantity-1"
-                      }
-                    },
-                    "meta" : {
-                      "globalKey" : "0"
+      "assignedIdentifier" : [ {
+        "identifier" : {
+          "value" : "UITD7895394",
+          "meta" : {
+            "scheme" : "http://www.fpml.org/coding-scheme/external/uti"
+          }
+        }
+      } ],
+      "meta" : {
+        "globalKey" : "3eac3060"
+      },
+      "identifierType" : "UniqueTransactionIdentifier"
+    } ],
+    "tradeDate" : {
+      "value" : "2006-05-10",
+      "meta" : {
+        "globalKey" : "3eb14a",
+        "externalKey" : "TRADEDATE"
+      }
+    },
+    "tradableProduct" : {
+      "product" : {
+        "contractualProduct" : {
+          "productTaxonomy" : [ {
+            "source" : "ISDA",
+            "productQualifier" : "InterestRate_Option_DebtOption"
+          } ],
+          "economicTerms" : {
+            "payout" : {
+              "optionPayout" : [ {
+                "payerReceiver" : {
+                  "payer" : "Party2",
+                  "receiver" : "Party1"
+                },
+                "priceQuantity" : {
+                  "quantitySchedule" : {
+                    "address" : {
+                      "scope" : "DOCUMENT",
+                      "value" : "quantity-1"
                     }
                   },
-                  "settlementTerms" : {
-                    "settlementType" : "Physical",
-                    "settlementCurrency" : {
-                      "value" : "JPY"
-                    },
-                    "settlementDate" : {
-                      "adjustableOrRelativeDate" : {
-                        "unadjustedDate" : "2006-06-22",
-                        "dateAdjustments" : {
-                          "businessDayConvention" : "FOLLOWING",
-                          "businessCenters" : {
-                            "businessCenter" : [ {
-                              "value" : "JPTO"
-                            } ],
-                            "meta" : {
-                              "globalKey" : "22da41"
-                            }
-                          },
+                  "meta" : {
+                    "globalKey" : "0"
+                  }
+                },
+                "settlementTerms" : {
+                  "settlementType" : "Physical",
+                  "settlementCurrency" : {
+                    "value" : "JPY"
+                  },
+                  "settlementDate" : {
+                    "adjustableOrRelativeDate" : {
+                      "unadjustedDate" : "2006-06-22",
+                      "dateAdjustments" : {
+                        "businessDayConvention" : "FOLLOWING",
+                        "businessCenters" : {
+                          "businessCenter" : [ {
+                            "value" : "JPTO"
+                          } ],
                           "meta" : {
-                            "globalKey" : "211ff630"
+                            "globalKey" : "22da41"
                           }
+                        },
+                        "meta" : {
+                          "globalKey" : "211ff630"
                         }
-                      },
-                      "meta" : {
-                        "globalKey" : "a15ed25a"
                       }
                     },
                     "meta" : {
-                      "globalKey" : "35f85f44"
+                      "globalKey" : "a15ed25a"
                     }
                   },
-                  "buyerSeller" : {
-                    "buyer" : "Party1",
-                    "seller" : "Party2"
-                  },
-                  "underlier" : {
-                    "security" : {
-                      "productIdentifier" : [ {
-                        "address" : {
-                          "scope" : "DOCUMENT",
-                          "value" : "productIdentifier-1"
-                        }
-                      } ],
-                      "securityType" : "Debt"
-                    },
-                    "meta" : {
-                      "globalKey" : "1ff493"
-                    }
-                  },
-                  "optionType" : "Call",
-                  "exerciseTerms" : {
-                    "style" : "European",
-                    "expirationDate" : [ {
-                      "adjustableDate" : {
-                        "unadjustedDate" : "2006-06-19",
-                        "dateAdjustments" : {
-                          "businessDayConvention" : "FOLLOWING",
-                          "businessCenters" : {
-                            "businessCenter" : [ {
-                              "value" : "JPTO"
-                            } ],
+                  "meta" : {
+                    "globalKey" : "35f85f44"
+                  }
+                },
+                "buyerSeller" : {
+                  "buyer" : "Party1",
+                  "seller" : "Party2"
+                },
+                "optionType" : "Call",
+                "exerciseTerms" : {
+                  "optionStyle" : {
+                    "europeanExercise" : {
+                      "expirationDate" : [ {
+                        "adjustableDate" : {
+                          "unadjustedDate" : "2006-06-19",
+                          "dateAdjustments" : {
+                            "businessDayConvention" : "FOLLOWING",
+                            "businessCenters" : {
+                              "businessCenter" : [ {
+                                "value" : "JPTO"
+                              } ],
+                              "meta" : {
+                                "globalKey" : "22da41"
+                              }
+                            },
                             "meta" : {
-                              "globalKey" : "22da41"
+                              "globalKey" : "211ff630"
                             }
                           },
                           "meta" : {
-                            "globalKey" : "211ff630"
+                            "globalKey" : "9c40487d"
                           }
                         },
                         "meta" : {
                           "globalKey" : "9c40487d"
                         }
-                      },
-                      "meta" : {
-                        "globalKey" : "9c40487d"
-                      }
-                    } ],
-                    "earliestExerciseTime" : {
-                      "hourMinuteTime" : "09:00:00",
-                      "businessCenter" : {
-                        "value" : "JPTO"
-                      }
-                    },
-                    "expirationTime" : {
-                      "hourMinuteTime" : "14:30:00",
-                      "businessCenter" : {
-                        "value" : "JPTO"
-                      }
-                    },
-                    "exerciseProcedure" : {
-                      "manualExercise" : {
-                        "exerciseNotice" : {
-                          "exerciseNoticeGiver" : "Buyer",
-                          "businessCenter" : {
-                            "value" : "JPTO"
-                          }
+                      } ],
+                      "earliestExerciseTime" : {
+                        "hourMinuteTime" : "09:00:00",
+                        "businessCenter" : {
+                          "value" : "JPTO"
                         }
                       },
-                      "followUpConfirmation" : true,
-                      "limitedRightToConfirm" : false,
-                      "splitTicket" : false
-                    },
-                    "meta" : {
-                      "globalKey" : "4f51319d"
+                      "expirationTime" : {
+                        "hourMinuteTime" : "14:30:00",
+                        "businessCenter" : {
+                          "value" : "JPTO"
+                        }
+                      },
+                      "meta" : {
+                        "globalKey" : "d363f4ef"
+                      }
                     }
                   },
                   "strike" : {
@@ -180,30 +155,81 @@
                       "priceType" : "AssetPrice"
                     }
                   },
-                  "meta" : {
-                    "globalKey" : "35a4fc07"
+                  "exerciseProcedure" : {
+                    "manualExercise" : {
+                      "exerciseNotice" : {
+                        "exerciseNoticeGiver" : "Buyer",
+                        "businessCenter" : {
+                          "value" : "JPTO"
+                        }
+                      }
+                    },
+                    "followUpConfirmation" : true,
+                    "limitedRightToConfirm" : false,
+                    "splitTicket" : false
                   }
-                } ],
+                },
+                "underlier" : {
+                  "security" : {
+                    "productIdentifier" : [ {
+                      "address" : {
+                        "scope" : "DOCUMENT",
+                        "value" : "productIdentifier-1"
+                      }
+                    } ],
+                    "securityType" : "Debt"
+                  },
+                  "meta" : {
+                    "globalKey" : "1ff493"
+                  }
+                },
                 "meta" : {
-                  "globalKey" : "35a4fc07"
+                  "globalKey" : "7a1c0256"
                 }
-              },
-              "calculationAgent" : {
-                "calculationAgentParty" : "CalculationAgentIndependent"
+              } ],
+              "meta" : {
+                "globalKey" : "7a1c0256"
               }
             },
-            "meta" : {
-              "globalKey" : "aca1ff31"
+            "calculationAgent" : {
+              "calculationAgentParty" : "CalculationAgentIndependent"
             }
           },
           "meta" : {
-            "globalKey" : "aca1ff31"
+            "globalKey" : "af70adc0"
           }
         },
-        "tradeLot" : [ {
-          "priceQuantity" : [ {
-            "quantity" : [ {
-              "value" : {
+        "meta" : {
+          "globalKey" : "af70adc0"
+        }
+      },
+      "tradeLot" : [ {
+        "priceQuantity" : [ {
+          "quantity" : [ {
+            "value" : {
+              "value" : 10000000000,
+              "unit" : {
+                "currency" : {
+                  "value" : "JPY",
+                  "meta" : {
+                    "scheme" : "http://www.fpml.org/coding-scheme/external/iso4217"
+                  }
+                }
+              }
+            },
+            "meta" : {
+              "location" : [ {
+                "scope" : "DOCUMENT",
+                "value" : "quantity-1"
+              } ]
+            }
+          }, {
+            "value" : {
+              "value" : 1,
+              "unit" : {
+                "financialUnit" : "Contract"
+              },
+              "multiplier" : {
                 "value" : 10000000000,
                 "unit" : {
                   "currency" : {
@@ -213,189 +239,166 @@
                     }
                   }
                 }
-              },
-              "meta" : {
-                "location" : [ {
-                  "scope" : "DOCUMENT",
-                  "value" : "quantity-1"
-                } ]
               }
-            }, {
+            },
+            "meta" : {
+              "location" : [ {
+                "scope" : "DOCUMENT",
+                "value" : "quantity-2"
+              } ]
+            }
+          } ],
+          "observable" : {
+            "productIdentifier" : [ {
               "value" : {
-                "value" : 1,
-                "unit" : {
-                  "financialUnit" : "Contract"
-                },
-                "multiplier" : {
-                  "value" : 10000000000,
-                  "unit" : {
-                    "currency" : {
-                      "value" : "JPY",
-                      "meta" : {
-                        "scheme" : "http://www.fpml.org/coding-scheme/external/iso4217"
-                      }
-                    }
+                "identifier" : {
+                  "value" : "ExampleCUSIP1",
+                  "meta" : {
+                    "scheme" : "CUSIP"
                   }
+                },
+                "source" : "CUSIP",
+                "meta" : {
+                  "globalKey" : "d892a975"
                 }
               },
               "meta" : {
                 "location" : [ {
                   "scope" : "DOCUMENT",
-                  "value" : "quantity-2"
+                  "value" : "productIdentifier-1"
                 } ]
               }
             } ],
-            "observable" : {
-              "productIdentifier" : [ {
-                "value" : {
-                  "identifier" : {
-                    "value" : "ExampleCUSIP1",
-                    "meta" : {
-                      "scheme" : "CUSIP"
-                    }
-                  },
-                  "source" : "CUSIP",
-                  "meta" : {
-                    "globalKey" : "d892a975"
-                  }
-                },
-                "meta" : {
-                  "location" : [ {
-                    "scope" : "DOCUMENT",
-                    "value" : "productIdentifier-1"
-                  } ]
-                }
-              } ],
-              "meta" : {
-                "globalKey" : "39c2852b"
-              }
-            },
-            "settlementTerms" : {
-              "settlementType" : "Physical",
-              "meta" : {
-                "globalKey" : "f3b1d0d7"
-              }
-            },
             "meta" : {
-              "globalKey" : "2be9cae3"
-            }
-          } ]
-        } ],
-        "counterparty" : [ {
-          "role" : "Party1",
-          "partyReference" : {
-            "globalReference" : "b6bdbfc2",
-            "externalReference" : "party1"
-          }
-        }, {
-          "role" : "Party2",
-          "partyReference" : {
-            "globalReference" : "a14913ec",
-            "externalReference" : "party2"
-          }
-        } ],
-        "ancillaryParty" : [ {
-          "role" : "CalculationAgentIndependent",
-          "partyReference" : [ {
-            "globalReference" : "b6bdbfc2",
-            "externalReference" : "party1"
-          } ]
-        } ]
-      },
-      "party" : [ {
-        "partyId" : [ {
-          "identifier" : {
-            "value" : "54930084UKLVMY22DS16",
-            "meta" : {
-              "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
+              "globalKey" : "39c2852b"
             }
           },
-          "identifierType" : "LEI",
+          "settlementTerms" : {
+            "settlementType" : "Physical",
+            "meta" : {
+              "globalKey" : "f3b1d0d7"
+            }
+          },
           "meta" : {
-            "globalKey" : "abf5051b"
+            "globalKey" : "2be9cae3"
           }
-        } ],
-        "name" : {
-          "value" : "Party A"
-        },
-        "meta" : {
-          "globalKey" : "b6bdbfc2",
-          "externalKey" : "party1"
+        } ]
+      } ],
+      "counterparty" : [ {
+        "role" : "Party1",
+        "partyReference" : {
+          "globalReference" : "b6bdbfc2",
+          "externalReference" : "party1"
         }
       }, {
-        "partyId" : [ {
-          "identifier" : {
-            "value" : "48750084UKLVTR22DS78",
-            "meta" : {
-              "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
-            }
-          },
-          "identifierType" : "LEI",
-          "meta" : {
-            "globalKey" : "62694f84"
-          }
-        } ],
-        "name" : {
-          "value" : "Party B"
-        },
-        "meta" : {
-          "globalKey" : "a14913ec",
-          "externalKey" : "party2"
+        "role" : "Party2",
+        "partyReference" : {
+          "globalReference" : "a14913ec",
+          "externalReference" : "party2"
         }
       } ],
-      "meta" : {
-        "globalKey" : "2bd8e4b7"
-      }
+      "ancillaryParty" : [ {
+        "role" : "CalculationAgentIndependent",
+        "partyReference" : [ {
+          "globalReference" : "b6bdbfc2",
+          "externalReference" : "party1"
+        } ]
+      } ]
     },
-    "transferHistory" : [ {
-      "transfer" : {
-        "quantity" : {
-          "value" : 25000000,
-          "unit" : {
-            "currency" : {
-              "value" : "JPY",
-              "meta" : {
-                "scheme" : "http://www.fpml.org/coding-scheme/external/iso4217"
-              }
-            }
+    "party" : [ {
+      "partyId" : [ {
+        "identifier" : {
+          "value" : "54930084UKLVMY22DS16",
+          "meta" : {
+            "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
           }
         },
-        "payerReceiver" : {
-          "payerPartyReference" : {
-            "globalReference" : "b6bdbfc2",
-            "externalReference" : "party1"
-          },
-          "receiverPartyReference" : {
-            "globalReference" : "a14913ec",
-            "externalReference" : "party2"
-          }
-        },
-        "settlementDate" : {
-          "unadjustedDate" : "2006-05-15",
-          "dateAdjustments" : {
-            "businessDayConvention" : "FOLLOWING",
-            "businessCenters" : {
-              "businessCenter" : [ {
-                "value" : "JPTO"
-              } ],
-              "meta" : {
-                "globalKey" : "22da41"
-              }
-            },
-            "meta" : {
-              "globalKey" : "211ff630"
-            }
-          }
-        },
-        "transferExpression" : {
-          "priceTransfer" : "Premium"
+        "identifierType" : "LEI",
+        "meta" : {
+          "globalKey" : "abf5051b"
         }
+      } ],
+      "name" : {
+        "value" : "Party A"
       },
       "meta" : {
-        "globalKey" : "71c62fb1"
+        "globalKey" : "b6bdbfc2",
+        "externalKey" : "party1"
+      }
+    }, {
+      "partyId" : [ {
+        "identifier" : {
+          "value" : "48750084UKLVTR22DS78",
+          "meta" : {
+            "scheme" : "http://www.fpml.org/coding-scheme/external/iso17442"
+          }
+        },
+        "identifierType" : "LEI",
+        "meta" : {
+          "globalKey" : "62694f84"
+        }
+      } ],
+      "name" : {
+        "value" : "Party B"
+      },
+      "meta" : {
+        "globalKey" : "a14913ec",
+        "externalKey" : "party2"
       }
     } ],
     "meta" : {
-      "globalKey" : "e0bc335a"
+      "globalKey" : "dbaf0e08"
     }
+  },
+  "transferHistory" : [ {
+    "transfer" : {
+      "quantity" : {
+        "value" : 25000000,
+        "unit" : {
+          "currency" : {
+            "value" : "JPY",
+            "meta" : {
+              "scheme" : "http://www.fpml.org/coding-scheme/external/iso4217"
+            }
+          }
+        }
+      },
+      "payerReceiver" : {
+        "payerPartyReference" : {
+          "globalReference" : "b6bdbfc2",
+          "externalReference" : "party1"
+        },
+        "receiverPartyReference" : {
+          "globalReference" : "a14913ec",
+          "externalReference" : "party2"
+        }
+      },
+      "settlementDate" : {
+        "unadjustedDate" : "2006-05-15",
+        "dateAdjustments" : {
+          "businessDayConvention" : "FOLLOWING",
+          "businessCenters" : {
+            "businessCenter" : [ {
+              "value" : "JPTO"
+            } ],
+            "meta" : {
+              "globalKey" : "22da41"
+            }
+          },
+          "meta" : {
+            "globalKey" : "211ff630"
+          }
+        }
+      },
+      "transferExpression" : {
+        "priceTransfer" : "Premium"
+      }
+    },
+    "meta" : {
+      "globalKey" : "71c62fb1"
+    }
+  } ],
+  "meta" : {
+    "globalKey" : "8dd9b6a9"
   }
+}
