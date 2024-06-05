@@ -420,7 +420,7 @@ def all_elements(lhs, op, rhs) -> bool:
 
 def default(op1: Any, op2: Any):
     ''''If op1 is not present or is an empty list then op2 is returned otherwise op1 is returned'''
-    if not op1:
+    if op1 is None:
         return op2
     elif isinstance(op1, (list, tuple)) and len(op1) == 0:
         return op2
