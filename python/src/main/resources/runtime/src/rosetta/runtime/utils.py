@@ -418,6 +418,14 @@ def all_elements(lhs, op, rhs) -> bool:
 
     return all(cmp(el1, el2) for el1 in op1 for el2 in op2)
 
+def default(op1: Any, op2: Any):
+    ''''If op1 is not present or is an empty list then op2 is returned otherwise op1 is returned'''
+    if not op1:
+        return op2
+    elif isinstance(op1, (list, tuple)) and len(op1) == 0:
+        return op2
+    else:
+        return op1
 
 def disjoint(op1, op2):
     '''Checks if two lists have no common elements'''
