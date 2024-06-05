@@ -18,6 +18,39 @@ class PythonExpressionGeneratorTest {
 	
     @Inject extension ModelHelper
     @Inject PythonCodeGenerator generator;
+    
+    @Test
+    def void shouldGenerateDefaultCondition() {
+        val python = '''
+	        type Test1:<"Test default condition.">
+	        	field1 string (0..1) <"Test string field 1">
+	        	field2 string (0..1) <"Test string field 2">
+	        	condition TestDefault: field1 default field2
+	        '''.generatePython  
+	        
+	     val expected= '''
+			class Test1(BaseDataClass):
+			    """
+			    Test default condition.
+			    """
+			    field1: Optional[str] = Field(None, description="Test string field 1")
+			    """
+			    Test string field 1
+			    """
+			    field2: Optional[str] = Field(None, description="Test string field 2")
+			    """
+			    Test string field 2
+			    """
+			    
+			    @rosetta_condition
+			    def condition_0_TestDefault(self):
+			        item = self
+			        return default(_resolve_rosetta_attr(self, "field1"), _resolve_rosetta_attr(self, "field2"))
+
+	     '''
+	     assertTrue(python.toString.contains(expected))
+    }
+    
 
 	
 	@Test

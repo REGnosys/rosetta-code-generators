@@ -439,6 +439,9 @@ class PythonExpressionGenerator {
                 case ("join"): {
                     '''join(«generateExpression(expr.left, iflvl)», «generateExpression(expr.right, iflvl)»)'''
                 }
+                case ("default"): {
+                	'''default(«generateExpression(expr.left, iflvl)», «generateExpression(expr.right, iflvl)»)'''
+                }
                 default: {
                     '''(«generateExpression(expr.left, iflvl)» «expr.operator» «generateExpression(expr.right, iflvl)»)'''
                 }
