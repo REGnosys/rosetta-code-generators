@@ -82,7 +82,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>9.8.0</rosetta.dsl.version>
+                <rosetta.dsl.version>9.10.0</rosetta.dsl.version>
                 <rosetta.bundle.version>0.0.0.master-SNAPSHOT</rosetta.bundle.version>
             </properties>
             <build>
@@ -100,8 +100,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>9.8.0</rosetta.dsl.version>
-                <rosetta.bundle.version>10.16.0</rosetta.bundle.version>
+                <rosetta.dsl.version>9.10.0</rosetta.dsl.version>
+                <rosetta.bundle.version>11.9.0</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
@@ -143,6 +143,7 @@
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
     </properties>
 
     <modules>
@@ -346,7 +347,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>${maven-gpg-plugin.version}</version>
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>

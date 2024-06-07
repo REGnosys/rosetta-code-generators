@@ -159,7 +159,7 @@ class PythonFilesGeneratorTest {
             e.printStackTrace ()
         }
     }
-    @Disabled("Generate Python Unit Tests from Rosetta Files")
+//    @Disabled("Generate Python Unit Tests from Rosetta Files")
     @Test
     def void generatePythonFromGenericRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results

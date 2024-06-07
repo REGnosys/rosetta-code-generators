@@ -1,6 +1,8 @@
 '''Utility functions (runtime) for rosetta models.'''
 from __future__ import annotations
 import logging as log
+import keyword
+from enum import Enum
 from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
@@ -27,7 +29,8 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'AttributeWithMetaWithAddress',
            'AttributeWithMetaWithReference',
            'AttributeWithAddressWithReference',
-           'AttributeWithMetaWithAddressWithReference']
+           'AttributeWithMetaWithAddressWithReference',
+           'rosetta_str']
 
 
 def if_cond(ifexpr, thenexpr: str, elseexpr: str, obj: object):
@@ -58,7 +61,14 @@ def _is_meta(obj: Any) -> bool:
               AttributeWithMetaWithAddressWithReference))
 
 
-_NAME_MANGLE_MAP = {'global': 'rosetta_attr_global'}
+def mangle_name(attrib: str) -> str:
+    ''' Mangle any attrib that is a Python keyword, is a Python soft keyword
+        or begins with _
+    '''
+    if (keyword.iskeyword(attrib) or keyword.issoftkeyword(attrib)
+            or attrib.startswith('_')):
+        return 'rosetta_attr_' + attrib
+    return attrib
 
 
 def rosetta_resolve_attr(obj: Any | None,
@@ -81,7 +91,7 @@ def rosetta_resolve_attr(obj: Any | None,
         # In the future one might want to check if the attrib is contained
         # in the metadata and return it instead of failing.
         obj = obj.value
-    attrib = _NAME_MANGLE_MAP.get(attrib, attrib)
+    attrib = mangle_name(attrib)
     return getattr(obj, attrib, None)
 
 
@@ -100,6 +110,13 @@ def rosetta_attr_exists(val: Any) -> bool:
     if val is None or val == []:
         return False
     return True
+
+
+def rosetta_str(x: Any) -> str:
+    '''Returns a Rosetta conform string representation'''
+    if isinstance(x, Enum):
+        x = x.value
+    return str(x)
 
 
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:

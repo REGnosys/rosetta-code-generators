@@ -24,11 +24,7 @@ cd $MYPATH
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
 $PYEXE -m venv --clear .pydevenv || processError
-<<<<<<< HEAD
 source .pydevenv/$ACDIR/activate || processError
-=======
-source .pyenv/$ACDIR/activate || processError
->>>>>>> master
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
 $PYEXE -m pip install pylint || processError
@@ -37,7 +33,7 @@ $PYEXE -m pip install yapf || processError
 $PYEXE -m pip install "pydantic>=2.0.0" || processError
 $PYEXE -m pip install jsonpickle || processError
 rm -rf build
-rm rosetta_runtime-2.0.0-py3-none-any.whl
+rm rosetta_runtime-*-py3-none-any.whl
 $PYEXE -m pip install -e . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
 rm -rf build .pydevenv

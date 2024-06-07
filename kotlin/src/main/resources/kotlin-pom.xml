@@ -7,7 +7,7 @@
 	<name>cdm-kotlin</name>
 	<packaging>jar</packaging>
 	<url>https://www.rosetta-model.org</url>
-	<version>0.0.0.master</version>
+	<version>0.0.0.master-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.release>11</maven.compiler.release>
