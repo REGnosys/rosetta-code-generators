@@ -89,7 +89,7 @@ class PythonObjectGenerationTest {
 		    @rosetta_condition
 		    def condition_0_Rule(self):
 		        item = self
-		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
+		        return all_elements(rosetta_resolve_attr(self, "intValue1"), "<", 100)
 		    
 		    @rosetta_condition
 		    def condition_1_OneOrTwo(self):
@@ -105,7 +105,7 @@ class PythonObjectGenerationTest {
 		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
 		        """
 		        item = self
-		        return ((rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and (not rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))))
+		        return ((rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(rosetta_resolve_attr(self, "intValue2")) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1"))) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1")))) or ((rosetta_attr_exists(rosetta_resolve_attr(self, "intValue2")) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1"))) and (not rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1")))))
 		'''
 		assertTrue(python.toString.contains(expectedA))
 		assertTrue(python.toString.contains(expectedB))
@@ -1055,7 +1055,7 @@ class PythonObjectGenerationTest {
 		        The value attribute must be present in a concrete measure.
 		        """
 		        item = self
-		        return rosetta_attr_exists(_resolve_rosetta_attr(self, "value"))
+		        return rosetta_attr_exists(rosetta_resolve_attr(self, "value"))
 		'''
 		val expectedTestType3=
 		'''
@@ -1487,12 +1487,12 @@ class PythonObjectGenerationTest {
 			        """
 			        item = self
 			        def _then_fn0():
-			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			            return all_elements(rosetta_resolve_attr(self, "field3"), ">", 0)
 			        
 			        def _else_fn0():
 			            return True
 			        
-			        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+			        return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(self, "field1")), _then_fn0, _else_fn0)
 			
             '''
             assertTrue(types.contains(expected))
@@ -1543,12 +1543,12 @@ class PythonObjectGenerationTest {
 			        """
 			        item = self
 			        def _then_fn0():
-			            return all_elements(_resolve_rosetta_attr(self, "field3"), ">", 0)
+			            return all_elements(rosetta_resolve_attr(self, "field3"), ">", 0)
 			        
 			        def _else_fn0():
-			            return all_elements(_resolve_rosetta_attr(self, "field4"), ">", 0)
+			            return all_elements(rosetta_resolve_attr(self, "field4"), ">", 0)
 			        
-			        return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+			        return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(self, "field1")), _then_fn0, _else_fn0)
 			
 			'''
 			assertTrue(python.toString.contains(expected))
@@ -1588,7 +1588,7 @@ class PythonObjectGenerationTest {
 		        The start date must fall on or before the end date (a date range of only one date is allowed).
 		        """
 		        item = self
-		        return all_elements(_resolve_rosetta_attr(self, "startDate"), "<=", _resolve_rosetta_attr(self, "endDate"))
+		        return all_elements(rosetta_resolve_attr(self, "startDate"), "<=", rosetta_resolve_attr(self, "endDate"))
 		'''
 		assertTrue(python.toString.contains(expectedCondition))
 	}
@@ -1638,7 +1638,7 @@ class PythonObjectGenerationTest {
 		    @rosetta_condition
 		    def condition_0_Rule(self):
 		        item = self
-		        return all_elements(_resolve_rosetta_attr(self, "intValue1"), "<", 100)
+		        return all_elements(rosetta_resolve_attr(self, "intValue1"), "<", 100)
 		    
 		    @rosetta_condition
 		    def condition_1_OneOrTwo(self):
@@ -1662,7 +1662,7 @@ class PythonObjectGenerationTest {
 		        FpML specifies a choice between adjustedDate and [unadjustedDate (required), dateAdjutsments (required), adjustedDate (optional)].
 		        """
 		        item = self
-		        return ((rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))) or ((rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue2")) and rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1"))) and (not rosetta_attr_exists(_resolve_rosetta_attr(self, "intValue1")))))
+		        return ((rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "a0")) or ((rosetta_attr_exists(rosetta_resolve_attr(self, "intValue2")) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1"))) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1")))) or ((rosetta_attr_exists(rosetta_resolve_attr(self, "intValue2")) and rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1"))) and (not rosetta_attr_exists(rosetta_resolve_attr(self, "intValue1")))))
 		
 		'''
 		

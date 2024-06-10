@@ -87,13 +87,21 @@ class PythonFilesGeneratorTest {
         result.putAll(generator.afterAllGenerate(resourceSet, #{m}, version))
         result
     }
-    def void generatePythonFromRosettaFiles (String rosettaSource, String outputPath){
+    def void generatePythonFromRosettaFiles (String rosettaSourceName, String outputPathName){
         // loop through each of the rosetta dsl definitions
         //  - produce new python from the dsl definitions 
         //  - delete any existing directory and create a new one
-        
+        val properties    = getProperties ()
+        val rosettaSource = properties.getProperty (rosettaSourceName) as String
+        if (rosettaSource === null){
+            throw new Exception ('Initialization failure: source Rosetta path not specified')
+        }
         if (!Files.exists(Paths.get(rosettaSource))){
             throw new Exception ("Unable to generate Python from non-existant Rosetta source directory: " + rosettaSource)
+        }
+        val outputPath = properties.getProperty (outputPathName) as String
+        if (outputPath === null) {
+            throw new Exception('Initialization failure: Python target not specified')
         }
         LOGGER.info("generatePython ... creating Python from Rosetta found in {}", rosettaSource)
         LOGGER.info("generatePython ... creating resource set and adding common Rosetta models")
@@ -135,16 +143,7 @@ class PythonFilesGeneratorTest {
         
         try {
             LOGGER.info('generateCDMPythonFromRosetta ... start')
-            val properties    = getProperties ()
-            val rosettaSource = properties.getProperty ('cdm.rosetta.source.path') as String
-            if (rosettaSource === null){
-                throw new Exception ('Initialization failure: source Rosetta path not specified')
-            }
-            val outputPath    = properties.getProperty ('cdm.python.output.path') as String
-            if (outputPath === null) {
-                throw new Exception('Initialization failure: Python target not specified')
-            }
-            generatePythonFromRosettaFiles (rosettaSource, outputPath)
+            generatePythonFromRosettaFiles ('cdm.rosetta.source.path', 'cdm.python.output.path')
             LOGGER.info('generateCDMPythonFromRosetta ... done')
         } 
         catch (IOException ioE) {
@@ -160,22 +159,14 @@ class PythonFilesGeneratorTest {
             e.printStackTrace ()
         }
     }
-    @Disabled("Generate Python Unit Tests from Rosetta Files")
+//    @Disabled("Generate Python Unit Tests from Rosetta Files")
     @Test
     def void generatePythonFromGenericRosetta () {
         // the process: get directory information from the POM, create Python from Rosetta definitions and write out results
-        
         try {
-            val properties    = getProperties ()
-            val rosettaSource = properties.getProperty ('unit.test.rosetta.source.path') as String
-            val outputPath    = properties.getProperty ('unit.test.python.output.path') as String
-            if (rosettaSource === null){
-                LOGGER.debug ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... source directory not specified')
-            } else if (outputPath === null) {
-                LOGGER.debug ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... target directory not specified')
-            } else {
-                generatePythonFromRosettaFiles (rosettaSource, outputPath)
-            }
+            LOGGER.info('generatePythonFromGenericRosetta ... start')
+            generatePythonFromRosettaFiles ('unit.test.rosetta.source.path', 'unit.test.python.output.path')
+            LOGGER.info('generatePythonFromGenericRosetta ... done')
         } 
         catch (IOException ioE) {
             LOGGER.error ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... processing failed with an IO Exception')
@@ -191,31 +182,6 @@ class PythonFilesGeneratorTest {
             LOGGER.error ('PythonFilesGeneratorTest::generatePythonUnitTestsFromRosetta ... processing failed with an Exception')
             LOGGER.error ('\n' + e.toString ())
             e.printStackTrace ()
-        }
-    }
-    
-    @Test 
-    def void generateClassMemberAccessOperatorPython () {
-        val model = '''
-            type Foo:
-                one int (1..1)
-                two int (0..1)
-                three int (0..*)
-''' as CharSequence
-        try {
-            val properties = getProperties ()
-            val filePath   = properties.get ('generated.python.path') as String
-            LOGGER.info ('generateClassMemberAccessOperatorPython ... generating files to: ' + filePath)
-            if (filePath !== null) {
-                val m 			 = model.parseRosettaWithNoErrors
-                val resourceSet  = m.eResource.resourceSet
-                val results 	 = generatePythonFromRosettaModel (m, resourceSet)
-                writeFiles (filePath, results)
-            }
-        } catch (Throwable t) {
-            LOGGER.info ('generateClassMemberAccessOperatorPython ... processing failed with an Exception')
-            LOGGER.info (t.toString ())
-            t.printStackTrace ()
         }
     }
 }
