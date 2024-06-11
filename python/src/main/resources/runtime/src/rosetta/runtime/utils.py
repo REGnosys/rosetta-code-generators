@@ -1,6 +1,8 @@
 '''Utility functions (runtime) for rosetta models.'''
 from __future__ import annotations
 import logging as log
+import keyword
+from enum import Enum
 from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
 from functools import wraps
@@ -14,7 +16,7 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'rosetta_local_condition',
            'execute_local_conditions',
            'flatten_list',
-           '_resolve_rosetta_attr',
+           'rosetta_resolve_attr',
            'rosetta_count',
            'rosetta_attr_exists',
            '_get_rosetta_object',
@@ -27,7 +29,8 @@ __all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
            'AttributeWithMetaWithAddress',
            'AttributeWithMetaWithReference',
            'AttributeWithAddressWithReference',
-           'AttributeWithMetaWithAddressWithReference']
+           'AttributeWithMetaWithAddressWithReference',
+           'rosetta_str']
 
 
 def if_cond(ifexpr, thenexpr: str, elseexpr: str, obj: object):
@@ -58,20 +61,37 @@ def _is_meta(obj: Any) -> bool:
               AttributeWithMetaWithAddressWithReference))
 
 
-def _resolve_rosetta_attr(obj: Any | None,
-                          attrib: str) -> Any | list[Any] | None:
+def mangle_name(attrib: str) -> str:
+    ''' Mangle any attrib that is a Python keyword, is a Python soft keyword
+        or begins with _
+    '''
+    if (keyword.iskeyword(attrib) or keyword.issoftkeyword(attrib)
+            or attrib.startswith('_')):
+        return 'rosetta_attr_' + attrib
+    return attrib
+
+
+def rosetta_resolve_attr(obj: Any | None,
+                         attrib: str) -> Any | list[Any] | None:
+    ''' Rosetta semantics compliant attribute resolver.
+        Lists and mangled attributes are treated as defined by
+        the rosetta definition (list flattening).
+    '''
     if obj is None:
         return None
     if isinstance(obj, (list, tuple)):
-        res = [item for elem in obj
-               for item in _to_list(_resolve_rosetta_attr(elem, attrib))
-               if item is not None]
+        res = [
+            item for elem in obj
+            for item in _to_list(rosetta_resolve_attr(elem, attrib))
+            if item is not None
+        ]
         return res if res else None
     if _is_meta(obj):
         # NOTE: ignores (for now) all meta attributes in the expressions.
         # In the future one might want to check if the attrib is contained
         # in the metadata and return it instead of failing.
         obj = obj.value
+    attrib = mangle_name(attrib)
     return getattr(obj, attrib, None)
 
 
@@ -90,6 +110,13 @@ def rosetta_attr_exists(val: Any) -> bool:
     if val is None or val == []:
         return False
     return True
+
+
+def rosetta_str(x: Any) -> str:
+    '''Returns a Rosetta conform string representation'''
+    if isinstance(x, Enum):
+        x = x.value
+    return str(x)
 
 
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
@@ -521,7 +548,7 @@ def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
 
     # Iterate through the path components, except the last one
     for attrib in path_components[:-1]:
-        parent_obj = _resolve_rosetta_attr(parent_obj, attrib)
+        parent_obj = rosetta_resolve_attr(parent_obj, attrib)
         if parent_obj is None:
             raise ValueError(
                 f"Attribute '{attrib}' in the path is None, cannot "

@@ -33,6 +33,53 @@ class PythonTranslator {
                 return null
         }
     }
+    static def String mangleName (String attrib) {
+        // prepend "rosetta_attr_" if attrib is a Python keyword, soft keyword or begins with an "_"
+        switch (attrib) {
+            case 'False',
+            case 'await',
+            case 'else',
+            case 'import',
+            case 'pass',
+            case 'None',
+            case 'break',
+            case 'except',
+            case 'in',
+            case 'raise',
+            case 'True',
+            case 'class',
+            case 'finally',
+            case 'is',
+            case 'return',
+            case 'and',
+            case 'continue',
+            case 'for',
+            case 'lambda',
+            case 'try',
+            case 'as',
+            case 'def',
+            case 'from',
+            case 'nonlocal',
+            case 'while',
+            case 'assert',
+            case 'del',
+            case 'global',
+            case 'not',
+            case 'with',
+            case 'async',
+            case 'elif',
+            case 'if',
+            case 'or',
+            case 'yield',
+            case 'match',
+            case 'case',
+            case 'type',
+            case '_':
+                return 'rosetta_attr_' + attrib
+            default:
+                return (attrib.charAt(0) == '_') ? 'rosetta_attr_' + attrib : attrib
+        }
+    }
     static def String toPythonBasicType(String rosettaType) {
         val pythonType = toPythonBasicTypeInnerFunction (rosettaType)
         return (pythonType === null) ? rosettaType : pythonType

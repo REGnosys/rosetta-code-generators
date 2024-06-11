@@ -116,12 +116,12 @@ class PythonExpressionGeneratorTest {
 		             """
 		             item = self
 		             def _then_fn0():
-		                 return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 0)
+		                 return all_elements(rosetta_resolve_attr(self, "field2"), "=", 0)
 		             
 		             def _else_fn0():
 		                 return True
 		             
-		             return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+		             return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(self, "field1")), _then_fn0, _else_fn0)
 	     '''
 	     assertTrue(python.toString.contains(expected))
 	     
@@ -160,12 +160,12 @@ class PythonExpressionGeneratorTest {
 	             """
 	             item = self
 	             def _then_fn0():
-	                 return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 0)
+	                 return all_elements(rosetta_resolve_attr(self, "field2"), "=", 0)
 	             
 	             def _else_fn0():
-	                 return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 1)
+	                 return all_elements(rosetta_resolve_attr(self, "field2"), "=", 1)
 	             
-	             return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(self, "field1")), _then_fn0, _else_fn0)
+	             return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(self, "field1")), _then_fn0, _else_fn0)
 	     '''
 	     assertTrue(python.toString.contains(expected))
 	     
@@ -203,12 +203,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 0)
+	                    return all_elements(rosetta_resolve_attr(self, "field2"), "=", 0)
 	                
 	                def _else_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 5)
+	                    return all_elements(rosetta_resolve_attr(self, "field2"), "=", 5)
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
 	        '''
        	assertTrue(python.toString.contains(expected))
 	                
@@ -246,12 +246,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 0)
+	                    return all_elements(rosetta_resolve_attr(self, "field2"), "=", 0)
 	                
 	                def _else_fn0():
-	                    return (not rosetta_attr_exists(_resolve_rosetta_attr(self, "field2")))
+	                    return (not rosetta_attr_exists(rosetta_resolve_attr(self, "field2")))
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field1"), "=", True), _then_fn0, _else_fn0)
 	        '''
        	assertTrue(python.toString.contains(expected))
 	                
@@ -306,12 +306,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field2"), "=", 0)
+	                    return all_elements(rosetta_resolve_attr(self, "field2"), "=", 0)
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(get_only_element(_resolve_rosetta_attr(self, "field1")), "=", _resolve_rosetta_attr(TestEnum, "TEST_ENUM_VALUE_1")), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(get_only_element(rosetta_resolve_attr(self, "field1")), "=", rosetta_resolve_attr(TestEnum, "TEST_ENUM_VALUE_1")), _then_fn0, _else_fn0)
 	        '''
        	assertTrue(python.toString.contains(expectedEnum))
        	assertTrue(python.toString.contains(expectedTest))
@@ -344,7 +344,7 @@ class PythonExpressionGeneratorTest {
 	                Test condition
 	                """
 	                item = self
-	                return _resolve_rosetta_attr(self, "field1")
+	                return rosetta_resolve_attr(self, "field1")
 	        '''
 	     assertTrue(python.toString.contains(expected))
 	                
@@ -375,7 +375,7 @@ class PythonExpressionGeneratorTest {
 	                Test condition
 	                """
 	                item = self
-	                return _resolve_rosetta_attr(self, "field1")
+	                return rosetta_resolve_attr(self, "field1")
 
 	        '''
 	     assertTrue(python.toString.contains(expected))
@@ -408,7 +408,7 @@ class PythonExpressionGeneratorTest {
 	                Test condition
 	                """
 	                item = self
-	                return _resolve_rosetta_attr(self, "field1")
+	                return rosetta_resolve_attr(self, "field1")
 
 	        '''
 	     assertTrue(python.toString.contains(expected))
@@ -446,12 +446,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return self.check_one_of_constraint(self, _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1"))
+	                    return self.check_one_of_constraint(self, rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1"))
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
+	                return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
 	        '''
 	        val expectedA ='''
 	        class A(BaseDataClass):
@@ -511,7 +511,7 @@ class PythonExpressionGeneratorTest {
 	                def _else_fn0():
 	                    return False
 	                
-	                return if_cond_fn(any_elements(rosetta_count(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")), "<>", rosetta_count(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field2"))), _then_fn0, _else_fn0)
+	                return if_cond_fn(any_elements(rosetta_count(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")), "<>", rosetta_count(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field2"))), _then_fn0, _else_fn0)
 	        '''
 	        val expectedA ='''
 	        class A(BaseDataClass):
@@ -564,12 +564,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return all_elements(["B", "C", "D"], "=", _resolve_rosetta_attr(self, "field2"))
+	                    return all_elements(["B", "C", "D"], "=", rosetta_resolve_attr(self, "field2"))
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field1"), "=", "A"), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field1"), "=", "A"), _then_fn0, _else_fn0)
 	        
             '''
 	     assertTrue(python.toString.contains(expected))
@@ -618,12 +618,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field3"), "=", 0)
+	                    return all_elements(rosetta_resolve_attr(self, "field3"), "=", 0)
 	                
 	                def _else_fn0():
-	                    return all_elements(_resolve_rosetta_attr(self, "field3"), "=", 1)
+	                    return all_elements(rosetta_resolve_attr(self, "field3"), "=", 1)
 	                
-	                return if_cond_fn(all_elements(rosetta_count(set(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1"))), "=", 1), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_count(set(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1"))), "=", 1), _then_fn0, _else_fn0)
 	        '''
 	        
 	        val expectedClassA=  '''
@@ -681,7 +681,7 @@ class PythonExpressionGeneratorTest {
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
+	                return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
 	        '''
 	        val expectedClassA=  '''
 	        class A(BaseDataClass):
@@ -732,12 +732,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")[-1]
+	                    return rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")[-1]
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
+	                return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
 	        '''
 	        val expectedClassA=  '''
  			class A(BaseDataClass):
@@ -789,12 +789,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return sum(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1"))
+	                    return sum(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1"))
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(rosetta_attr_exists(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
+	                return if_cond_fn(rosetta_attr_exists(rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")), _then_fn0, _else_fn0)
 	        '''
 	        val expectedClassA='''
 	        class A(BaseDataClass):
@@ -844,7 +844,7 @@ class PythonExpressionGeneratorTest {
 	                Test condition
 	                """
 	                item = self
-	                return (lambda item: _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field2")[0])(rosetta_filter(item, lambda item: _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")))
+	                return (lambda item: rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field2")[0])(rosetta_filter(item, lambda item: rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")))
 	        '''
 	        val expectedClassA='''
 	        class A(BaseDataClass):
@@ -902,7 +902,7 @@ class PythonExpressionGeneratorTest {
 	                Test condition
 	                """
 	                item = self
-	                return (lambda item: _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field2")[0])(rosetta_filter(item, lambda item: _resolve_rosetta_attr(_resolve_rosetta_attr(self, "aValue"), "field1")))
+	                return (lambda item: rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field2")[0])(rosetta_filter(item, lambda item: rosetta_resolve_attr(rosetta_resolve_attr(self, "aValue"), "field1")))
 	        '''
 	        val expectedClassA='''
 	        class A(BaseDataClass):
@@ -963,12 +963,12 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn0():
-	                    return contains(_resolve_rosetta_attr(_resolve_rosetta_attr(_resolve_rosetta_attr(self, "bValue"), "aValue"), "cValue"), _resolve_rosetta_attr(C, "FIELD_4"))
+	                    return contains(rosetta_resolve_attr(rosetta_resolve_attr(rosetta_resolve_attr(self, "bValue"), "aValue"), "cValue"), rosetta_resolve_attr(C, "FIELD_4"))
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field3"), "=", True), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field3"), "=", True), _then_fn0, _else_fn0)
 	        '''
 	        val expectedClassA='''
 	        class A(BaseDataClass):
@@ -1058,18 +1058,18 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn1():
-	                    return all_elements(_resolve_rosetta_attr(self, "field3"), "=", True)
+	                    return all_elements(rosetta_resolve_attr(self, "field3"), "=", True)
 	                
 	                def _else_fn1():
 	                    return True
 	                
 	                def _then_fn0():
-	                    return if_cond_fn((all_elements(["B", "C", "D"], "=", _resolve_rosetta_attr(self, "field2")) and disjoint(["A"], _resolve_rosetta_attr(self, "field1"))), _then_fn1, _else_fn1)
+	                    return if_cond_fn((all_elements(["B", "C", "D"], "=", rosetta_resolve_attr(self, "field2")) and disjoint(["A"], rosetta_resolve_attr(self, "field1"))), _then_fn1, _else_fn1)
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field3"), "=", False), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field3"), "=", False), _then_fn0, _else_fn0)
             '''
 	     assertTrue(python.toString.contains(expected))
 	                
@@ -1112,18 +1112,18 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn1():
-	                    return join(item, _resolve_rosetta_attr(self, "field1"))
+	                    return join(item, rosetta_resolve_attr(self, "field1"))
 	                
 	                def _else_fn1():
 	                    return True
 	                
 	                def _then_fn0():
-	                    return if_cond_fn(all_elements(["B", "C", "D"], "=", _resolve_rosetta_attr(self, "field2")), _then_fn1, _else_fn1)
+	                    return if_cond_fn(all_elements(["B", "C", "D"], "=", rosetta_resolve_attr(self, "field2")), _then_fn1, _else_fn1)
 	                
 	                def _else_fn0():
 	                    return True
 	                
-	                return if_cond_fn(all_elements(_resolve_rosetta_attr(self, "field3"), "=", False), _then_fn0, _else_fn0)
+	                return if_cond_fn(all_elements(rosetta_resolve_attr(self, "field3"), "=", False), _then_fn0, _else_fn0)
 	        '''
 	     assertTrue(python.toString.contains(expected))
 	                
