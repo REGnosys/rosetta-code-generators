@@ -78,7 +78,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.dsl.version>0.0.0.test-version</rosetta.dsl.version>
+                <rosetta.dsl.version>test</rosetta.dsl.version>
                 <rosetta.bundle.version>0.0.0.master-SNAPSHOT</rosetta.bundle.version>
             </properties>
             <build>
@@ -96,8 +96,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <rosetta.dsl.version>0.0.0.test-version</rosetta.dsl.version>
-                <rosetta.bundle.version>0.0.0.next-bundle</rosetta.bundle.version>
+                <rosetta.dsl.version>test</rosetta.dsl.version>
+                <rosetta.bundle.version></rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
