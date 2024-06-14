@@ -101,7 +101,7 @@
             </activation>
             <properties>
                 <rosetta.dsl.version>9.11.1</rosetta.dsl.version>
-                <rosetta.bundle.version>11.9.1</rosetta.bundle.version>
+                <rosetta.bundle.version>11.10.1</rosetta.bundle.version>
             </properties>
         </profile>
     </profiles>
