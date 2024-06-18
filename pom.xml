@@ -83,7 +83,7 @@
             <id>regnosys</id>
             <properties>
                 <rosetta.dsl.version>9.11.2</rosetta.dsl.version>
-                <rosetta.bundle.version>0.0.0.master-SNAPSHOT</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.main-SNAPSHOT</rosetta.bundle.version>
             </properties>
             <build>
                 <plugins>
