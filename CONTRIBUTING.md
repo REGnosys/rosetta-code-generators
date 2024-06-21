@@ -58,7 +58,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Setup a new branch for your changes. 
 
      ```shell
-     git checkout -b cool-feature-branch master
+     git checkout -b cool-feature-branch main
      ```
 
 1. Create your patch, **including appropriate test cases**.
@@ -83,7 +83,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git push origin cool-feature-branch
     ```
 
-1. In GitHub, create a [pull request] to `rosetta-code-generators:master` and choose as reviewer 
+1. In GitHub, create a [pull request] to `rosetta-code-generators:main` and choose as reviewer 
     a member of the team
 * If we suggest changes then:
   * Make the required updates.
@@ -91,7 +91,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   * Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
-    git rebase master -i
+    git rebase main -i
     git push -f
     ```
 
@@ -108,10 +108,10 @@ from the main (upstream) repository:
     git push origin --delete cool-feature-branch
     ```
 
-* Check out the master branch:
+* Check out the main branch:
 
     ```shell
-    git checkout master -f
+    git checkout main -f
     ```
 
 * Delete the local branch:
@@ -120,10 +120,10 @@ from the main (upstream) repository:
     git branch -D cool-feature-branch
     ```
 
-* Update your master with the latest upstream version:
+* Update your main with the latest upstream version:
 
     ```shell
-    git pull --ff upstream master
+    git pull --ff upstream main
     ```
 
 ## <a name="rules"></a> Coding Rules
@@ -138,4 +138,4 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 [pull request]: https://help.github.com/articles/creating-a-pull-request
 [github issues here]:https://guides.github.com/features/issues
 [github]: https://github.com/REGnosys/rosetta-code-generators
-[checkstyle rules]: https://github.com/REGnosys/rosetta-code-generators/tree/master/checkstyle/checkstyle.xml
+[checkstyle rules]: https://github.com/REGnosys/rosetta-code-generators/tree/main/checkstyle/checkstyle.xml

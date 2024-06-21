@@ -8,7 +8,7 @@ weight: 3
 
 # Rosetta Code Generators
 
-**Continuous Integration:** [![Codefresh build status](https://g.codefresh.io/api/badges/pipeline/regnosysops/REGnosys%2Frosetta-code-generators%2Frosetta-code-generators?branch=master&key=eyJhbGciOiJIUzI1NiJ9.NWE1N2EyYTlmM2JiOTMwMDAxNDRiODMz.ZDeqVUhB-oMlbZGj4tfEiOg0cy6azXaBvoxoeidyL0g&type=cf-1)](https://g.codefresh.io/pipelines/rosetta-code-generators/builds?repoOwner=REGnosys&repoName=rosetta-code-generators&serviceName=REGnosys%2Frosetta-code-generators&filter=trigger:build~Build;branch:master;pipeline:5d0a15a6a52a3deca9db7236~rosetta-code-generators)
+**Continuous Integration:** [![Codefresh build status](https://g.codefresh.io/api/badges/pipeline/regnosysops/REGnosys%2Frosetta-code-generators%2Frosetta-code-generators?branch=main&key=eyJhbGciOiJIUzI1NiJ9.NWE1N2EyYTlmM2JiOTMwMDAxNDRiODMz.ZDeqVUhB-oMlbZGj4tfEiOg0cy6azXaBvoxoeidyL0g&type=cf-1)](https://g.codefresh.io/pipelines/rosetta-code-generators/builds?repoOwner=REGnosys&repoName=rosetta-code-generators&serviceName=REGnosys%2Frosetta-code-generators&filter=trigger:build~Build;branch:main;pipeline:5d0a15a6a52a3deca9db7236~rosetta-code-generators)
 
  **License:** [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -119,4 +119,4 @@ These types are used to bootstrap the Rosetta-enabled application.
 
 ## How to contribute
 
-Please read the [detailed guide](https://github.com/REGnosys/rosetta-code-generators/blob/master/CONTRIBUTING.md).
+Please read the [detailed guide](https://github.com/REGnosys/rosetta-code-generators/blob/main/CONTRIBUTING.md).

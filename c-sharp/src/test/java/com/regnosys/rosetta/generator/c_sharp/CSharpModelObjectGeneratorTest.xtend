@@ -122,7 +122,7 @@ class CSharpModelObjectGeneratorTest {
     @Test
     def void shouldGenerateAssemblyVersion() {
         assertEquals(CSharpModelObjectGenerator.getAssemblyVersion("2.71.7"), "2.71.7");
-        assertEquals(CSharpModelObjectGenerator.getAssemblyVersion("0.0.0.master"), "0.0.0");
+        assertEquals(CSharpModelObjectGenerator.getAssemblyVersion("0.0.0.main"), "0.0.0");
     }
 
     @Test
