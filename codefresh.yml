@@ -72,13 +72,13 @@ steps:
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true
-      - mvn ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
+      - mvn versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -P regnosys
+      - mvn ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version -P regnosys
       - export CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}"
       - export CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}"
       - export GPG_KEYNAME="${{GPG_KEYNAME}}"
       - export GPG_PASSPHRASE="${{GPG_PASSPHRASE}}"
-      - mvn -s settings.xml -U -B clean deploy -P gpg
+      - mvn -s settings.xml -U -B clean deploy -P gpg,regnosys
 
   RunPythonUnitTests:
     title: Run Python Unit tests
