@@ -19,7 +19,6 @@ steps:
     commands:
       - cf_export CICD_REPO="${{CF_VOLUME_PATH}}/m2_repository"
       - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import" --mask
-      - cf_export MAVEN_BUILD_PROFILES="regnosys"
 
   TagReleaseName:
     title: Setup RELEASE_NAME variable with tag
@@ -73,9 +72,13 @@ steps:
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn -s settings.xml versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true
-      - mvn -s settings.xml ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version
-      - mvn -s settings.xml -U -B clean deploy -Denv.CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}" -Denv.CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}" -Denv.GPG_KEYNAME="${{GPG_KEYNAME}}" -Denv.GPG_PASSPHRASE="${{GPG_PASSPHRASE}}" -Denv.CICD_REPO="${{CICD_REPO}}" -P "${{MAVEN_BUILD_PROFILES}}"
+      - mvn versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -P regnosys
+      - mvn ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version -P regnosys
+      - export CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}"
+      - export CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}"
+      - export GPG_KEYNAME="${{GPG_KEYNAME}}"
+      - export GPG_PASSPHRASE="${{GPG_PASSPHRASE}}"
+      - mvn -s settings.xml -U -B clean deploy -P gpg,regnosys
 
   RunPythonUnitTests:
     title: Run Python Unit tests
