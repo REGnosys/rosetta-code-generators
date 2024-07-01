@@ -104,7 +104,7 @@ class  PythonFunctionGenerator {
         if(output!==null){
             '''
             «IF function.operations.size==0 && function.getShortcuts().size==0»
-                «output.name» = _resolve_rosetta_attr(self, "«output.name»")
+                «output.name» = rosetta_resolve_attr(self, "«output.name»")
             «ENDIF»
             
             «generatePostConditions(function)»
@@ -169,30 +169,35 @@ class  PythonFunctionGenerator {
     
     private def collectFunctionDependencies(Function func) {
         val Set<EObject> dependencies = newHashSet()
-    
+
         func.shortcuts.forEach[shortcut |
             dependencies.addAll(functionDependencyProvider.findDependencies(shortcut.expression))
         ]
         func.operations.forEach[operation |
             dependencies.addAll(functionDependencyProvider.findDependencies(operation.expression))
         ]
-    
+
         (func.conditions + func.postConditions).forEach[condition |
             dependencies.addAll(functionDependencyProvider.findDependencies(condition.expression))
         ]
-    
+
         func.inputs.forEach[input |
             if (input.getTypeCall()?.getType() !== null) {
                 dependencies.add(input.getTypeCall().getType())
             }
         ]
-    
+
         if (func.output?.getTypeCall()?.getType() !== null) {
             dependencies.add(func.output.getTypeCall().getType())
         }
-    
+        
+        dependencies.removeIf[
+		    it instanceof Function && (it as Function).name == func.name
+		]
+
         return dependencies
     }
+
 
     private def generateIfBlocks(Function function) {
         val levelList = newArrayList(0) 
@@ -311,7 +316,7 @@ class  PythonFunctionGenerator {
                 setNames.add(attributeRoot.name)
             }  	
             else{
-                result = '''«attributeRoot.name» = set_rosetta_attr(_resolve_rosetta_attr(self, '«attributeRoot.name»'), «generateAttributesPath(operation.path)», «expression»)'''
+                result = '''«attributeRoot.name» = set_rosetta_attr(rosetta_resolve_attr(self, '«attributeRoot.name»'), «generateAttributesPath(operation.path)», «expression»)'''
             }
         }
         return result
@@ -357,9 +362,9 @@ class  PythonFunctionGenerator {
         val attr = attrs.head
         val remainingAttrs = attrs.tail.toList 
     
-        val nextPath = if (remainingAttrs.isEmpty) '''_resolve_rosetta_attr(self, «root»)''' else generateFullPath(remainingAttrs, root)
+        val nextPath = if (remainingAttrs.isEmpty) '''rosetta_resolve_attr(self, «root»)''' else generateFullPath(remainingAttrs, root)
     
-        return '''_resolve_rosetta_attr(«nextPath», '«attr.name»')'''
+        return '''rosetta_resolve_attr(«nextPath», '«attr.name»')'''
     }
 
     private def getReversedAttributes(Segment segment) {

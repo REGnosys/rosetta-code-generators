@@ -238,7 +238,7 @@ class CSharpModelObjectGenerator {
     	if (version.contains("-dev.")) {
     		return version.replace("-dev", "")
     	}
-        // Take the first three numbers from the version string, which could be "0.0.0.master".
+        // Take the first three numbers from the version string, which could be "0.0.0.main-SNAPSHOT".
         return String.join(".", Arrays.copyOfRange(version.split("\\."), 0, 3))
     }
 
