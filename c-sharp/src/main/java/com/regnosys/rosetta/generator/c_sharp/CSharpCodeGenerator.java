@@ -12,9 +12,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
+//import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpCodeInfo;
-import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
+//import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
@@ -22,15 +22,15 @@ import com.regnosys.rosetta.rosetta.simple.Data;
 
 public abstract class CSharpCodeGenerator extends AbstractExternalGenerator implements CSharpCodeInfo {
 	
-	@Inject
-	private CSharpModelObjectGenerator pocoGenerator;
-
-	@Inject
-	private CSharpEnumGenerator enumGenerator;
+//	@Inject
+//	private CSharpModelObjectGenerator pocoGenerator;
+//
+//	@Inject
+//	private CSharpEnumGenerator enumGenerator;
 
 	protected CSharpCodeGenerator(int version) {
 		super("CSharp" + version);
-		enumGenerator = new CSharpEnumGenerator();
+//		enumGenerator = new CSharpEnumGenerator();
 	}
 	
 	@Override
@@ -47,8 +47,8 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
-		result.putAll(enumGenerator.generate(rosettaEnums, version));
-		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version, this));
+//		result.putAll(enumGenerator.generate(rosettaEnums, version));
+//		result.putAll(pocoGenerator.generate(rosettaClasses, metaTypes, version, this));
 		return result;
 	}
 
