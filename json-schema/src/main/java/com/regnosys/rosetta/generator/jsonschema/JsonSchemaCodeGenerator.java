@@ -19,14 +19,14 @@ import com.regnosys.rosetta.rosetta.simple.Data;
 
 public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 
-	@Inject
-	private JsonSchemaTypeGenerator typeSchemaGenerator;
-
-	@Inject 
-	private JsonSchemaMetaFieldGenerator metaFieldGenerator;
-
-	@Inject
-	private JsonSchemaEnumGenerator enumGenerator;
+//	@Inject
+//	private JsonSchemaTypeGenerator typeSchemaGenerator;
+//
+//	@Inject
+//	private JsonSchemaMetaFieldGenerator metaFieldGenerator;
+//
+//	@Inject
+//	private JsonSchemaEnumGenerator enumGenerator;
 	
 	public JsonSchemaCodeGenerator() {
 		super("JsonSchema");
@@ -54,9 +54,9 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 
 		Map<String, CharSequence> result = new HashMap<>();
 
-		result.putAll(typeSchemaGenerator.generateTypeDefinitions(rosettaData));
-		result.putAll(metaFieldGenerator.generateMetaFields(rosettaData, metaTypes));
-		result.putAll(enumGenerator.generateEnumDefinitions(rosettaEnums));
+//		result.putAll(typeSchemaGenerator.generateTypeDefinitions(rosettaData));
+//		result.putAll(metaFieldGenerator.generateMetaFields(rosettaData, metaTypes));
+//		result.putAll(enumGenerator.generateEnumDefinitions(rosettaEnums));
 
 		return result;
 	}

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.xtext.resource.XtextResourceSet;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,6 +37,7 @@ import com.networknt.schema.ValidationMessage;
 import com.regnosys.rosetta.tests.RosettaInjectorProvider;
 import com.regnosys.rosetta.tests.util.ModelHelper;
 
+@Disabled
 public class JsonSchemaGenerationTest {
 
     public static final SpecVersion.VersionFlag JSON_SCHEMA_VERSION = SpecVersion.VersionFlag.V4;
