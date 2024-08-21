@@ -13,12 +13,15 @@ import java.util.Set
 import static com.regnosys.rosetta.generator.kotlin.util.KotlinModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
+import com.regnosys.rosetta.types.RDataType
 
 class KotlinModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension KotlinModelObjectBoilerPlate
     @Inject extension KotlinMetaFieldGenerator
+    @Inject extension TypeSystem
 
     static final String CLASSES_FILENAME = 'Types.kt'
     static final String META_FILENAME = 'Metatypes.kt'
@@ -28,8 +31,10 @@ class KotlinModelObjectGenerator {
         val result = new HashMap
 
         val superTypes = rosettaClasses
-                .map[superType]
-                .map[allSuperTypes].flatten
+                .map[dataToType.superType.stripFromTypeAliases]
+                .filter(RDataType)
+                .map[allSuperDataTypes].flatten
+                .map[data]
                 .toSet
 
         val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
@@ -70,7 +75,7 @@ class KotlinModelObjectGenerator {
 		open class «c.name»«IF c.superType === null && !superTypes.contains(c)»«ENDIF» (
 			«generateAttributes(c)»
 		)
-		«IF c.superType !== null && superTypes.contains(c)»: «c.superType.name»()«ELSEIF c.superType !== null»: «c.superType.name»()«ENDIF»
+		«IF c.superType !== null && superTypes.contains(c)»: «c.superType.type.name»()«ELSEIF c.superType !== null»: «c.superType.type.name»()«ENDIF»
 		«IF c.conditions.size !== 0»
 «««		{
 «««			«FOR condition : c.conditions»
@@ -107,7 +112,7 @@ class KotlinModelObjectGenerator {
 //    }
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-        type.allSuperTypes.map[it.expandedAttributes].flatten
+        type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
     }
     
     def String definition(Data element){

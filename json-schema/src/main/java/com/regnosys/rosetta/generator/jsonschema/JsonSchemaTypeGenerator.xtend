@@ -11,12 +11,15 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
 
 class JsonSchemaTypeGenerator {
 
 	@Inject extension JsonSchemaGeneratorHelper
 	
 	@Inject extension RosettaExtensions
+	
+	@Inject extension TypeSystem
 
 	def Map<String, ? extends CharSequence> generateTypeDefinitions(List<Data> dataList) {
 		val result = newHashMap
@@ -39,7 +42,7 @@ class JsonSchemaTypeGenerator {
 		  	"description": "«data.definition»",
 		  «ENDIF»
 		  "properties": {
-		    «FOR attr : data.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
+		    «FOR attr : data.dataToType.allAttributes SEPARATOR ","»«attr.generateAttributeDefinition»«ENDFOR»
 		  }«IF !data.requiredAttributeNames.isEmpty»,
 		  "required": [
 		    «FOR requiredAttrName : data.requiredAttributeNames SEPARATOR ",\n"»"«requiredAttrName»"«ENDFOR»
@@ -71,14 +74,14 @@ class JsonSchemaTypeGenerator {
 		if (expandedType.isBuiltInType && !attr.toExpandedAttribute.hasMetas) {
 			return '''"type": "«JsonSchemaTranslator.toJsonSchemaType(expandedType)»"'''
 		} else if (attr.toExpandedAttribute.hasMetas) {
-			return '''"$ref": "«getFilename(type.toExpandedType.metaNamespace, attr.toExpandedAttribute.toType)»"'''
+			return '''"$ref": "«getFilename(expandedType.metaNamespace, attr.toExpandedAttribute.toType)»"'''
 		} else {
-			return '''"$ref": "«getFilename(type.namespace, attr.toExpandedAttribute.toType)»"'''
+			return '''"$ref": "«getFilename(expandedType.namespace.toString, attr.toExpandedAttribute.toType)»"'''
 		}
 	}
 
 	def List<String> getRequiredAttributeNames(Data data) {
-		data.expandedAttributes.filter[inf == 1 && sup == 1].map[name].toList
+		data.dataToType.expandedAttributes.filter[inf == 1 && sup == 1].map[name].toList
 	}
 
 	def Map<String, ? extends CharSequence> generateEnumDefinitions(List<RosettaEnumeration> enumList) {

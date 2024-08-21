@@ -12,12 +12,18 @@ import java.util.Map
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
 
 class DamlModelObjectGenerator {
 
-	@Inject extension RosettaExtensions
-	@Inject extension DamlModelObjectBoilerPlate
-	@Inject extension DamlMetaFieldGenerator
+	@Inject
+	extension RosettaExtensions
+	@Inject
+	extension DamlModelObjectBoilerPlate
+	@Inject
+	extension DamlMetaFieldGenerator
+	@Inject
+	extension TypeSystem
 	
 	static final String CLASSES_FILENAME = 'Org/Isda/Cdm/Classes.daml'
 	static final String META_FIELDS_FILENAME = 'Org/Isda/Cdm/MetaFields.daml'
@@ -71,7 +77,7 @@ class DamlModelObjectGenerator {
 	
 	
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
 	}
 	
 	private def metaClasses() '''

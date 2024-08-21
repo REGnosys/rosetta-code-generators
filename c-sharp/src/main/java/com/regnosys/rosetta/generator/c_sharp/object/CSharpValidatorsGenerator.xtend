@@ -9,8 +9,12 @@ import org.eclipse.xtend2.lib.StringConcatenationClient
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import javax.inject.Inject
+import com.regnosys.rosetta.types.TypeSystem
 
 class CSharpValidatorsGenerator {
+	
+	@Inject extension TypeSystem
     
     def generateValidators(List<Data> rosettaClasses, String version) {
         '''
@@ -36,7 +40,7 @@ class CSharpValidatorsGenerator {
     }
 
     private def StringConcatenationClient validatorClassBody(Data data) {
-        val attributes = data.getExpandedAttributes
+        val attributes = data.dataToType.getExpandedAttributes
         '''
         public class «data.name»Validator : AbstractValidator<«data.name»>
         {

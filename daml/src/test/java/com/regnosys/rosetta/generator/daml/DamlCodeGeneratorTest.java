@@ -16,6 +16,7 @@ import com.google.common.io.Resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.regnosys.rosetta.RosettaStandaloneSetup;
 import com.regnosys.rosetta.generators.test.TestHelper;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 
@@ -25,7 +26,7 @@ public class DamlCodeGeneratorTest {
 
 	@BeforeEach
 	public void setup() {
-		Injector injector = Guice.createInjector(new CodeGenModule());
+		Injector injector = new RosettaStandaloneSetup().createInjectorAndDoEMFRegistration();
 		codeGenerator = injector.getInstance(DamlCodeGenerator.class);
 	}
 

@@ -11,13 +11,18 @@ import static extension com.regnosys.rosetta.generator.c_sharp.object.CSharpMode
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.Util.*
+import javax.inject.Inject
+import com.regnosys.rosetta.types.TypeSystem
 
 class CSharpMetaFieldGenerator {
+	
+	@Inject
+	extension TypeSystem
 
     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
         val metaFieldsImports = generateMetaFieldsImports.toString
 
-        val refs = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && metas.exists[name == "reference" || name =="address"]].map [
+        val refs = rosettaClasses.flatMap[dataToType.expandedAttributes].filter[hasMetas && metas.exists[name == "reference" || name =="address"]].map [
             type
         ].toSet
 
@@ -31,12 +36,12 @@ class CSharpMetaFieldGenerator {
         }
 
         // Any enumerations with comments currently fails to parse correctly.
-        val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name === null].toSet
+        val missing = rosettaClasses.flatMap[dataToType.expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name === null].toSet
         for (m : missing) {
             println("Missing: " + m.name + " enclosed by: " + m.enclosingType + " : " +  m.type)
         }
 
-        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name !== null].
+        val metas = rosettaClasses.flatMap[dataToType.expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name !== null].
             map[type].toSet
 
         for (meta : metas) {

@@ -15,6 +15,8 @@ import java.util.Set
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
+import com.regnosys.rosetta.types.RDataType
 
 class ScalaModelObjectGenerator {
 
@@ -22,6 +24,7 @@ class ScalaModelObjectGenerator {
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
 	@Inject extension ScalaObjectMapperGenerator
+	@Inject extension TypeSystem
 	
 	static final String CLASSES_FILENAME = 'Types.scala'
 	static final String TRAITS_FILENAME = 'Traits.scala'
@@ -32,8 +35,10 @@ class ScalaModelObjectGenerator {
 		val result = new HashMap		
 		
 		val superTypes = rosettaClasses
-				.map[superType]
-				.map[allSuperTypes].flatten
+				.map[dataToType.superType.stripFromTypeAliases]
+				.filter(RDataType)
+				.map[allSuperDataTypes].flatten
+				.map[data]
 				.toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
@@ -65,8 +70,8 @@ class ScalaModelObjectGenerator {
 	«FOR c : rosettaClasses»
 		«classComment(c.definition, c.allExpandedAttributes)»
 		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
-			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
-			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
+			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.type.name»Trait {
+			«ELSEIF c.superType !== null»extends «c.superType.type.name»Trait {
 			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
 			«FOR condition : c.conditions»
 				«generateConditionLogic(c, condition)»
@@ -86,7 +91,7 @@ class ScalaModelObjectGenerator {
 	
 	«FOR c : rosettaClasses»
 		«comment(c.definition)»
-		trait «c.name»Trait «IF c.superType !== null»extends «c.superType.name»Trait «ENDIF»{
+		trait «c.name»Trait «IF c.superType !== null»extends «c.superType.type.name»Trait «ENDIF»{
 			«generateTraitAttributes(c)»
 		}
 
@@ -115,7 +120,7 @@ class ScalaModelObjectGenerator {
 	
 	private def generateTraitAttributes(Data c) {
 		'''
-		«FOR attribute : c.expandedAttributes»
+		«FOR attribute : c.dataToType.expandedAttributes»
 			«generateTraitAttribute(c, attribute)»
 		«ENDFOR»
 		'''
@@ -134,7 +139,7 @@ class ScalaModelObjectGenerator {
 	}
 
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
 	}
 	
 	def String definition(Data element){

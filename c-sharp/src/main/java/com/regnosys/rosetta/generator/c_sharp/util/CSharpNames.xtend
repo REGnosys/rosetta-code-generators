@@ -31,8 +31,11 @@ import com.regnosys.rosetta.rosetta.RosettaTypeAlias
 import com.regnosys.rosetta.types.builtin.RRecordType
 import com.regnosys.rosetta.types.builtin.RBasicType
 import com.rosetta.util.DottedPath
+import com.regnosys.rosetta.utils.ModelIdProvider
 
 class CSharpNames {
+	
+	@Inject extension ModelIdProvider
 
     @Accessors(PUBLIC_GETTER)
     RosettaJavaPackages packages
@@ -51,7 +54,7 @@ class CSharpNames {
         if (type.builtInType) {
             return createForBasicType(type.name)
         }
-        createCSharpType(new RootPackage(type.model), type.name)
+        createCSharpType(new RootPackage(type.namespace), type.name)
     }
 
     def CSharpType toCSharpType(RosettaCallableWithArgs func) {
@@ -112,8 +115,8 @@ class CSharpNames {
     }
 
     def toMetaType(Attribute ctx, String name) {
-        var model = ctx.typeCall.type.model
-        var pkg = new RootPackage(model.name).metaField
+        var model = ctx.typeCall.type.namespace.toDottedPath
+        var pkg = new RootPackage(model).metaField
         return createCSharpType(pkg, name)
     }
 
@@ -122,7 +125,7 @@ class CSharpNames {
             // built-in meta types are defined in metafield package
             return createCSharpType(packages.basicMetafields, name)
         }
-        var parentPKG = new RootPackage(type.type.model)
+        var parentPKG = new RootPackage(type.type.namespace)
         var metaParent = parentPKG.child(type.type.name).withDots
         
         var metaPKG = parentPKG.metaField
@@ -132,11 +135,11 @@ class CSharpNames {
 
     def private RootPackage modelRootPackage(RosettaNamed namedType) {
         val rootElement = EcoreUtil2.getContainerOfType(namedType, RosettaRootElement)
-        val model = rootElement.model
+        val model = rootElement.namespace
         if (model === null)
             // Faked attributes
             throw new IllegalArgumentException('''Can not compute package name for «namedType.eClass.name» «namedType.name». Element is not attached to a RosettaModel.''')
-        return new RootPackage(model)
+        return new RootPackage(model.toDottedPath)
     }
 
     private def CSharpType createForBasicType(String typeName) {

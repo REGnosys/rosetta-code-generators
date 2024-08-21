@@ -11,14 +11,18 @@ import static extension com.regnosys.rosetta.generator.python.util.PythonTransla
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.Util.*
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
+import com.regnosys.rosetta.types.TypeSystem
+import javax.inject.Inject
 
 class PythonMetaFieldGenerator {
+	
+	@Inject extension TypeSystem
 
     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
         val metaFieldsImports = generateMetaFieldsImports.toString
 
         val refs = rosettaClasses
-                .flatMap[expandedAttributes]
+                .flatMap[dataToType.expandedAttributes]
                  .filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
@@ -33,7 +37,7 @@ class PythonMetaFieldGenerator {
         }
 
         val metas =  rosettaClasses
-                .flatMap[expandedAttributes]
+                .flatMap[dataToType.expandedAttributes]
                 .filter[hasMetas && !metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet

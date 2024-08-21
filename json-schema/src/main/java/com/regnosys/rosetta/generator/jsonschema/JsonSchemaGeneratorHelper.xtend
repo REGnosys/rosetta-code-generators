@@ -5,23 +5,23 @@ import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.jsonschema.JsonSchemaTranslator
 import com.regnosys.rosetta.rosetta.RosettaType
+import com.regnosys.rosetta.utils.ModelIdProvider
+import javax.inject.Inject
 
 class JsonSchemaGeneratorHelper {
+	
+	@Inject extension ModelIdProvider
 
     def replaceTabsWithSpaces(CharSequence code) {
         code.toString.replace('\t', '  ')
     }
 
-	def String getNamespace(RosettaType type) {
-		type.model.name
-	}
-
     def getMetaNamespace(ExpandedType type) {
-		type.model.name + ".metafields"	
+		type.namespace + ".metafields"	
     }
 
 	def String getFilename(RosettaType type) {
-		getFilename(type.namespace, type.name)
+		getFilename(type.namespace.toDottedPath.toString, type.name)
 	}
 	
 	def String getFilename(String namespace, CharSequence typeName) {

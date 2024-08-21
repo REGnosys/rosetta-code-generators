@@ -18,6 +18,8 @@ import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUt
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
+import com.regnosys.rosetta.types.RDataType
 
 class CSharpModelObjectGenerator {
 
@@ -32,6 +34,9 @@ class CSharpModelObjectGenerator {
     
     @Inject
     extension CSharpValidatorsGenerator
+    
+    @Inject
+    extension TypeSystem
 
     static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
@@ -42,7 +47,7 @@ class CSharpModelObjectGenerator {
     static final String VALIDATORS_FILENAME = "Validators.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-        type.allSuperTypes.map[it.expandedAttributes].flatten
+        type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
     }
 
     @org.eclipse.xtend.lib.annotations.Data
@@ -64,8 +69,10 @@ class CSharpModelObjectGenerator {
         val result = new HashMap
 
         val superTypes = rosettaClasses
-                    .map[superType]
-                    .map[allSuperTypes].flatten
+                    .map[dataToType.superType.stripFromTypeAliases]
+                    .filter(RDataType)
+                    .map[allSuperDataTypes].flatten
+                    .map[data]
                     .toSet
 
         val interfaces = superTypes.sortBy[name].generateInterfaces(version).replaceTabsWithSpaces
@@ -256,7 +263,7 @@ class CSharpModelObjectGenerator {
 «««             this class, if it is a super type.
 «««         Abstract base class has a different name if oneOf, since they are implemented as records instead of classes.
             «val isChild = c.superType !== null»        «»
-            AbstractRosettaModelObject<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF isChild», «getInterfaceName(c.superType)»«ENDIF»
+            AbstractRosettaModelObject<«c.name»>«IF superTypes.contains(c)», «getInterfaceName(c)»«ENDIF»«IF isChild», «getInterfaceName((c.dataToType.superType.stripFromTypeAliases as RDataType).data)»«ENDIF»
         '''
     }
 
@@ -281,9 +288,9 @@ class CSharpModelObjectGenerator {
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
                     «comment(c.definition)»
-                    interface «getInterfaceName(c)»«IF c.superType !== null» : «getInterfaceName(c.superType)»«ENDIF»
+                    interface «getInterfaceName(c)»«IF c.superType !== null» : «getInterfaceName((c.dataToType.superType.stripFromTypeAliases as RDataType).data)»«ENDIF»
                     {
-                        «FOR attribute : c.expandedAttributes SEPARATOR '\n'»
+                        «FOR attribute : c.dataToType.expandedAttributes SEPARATOR '\n'»
                             «comment(attribute.definition)»
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
                             «IF attribute.isMissingType»// MISSING «ENDIF»«attribute.toType» «attribute.toPropertyName» { get; }

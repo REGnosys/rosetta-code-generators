@@ -99,7 +99,7 @@ class PythonTranslator {
             return null
         val rosettaType = rosettaAttribute.type.name;
         val pythonType  = toPythonBasicTypeInnerFunction (rosettaType);
-        return (pythonType === null) ? rosettaAttribute.type.model.name + '.' + rosettaType + '.' + rosettaType : pythonType
+        return (pythonType === null) ? rosettaAttribute.type.namespace + '.' + rosettaType + '.' + rosettaType : pythonType
     }
     static def String toPythonType(Attribute rosettaAttributeType) {
         if (rosettaAttributeType === null)

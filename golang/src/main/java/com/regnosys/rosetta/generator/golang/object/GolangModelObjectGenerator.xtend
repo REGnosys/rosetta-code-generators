@@ -14,12 +14,14 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import java.util.Set
 import com.google.common.collect.Lists
+import com.regnosys.rosetta.types.TypeSystem
 
 class GolangModelObjectGenerator {
 
 	@Inject extension RosettaExtensions
 	@Inject extension GolangModelObjectBoilerPlate
 	@Inject extension GolangMetaFieldGenerator
+	@Inject extension TypeSystem
 	
 	static final String CLASSES_FILENAME = 'types.go'
 	static final String META_FILENAME = 'metatypes.go'
@@ -72,7 +74,7 @@ class GolangModelObjectGenerator {
 	
 	
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
 	}
 	
 	def String definition(Data element){

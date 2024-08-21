@@ -9,10 +9,12 @@ import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.jsonschema.JsonSchemaGeneratorHelper.*
+import com.regnosys.rosetta.types.TypeSystem
 
 class JsonSchemaMetaFieldGenerator {
 
 	@Inject extension JsonSchemaGeneratorHelper
+	@Inject extension TypeSystem
 
 
     def Map<String, ? extends CharSequence> generateMetaFields(List<Data> data, Iterable<RosettaMetaType> metaTypes) {
@@ -20,7 +22,7 @@ class JsonSchemaMetaFieldGenerator {
         val result = newHashMap
         
         val refs = data
-                .flatMap[expandedAttributes]
+                .flatMap[dataToType.expandedAttributes]
  				.filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
@@ -30,7 +32,7 @@ class JsonSchemaMetaFieldGenerator {
         }
 
         val metas =  data
-                .flatMap[expandedAttributes]
+                .flatMap[dataToType.expandedAttributes]
                 .filter[hasMetas && !metas.exists[name=="reference" || name=="address"]]
                 .map[type]
                 .toSet
@@ -49,7 +51,7 @@ class JsonSchemaMetaFieldGenerator {
     private def String generateFieldWithMeta(ExpandedType type) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
-		  "$anchor": "«type.model.name»",
+		  "$anchor": "«type.namespace»",
 		  "type": "object",
 		  "title": "«type.toFieldWithMetaTypeName»",
 		  "properties": {
@@ -67,14 +69,14 @@ class JsonSchemaMetaFieldGenerator {
 		if (type.isBuiltInType) {
 			return '''"type": "«JsonSchemaTranslator.toJsonSchemaType(type)»"'''
 		} else {
-			return '''"$ref": "«getFilename(type.model.name, JsonSchemaTranslator.toJsonSchemaType(type))»"'''
+			return '''"$ref": "«getFilename(type.namespace.toString, JsonSchemaTranslator.toJsonSchemaType(type))»"'''
 		}
 	}
 
     private def String generateReferenceWithMeta(ExpandedType type) '''
 		{
 		  "$schema": "http://json-schema.org/draft-04/schema#",
-		  "$anchor": "«type.model.name».metafields",
+		  "$anchor": "«type.namespace».metafields",
 		  "type": "object",
 		  "title": "ReferenceWithMeta«type.toMetaTypeName»",
 		  "properties": {

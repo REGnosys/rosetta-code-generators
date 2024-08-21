@@ -64,6 +64,6 @@ class Util {
         }
     }
     
-    static def String fullname(RosettaType clazz) '''«clazz.model.name».«clazz.name»'''
-    static def String packageName(RosettaType clazz)  {clazz.model.name}
+    static def String fullname(RosettaType clazz) '''«clazz.namespace.name».«clazz.name»'''
+    static def String packageName(RosettaType clazz)  {clazz.namespace.name}
 }

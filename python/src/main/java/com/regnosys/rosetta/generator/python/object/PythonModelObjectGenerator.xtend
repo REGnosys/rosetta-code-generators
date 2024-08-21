@@ -15,12 +15,14 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.types.TypeSystem
 
 class PythonModelObjectGenerator {
 
     @Inject extension RosettaExtensions
     @Inject extension PythonModelObjectBoilerPlate
     @Inject PythonExpressionGenerator expressionGenerator;
+    @Inject extension TypeSystem
 
     var List<String> importsFound = newArrayList
 
@@ -94,7 +96,7 @@ class PythonModelObjectGenerator {
         var List<String> dataImports = newArrayList
         var List<String> classDefinitions = newArrayList
         var superType = rosettaClass.superType
-        if (superType !== null && superType.name === null) {
+        if (superType !== null && superType.type.name === null) {
             throw new Exception("SuperType is null for " + rosettaClass.name)
         }
         importsFound = getImportsFromAttributes(rosettaClass)
@@ -106,7 +108,7 @@ class PythonModelObjectGenerator {
         dataImports = dataImports.toSet().toList()
 
         return '''
-            «IF superType!==null»from «(superType.eContainer as RosettaModel).name».«superType.name» import «superType.name»«ENDIF»
+            «IF superType!==null»from «(superType.eContainer as RosettaModel).name».«superType.type.name» import «superType.type.name»«ENDIF»
             
             «classDefinition»
             
@@ -122,9 +124,9 @@ class PythonModelObjectGenerator {
 
         val imports = newArrayList
         for (attribute : filteredAttributes) {
-            val model = attribute.type.model
+            val model = attribute.type.namespace
             if (model !== null) {
-                val importStatement = '''import «model.name».«attribute.toRawType»'''
+                val importStatement = '''import «model».«attribute.toRawType»'''
                 imports.add(importStatement)
             }
         }
@@ -134,7 +136,7 @@ class PythonModelObjectGenerator {
 
     private def generateClassDefinition(Data rosettaClass) {
         return '''
-            class «rosettaClass.name»«IF rosettaClass.superType === null»«ENDIF»«IF rosettaClass.superType !== null»(«rosettaClass.superType.name»):«ELSE»(BaseDataClass):«ENDIF»
+            class «rosettaClass.name»«IF rosettaClass.superType === null»«ENDIF»«IF rosettaClass.superType !== null»(«rosettaClass.superType.type.name»):«ELSE»(BaseDataClass):«ENDIF»
                 «IF rosettaClass.definition !== null»
                     """
                     «rosettaClass.definition»
@@ -198,7 +200,7 @@ class PythonModelObjectGenerator {
     }
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-        type.allSuperTypes.map[it.expandedAttributes].flatten
+        type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
     }
 
     def String definition(Data element) {

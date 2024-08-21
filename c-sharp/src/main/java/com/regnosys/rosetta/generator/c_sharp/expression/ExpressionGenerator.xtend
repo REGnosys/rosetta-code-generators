@@ -566,7 +566,7 @@ class ExpressionGenerator {
         typeCall.type.toCSharpType
     }
     private def CSharpType toCSharpType(RosettaType rosType) {
-        val model = rosType.model
+        val model = rosType.namespace
         if (model === null)
             throw new IllegalArgumentException('''Can not create type reference. «rosType.eClass?.name» «rosType.name» is not attached to a «RosettaModel.simpleName»''')
         factory.create().toCSharpType(rosType)

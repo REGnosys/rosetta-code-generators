@@ -14,12 +14,14 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import java.util.Set
 import com.google.common.collect.Lists
+import com.regnosys.rosetta.types.TypeSystem
 
 class TypescriptModelObjectGenerator {
 
 	@Inject extension RosettaExtensions
 	@Inject extension TypescriptModelObjectBoilerPlate
 	@Inject extension TypescriptMetaFieldGenerator
+	@Inject extension TypeSystem
 	
 	static final String CLASSES_FILENAME = 'types.ts'
 	static final String META_FILENAME = 'metatypes.ts'
@@ -53,7 +55,7 @@ class TypescriptModelObjectGenerator {
 	
 	«FOR c : rosettaClasses»
 		«classComment(c.definition)»
-		export interface «c.name» «IF c.superType !== null»extends «c.superType.name» «ENDIF»{
+		export interface «c.name» «IF c.superType !== null»extends «c.superType.type.name» «ENDIF»{
 			«FOR attribute : c.allExpandedAttributes»
 				«methodComment(attribute.definition)»
 				«attribute.toAttributeName»?: «attribute.toType»;
@@ -65,7 +67,7 @@ class TypescriptModelObjectGenerator {
 	
 	
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.dataToType.allSuperDataTypes.map[it.expandedAttributes].flatten
 	}
 	
 	def String definition(Data element){
