@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.scala.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
@@ -15,10 +14,11 @@ import java.util.Set
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class ScalaModelObjectGenerator {
 
-	@Inject extension RosettaExtensions
+	@Inject extension RosettaEcoreUtil
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
 	@Inject extension ScalaObjectMapperGenerator
@@ -32,9 +32,10 @@ class ScalaModelObjectGenerator {
 		val result = new HashMap		
 		
 		val superTypes = rosettaClasses
-				.map[superType]
-				.map[allSuperTypes].flatten
-				.toSet
+				.filter[superType !== null]
+                .map[superType]
+                .map[allSuperTypes].flatten
+                .toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
 		result.put(CLASSES_FILENAME, classes)
@@ -134,7 +135,7 @@ class ScalaModelObjectGenerator {
 	}
 
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.allSuperTypes.reverse.map[it.expandedAttributes].flatten
 	}
 	
 	def String definition(Data element){

@@ -10,7 +10,7 @@ import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUt
 import static extension com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 
 class CSharpMetaFieldGenerator {
 

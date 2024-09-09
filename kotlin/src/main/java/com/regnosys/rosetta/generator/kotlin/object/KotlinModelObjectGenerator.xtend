@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.kotlin.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -13,10 +12,11 @@ import java.util.Set
 import static com.regnosys.rosetta.generator.kotlin.util.KotlinModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class KotlinModelObjectGenerator {
 
-    @Inject extension RosettaExtensions
+    @Inject extension RosettaEcoreUtil
     @Inject extension KotlinModelObjectBoilerPlate
     @Inject extension KotlinMetaFieldGenerator
 
@@ -28,6 +28,7 @@ class KotlinModelObjectGenerator {
         val result = new HashMap
 
         val superTypes = rosettaClasses
+				.filter[superType !== null]
                 .map[superType]
                 .map[allSuperTypes].flatten
                 .toSet

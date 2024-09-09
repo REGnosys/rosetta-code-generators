@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.daml.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
@@ -12,10 +11,11 @@ import java.util.Map
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class DamlModelObjectGenerator {
 
-	@Inject extension RosettaExtensions
+	@Inject extension RosettaEcoreUtil
 	@Inject extension DamlModelObjectBoilerPlate
 	@Inject extension DamlMetaFieldGenerator
 	

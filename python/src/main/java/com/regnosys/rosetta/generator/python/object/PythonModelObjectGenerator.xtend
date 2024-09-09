@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.python.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.python.expressions.PythonExpressionGenerator
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
@@ -15,10 +14,11 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class PythonModelObjectGenerator {
 
-    @Inject extension RosettaExtensions
+    @Inject extension RosettaEcoreUtil
     @Inject extension PythonModelObjectBoilerPlate
     @Inject PythonExpressionGenerator expressionGenerator;
 

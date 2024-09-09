@@ -9,7 +9,7 @@ import java.util.List
 import static extension com.regnosys.rosetta.generator.python.object.PythonModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.python.util.PythonTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 
 class PythonMetaFieldGenerator {

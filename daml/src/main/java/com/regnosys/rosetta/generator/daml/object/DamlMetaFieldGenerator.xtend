@@ -5,7 +5,7 @@ import com.regnosys.rosetta.rosetta.RosettaMetaType
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 
 class DamlMetaFieldGenerator {
 	
