@@ -28,6 +28,7 @@ class KotlinModelObjectGenerator {
         val result = new HashMap
 
         val superTypes = rosettaClasses
+				.filter[superType !== null]
                 .map[superType]
                 .map[allSuperTypes].flatten
                 .toSet

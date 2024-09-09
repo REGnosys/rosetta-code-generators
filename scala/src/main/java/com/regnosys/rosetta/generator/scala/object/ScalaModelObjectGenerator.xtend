@@ -32,11 +32,10 @@ class ScalaModelObjectGenerator {
 		val result = new HashMap		
 		
 		val superTypes = rosettaClasses
-				.map[
-					val s = allSuperTypes
-					s.take(s.size-1)
-				].flatten
-				.toSet
+				.filter[superType !== null]
+                .map[superType]
+                .map[allSuperTypes].flatten
+                .toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
 		result.put(CLASSES_FILENAME, classes)
