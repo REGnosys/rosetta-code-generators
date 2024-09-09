@@ -32,8 +32,10 @@ class ScalaModelObjectGenerator {
 		val result = new HashMap		
 		
 		val superTypes = rosettaClasses
-				.map[superType]
-				.map[allSuperTypes].flatten
+				.map[
+					val s = allSuperTypes
+					s.take(s.size-1)
+				].flatten
 				.toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
@@ -134,7 +136,7 @@ class ScalaModelObjectGenerator {
 	}
 
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+		type.allSuperTypes.reverse.map[it.expandedAttributes].flatten
 	}
 	
 	def String definition(Data element){

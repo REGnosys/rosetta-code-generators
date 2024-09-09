@@ -42,7 +42,7 @@ class CSharpModelObjectGenerator {
     static final String VALIDATORS_FILENAME = "Validators.cs"
 
     def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-        type.allSuperTypes.map[it.expandedAttributes].flatten
+        type.allSuperTypes.reverse.map[it.expandedAttributes].flatten
     }
 
     @org.eclipse.xtend.lib.annotations.Data
@@ -64,6 +64,7 @@ class CSharpModelObjectGenerator {
         val result = new HashMap
 
         val superTypes = rosettaClasses
+        			.filter[superType!==null]
                     .map[superType]
                     .map[allSuperTypes].flatten
                     .toSet
