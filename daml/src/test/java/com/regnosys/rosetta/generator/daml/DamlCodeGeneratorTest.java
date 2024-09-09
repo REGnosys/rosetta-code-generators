@@ -3,7 +3,8 @@ package com.regnosys.rosetta.generator.daml;
 import static com.regnosys.rosetta.generators.test.TestHelper.toStringContents;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 import java.util.Collections;
@@ -14,10 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.io.Resources;
 import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.regnosys.rosetta.generators.test.TestHelper;
 import com.regnosys.rosetta.rosetta.RosettaModel;
+import com.regnosys.rosetta.tests.RosettaInjectorProvider;
 
 public class DamlCodeGeneratorTest {
 
@@ -25,7 +26,7 @@ public class DamlCodeGeneratorTest {
 
 	@BeforeEach
 	public void setup() {
-		Injector injector = Guice.createInjector(new CodeGenModule());
+		Injector injector = new RosettaInjectorProvider().getInjector();
 		codeGenerator = injector.getInstance(DamlCodeGenerator.class);
 	}
 
