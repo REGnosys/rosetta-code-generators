@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.typescript.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import java.util.List
 
@@ -14,10 +13,11 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import java.util.Set
 import com.google.common.collect.Lists
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class TypescriptModelObjectGenerator {
 
-	@Inject extension RosettaExtensions
+	@Inject extension RosettaEcoreUtil
 	@Inject extension TypescriptModelObjectBoilerPlate
 	@Inject extension TypescriptMetaFieldGenerator
 	

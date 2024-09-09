@@ -51,7 +51,7 @@ class CSharpNames {
         if (type.builtInType) {
             return createForBasicType(type.name)
         }
-        createCSharpType(new RootPackage(type.model), type.name)
+        createCSharpType(new RootPackage(type.model.name), type.name)
     }
 
     def CSharpType toCSharpType(RosettaCallableWithArgs func) {
@@ -92,9 +92,9 @@ class CSharpNames {
             RBasicType:
                 rType.name.createForBasicType
             REnumType:
-                rType.enumeration.toCSharpType
+                rType.EObject.toCSharpType
             RDataType:
-                rType.data.toCSharpType
+                rType.EObject.toCSharpType
             RRecordType:
                 CSharpType.create(rType.name) ?:
                     CSharpType.create(packages.defaultLibRecords.withDots + '.' + rType.name.toFirstUpper)
@@ -122,7 +122,7 @@ class CSharpNames {
             // built-in meta types are defined in metafield package
             return createCSharpType(packages.basicMetafields, name)
         }
-        var parentPKG = new RootPackage(type.type.model)
+        var parentPKG = new RootPackage(type.type.model.name)
         var metaParent = parentPKG.child(type.type.name).withDots
         
         var metaPKG = parentPKG.metaField
@@ -136,7 +136,7 @@ class CSharpNames {
         if (model === null)
             // Faked attributes
             throw new IllegalArgumentException('''Can not compute package name for «namedType.eClass.name» «namedType.name». Element is not attached to a RosettaModel.''')
-        return new RootPackage(model)
+        return new RootPackage(model.name)
     }
 
     private def CSharpType createForBasicType(String typeName) {

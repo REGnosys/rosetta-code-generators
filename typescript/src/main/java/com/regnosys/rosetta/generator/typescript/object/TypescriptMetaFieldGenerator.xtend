@@ -4,7 +4,7 @@ import com.regnosys.rosetta.rosetta.RosettaMetaType
 
 import static com.regnosys.rosetta.generator.typescript.util.TypescriptModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 import static extension com.regnosys.rosetta.generator.typescript.util.TypescriptTranslator.toTSType
 
 class TypescriptMetaFieldGenerator {

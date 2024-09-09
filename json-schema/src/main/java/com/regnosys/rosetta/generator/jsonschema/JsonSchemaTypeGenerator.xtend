@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.jsonschema
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.simple.Attribute
@@ -11,12 +10,13 @@ import java.util.List
 import java.util.Map
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class JsonSchemaTypeGenerator {
 
 	@Inject extension JsonSchemaGeneratorHelper
 	
-	@Inject extension RosettaExtensions
+	@Inject extension RosettaEcoreUtil
 
 	def Map<String, ? extends CharSequence> generateTypeDefinitions(List<Data> dataList) {
 		val result = newHashMap

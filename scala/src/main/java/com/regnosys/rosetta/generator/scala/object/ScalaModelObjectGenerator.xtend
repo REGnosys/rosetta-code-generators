@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.scala.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
@@ -15,10 +14,11 @@ import java.util.Set
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class ScalaModelObjectGenerator {
 
-	@Inject extension RosettaExtensions
+	@Inject extension RosettaEcoreUtil
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
 	@Inject extension ScalaObjectMapperGenerator

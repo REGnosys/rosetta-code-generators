@@ -10,7 +10,7 @@ import static com.regnosys.rosetta.generator.kotlin.util.KotlinModelGeneratorUti
 import static extension com.regnosys.rosetta.generator.kotlin.object.KotlinModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 
 class KotlinMetaFieldGenerator {
 

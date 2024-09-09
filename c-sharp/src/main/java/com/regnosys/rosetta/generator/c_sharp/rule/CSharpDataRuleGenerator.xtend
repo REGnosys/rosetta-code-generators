@@ -2,7 +2,6 @@ package com.regnosys.rosetta.generator.c_sharp.rule
 
 import com.google.common.base.CaseFormat
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import java.util.List
 
 import com.regnosys.rosetta.generator.c_sharp.expression.ExpressionGenerator
@@ -18,10 +17,11 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
 import static com.regnosys.rosetta.rosetta.simple.SimplePackage.Literals.CONDITION__EXPRESSION
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class CSharpDataRuleGenerator {
     @Inject ExpressionGenerator expressionHandler
-    @Inject extension RosettaExtensions
+    @Inject extension RosettaEcoreUtil
     //@Inject RosettaFunctionDependencyProvider funcDependencies
     
     def generateDataRules(List<Data> rosettaClasses, String version) {

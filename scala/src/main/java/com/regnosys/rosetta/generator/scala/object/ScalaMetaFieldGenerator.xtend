@@ -10,7 +10,7 @@ import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.
 import static extension com.regnosys.rosetta.generator.scala.object.ScalaModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.*
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
-import static extension com.regnosys.rosetta.generator.util.Util.*
+import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 
 class ScalaMetaFieldGenerator {
 	

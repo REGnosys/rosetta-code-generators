@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.RosettaExtensions
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpValidatorsGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
@@ -18,11 +17,12 @@ import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUt
 import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
+import com.regnosys.rosetta.RosettaEcoreUtil
 
 class CSharpModelObjectGenerator {
 
     @Inject
-    extension RosettaExtensions
+    extension RosettaEcoreUtil
 
     @Inject
     extension CSharpModelObjectBoilerPlate
