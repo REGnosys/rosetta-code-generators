@@ -26,7 +26,7 @@ class TypescriptEnumGenerator {
 	}
 
 	def static toJavaEnumName(RosettaEnumeration enumeration, RosettaEnumValue rosettaEnumValue) {
-		return enumeration.name + '.' + EnumHelper.convertValues(rosettaEnumValue)
+		return enumeration.name + '.' + EnumHelper.convertValue(rosettaEnumValue)
 	}
 
 	private def allEnumsValues(RosettaEnumeration enumeration) {
@@ -35,7 +35,7 @@ class TypescriptEnumGenerator {
 
 		while (e !== null) {
 			e.enumValues.forEach[enumValues.add(it)]
-			e = e.superType
+			e = e.parent
 		}
 		return enumValues.sortBy[name];
 	}
@@ -50,7 +50,7 @@ class TypescriptEnumGenerator {
 			«FOR value: allEnumValues SEPARATOR ","»
 			
 				«methodComment(value.definition)»
-				«EnumHelper.convertValues(value)»
+				«EnumHelper.convertValue(value)»
 			«ENDFOR»
 			}
 		«ENDFOR»

@@ -32,7 +32,7 @@ class GolangEnumGenerator {
 	}
 
 	def static toJavaEnumName(RosettaEnumeration enumeration, RosettaEnumValue rosettaEnumValue) {
-		return enumeration.name + '.' + EnumHelper.convertValues(rosettaEnumValue)
+		return enumeration.name + '.' + EnumHelper.convertValue(rosettaEnumValue)
 	}
 
 	private def allEnumsValues(RosettaEnumeration enumeration) {
@@ -41,7 +41,7 @@ class GolangEnumGenerator {
 
 		while (e !== null) {
 			e.enumValues.forEach[enumValues.add(it)]
-			e = e.superType
+			e = e.parent
 		}
 		return enumValues.sortBy[name];
 	}
@@ -74,7 +74,7 @@ class GolangEnumGenerator {
 			const (
 			«FOR value: allEnumValues»
 				«methodComment(value.definition)»
-				«EnumHelper.convertValues(value)» «e.name» = iota + 1
+				«EnumHelper.convertValue(value)» «e.name» = iota + 1
 			«ENDFOR»
 			)		
 		'''.replaceTabsWithSpaces

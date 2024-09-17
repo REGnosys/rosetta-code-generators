@@ -26,7 +26,7 @@ class ScalaEnumGenerator {
 	}
 
 	def static toJavaEnumName(RosettaEnumeration enumeration, RosettaEnumValue rosettaEnumValue) {
-		return enumeration.name + '.' + EnumHelper.convertValues(rosettaEnumValue)
+		return enumeration.name + '.' + EnumHelper.convertValue(rosettaEnumValue)
 	}
 
 	private def allEnumsValues(RosettaEnumeration enumeration) {
@@ -35,7 +35,7 @@ class ScalaEnumGenerator {
 
 		while (e !== null) {
 			e.enumValues.forEach[enumValues.add(it)]
-			e = e.superType
+			e = e.parent
 		}
 		return enumValues.sortBy[name];
 	}
@@ -55,7 +55,7 @@ class ScalaEnumGenerator {
 				
 				«FOR value: allEnumValues SEPARATOR '\n'»
 					«comment(value.definition)»
-					val «EnumHelper.convertValues(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
+					val «EnumHelper.convertValue(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
 				«ENDFOR»
 			}
 			

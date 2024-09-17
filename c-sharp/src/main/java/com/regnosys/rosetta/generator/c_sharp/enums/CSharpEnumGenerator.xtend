@@ -46,7 +46,7 @@ class CSharpEnumGenerator {
 
         while (e !== null) {
             e.enumValues.forEach[enumValues.add(it)]
-            e = e.superType
+            e = e.parent
         }
         return enumValues.sortBy[name];
     }
