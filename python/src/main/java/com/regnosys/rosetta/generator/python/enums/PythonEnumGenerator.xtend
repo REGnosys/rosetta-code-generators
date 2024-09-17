@@ -41,7 +41,7 @@ class PythonEnumGenerator {
 
         while (e !== null) {
             e.enumValues.forEach[enumValues.add(it)]
-            e = e.superType
+            e = e.parent
         }
         return enumValues.sortBy[name];
     }
@@ -59,7 +59,7 @@ class PythonEnumGenerator {
             pass
             «ELSE»
             «FOR value: allEnumValues SEPARATOR ''»
-            «EnumHelper.convertValues(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
+            «EnumHelper.convertValue(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
             «IF value.definition!==null»
             """
             «value.definition»

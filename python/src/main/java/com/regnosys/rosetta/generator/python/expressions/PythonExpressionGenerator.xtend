@@ -203,7 +203,7 @@ class PythonExpressionGenerator {
                     }
                     RosettaEnumValue: {
                         val rosettaValue = expr.feature as RosettaEnumValue
-                        val value = EnumHelper.convertValues(rosettaValue)
+                        val value = EnumHelper.convertValue(rosettaValue)
 
                         val symbol = (expr.receiver as RosettaSymbolReference).symbol
                         val model = symbol.eContainer as RosettaModel
@@ -265,7 +265,7 @@ class PythonExpressionGenerator {
                 '''get_only_element(«generateExpression(argument, iflvl)»)'''
             }
             RosettaEnumValueReference: {
-                val value = EnumHelper.convertValues(expr.value)
+                val value = EnumHelper.convertValue(expr.value)
                 '''«expr.enumeration».«value»'''
             }
             RosettaOnlyExistsExpression: {

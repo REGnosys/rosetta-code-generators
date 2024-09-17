@@ -30,7 +30,7 @@ class KotlinEnumGenerator {
 
         while (e !== null) {
             e.enumValues.forEach[enumValues.add(it)]
-            e = e.superType
+            e = e.parent
         }
         return enumValues.sortBy[name];
     }
@@ -49,8 +49,8 @@ class KotlinEnumGenerator {
 			enum class «e.name» {
 				«FOR value: allEnumValues SEPARATOR ','»
 					«comment(value.definition)»
-					@SerialName("«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValues(value)»«ENDIF»")
-					«EnumHelper.convertValues(value)»
+					@SerialName("«IF value.display !== null»«value.display»«ELSE»«EnumHelper.convertValue(value)»«ENDIF»")
+					«EnumHelper.convertValue(value)»
 				«ENDFOR»
 				;
 			}
