@@ -11,29 +11,14 @@ namespace Org.Isda.Cdm.Functions
     using Org.Isda.Cdm.MetaFields;
     using Rosetta.Lib.Functions;
 
-    // TEMPORARY: Should be generated
-    public class ForwardFX : IRosettaFunction
-    {
-        static public ForeignExchange Evaluate(ForwardPayout forwardPayout)
-        {
-            var fx = forwardPayout.Underlier.ForeignExchange;
-            if (fx == null)
-            {
-                // TODO: Define ValidationException
-                throw new System.Exception($"ForeignExchange is not specified on {forwardPayout}");
-            }
-            return fx;
-        }
-    }
-
     public class FpmlIrd8 : IRosettaFunction
     {
-        static public bool Evaluate(TradableProduct tradableProduct, IEnumerable<Account> accounts)
+        static public bool Evaluate(Trade trade, IEnumerable<Account> accounts)
         {
-            if (tradableProduct.Counterparty.Count() != 2)
+            if (trade.Counterparty.Count() != 2)
                 return false;
 
-            var parties = tradableProduct.Counterparty.ToArray();
+            var parties = trade.Counterparty.ToArray();
             ReferenceWithMetaParty? party1 = parties[0].PartyReference;
             ReferenceWithMetaParty? party2 = parties[1].PartyReference;
 
