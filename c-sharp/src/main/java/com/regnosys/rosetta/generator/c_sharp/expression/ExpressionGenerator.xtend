@@ -48,7 +48,6 @@ import com.regnosys.rosetta.rosetta.expression.ExistsModifier
 import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
-import com.regnosys.rosetta.rosetta.TypeCall
 import com.regnosys.rosetta.RosettaEcoreUtil
 
 class ExpressionGenerator {
@@ -433,8 +432,8 @@ class ExpressionGenerator {
     def StringConcatenationClient binaryExpr(RosettaBinaryOperation expr, RosettaExpression test, ParamMap params) {
         val left = expr.left
         val right = expr.right
-        val leftRtype = typeProvider.getRType(expr.left)
-        val rightRtype = typeProvider.getRType(expr.right)
+        val leftRtype = typeProvider.getRMetaAnnotatedType(expr.left).RType
+        val rightRtype = typeProvider.getRMetaAnnotatedType(expr.right).RType
         val resultType = operators.resultType(expr.operator, leftRtype, rightRtype)
         val leftType = '''«leftRtype.name.toCSharpType»'''
         val rightType = '''«rightRtype.name.toCSharpType»'''
@@ -597,9 +596,11 @@ class ExpressionGenerator {
         }
     }
     
-    private def typeName(Attribute attribute)
+    private def typeName(Attribute attribute) {
         // TODO: Handle Meta types
-        '''«attribute.typeCall.type.toCSharpType»'''
+    	val foo = attribute.typeCall.type
+        '''«foo.toCSharpType»'''    
+    }
 
     private def attributeTypeVariableName(Attribute attribute)
          '''«(attribute.eContainer as Data).toCSharpType.simpleName.toFirstLower»'''
