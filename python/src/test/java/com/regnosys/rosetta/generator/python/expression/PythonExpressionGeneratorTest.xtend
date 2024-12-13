@@ -1084,7 +1084,7 @@ class PythonExpressionGeneratorTest {
 	        	field3 boolean (1..1) <"Test boolean field3">
 		        condition TestCond: <"Test condition">
     				if field3=False 
-    				then if ["B", "C", "D"] any = field2 then join field1
+    				then if ["B", "C", "D"] join field1 = "Foo" then True
 	        '''.generatePython 
 	        
 	        val expected= '''
@@ -1112,13 +1112,13 @@ class PythonExpressionGeneratorTest {
 	                """
 	                item = self
 	                def _then_fn1():
-	                    return join(item, rosetta_resolve_attr(self, "field1"))
+	                    return True
 	                
 	                def _else_fn1():
 	                    return True
 	                
 	                def _then_fn0():
-	                    return if_cond_fn(all_elements(["B", "C", "D"], "=", rosetta_resolve_attr(self, "field2")), _then_fn1, _else_fn1)
+	                    return if_cond_fn(all_elements(join(["B", "C", "D"], rosetta_resolve_attr(self, "field1")), "=", "Foo"), _then_fn1, _else_fn1)
 	                
 	                def _else_fn0():
 	                    return True

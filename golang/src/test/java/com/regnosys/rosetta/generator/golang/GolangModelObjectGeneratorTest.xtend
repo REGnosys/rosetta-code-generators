@@ -230,6 +230,7 @@ class GolangModelObjectGeneratorTest {
 					[metadata reference]
 			
 			type TestType2:
+				[metadata key]
 				testType2Value1 number (1..1)
 					[metadata reference]
 					
@@ -265,6 +266,7 @@ class GolangModelObjectGeneratorTest {
 		type TestType2 struct {
 		  TestType2Value1 ReferenceWithMeta;
 		  TestType2Value2 FieldWithMeta;
+		  Meta MetaFields;
 		}'''))
 		
 		assertTrue(types.contains('''
