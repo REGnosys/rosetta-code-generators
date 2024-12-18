@@ -40,6 +40,7 @@ class PythonMetaDataGenerationTest {
                         TestEnumValue2
 
                     type TestType2:
+                    	[metadata key]
                         testType2Value1 number (1..1)
                             [metadata reference]
                         testType2Value2 string (1..1)

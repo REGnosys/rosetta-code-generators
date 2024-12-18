@@ -1047,6 +1047,7 @@ class CSharpModelObjectGeneratorTest {
                  GmtTestEnumValue2 <"Test enum value 2">
             
             type GmtTestType2:
+            	[metadata key]
                  gmtTestType2Value1 number (1..1)
                       [metadata reference]
                       
@@ -1235,7 +1236,7 @@ class CSharpModelObjectGeneratorTest {
                     private static readonly IRosettaMetaData<GmtTestType2> metaData = new GmtTestType2Meta();
                     
                     [JsonConstructor]
-                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, IEnumerable<FieldWithMetaGmtTestEnum> gmtTestType2List3, BasicReferenceWithMetaLocalDate gmtTestType2Value4, IEnumerable<BasicReferenceWithMetaLocalDate> gmtTestType2List4)
+                    public GmtTestType2(BasicReferenceWithMetaDecimal gmtTestType2Value1, FieldWithMetaString gmtTestType2Value2, FieldWithMetaGmtTestEnum gmtTestType2Value3, IEnumerable<FieldWithMetaGmtTestEnum> gmtTestType2List3, BasicReferenceWithMetaLocalDate gmtTestType2Value4, IEnumerable<BasicReferenceWithMetaLocalDate> gmtTestType2List4, _MetaFields? meta)
                     {
                         GmtTestType2Value1 = gmtTestType2Value1;
                         GmtTestType2Value2 = gmtTestType2Value2;
@@ -1243,6 +1244,7 @@ class CSharpModelObjectGeneratorTest {
                         GmtTestType2List3 = gmtTestType2List3;
                         GmtTestType2Value4 = gmtTestType2Value4;
                         GmtTestType2List4 = gmtTestType2List4;
+                        Meta = meta;
                     }
                     
                     /// <inheritdoc />
@@ -1260,6 +1262,8 @@ class CSharpModelObjectGeneratorTest {
                     public BasicReferenceWithMetaLocalDate GmtTestType2Value4 { get; }
                     
                     public IEnumerable<BasicReferenceWithMetaLocalDate> GmtTestType2List4 { get; }
+                    
+                    public _MetaFields? Meta { get; }
                 }
         '''))
     }

@@ -30,7 +30,6 @@ import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.expression.ListLiteral
 import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
-import com.regnosys.rosetta.types.RosettaOperators
 import com.regnosys.rosetta.types.RosettaTypeProvider
 import com.regnosys.rosetta.utils.ExpressionHelper
 import com.rosetta.model.lib.mapper.MapperC
@@ -54,8 +53,6 @@ class ExpressionGenerator {
 
     @Inject
     protected RosettaTypeProvider typeProvider
-    @Inject
-    RosettaOperators operators
 //    @Inject
 //    CardinalityProvider cardinalityProvider // TODO: Decide if this should be used in place of isCollection
     @Inject
@@ -434,7 +431,7 @@ class ExpressionGenerator {
         val right = expr.right
         val leftRtype = typeProvider.getRMetaAnnotatedType(expr.left).RType
         val rightRtype = typeProvider.getRMetaAnnotatedType(expr.right).RType
-        val resultType = operators.resultType(expr.operator, leftRtype, rightRtype)
+        val resultType = typeProvider.getRMetaAnnotatedType(expr).RType
         val leftType = '''«leftRtype.name.toCSharpType»'''
         val rightType = '''«rightRtype.name.toCSharpType»'''
 
