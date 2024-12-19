@@ -326,7 +326,7 @@ class PythonExpressionGeneratorTest {
 	        	
 		        condition TestCond: <"Test condition">
     				field1
-	        '''.generatePython 
+	        '''.generatePython(false)
 	        
 	        val expected= '''
 	        class Test1(BaseDataClass):
@@ -357,7 +357,7 @@ class PythonExpressionGeneratorTest {
 	        	
 		        condition TestCond: <"Test condition">
     				field1
-	        '''.generatePython 
+	        '''.generatePython(false)
 	        
 	        val expected= '''
 	        class Test1(BaseDataClass):
@@ -390,7 +390,7 @@ class PythonExpressionGeneratorTest {
 	        	
 		        condition TestCond: <"Test condition">
     				field1
-	        '''.generatePython 
+	        '''.generatePython(false)
 	        
 	        val expected= '''
 	        class Test1(BaseDataClass):
@@ -657,7 +657,7 @@ class PythonExpressionGeneratorTest {
 		        condition TestCond: <"Test condition">
 					if aValue->field1 exists 
 					then sort [ aValue->field1]
-  		        '''.generatePython 
+  		        '''.generatePython(false)
   		        
 	        val expected= '''
 	        class Test(BaseDataClass):
@@ -713,7 +713,7 @@ class PythonExpressionGeneratorTest {
 		        condition TestCond: <"Test condition">
 					if aValue->field1 exists 
 					then aValue->field1 last
-  		        '''.generatePython 
+  		        '''.generatePython(false)
   		        
 	        val expected= '''
 	        class Test(BaseDataClass):
@@ -770,7 +770,7 @@ class PythonExpressionGeneratorTest {
 		        condition TestCond: <"Test condition">
 					if aValue->field1 exists 
 					then aValue->field1 sum
-  		        '''.generatePython 
+  		        '''.generatePython(false)
   		        
 	        val expected= '''
 	        class Test(BaseDataClass):
@@ -826,7 +826,7 @@ class PythonExpressionGeneratorTest {
 		        condition TestCond: <"Test condition">
 					filter aValue->field1
 					then aValue->field2 first
-  		        '''.generatePython 
+  		        '''.generatePython(false)
   		        
 	        val expected= '''
 	        class Test(BaseDataClass):
@@ -1131,9 +1131,11 @@ class PythonExpressionGeneratorTest {
     
     
     
-	
-	 def generatePython(CharSequence model) {
-		val m = model.parseRosettaWithNoErrors
+	def generatePython(CharSequence model) {
+		generatePython(model, true)
+	}
+	 def generatePython(CharSequence model, boolean validateSyntax) {
+		val m = validateSyntax ? model.parseRosettaWithNoErrors : model.parseRosetta
         val resourceSet = m.eResource.resourceSet
         val version = m.version
         
