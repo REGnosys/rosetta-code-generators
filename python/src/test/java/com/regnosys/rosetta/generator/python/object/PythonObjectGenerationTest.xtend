@@ -1510,7 +1510,7 @@ class PythonObjectGenerationTest {
                     condition BusinessCentersChoice: <"Choice rule to represent an FpML choice construct.">
                             if field1 exists
                                     then field3 > 0
-                            else field4 > 0
+                            else field4 all > 0
                 '''.generatePython
 
 			val expected =

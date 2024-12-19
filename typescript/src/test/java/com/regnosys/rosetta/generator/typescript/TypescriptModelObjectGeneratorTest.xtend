@@ -227,6 +227,7 @@ class TypescriptModelObjectGeneratorTest {
 				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
+				[metadata key]
 				testType2Value1 number (1..1)
 					[metadata reference]
 				
@@ -264,6 +265,7 @@ class TypescriptModelObjectGeneratorTest {
 		  testType2Value1?: ReferenceWithMeta<Number>;
 		  testType2Value2?: FieldWithMeta<String>;
 		  testEnum?: FieldWithMeta<TestEnum>;
+		  meta?: MetaFields;
 		}'''))
 		
 		assertTrue(types.contains('''

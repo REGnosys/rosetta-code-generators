@@ -298,6 +298,7 @@ class ScalaModelObjectGeneratorTest {
 				TestEnumValue2 <"Test enum value 2">
 			
 			type TestType2:
+				[metadata key]
 				testType2Value1 number (1..1)
 					[metadata id]
 				
@@ -329,7 +330,8 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class TestType2(testType2Value1: FieldWithMetaBigDecimal,
 		    testType2Value2: FieldWithMetaString,
-		    testType2Value3: FieldWithMetaTestEnum) {
+		    testType2Value3: FieldWithMetaTestEnum,
+		    meta: Option[MetaFields]) {
 		}'''))
 		
 		assertTrue(types.contains('''
