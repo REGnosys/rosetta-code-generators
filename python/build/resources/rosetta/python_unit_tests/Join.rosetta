@@ -1,0 +1,12 @@
+namespace rosetta_dsl.test.semantic.join_operator : <"generate Python unit tests from Rosetta.">
+
+type JoinTest: <"Test join binary expression condition">
+    field1 string (1..1)
+    field2 string (1..1)
+    condition TestCond: <"Test condition">
+        if "" join [field1, field2] = "ab"
+        then 
+            True
+        else
+            False
+

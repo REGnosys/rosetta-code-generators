@@ -33,7 +33,7 @@ class FuncProxy:
 
         curr_params = inspect.signature(self._func).parameters
         new_params = inspect.signature(func).parameters
-        if curr_params != new_params:
+        if curr_params.keys() != new_params.keys():
             raise ValueError(
                 'Replacement function parameter list do not match the current '
                 f'parameter list of {str(self._func)}'

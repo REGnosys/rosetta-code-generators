@@ -1,0 +1,35 @@
+namespace rosetta_dsl.test.semantic.deep_path : <"generate Python unit tests from Rosetta.">
+
+type Deep1:
+    attr int (1..1)
+
+type Bar1:
+    deep1 Deep1 (1..1)
+    b1 int (1..1)
+    a int (1..1)
+
+type Bar2:
+    deep1 Deep1 (1..1)
+    b1 int (1..1)
+    c int (1..1)
+
+type Bar4:
+    deep1 Deep1 (1..1)
+    b1 int (1..1)
+
+type Bar3:
+    bar2 Bar2(0..1)
+    bar4 Bar4(0..1)
+    condition Choice: one-of 
+
+type Foo:
+    bar1 Bar1 (0..1)
+    bar3 Bar3 (0..1)
+    condition Choice: one-of
+    condition Test:
+        item->>deep1->attr = 3
+
+type FooBar:
+    foo Foo (1..1)
+    condition Test: 
+        foo->>deep1->attr = 3

@@ -1,14 +1,10 @@
-# ISDA CDM Python Implementation
+# Rune Python Generator
 
 This repository contains both a Python CDM implementation and the code to generate the package from Regnosys' [Rune](https://github.com/finos/rune-dsl) specifications.  
  
-The Python package can both deserialize CDM into objects and serialize objects with a caveat.  Ingestion of CDM flattens any use of metadata abstraction and, as a result, serialized CDM will not match a source which makes use of metadata objects.
-
 The implementation follows the same approach as those completed for other languages such as C# in that it does not include the complete scope of functionality available in the Java implementation.
 
-The Python package supports CDM version XXX and requires Python version 3.9+.
-
-The code to create the Python package supports Rune DSL version 4.44.0 and Rune Bundle version 3.13.0.
+The Python package requires Python version 3.10+.
 
 ## License
 
@@ -16,49 +12,18 @@ The code to create the Python package supports Rune DSL version 4.44.0 and Rune 
 
 ## Contributors
 - [CloudRisk](https://www.cloudrisk.uk)
+- [FT Advisory LLC](https://www.ftadvisory.co)
 - [TradeHeader SL](https://www.tradeheader.com)
-- FT Advisory LLC
 
 ## Repository Organization
 
 - `README.md` - this file, for documentation purposes
-- `dist` - Python code to read and write CDM, Unit and Functional tests
-- `src`  - Java code to generate Python from the Rosetta CDM definitions
-- `build/Dockerfile-Python-Rosetta-Build` - Defines the runnable Docker image
-
-# Python Package
-
-The `dist` directory contains the generated Python code in the src subdirectory, a script to build the Python package (`build.sh`), unit tests in the test directory and a script to execute these tests. 
-
-The unit tests in the pytests directory leverage the pytest package to confirm that the implementation successfully supports Rune semantics.  Additionally, the pytests directory contain tests that confirm that certain CDM functionality works as expected.
-
-## Installation, Unit and Functional Tests 
-
-> [!NOTE]  
-> Scripts assume access to Python (version `3.9` or above).
-
-Executing `build/build_python_rosetta.sh` will create a python package (i.e., `python_cdm-2.182.3-py3-none-any.whl`) which can then be instaalled using `pip`.
-Executing `test/run_tests.sh` will run the above unit tests. 
-
-## Containerized build and tests of the Python package
-
-The `build/Dockerfile-Python-Rosetta-Build` file contains the definition to containerize the build, intallation and testing processes of the generated Python code.
-
-In order to build the Docker image, you need to run the build steps documented above, then run:
-```
-docker build -t rosetta-codegen:0.0.1 .
-docker run rosetta-codegen:0.0.1
-```
-This should result in the unit tests having been sucessfully run.
-
-If you want to interact with a running container, you can login using `docker run -it rosetta-codegen:0.0.1 sh`.
-
-
-## Example
-
-See To demonstrate usage 
-
-An example of how to create a swap ...
+- `src/main`  - Java/Xtend code to generate Python from Rune
+- `src/main/resources`  - the package and source for building the Python Rosetta Runtime library used by the generated code
+- `src/test`  - Java/Xtend code to run JUnit tests on the code generation process
+- `build/build_cdm.sh` - used to create a Python package from code generated using CDM Rune definitions
+- `build/resources` - Rune source used to generate inputs to Python (pytest) based unit tests
+- `test` - Python unit tests and scripts to run the tests
 
 # Generation 
 
@@ -69,6 +34,9 @@ The following instructions are based on directions found at:
 [https://github.com/REGnosys/rosetta-code-generators](https://github.com/REGnosys/rosetta-code-generators)
 
 [https://github.com/REGnosys/rosetta-code-generators/issues/149](https://github.com/REGnosys/rosetta-code-generators/issues/149)
+
+# Building and Testing
+See below and [BUILDANDTEST.md](BUILDANDTEST.md) for instructions on building and testing
 
 ## Prerequisites
 

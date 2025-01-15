@@ -1,0 +1,13 @@
+namespace rosetta_dsl.test.semantic.filter_operator : <"generate Python unit tests from Rosetta.">
+
+type FilterItem:
+    fi int (1..1)
+
+type FilterTest : <"Test filter operation condition">
+    fis FilterItem (1..*)
+    target int (1..1)
+    condition Test:
+        if [fis filter i [i->fi = target]] count = 1
+        then True
+        else
+            False

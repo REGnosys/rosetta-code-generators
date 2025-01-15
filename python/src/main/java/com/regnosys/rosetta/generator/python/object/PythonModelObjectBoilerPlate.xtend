@@ -1,64 +1,57 @@
 package com.regnosys.rosetta.generator.python.object
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-
+import com.regnosys.rosetta.types.RAttribute
+import com.regnosys.rosetta.types.RType
+import com.regnosys.rosetta.types.REnumType
 import static extension com.regnosys.rosetta.generator.python.util.PythonTranslator.toPythonType
-import com.regnosys.rosetta.generator.object.ExpandedType
 
 class PythonModelObjectBoilerPlate {
 
-    def toAttributeName(ExpandedAttribute attribute) {
-        if (attribute.name == "val")
-        '''`val`'''
-        else
-        attribute.name.toFirstLower
+    def toAttributeName(RAttribute attribute) {
+        return (attribute.name == "val")
+            ? '''`val`''' : attribute.name.toFirstLower
     }
 
     def replaceTabsWithSpaces(CharSequence code) {
         code.toString.replace('\t', '  ')
     }
 
-    def toEnumAnnotationType(ExpandedType type) {
-        '''«type.name»'''
+    def toEnumAnnotationType(RType type) {
+        return '''«type.name»''';
     }
 
-    def toType(ExpandedAttribute attribute) {
-        if (attribute.multiple)
-            '''MutableList<«attribute.toRawType»>'''
-        else if (attribute.singleOptional)
-            '''«attribute.toRawType»'''
-        else
-        '''«attribute.toRawType»'''
+    def toType(RAttribute ra) {
+        return (ra.isMulti)
+            ? '''MutableList<«ra.toRawType»>''' : '''«ra.toRawType»'''
     }
 
-    def toRawType(ExpandedAttribute attribute) {
-        attribute.type.toPythonType
+    def toRawType(RAttribute ra) {
+        ra.getRMetaAnnotatedType.getRType.toPythonType
     }
 
-    def toReferenceWithMetaTypeName(ExpandedType type) {
+    def toReferenceWithMetaTypeName(RType type) {
         '''ReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+    def toBasicReferenceWithMetaTypeName(RType type) {
         '''BasicReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toFieldWithMetaTypeName(ExpandedType type) {
+    def toFieldWithMetaTypeName(RType type) {
         '''FieldWithMeta«type.toMetaTypeName»'''
     }
 
-    static def toMetaTypeName(ExpandedType type) {
+    static def toMetaTypeName(RType type) {
         val name = type.toPythonType
         if (name === null) {
             return "null-name"
         }
-
-        if (type.enumeration) {
+        if (type instanceof REnumType) {
             return name
-        } else if (name.contains(".")) {
+        }
+        if (name.contains(".")) {
             return name.substring(name.lastIndexOf(".") + 1).toFirstUpper
         }
-
         return name.toFirstUpper
     }
 }

@@ -30,69 +30,69 @@ class RosettaExtensionsTest {
             type Baz:
         '''.generatePython
 
-		
-		val expectedBaz=
-		'''
-		class Baz(BaseDataClass):
-		    pass
-		'''
+        
+        val expectedBaz=
+        '''
+        class Baz(BaseDataClass):
+            pass
+        '''
 
-		val expectedBar=
-		'''
-		class Bar(Baz):
-		    pass
-		'''
+        val expectedBar=
+        '''
+        class Bar(Baz):
+            pass
+        '''
 
-		val expectedFoo=
-		'''
-		class Foo(Bar):
-		    pass
-		'''
+        val expectedFoo=
+        '''
+        class Foo(Bar):
+            pass
+        '''
 
-		assertTrue(python.toString.contains(expectedBaz))
-		assertTrue(python.toString.contains(expectedBar))
-		assertTrue(python.toString.contains(expectedFoo))
+        assertTrue(python.toString.contains(expectedBaz))
+        assertTrue(python.toString.contains(expectedBar))
+        assertTrue(python.toString.contains(expectedFoo))
 
-	}
+    }
 
 
-	@Test
-	def testEnumValue() {
-		val python = '''
-			namespace test
-			version "1.2.3"
+    @Test
+    def testEnumValue() {
+        val python = '''
+            namespace test
+            version "1.2.3"
 
-			enum Foo:
-				foo0 foo1
+            enum Foo:
+                foo0 foo1
 
-			enum Bar extends Foo:
-				bar
-			enum Baz extends Bar:
-				baz
-		'''.generatePython
+            enum Bar extends Foo:
+                bar
+            enum Baz extends Bar:
+                baz
+        '''.generatePython
 
-		val expectedBar=
-		'''
-		class Bar(Enum):
-		    BAR = "bar"
-		    FOO_0 = "foo0"
-		    FOO_1 = "foo1"
-		'''
+        val expectedBar=
+        '''
+        class Bar(Enum):
+            BAR = "bar"
+            FOO_0 = "foo0"
+            FOO_1 = "foo1"
+        '''
 
-		val expectedBaz=
-		'''
-		class Baz(Enum):
-		    BAR = "bar"
-		    BAZ = "baz"
-		    FOO_0 = "foo0"
-		    FOO_1 = "foo1"
-		'''
+        val expectedBaz=
+        '''
+        class Baz(Enum):
+            BAR = "bar"
+            BAZ = "baz"
+            FOO_0 = "foo0"
+            FOO_1 = "foo1"
+        '''
 
-		val expectedFoo=
-		'''
-		class Foo(Enum):
-		    FOO_0 = "foo0"
-		    FOO_1 = "foo1"
+        val expectedFoo=
+        '''
+        class Foo(Enum):
+            FOO_0 = "foo0"
+            FOO_1 = "foo1"
         '''
 
         assertTrue(python.toString.contains(expectedBar))

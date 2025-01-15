@@ -2,35 +2,27 @@
 from __future__ import annotations
 import logging as log
 import keyword
+import inspect
 from enum import Enum
 from typing import get_args, get_origin
 from typing import TypeVar, Generic, Callable, Any
-from functools import wraps
 from collections import defaultdict
 from pydantic import BaseModel, ValidationError, ConfigDict
 
-__all__ = ['if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition',
-           'BaseDataClass', 'ConditionViolationError', 'any_elements',
-           'get_only_element', 'rosetta_filter',
-           'all_elements', 'contains', 'disjoint', 'join',
-           'rosetta_local_condition',
-           'execute_local_conditions',
-           'flatten_list',
-           'rosetta_resolve_attr',
-           'rosetta_count',
-           'rosetta_attr_exists',
-           '_get_rosetta_object',
-           'set_rosetta_attr',
-           'add_rosetta_attr',
-           'check_cardinality',
-           'AttributeWithMeta',
-           'AttributeWithAddress',
-           'AttributeWithReference',
-           'AttributeWithMetaWithAddress',
-           'AttributeWithMetaWithReference',
-           'AttributeWithAddressWithReference',
-           'AttributeWithMetaWithAddressWithReference',
-           'rosetta_str']
+__all__ = [
+    'if_cond', 'if_cond_fn', 'Multiprop', 'rosetta_condition', 'BaseDataClass',
+    'ConditionViolationError', 'any_elements', 'get_only_element',
+    'rosetta_filter', 'all_elements', 'contains', 'disjoint', 'join',
+    'rosetta_local_condition', 'execute_local_conditions', 'flatten_list',
+    'rosetta_resolve_attr', 'rosetta_resolve_deep_attr', 'rosetta_count',
+    'rosetta_attr_exists', '_get_rosetta_object', 'set_rosetta_attr',
+    'add_rosetta_attr', 'check_cardinality', 'AttributeWithMeta',
+    'AttributeWithAddress', 'AttributeWithReference',
+    'AttributeWithMetaWithAddress', 'AttributeWithMetaWithReference',
+    'AttributeWithAddressWithReference',
+    'AttributeWithMetaWithAddressWithReference', 'rosetta_str',
+    'rosetta_check_one_of'
+]
 
 
 def if_cond(ifexpr, thenexpr: str, elseexpr: str, obj: object):
@@ -50,7 +42,7 @@ def if_cond_fn(ifexpr, thenexpr: Callable, elseexpr: Callable) -> Any:
 def _to_list(obj) -> list | tuple:
     if isinstance(obj, (list, tuple)):
         return obj
-    return (obj,)
+    return (obj, )
 
 
 def _is_meta(obj: Any) -> bool:
@@ -91,8 +83,32 @@ def rosetta_resolve_attr(obj: Any | None,
         # In the future one might want to check if the attrib is contained
         # in the metadata and return it instead of failing.
         obj = obj.value
+    elif inspect.isframe(obj):
+        obj = getattr(obj, 'f_locals')
     attrib = mangle_name(attrib)
+    if isinstance(obj, dict):
+        return obj[attrib]
     return getattr(obj, attrib, None)
+
+
+def rosetta_resolve_deep_attr(obj: Any | None,
+                              attrib: str) -> Any | list[Any] | None:
+    ''' Resolves a "deep path" attribute. If the attribute or the object is
+        not a "deep path" one, the function falls back to the regular
+        `rosetta_resolve_attr`.
+    '''
+    # pylint: disable=protected-access
+    if obj is None:
+        return None
+    # if not a "deep path" object or attribute, fall back to the std function
+    if (not hasattr(obj, '_CHOICE_ALIAS_MAP')
+            or attrib not in obj._CHOICE_ALIAS_MAP):
+        return rosetta_resolve_attr(obj, attrib)
+
+    for container_nm, getter_fn in obj._CHOICE_ALIAS_MAP[attrib]:
+        if container_obj := rosetta_resolve_attr(obj, container_nm):
+            return getter_fn(container_obj, attrib)
+    return None
 
 
 def rosetta_count(obj: Any | None) -> int:
@@ -119,6 +135,23 @@ def rosetta_str(x: Any) -> str:
     return str(x)
 
 
+def rosetta_check_one_of(obj, *attr_names, necessity=True) -> bool:
+    """ Checks that one and only one attribute is set. """
+    if inspect.isframe(obj):
+        values = getattr(obj, 'f_locals')
+    else:
+        values = obj.model_dump()
+    vals = [values.get(n) for n in attr_names]
+    n_attr = sum(1 for v in vals if v is not None and v != [])
+    if necessity and n_attr != 1:
+        log.error('One and only one of %s should be set!', attr_names)
+        return False
+    if not necessity and n_attr > 1:
+        log.error('Only one of %s can be set!', attr_names)
+        return False
+    return True
+
+
 def _get_rosetta_object(base_model: str, attribute: str, value: Any) -> Any:
     model_class = globals()[base_model]
     instance_kwargs = {attribute: value}
@@ -130,6 +163,7 @@ class Multiprop(list):
     ''' A class allowing for dot access to a attribute of all elements of a
         list.
     '''
+
     def __getattr__(self, attr):
         # return multiprop(getattr(x, attr) for x in self)
         res = Multiprop()
@@ -151,23 +185,18 @@ def rosetta_condition(condition):
     name = path_components[-1]
     _CONDITIONS_REGISTRY[path][name] = condition
 
-    @wraps(condition)
-    def wrapper(*args, **kwargs):
-        return condition(*args, **kwargs)
-    return wrapper
+    return condition
 
 
 def rosetta_local_condition(registry: dict):
     '''Registers a condition function in a local registry.'''
+
     def decorator(condition):
         path_components = condition.__qualname__.split('.')
         path = '.'.join([condition.__module__ or ''] + path_components)
         registry[path] = condition
 
-        @wraps(condition)
-        def wrapper(*args, **kwargs):
-            return condition(*args, **kwargs)
-        return wrapper
+        return condition
 
     return decorator
 
@@ -199,7 +228,7 @@ def _get_conditions(cls) -> list:
 
 
 class MetaAddress(BaseModel):  # pylint: disable=missing-class-docstring
-    scope: str
+    scope: str | None = None
     value: str
 
 
@@ -233,7 +262,9 @@ class BaseDataClass(BaseModel):
         return att_errors + self.validate_conditions(recursively=recursively,
                                                      raise_exc=raise_exc)
 
-    def validate_attribs(self, raise_exc: bool = True, strict: bool = True) -> list:
+    def validate_attribs(self,
+                         raise_exc: bool = True,
+                         strict: bool = True) -> list:
         ''' This method performs attribute type validation.
             The parameter `raise_exc` controls whether an exception should be
             thrown if a validation or condition is violated or if a list with
@@ -282,19 +313,6 @@ class BaseDataClass(BaseModel):
         log.info('Done conditions checking for %s %s errors.', self_rep, err)
         return exceptions
 
-    def check_one_of_constraint(self, *attr_names, necessity=True) -> bool:
-        """ Checks that one and only one attribute is set. """
-        values = self.model_dump()
-        vals = [values.get(n) for n in attr_names]
-        n_attr = sum(1 for v in vals if v is not None and v != [])
-        if necessity and n_attr != 1:
-            log.error('One and only one of %s should be set!', attr_names)
-            return False
-        if not necessity and n_attr > 1:
-            log.error('Only one of %s can be set!', attr_names)
-            return False
-        return True
-
     def add_to_list_attribute(self, attr_name: str, value) -> None:
         """
         Adds a value to a list attribute, ensuring the value is of an allowed
@@ -321,10 +339,8 @@ class BaseDataClass(BaseModel):
 
         # Check if value is an instance of one of the allowed types
         if not isinstance(value, allowed_types):
-            raise TypeError(
-                f"Value must be an instance of {allowed_types}, "
-                f"not {type(value)}"
-            )
+            raise TypeError(f"Value must be an instance of {allowed_types}, "
+                            f"not {type(value)}")
 
         attr.append(value)
 
@@ -334,8 +350,9 @@ def _validate_conditions_recursively(obj, raise_exc=True):
     if not obj:
         return []
     if isinstance(obj, BaseDataClass):
-        return obj.validate_conditions(recursively=True,  # type:ignore
-                                       raise_exc=raise_exc)
+        return obj.validate_conditions(
+            recursively=True,  # type:ignore
+            raise_exc=raise_exc)
     if isinstance(obj, (list, tuple)):
         exc = []
         for item in obj:
@@ -363,7 +380,7 @@ def get_allowed_types_for_list_field(model_class: type, field_name: str):
         list_elem_type = get_args(field_type)[0]
         if get_origin(list_elem_type):
             return get_args(list_elem_type)
-        return (list_elem_type,)  # Single type or | operator used
+        return (list_elem_type, )  # Single type or | operator used
     return ()
 
 
@@ -443,8 +460,7 @@ def all_elements(lhs, op, rhs) -> bool:
     op1 = _to_list(lhs)
     op2 = _to_list(rhs)
 
-    return all(cmp(el1, el2) for el1 in op1 for el2 in op2)
-
+    return all(cmp(el1, el2) for el1, el2 in zip(op1, op2)) if len(op1) == len(op2) else False
 
 def disjoint(op1, op2):
     '''Checks if two lists have no common elements'''
@@ -507,10 +523,10 @@ def get_only_element(collection):
 
 def flatten_list(nested_list):
     '''flattens the list of lists (no-recursively)'''
-    return [item for sublist in nested_list for item in sublist]
+    return [item for sublist in _to_list(nested_list) for item in _to_list(sublist)]
 
 
-def rosetta_filter(items, filter_func, item_name='item'):
+def rosetta_filter(items, filter_func):
     """
     Filters a list of items based on a specified filtering criteria provided as
     a boolean lambda function.
@@ -522,7 +538,7 @@ def rosetta_filter(items, filter_func, item_name='item'):
         expression.
     :return: Filtered list.
     """
-    return [item for item in items if filter_func(locals()[item_name])]
+    return [item for item in (items or []) if filter_func(item)]
 
 
 def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
@@ -552,18 +568,15 @@ def set_rosetta_attr(obj: Any, path: str, value: Any) -> None:
         if parent_obj is None:
             raise ValueError(
                 f"Attribute '{attrib}' in the path is None, cannot "
-                "proceed to set value."
-            )
+                "proceed to set value.")
 
     # Set the value to the last attribute in the path
     final_attr = path_components[-1]
     if hasattr(parent_obj, final_attr):
         setattr(parent_obj, final_attr, value)
     else:
-        raise AttributeError(
-            f"Invalid attribute '{final_attr}' for object of "
-            f"type {type(parent_obj).__name__}"
-        )
+        raise AttributeError(f"Invalid attribute '{final_attr}' for object of "
+                             f"type {type(parent_obj).__name__}")
 
 
 def add_rosetta_attr(obj: Any, attrib: str, value: Any) -> None:

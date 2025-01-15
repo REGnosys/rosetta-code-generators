@@ -23,20 +23,20 @@ MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $MYPATH
 ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
 
-$PYEXE -m venv --clear .pydevenv || processError
-source .pydevenv/$ACDIR/activate || processError
+$PYEXE -m venv --clear .pybuild || processError
+source .pybuild/$ACDIR/activate || processError
 $PYEXE -m pip install --upgrade pip || processError
 $PYEXE -m pip install "setuptools>=62.0" || processError
 $PYEXE -m pip install pylint || processError
 $PYEXE -m pip install pycodestyle || processError
 $PYEXE -m pip install yapf || processError
-$PYEXE -m pip install "pydantic>=2.0.0" || processError
+$PYEXE -m pip install "pydantic>=2.6.1,<2.10" || processError
 $PYEXE -m pip install jsonpickle || processError
 rm -rf build
 rm rosetta_runtime-*-py3-none-any.whl
 $PYEXE -m pip install -e . || processError
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
-rm -rf build .pydevenv
+rm -rf build .pybuild
 echo ""
 echo ""
 echo "***************************************************************************"

@@ -7,7 +7,7 @@ name = "rosetta_runtime"
 version = "2.1.0"
 requires-python = ">= 3.10"
 dependencies = [
-   "pydantic>=2.6.1"
+   "pydantic>=2.6.1,<2.10"
 ]
 
 [tool.setuptools.packages.find]

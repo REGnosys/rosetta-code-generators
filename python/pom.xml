@@ -20,7 +20,6 @@
         <cdm.python.output.path>target/python</cdm.python.output.path>
         <unit.test.rosetta.source.path>build/resources/rosetta/python_unit_tests</unit.test.rosetta.source.path>
         <unit.test.python.output.path>target/python_unit_tests</unit.test.python.output.path>
-        <generated.python.path>target/python_test</generated.python.path>
     </properties>
     <build>
         <plugins>
@@ -38,7 +37,6 @@
                         <outputDirectory>${project.basedir}/target/main/generated/xtend</outputDirectory>
                     </configuration>
                     </execution>
-                    
                     <execution>
                     <id>Generate xtend test sources</id>
                     <phase>generate-test-sources</phase>
@@ -49,12 +47,10 @@
                         <testOutputDirectory>${project.basedir}/target/test/generated/xtend</testOutputDirectory>
                     </configuration>
                     </execution>
-                    
                 </executions>
             </plugin>
         </plugins>
     </build>
-    
     <dependencies>
         <dependency>
             <groupId>com.regnosys.rosetta</groupId>
@@ -80,7 +76,6 @@
             <groupId>org.eclipse.xtend</groupId>
             <artifactId>org.eclipse.xtend.lib</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.regnosys.rosetta</groupId>
             <artifactId>com.regnosys.rosetta.tests</artifactId>
