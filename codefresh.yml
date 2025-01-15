@@ -93,10 +93,23 @@ steps:
       - python3 -m pip install ./src/main/resources/runtime/rosetta_runtime-2.1.0-py3-none-any.whl --force-reinstall
       - |-
         python3 -m pip wheel --no-deps --only-binary :all: --wheel-dir ./target/python_unit_tests ./target/python_unit_tests
-      - python3 -m pip install ./target/python_unit_tests/python_rosetta-0.0.0-py3-none-any.whl
+      - python3 -m pip install ./target/python_unit_tests/python_rosetta-*-py3-none-any.whl
       - python3 -m pip install pytest
       - pytest -p no:cacheprovider ./test/rosetta_tests
       - pytest -p no:cacheprovider ./test/runtime_tests
+
+  FailPipeline:
+    stage: 'finalise'
+    title: Fail pipeline on failure
+    image: codefresh/cli
+    when:
+      condition:
+        any:
+          buildFailure: steps.Build.result == 'failure'
+          runPythonUnitTestsFailure: steps.RunPythonUnitTests.result == 'failure'
+    commands:
+      - exit 1
+
 
   TagRepo:
     title: Tag git repo with release name
