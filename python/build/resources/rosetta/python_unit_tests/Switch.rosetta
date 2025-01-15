@@ -1,0 +1,10 @@
+namespace rosetta_dsl.test.semantic.switch_operator : <"generate Python unit tests from Rosetta.">
+
+type SwitchTest:
+	a int(1..1)
+	condition Test:
+		a switch
+			1 then True,
+			2 then True,
+			3 then True,
+			default False

@@ -1,4 +1,4 @@
-namespace rosetta.test.semantic : <"Testing for the name mangling of attributes.">
+namespace rosetta_dsl.test.semantic : <"Testing for the name mangling of attributes.">
 
 type PythonNameMangling:
     global int (0..1) <"This is a reserved word in python.">

@@ -13,24 +13,22 @@ import java.util.Map
 class PythonEnumGenerator {
 
     @Inject extension PythonModelObjectBoilerPlate
-    
 
     def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
         val result = new HashMap
-        for(RosettaEnumeration enum: rosettaEnums){
+        for (RosettaEnumeration enum : rosettaEnums) {
             val tr = enum.eContainer as RosettaModel
             val namespace = tr.name
             val enums = enum.generateEnums(version).replaceTabsWithSpaces
-        
-            val all = 
+
+            val all = '''
+                # pylint: disable=missing-module-docstring, invalid-name, line-too-long
+                from enum import Enum
+                
+                __all__ = ['«enum.name»']
+                
             '''
-            # pylint: disable=missing-module-docstring, invalid-name, line-too-long
-            from enum import Enum
-            
-            __all__ = ['«enum.name»']
-            
-            '''
-            result.put(PythonModelGeneratorUtil::toPyFileName(namespace, enum.name), all +enums)
+            result.put(PythonModelGeneratorUtil::toPyFileName(namespace, enum.name), all + enums)
         }
         return result;
     }
@@ -46,27 +44,27 @@ class PythonEnumGenerator {
         return enumValues.sortBy[name];
     }
 
-    private def generateEnums(RosettaEnumeration enume, String version){
+    private def generateEnums(RosettaEnumeration enume, String version) {
         '''
-        «val allEnumValues = allEnumsValues(enume)»
-        class «enume.name»(Enum):
-            «IF enume.definition!==null»
-            """
-            «enume.definition»
-            """
-            «ENDIF»
-            «IF allEnumValues.size()===0»
-            pass
-            «ELSE»
-            «FOR value: allEnumValues SEPARATOR ''»
-            «EnumHelper.convertValue(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
-            «IF value.definition!==null»
-            """
-            «value.definition»
-            """
-            «ENDIF»
-            «ENDFOR»
-            «ENDIF»
+            «val allEnumValues = allEnumsValues(enume)»
+            class «enume.name»(Enum):
+                «IF enume.definition!==null»
+                    """
+                    «enume.definition»
+                    """
+                «ENDIF»
+                «IF allEnumValues.size()===0»
+                    pass
+                «ELSE»
+                    «FOR value: allEnumValues SEPARATOR ''»
+                        «EnumHelper.convertValue(value)» = "«IF value.display !== null»«value.display»«ELSE»«value.name»«ENDIF»"
+                        «IF value.definition!==null»
+                            """
+                            «value.definition»
+                            """
+                        «ENDIF»
+                    «ENDFOR»
+                «ENDIF»
         '''
     }
 }

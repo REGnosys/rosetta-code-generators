@@ -1,0 +1,11 @@
+namespace rosetta_dsl.test.semantic.sum_operator : <"generate Python unit tests from Rosetta.">
+
+type SumTest: <"    Test sum operation condition">
+    aValue int (1..1)
+    bValue int (1..1)
+    target int (1..1)
+    condition TestCond: <"Test condition">
+        if [aValue, bValue] sum = target
+        then True
+        else 
+            False

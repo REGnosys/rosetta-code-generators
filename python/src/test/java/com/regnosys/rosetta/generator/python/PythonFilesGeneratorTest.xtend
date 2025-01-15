@@ -21,7 +21,6 @@ import org.eclipse.xtext.resource.XtextResourceSet
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
-import static org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 import org.junit.jupiter.api.Disabled
@@ -41,10 +40,8 @@ class PythonFilesGeneratorTest {
     @Inject PythonCodeGenerator generator
 
     @Inject extension ParseHelper<RosettaModel>
-    @Inject extension ModelHelper
     
-    @Inject
-    Provider<XtextResourceSet> resourceSetProvider;
+    @Inject Provider<XtextResourceSet> resourceSetProvider;
 
     def private Properties getProperties () throws Exception {
         var reader     = new MavenXpp3Reader();
@@ -68,11 +65,11 @@ class PythonFilesGeneratorTest {
         // Assuming 'generatedFiles' is a HashMap<String, CharSequence>
         for (entry : generatedFiles.entrySet) {
             // Split the key into its components and replace '.' with the file separator
-            val filePath	 = entry.key
+            val filePath     = entry.key
             val fileContents = entry.value.toString
-            val outputPath   = Path.of(pythonTgtPath + File.separator + filePath)
+            val outputPath  = Path.of(pythonTgtPath + File.separator + filePath)
             Files.createDirectories(outputPath.parent);
-            Files.write(outputPath, fileContents.getBytes(StandardCharsets.UTF_8))		
+            Files.write(outputPath, fileContents.getBytes(StandardCharsets.UTF_8))
         }
         LOGGER.info("Write Files ... wrote: {}", generatedFiles.size ())
         
@@ -92,14 +89,14 @@ class PythonFilesGeneratorTest {
         //  - produce new python from the dsl definitions 
         //  - delete any existing directory and create a new one
         val properties    = getProperties ()
-        val rosettaSource = properties.getProperty (rosettaSourceName) as String
+        val rosettaSource = properties.getProperty (rosettaSourceName)
         if (rosettaSource === null){
             throw new Exception ('Initialization failure: source Rosetta path not specified')
         }
         if (!Files.exists(Paths.get(rosettaSource))){
             throw new Exception ("Unable to generate Python from non-existant Rosetta source directory: " + rosettaSource)
         }
-        val outputPath = properties.getProperty (outputPathName) as String
+        val outputPath = properties.getProperty (outputPathName)
         if (outputPath === null) {
             throw new Exception('Initialization failure: Python target not specified')
         }

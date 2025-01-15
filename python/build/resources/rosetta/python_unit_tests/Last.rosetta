@@ -1,0 +1,12 @@
+namespace rosetta_dsl.test.semantic.last_operator : <"generate Python unit tests from Rosetta.">
+
+type LastTest: <"    Test last operation condition">
+    aValue int (1..1)
+    bValue int (1..1)
+    cValue int (1..1)
+    target int (1..1)
+    condition TestCond: <"Test condition">
+        if [aValue, bValue, cValue] last = target
+        then True
+        else 
+            False

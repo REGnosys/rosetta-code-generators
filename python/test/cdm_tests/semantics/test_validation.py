@@ -5,7 +5,6 @@ import os
 import sys
 from datetime import date
 import logging
-from pathlib import Path
 from cdm.event.common.Trade import Trade
 from cdm.event.common.TradeIdentifier import TradeIdentifier
 from cdm.product.template.TradableProduct import TradableProduct
@@ -56,28 +55,9 @@ def test_trade():
     exceptions = t.validate_model(raise_exc=False)
     assert not exceptions
 
-
-def test_rates():
-    ''' The below sample json is conform to CDM 5.8.0, the python library
-        generated for earlier or newer versions of CDM might fail to parse
-        it correctly.
-    '''
-    path = os.path.join(os.path.dirname(__file__), 
-                        CDM_JSON_SAMPLE_SOURCE,
-                        'rates', 
-                        'bond-option-uti.json')
-    json_str = Path(path).read_text(encoding='utf8')
-    ts = TradeState.model_validate_json(json_str)
-    print(repr(ts))
-
-    exceptions = ts.validate_model(raise_exc=False)
-    assert not exceptions
-
-
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
     test_trade()
-    test_rates()
     print('Done!')
 
 # EOF

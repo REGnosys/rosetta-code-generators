@@ -9,22 +9,23 @@ fi
 export PYTHONDONTWRITEBYTECODE=1
 
 MYPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $MYPATH
-$PYEXE -m venv --clear .pydevenv
-
-ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
-source .pydevenv/$ACDIR/activate
 
 ROSETTARUNTIMEDIR="../../src/main/resources/runtime"
 PYTHONUNITTESTDIR="../../target/python_unit_tests"
 
-$PYEXE -m pip install pydantic
-$PYEXE -m pip install pytest
+cd $MYPATH/$PYTHONUNITTESTDIR
+$PYEXE -m venv --clear .pytest
+ACDIR=$($PYEXE -c "import sys;print('Scripts' if sys.platform.startswith('win') else 'bin')")
+source .pytest/$ACDIR/activate
+
+$PYEXE -m pip install 'pydantic>=2.6.1,<2.10'
 $PYEXE -m pip install $MYPATH/$ROSETTARUNTIMEDIR/rosetta_runtime-2.1.0-py3-none-any.whl --force-reinstall
 
-cd $MYPATH/$PYTHONUNITTESTDIR
 $PYEXE -m pip wheel --no-deps --only-binary :all: . || processError
-$PYEXE -m pip install python_rosetta-0.0.0-py3-none-any.whl
+$PYEXE -m pip install python_rosetta_dsl-0.0.0-py3-none-any.whl
+$PYEXE -m pip install pytest
 
 # run tests
-pytest -p no:cacheprovider $MYPATH
+$PYEXE -m pytest -p no:cacheprovider $MYPATH
+
+rm -rf $MYPATH/.pytest

@@ -24,56 +24,41 @@ class RosettaObjectInheritanceGeneratorTest {
     @Test
     def void shouldGeneratePythonClassWithMultipleParents() {
         val python = '''
-
-
             type D extends C:
                 dd string (0..1)
-
             type B extends A:
                 bb string (0..1)
-
             type C extends B:
                 cc string (0..1)
-
             type A:
                 aa string (0..1)
-
         '''.generatePython
 
-		
-		val expectedA=
-		'''
-		class A(BaseDataClass):
-		    aa: Optional[str] = Field(None, description="")
-
+        val expectedA=
         '''
-
-		val expectedB=
-		'''
-		class B(A):
-		    bb: Optional[str] = Field(None, description="")
-
-		'''
-
-		val expectedC=
-		'''
-		class C(B):
-		    cc: Optional[str] = Field(None, description="")
-
-		'''
-
-		val expectedD=
-		'''
-		class D(C):
-		    dd: Optional[str] = Field(None, description="")
-
-		'''
-		
-		assertTrue(python.toString.contains(expectedA))
-		assertTrue(python.toString.contains(expectedB))
-		assertTrue(python.toString.contains(expectedC))
-		assertTrue(python.toString.contains(expectedD))
-	}
+        class A(BaseDataClass):
+            aa: Optional[str] = Field(None, description="")
+        '''
+        val expectedB=
+        '''
+        class B(A):
+            bb: Optional[str] = Field(None, description="")
+        '''
+        val expectedC=
+        '''
+        class C(B):
+            cc: Optional[str] = Field(None, description="")
+        '''
+        val expectedD=
+        '''
+        class D(C):
+            dd: Optional[str] = Field(None, description="")
+        '''
+        assertTrue(python.toString.contains(expectedA))
+        assertTrue(python.toString.contains(expectedB))
+        assertTrue(python.toString.contains(expectedC))
+        assertTrue(python.toString.contains(expectedD))
+    }
 
 
 
