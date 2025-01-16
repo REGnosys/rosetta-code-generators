@@ -93,7 +93,7 @@ steps:
       - python3 -m pip install ./src/main/resources/runtime/rosetta_runtime-2.1.0-py3-none-any.whl --force-reinstall
       - |-
         python3 -m pip wheel --no-deps --only-binary :all: --wheel-dir ./target/python_unit_tests ./target/python_unit_tests
-      - python3 -m pip install ./target/python_unit_tests/python_rosetta-*-py3-none-any.whl
+      - python3 -m pip install ./target/python_unit_tests/python_rosetta_dsl-0.0.0-py3-none-any.whl
       - python3 -m pip install pytest
       - pytest -p no:cacheprovider ./test/rosetta_tests
       - pytest -p no:cacheprovider ./test/runtime_tests
