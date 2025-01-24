@@ -371,7 +371,8 @@ class PythonExpressionGenerator {
             SwitchOperation: {
                 val attr = generateExpression(expr.argument, 0, isLambda)
                 var funcNames = new ArrayList<String>()
-                for (thenExpr : expr.cases) {
+                val nonDefaultCases = expr.cases.filter[!isDefault].toList
+                for (thenExpr : nonDefaultCases) {
                     val thenExprDef = generateExpression(thenExpr.getExpression(), iflvl + 1, isLambda)
                     val funcName = '''_then_«generateExpression(thenExpr.getGuard().getLiteralGuard(),0,isLambda)»'''
                     funcNames.add(funcName)
@@ -390,7 +391,7 @@ class PythonExpressionGenerator {
                 '''
                 switch_cond_blocks.add(block_default_then)
                 '''match «attr»:
-        «FOR i : 0 ..< expr.cases.length»case «generateExpression(expr.cases.get(i).getGuard().getLiteralGuard(),0,isLambda)»: return «funcNames.get(i)»()
+        «FOR i : 0 ..< nonDefaultCases.length»case «generateExpression(nonDefaultCases.get(i).getGuard().getLiteralGuard(),0,isLambda)»: return «funcNames.get(i)»()
         «ENDFOR»case _: return «funcNames.get(funcNames.size-1)»()
 '''
 
