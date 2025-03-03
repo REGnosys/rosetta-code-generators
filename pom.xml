@@ -159,17 +159,18 @@
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
         <apache.commons.text.version>1.11.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <guava.version>32.0.1-jre</guava.version>
+        <guava.version>33.3.1-jre</guava.version>
 
         <!-- Release -->
         <gpg.keyname>configured-by-release-profile</gpg.keyname>
         <repoServerHost>s01.oss.sonatype.org</repoServerHost>
         <stagingTimeoutInMinutes>10</stagingTimeoutInMinutes>
 
-        <rosetta.dsl.version>9.36.6</rosetta.dsl.version>
-        <rosetta.bundle.version>11.46.0</rosetta.bundle.version>
+        <rosetta.dsl.version>9.37.0</rosetta.dsl.version>
+        <rosetta.bundle.version>11.48.0</rosetta.bundle.version>
 
-        <xtext.version>2.27.0</xtext.version>
+        <xtext.version>2.38.0</xtext.version>
+        <guice.version>6.0.0</guice.version>
 
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.5.6</logback.version>
@@ -180,6 +181,7 @@
 
         <!-- plugin -->
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -223,6 +225,11 @@
                 <version>${apache.commons.text.version}</version>
             </dependency>
             <!-- xtext START -->
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.eclipse.xtext</groupId>
                 <artifactId>xtext-dev-bom</artifactId>
@@ -485,29 +492,36 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <configuration>
+                    <configLocation>checkstyle/checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <sourceDirectories>
+                        <sourceDirectory>src/main/java</sourceDirectory>
+                        <sourceDirectory>src/test/java</sourceDirectory>
+                    </sourceDirectories>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>Check style</id>
+                        <!-- This needs to run /after/ (test) source
+                        generation is done. -->
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <logViolationsToConsole>false</logViolationsToConsole>
-                            <failOnViolation>false</failOnViolation>
-                            <violationSeverity>warning</violationSeverity>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
