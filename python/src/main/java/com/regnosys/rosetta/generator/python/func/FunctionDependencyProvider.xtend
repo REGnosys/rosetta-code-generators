@@ -25,7 +25,7 @@ import com.regnosys.rosetta.types.RFunction
 import com.regnosys.rosetta.types.RObjectFactory
 import java.util.HashSet
 import java.util.Set
-import jakarta.inject.Inject
+import javax.inject.Inject
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 

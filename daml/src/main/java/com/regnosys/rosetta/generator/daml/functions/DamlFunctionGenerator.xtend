@@ -9,7 +9,7 @@ import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 

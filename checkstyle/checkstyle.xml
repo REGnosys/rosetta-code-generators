@@ -10,14 +10,6 @@
 	it from the file. Finally, it is worth reading the documentation. -->
 
 <module name="Checker">
-	<property name="localeCountry" value="UK"/>
-	<property name="localeLanguage" value="en"/>
-
-	<module name="BeforeExecutionExclusionFileFilter">
-		<!-- Exclude any generated source folders -->
-		<property name="fileNamePattern" value=".*-gen[\\/].*$" />
-	</module>
-
 	<property name="severity" value="warning" />
 	<!-- If you set the basedir property below, then all reported file names will be relative to the specified directory. See https://checkstyle.org/5.x/config.html#Checker 
 		<property name="basedir" value="${basedir}"/> -->
@@ -61,14 +53,6 @@
 	<!-- </module> -->
 
 	<module name="TreeWalker">
-		<!-- Forbid using Google Inject and the deprecated javax Inject in favour of jakarta Inject. -->
-		<module name="IllegalImport">
-			<property name="illegalClasses"
-					  value="com.google.inject.Inject, com.google.inject.name.Named, com.google.inject.Provider, com.google.inject.Singleton" />
-			<property name="illegalPkgs"
-					  value="javax.inject" />
-		</module>
-
 		<property name="tabWidth" value="4" />
 		<!-- Checks for Javadoc comments. -->
 		<!-- See http://checkstyle.sf.net/config_javadoc.html -->
