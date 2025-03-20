@@ -20,6 +20,13 @@ steps:
       - cf_export CICD_REPO="${{CF_VOLUME_PATH}}/m2_repository"
       - cf_export GPG_IMPORT_COMMAND="cat <(echo -e '${{GPG_PRIVATE_KEY}}') | gpg --batch --import" --mask
 
+  MvnSettings:
+    stage: 'setup'
+    title: Setup Maven settings
+    image: alpine/git
+    commands:
+      - cf_export MVN_CLI_OPT="-Dmaven.repo.local=\"${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}_m2/repository\""
+
   TagReleaseName:
     title: Setup RELEASE_NAME variable with tag
     stage: 'setup'
@@ -51,7 +58,7 @@ steps:
         all:
           releaseNameNotDefined: "${{TAG_REPO}} == true"
     commands:
-      - cf_export MVN_SET_VERSION="versions:set-property -DnewVersion=${{RELEASE_NAME}}"
+      - cf_export MVN_SET_VERSION="${{MVN_CLI_OPT}} versions:set-property -DnewVersion=${{RELEASE_NAME}}"
 
   BranchProperties:
     title: Setup branch build
@@ -62,7 +69,7 @@ steps:
         all:
           releaseNameNotDefined: "${{TAG_REPO}} == false"
     commands:
-      - cf_export MVN_SET_VERSION="versions:update-property -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true"
+      - cf_export MVN_SET_VERSION="${{MVN_CLI_OPT}} versions:update-property -DnewVersion=[${{RELEASE_NAME}}] -DallowSnapshots=true -DallowDowngrade=true"
 
   Build:
     title: Maven build
@@ -72,13 +79,13 @@ steps:
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
-      - mvn versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -P regnosys
+      - mvn ${{MVN_CLI_OPT}} versions:set -DnewVersion=${{RELEASE_NAME}} -DallowSnapshots=true -P regnosys
       - mvn ${{MVN_SET_VERSION}} -Dproperty=regnosys.bundle.version -P regnosys
       - export CI_DEPLOY_USERNAME="${{CI_DEPLOY_USERNAME}}"
       - export CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}"
       - export GPG_KEYNAME="${{GPG_KEYNAME}}"
       - export GPG_PASSPHRASE="${{GPG_PASSPHRASE}}"
-      - mvn -s settings.xml -U -B clean deploy -P gpg,regnosys
+      - mvn -s settings.xml -U -B ${{MVN_CLI_OPT}} clean deploy -P gpg,regnosys
 
   RunPythonUnitTests:
     title: Run Python Unit tests
