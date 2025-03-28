@@ -18,6 +18,9 @@ import org.eclipse.xtend2.lib.StringConcatenationClient
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
 import static com.regnosys.rosetta.rosetta.simple.SimplePackage.Literals.CONDITION__EXPRESSION
 import com.regnosys.rosetta.RosettaEcoreUtil
+import java.util.Collection
+import com.regnosys.rosetta.rosetta.expression.OneOfOperation
+import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
 
 class CSharpDataRuleGenerator {
     @Inject ExpressionGenerator expressionHandler
@@ -60,6 +63,35 @@ class CSharpDataRuleGenerator {
     
     def  String dataRuleClassName(Condition cond, Data data) {
         dataRuleClassName(cond.conditionName(data))
+    }
+
+    @Deprecated
+    private def String conditionName(Condition cond, Data data) {
+        return cond.conditionName(data.name, data.conditions)
+    }
+
+    //Name convention: <type name>(<condition name>|<condition type><#>) where condition type should be 'choice' or 'oneof'.
+    private def String conditionName(Condition cond, String containerName, Collection<Condition> conditions) {
+        val name = if (!cond.name.nullOrEmpty)
+                cond.name
+            else {
+                val idx = conditions.filter[name.nullOrEmpty].toList.indexOf(cond)
+                val type = if (cond.isOneOf) {
+                        'OneOf'
+                    } else if (cond.isChoice) {
+                         'Choice'
+                    } else 'DataRule'
+                '''«type»«idx»'''
+            }
+        return '''«containerName»«name»'''
+    }
+    
+    private def boolean isOneOf(Condition cond) {
+        return cond.expression instanceof OneOfOperation
+    }
+
+    private def boolean isChoice(Condition cond) {
+        return cond.expression instanceof ChoiceOperation
     }
     
     private def StringConcatenationClient dataRuleClassBody(Condition rule, Data data, String version)  {
