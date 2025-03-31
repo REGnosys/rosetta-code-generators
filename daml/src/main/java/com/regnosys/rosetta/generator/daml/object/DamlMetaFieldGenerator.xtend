@@ -10,7 +10,7 @@ import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 class DamlMetaFieldGenerator {
 	
 	def generateMetaFields(Iterable<RosettaMetaType> metaTypes, String version) {
-		metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template" && name!="address"], version)
+		metaFields(metaTypes.filter[name!="key" && name!="id" && name!="reference" && name!="template" && name!="address" && name != "location"], version)
 	}
 	
 	def metaFields(Iterable<RosettaMetaType> types, String version) '''
@@ -21,7 +21,7 @@ class DamlMetaFieldGenerator {
 		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
-		  «FOR type : types.filter[it.name != "location"].distinctBy(t|t.name.toFirstLower)»
+		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text
@@ -30,7 +30,7 @@ class DamlMetaFieldGenerator {
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
-		  «FOR type : types.filter[it.name != "location"].distinctBy(t|t.name.toFirstLower)»
+		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text

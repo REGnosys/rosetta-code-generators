@@ -43,9 +43,9 @@ class CSharpMetaFieldGenerator {
             referenceWithMeta += generateFieldWithMeta(meta).toString
         }
 
-        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address" && t.name != "location"], version)
 
-		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
+		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address" && t.name != "location"], version)
 
         return '''
         «fileComment(version)»
@@ -153,7 +153,7 @@ class CSharpMetaFieldGenerator {
     }
 
     private def genMetaFields(Iterable<RosettaMetaType> types, String version) {
-        val typesDistinct = types.filter[it.name != "location"].distinct()
+        val typesDistinct = types.distinct()
         '''
             «""»
                 public class MetaFields
@@ -182,7 +182,7 @@ class CSharpMetaFieldGenerator {
     }
     
     private def genMetaAndTemplateFields(Iterable<RosettaMetaType> types, String version) {
-        val typesDistinct = types.filter[it.name != "location"].distinct()
+        val typesDistinct = types.distinct()
         '''
             «""»
                 public class MetaAndTemplateFields
