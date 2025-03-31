@@ -1036,6 +1036,7 @@ class CSharpModelObjectGeneratorTest {
             metaType reference string
             metaType scheme string
             metaType id string
+            metaType location string
             
             type GmtTestType:
                  [metadata key]
@@ -1083,11 +1084,12 @@ class CSharpModelObjectGeneratorTest {
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(string? scheme, string? globalKey, string? externalKey)
+                    public MetaFields(string? scheme, string? globalKey, string? externalKey, IEnumerable<Key> location)
                     {
                         Scheme = scheme;
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
+                        Location = location;
                     }
                     
                     public string? Scheme { get; }
@@ -1095,6 +1097,8 @@ class CSharpModelObjectGeneratorTest {
                     public string? GlobalKey { get; }
                     
                     public string? ExternalKey { get; }
+                    
+                    public IEnumerable<Key> Location { get; }
                 }
         '''))
 

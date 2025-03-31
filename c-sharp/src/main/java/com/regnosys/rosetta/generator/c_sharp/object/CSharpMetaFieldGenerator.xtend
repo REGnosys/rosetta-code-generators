@@ -153,19 +153,20 @@ class CSharpMetaFieldGenerator {
     }
 
     private def genMetaFields(Iterable<RosettaMetaType> types, String version) {
-        val typesDistinct = types.distinct()
+        val typesDistinct = types.filter[it.name != "location"].distinct()
         '''
             «""»
                 public class MetaFields
                 {
                     [JsonConstructor]
-                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey)
+                    public MetaFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, IEnumerable<Key> location)
                     {
                         «FOR t : typesDistinct»
                         	«t.name.toFirstUpper» = «t.name.toFirstLower»;
                         «ENDFOR»
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
+                        Location = location;
                     }
                     
                     «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
@@ -173,24 +174,27 @@ class CSharpMetaFieldGenerator {
                     public string? GlobalKey { get; }
                     
                     public string? ExternalKey { get; }
+                    
+                    public IEnumerable<Key> Location { get; }
                 }
                 
         '''
     }
     
     private def genMetaAndTemplateFields(Iterable<RosettaMetaType> types, String version) {
-        val typesDistinct = types.distinct()
+        val typesDistinct = types.filter[it.name != "location"].distinct()
         '''
             «""»
                 public class MetaAndTemplateFields
                 {
                     [JsonConstructor]
-                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference)
+                    public MetaAndTemplateFields(«IF !typesDistinct.empty»«FOR t : typesDistinct SEPARATOR ', '»«t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstLower»«ENDFOR», «ENDIF»string? globalKey, string? externalKey, string? templateGlobalReference, IEnumerable<Key> location)
                     {
                         «FOR t : typesDistinct SEPARATOR ';'»«t.name.toFirstUpper» = «t.name.toFirstLower»;«ENDFOR»
                         GlobalKey = globalKey;
                         ExternalKey = externalKey;
                         TemplateGlobalReference = templateGlobalReference;
+                        Location = location;
                     }
                     
                     «FOR t : typesDistinct SEPARATOR '\n\n        '»public «t.typeCall.type.name.toCSharpBasicType»? «t.name.toFirstUpper» { get; }«ENDFOR»
@@ -200,6 +204,8 @@ class CSharpMetaFieldGenerator {
                     public string? ExternalKey { get; }
                     
                     public string? TemplateGlobalReference { get; }
+                    
+                    public IEnumerable<Key> Location { get; }
                 }
                 
         '''
