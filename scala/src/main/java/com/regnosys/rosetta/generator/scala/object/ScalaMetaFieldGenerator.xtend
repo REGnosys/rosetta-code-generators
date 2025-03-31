@@ -104,13 +104,11 @@ class ScalaMetaFieldGenerator {
 	private def genMetaFields(Iterable<RosettaMetaType> types, String version) '''				
 		case class MetaFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.typeCall.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
-				externalKey: Option[String],
-				location: List[Key]) {}
+				externalKey: Option[String]) {}
 		
 		case class MetaAndTemplateFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.typeCall.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
 				externalKey: Option[String],
-				templateGlobalReference: Option[String],
-				location: List[Key]) {}
+				templateGlobalReference: Option[String]) {}
 	'''
 }

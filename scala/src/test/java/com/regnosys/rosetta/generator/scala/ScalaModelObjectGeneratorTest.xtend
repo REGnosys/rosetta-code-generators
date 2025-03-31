@@ -343,16 +343,14 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
-		    externalKey: Option[String],
-		    location: List[Key]) {}
+		    externalKey: Option[String]) {}
 	    '''))
 	    
 	    assertTrue(types.contains('''
 		case class MetaAndTemplateFields(scheme: Option[String],
 		    globalKey: Option[String],
 		    externalKey: Option[String],
-		    templateGlobalReference: Option[String],
-		    location: List[Key]) {}
+		    templateGlobalReference: Option[String]) {}
 	    '''))
 	    
 	    assertTrue(types.contains('''

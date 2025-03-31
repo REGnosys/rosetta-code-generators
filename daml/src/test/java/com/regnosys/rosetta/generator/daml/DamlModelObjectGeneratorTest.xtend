@@ -159,7 +159,6 @@ class DamlModelObjectGeneratorTest {
 		  scheme : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
@@ -167,7 +166,6 @@ class DamlModelObjectGeneratorTest {
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -230,14 +228,12 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -322,14 +318,12 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data Key = Key with
@@ -379,14 +373,12 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
-		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
