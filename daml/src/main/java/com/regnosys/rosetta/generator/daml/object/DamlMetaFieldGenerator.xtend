@@ -21,20 +21,22 @@ class DamlMetaFieldGenerator {
 		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
-		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
+		  «FOR type : types.filter[it.name != "location"].distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
-		  «FOR type : types.distinctBy(t|t.name.toFirstLower)»
+		  «FOR type : types.filter[it.name != "location"].distinctBy(t|t.name.toFirstLower)»
 		      «type.name.toFirstLower» : Optional «type.typeCall.type.name.toDamlType»
 		  «ENDFOR»
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data Key = Key with

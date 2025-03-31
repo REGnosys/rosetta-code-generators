@@ -129,6 +129,7 @@ class DamlModelObjectGeneratorTest {
 	def void shouldGenerateClassWithBasicTypeAndMetaFieldScheme() {
 		val code = '''
 			metaType scheme string
+			metaType location string
 			
 			type Foo:
 			    stringAttr string (1..1)
@@ -159,6 +160,7 @@ class DamlModelObjectGeneratorTest {
 		  scheme : Optional Text
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
@@ -166,6 +168,7 @@ class DamlModelObjectGeneratorTest {
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -189,6 +192,7 @@ class DamlModelObjectGeneratorTest {
 	def void shouldGenerateClassWithRosettaTypeAndMetaReference() {
 		val code = '''
 			metaType reference string
+			metaType location string
 			
 			type Foo:
 			    barReference Bar (0..1)
@@ -228,12 +232,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
@@ -242,6 +248,7 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			metaType address string
+			metaType location string
 			
 			type Foo:
 			    bazAddress Baz (1..1)
@@ -318,12 +325,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data Key = Key with
@@ -344,6 +353,7 @@ class DamlModelObjectGeneratorTest {
 			metaType id string
 			metaType key string
 			metaType address string
+			metaType location string
 			
 			type Foo:
 			    stringReference string (0..1)
@@ -373,12 +383,14 @@ class DamlModelObjectGeneratorTest {
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)
 		
 		data MetaAndTemplateFields = MetaAndTemplateFields with
 		  globalKey : Optional Text
 		  externalKey : Optional Text
 		  templateGlobalReference : Optional Text
+		  location: [Key]
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
