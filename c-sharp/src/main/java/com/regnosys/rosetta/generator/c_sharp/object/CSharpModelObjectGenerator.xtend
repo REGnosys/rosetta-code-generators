@@ -18,6 +18,9 @@ import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTransl
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.RosettaEcoreUtil
+import java.util.Collection
+import com.regnosys.rosetta.rosetta.expression.OneOfOperation
+import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
 
 class CSharpModelObjectGenerator {
 
@@ -53,6 +56,35 @@ class CSharpModelObjectGenerator {
 
     private def List<ClassRule> conditionRules(Data d, List<Condition> elements, (Condition)=>boolean filter) {
         return elements.filter(filter).map[new ClassRule((it.eContainer as RosettaNamed).getName, it.conditionName(d))].toList
+    }
+
+    @Deprecated
+    private def String conditionName(Condition cond, Data data) {
+        return cond.conditionName(data.name, data.conditions)
+    }
+
+    //Name convention: <type name>(<condition name>|<condition type><#>) where condition type should be 'choice' or 'oneof'.
+    private def String conditionName(Condition cond, String containerName, Collection<Condition> conditions) {
+        val name = if (!cond.name.nullOrEmpty)
+                cond.name
+            else {
+                val idx = conditions.filter[name.nullOrEmpty].toList.indexOf(cond)
+                val type = if (cond.isOneOf) {
+                        'OneOf'
+                    } else if (cond.isChoice) {
+                         'Choice'
+                    } else 'DataRule'
+                '''«type»«idx»'''
+            }
+        return '''«containerName»«name»'''
+    }
+
+    private def boolean isOneOf(Condition cond) {
+        return cond.expression instanceof OneOfOperation
+    }
+
+    private def boolean isChoice(Condition cond) {
+        return cond.expression instanceof ChoiceOperation
     }
 
     def String definition(Data element) {
