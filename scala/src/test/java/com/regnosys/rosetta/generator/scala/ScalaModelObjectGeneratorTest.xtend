@@ -284,6 +284,7 @@ class ScalaModelObjectGeneratorTest {
 			metaType scheme string
 			metaType id string
 			metaType address string
+			metaType location string
 			
 			type TestType:
 				[metadata key]
@@ -343,14 +344,16 @@ class ScalaModelObjectGeneratorTest {
 		assertTrue(types.contains('''
 		case class MetaFields(scheme: Option[String],
 		    globalKey: Option[String],
-		    externalKey: Option[String]) {}
+		    externalKey: Option[String],
+		    location: List[Key]) {}
 	    '''))
 	    
 	    assertTrue(types.contains('''
 		case class MetaAndTemplateFields(scheme: Option[String],
 		    globalKey: Option[String],
 		    externalKey: Option[String],
-		    templateGlobalReference: Option[String]) {}
+		    templateGlobalReference: Option[String],
+		    location: List[Key]) {}
 	    '''))
 	    
 	    assertTrue(types.contains('''

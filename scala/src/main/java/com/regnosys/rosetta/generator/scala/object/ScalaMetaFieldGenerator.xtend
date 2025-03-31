@@ -42,7 +42,7 @@ class ScalaMetaFieldGenerator {
 			referenceWithMeta += generateFieldWithMeta(meta).toString
 		}
 		
-		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference" && t.name!="address"], version)
+		val metaFields = genMetaFields(metaTypes.filter[t|t.name!="key" && t.name!="id" && t.name!="reference" && t.name!="address" && t.name!="location"], version)
 		
 		return fileComment(version) + metaFieldsImports + keyRef.toString + referenceWithMeta + metaFields
 	}
@@ -104,11 +104,13 @@ class ScalaMetaFieldGenerator {
 	private def genMetaFields(Iterable<RosettaMetaType> types, String version) '''				
 		case class MetaFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.typeCall.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
-				externalKey: Option[String]) {}
+				externalKey: Option[String],
+				location: List[Key]) {}
 		
 		case class MetaAndTemplateFields(«FOR type : types.distinctBy(t|t.name.toFirstLower) SEPARATOR '\n		'»«type.name.toFirstLower»: Option[«type.typeCall.type.name.toScalaBasicType»],«ENDFOR»
 				globalKey: Option[String],
 				externalKey: Option[String],
-				templateGlobalReference: Option[String]) {}
+				templateGlobalReference: Option[String],
+				location: List[Key]) {}
 	'''
 }
