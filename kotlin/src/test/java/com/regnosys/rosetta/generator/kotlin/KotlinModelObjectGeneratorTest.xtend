@@ -247,6 +247,7 @@ class KotlinModelObjectGeneratorTest {
 			metaType address string
 			metaType scheme string
 			metaType id string
+			metaType location string
 			
 			type TestType:
 				[metadata key]
