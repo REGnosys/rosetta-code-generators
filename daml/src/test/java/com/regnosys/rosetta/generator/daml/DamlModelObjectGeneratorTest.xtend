@@ -129,6 +129,7 @@ class DamlModelObjectGeneratorTest {
 	def void shouldGenerateClassWithBasicTypeAndMetaFieldScheme() {
 		val code = '''
 			metaType scheme string
+			metaType location string
 			
 			type Foo:
 			    stringAttr string (1..1)
@@ -191,6 +192,7 @@ class DamlModelObjectGeneratorTest {
 	def void shouldGenerateClassWithRosettaTypeAndMetaReference() {
 		val code = '''
 			metaType reference string
+			metaType location string
 			
 			type Foo:
 			    barReference Bar (0..1)
@@ -246,6 +248,7 @@ class DamlModelObjectGeneratorTest {
 		val code = '''
 			metaType reference string
 			metaType address string
+			metaType location string
 			
 			type Foo:
 			    bazAddress Baz (1..1)
@@ -350,6 +353,7 @@ class DamlModelObjectGeneratorTest {
 			metaType id string
 			metaType key string
 			metaType address string
+			metaType location string
 			
 			type Foo:
 			    stringReference string (0..1)

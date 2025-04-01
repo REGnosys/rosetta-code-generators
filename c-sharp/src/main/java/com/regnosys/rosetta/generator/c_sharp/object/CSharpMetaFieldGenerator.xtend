@@ -43,9 +43,9 @@ class CSharpMetaFieldGenerator {
             referenceWithMeta += generateFieldWithMeta(meta).toString
         }
 
-        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
+        val metaFields = genMetaFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address" && t.name != "location"], version)
 
-		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address"], version)
+		val metaAndTemplateFields = genMetaAndTemplateFields(metaTypes.filter[t|t.name != "key" && t.name != "id" && t.name != "reference" && t.name !="address" && t.name != "location"], version)
 
         return '''
         «fileComment(version)»

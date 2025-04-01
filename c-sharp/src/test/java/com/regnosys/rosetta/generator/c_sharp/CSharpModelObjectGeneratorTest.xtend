@@ -1036,6 +1036,7 @@ class CSharpModelObjectGeneratorTest {
             metaType reference string
             metaType scheme string
             metaType id string
+            metaType location string
             
             type GmtTestType:
                  [metadata key]
