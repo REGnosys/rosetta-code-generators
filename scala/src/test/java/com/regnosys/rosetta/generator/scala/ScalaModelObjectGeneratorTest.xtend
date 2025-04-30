@@ -284,6 +284,7 @@ class ScalaModelObjectGeneratorTest {
 			metaType scheme string
 			metaType id string
 			metaType address string
+			metaType location string
 			
 			type TestType:
 				[metadata key]
