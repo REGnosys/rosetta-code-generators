@@ -153,8 +153,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.enforced.version>[17,18)</java.enforced.version>
-        <maven.compiler.release>11</maven.compiler.release>
+        <java.enforced.version>[21,22)</java.enforced.version>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
         <apache.commons.text.version>1.11.0</apache.commons.text.version>
