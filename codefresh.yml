@@ -75,7 +75,7 @@ steps:
     title: Maven build
     stage: 'build'
     fail_fast: true
-    image: maven:3.8.5-openjdk-17
+    image: maven:3.9.9-eclipse-temurin-21-alpine
     working_directory: ./
     commands:
       - bash -c "${{GPG_IMPORT_COMMAND}}"
