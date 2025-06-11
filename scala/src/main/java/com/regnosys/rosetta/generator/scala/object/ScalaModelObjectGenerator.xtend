@@ -134,8 +134,14 @@ class ScalaModelObjectGenerator {
 		'''
 	}
 
-	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.reverse.map[it.expandedAttributes].flatten
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
+		var attributeMap = newLinkedHashMap
+		for (Data t : type.allSuperTypes) {
+			for (ExpandedAttribute a : t.expandedAttributes) {
+				attributeMap.put(a.name, a)
+			}
+		}
+		attributeMap.values
 	}
 	
 	def String definition(Data element){

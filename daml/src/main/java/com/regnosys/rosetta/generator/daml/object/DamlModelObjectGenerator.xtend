@@ -70,8 +70,14 @@ class DamlModelObjectGenerator {
 	'''}
 	
 	
-	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type){
-		type.allSuperTypes.map[it.expandedAttributes].flatten
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
+		var attributeMap = newLinkedHashMap
+		for (Data t : type.allSuperTypes) {
+			for (ExpandedAttribute a : t.expandedAttributes) {
+				attributeMap.put(a.name, a)
+			}
+		}
+		attributeMap.values
 	}
 	
 	private def metaClasses() '''

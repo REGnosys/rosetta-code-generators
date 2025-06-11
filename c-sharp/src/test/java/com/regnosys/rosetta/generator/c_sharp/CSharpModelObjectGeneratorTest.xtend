@@ -812,19 +812,32 @@ class CSharpModelObjectGeneratorTest {
                     private static readonly IRosettaMetaData<GteTestType> metaData = new GteTestTypeMeta();
                     
                     [JsonConstructor]
-                    public GteTestType(string gteTestTypeValue1, int? gteTestTypeValue2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
+                    public GteTestType(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string gteTestTypeValue1, int? gteTestTypeValue2)
                     {
-                        GteTestTypeValue1 = gteTestTypeValue1;
-                        GteTestTypeValue2 = gteTestTypeValue2;
-                        GteTestType2Value1 = gteTestType2Value1;
-                        GteTestType2Value2 = gteTestType2Value2;
                         GteTestType3Value1 = gteTestType3Value1;
                         GteTestType3Value2 = gteTestType3Value2;
+                        GteTestType2Value1 = gteTestType2Value1;
+                        GteTestType2Value2 = gteTestType2Value2;
+                        GteTestTypeValue1 = gteTestTypeValue1;
+                        GteTestTypeValue2 = gteTestTypeValue2;
                     }
                     
                     /// <inheritdoc />
                     [JsonIgnore]
                     public override IRosettaMetaData<GteTestType> MetaData => metaData;
+                    
+                    /// <inheritdoc/>
+                    public string? GteTestType3Value1 { get; }
+                    
+                    /// <inheritdoc/>
+                    public IEnumerable<int> GteTestType3Value2 { get; }
+                    
+                    /// <inheritdoc/>
+                    public decimal? GteTestType2Value1 { get; }
+                    
+                    /// <inheritdoc/>
+                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
+                    public IEnumerable<LocalDate> GteTestType2Value2 { get; }
                     
                     /// <summary>
                     /// Test string
@@ -835,54 +848,41 @@ class CSharpModelObjectGeneratorTest {
                     /// Test int
                     /// </summary>
                     public int? GteTestTypeValue2 { get; }
-                    
-                    /// <inheritdoc/>
-                    public decimal? GteTestType2Value1 { get; }
-                    
-                    /// <inheritdoc/>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
-                    public IEnumerable<LocalDate> GteTestType2Value2 { get; }
-                    
-                    /// <inheritdoc/>
-                    public string? GteTestType3Value1 { get; }
-                    
-                    /// <inheritdoc/>
-                    public IEnumerable<int> GteTestType3Value2 { get; }
                 }
         '''))
-
+        
         assertTrue(types.contains('''
-            «""»
-                public class GteTestType2 : AbstractRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
-                {
-                    private static readonly IRosettaMetaData<GteTestType2> metaData = new GteTestType2Meta();
-                    
-                    [JsonConstructor]
-                    public GteTestType2(decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2, string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2)
-                    {
-                        GteTestType2Value1 = gteTestType2Value1;
-                        GteTestType2Value2 = gteTestType2Value2;
-                        GteTestType3Value1 = gteTestType3Value1;
-                        GteTestType3Value2 = gteTestType3Value2;
-                    }
-                    
-                    /// <inheritdoc />
-                    [JsonIgnore]
-                    public override IRosettaMetaData<GteTestType2> MetaData => metaData;
-                    
-                    /// <inheritdoc/>
-                    public decimal? GteTestType2Value1 { get; }
-                    
-                    /// <inheritdoc/>
-                    [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
-                    public IEnumerable<LocalDate> GteTestType2Value2 { get; }
-                    
-                    /// <inheritdoc/>
-                    public string? GteTestType3Value1 { get; }
-                    
-                    /// <inheritdoc/>
-                    public IEnumerable<int> GteTestType3Value2 { get; }
-                }
+			«""»
+			    public class GteTestType2 : AbstractRosettaModelObject<GteTestType2>, IGteTestType2, IGteTestType3
+			    {
+			        private static readonly IRosettaMetaData<GteTestType2> metaData = new GteTestType2Meta();
+			        
+			        [JsonConstructor]
+			        public GteTestType2(string? gteTestType3Value1, IEnumerable<int> gteTestType3Value2, decimal? gteTestType2Value1, IEnumerable<LocalDate> gteTestType2Value2)
+			        {
+			            GteTestType3Value1 = gteTestType3Value1;
+			            GteTestType3Value2 = gteTestType3Value2;
+			            GteTestType2Value1 = gteTestType2Value1;
+			            GteTestType2Value2 = gteTestType2Value2;
+			        }
+			        
+			        /// <inheritdoc />
+			        [JsonIgnore]
+			        public override IRosettaMetaData<GteTestType2> MetaData => metaData;
+			        
+			        /// <inheritdoc/>
+			        public string? GteTestType3Value1 { get; }
+			        
+			        /// <inheritdoc/>
+			        public IEnumerable<int> GteTestType3Value2 { get; }
+			        
+			        /// <inheritdoc/>
+			        public decimal? GteTestType2Value1 { get; }
+			        
+			        /// <inheritdoc/>
+			        [JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]
+			        public IEnumerable<LocalDate> GteTestType2Value2 { get; }
+			    }
         '''))
 
         assertTrue(types.contains('''
@@ -2379,6 +2379,37 @@ class CSharpModelObjectGeneratorTest {
                 }
         '''))
     }
+    
+	@Test
+	def void shouldGenerateClassWitOverrideAttribute() {
+		val classes = '''
+			type Foo:
+			    attr string (0..1)
+			
+			type Bar extends Foo:
+			    override attr string (1..1)
+		'''.generateCSharp.get('Interfaces.cs').toString
+
+		assertTrue(classes.contains('''
+		namespace Org.Isda.Cdm
+		{
+		    using System.Collections.Generic;
+		
+		    using Newtonsoft.Json;
+		    using Newtonsoft.Json.Converters;
+		
+		    using NodaTime;
+		
+		    using Org.Isda.Cdm.Meta;
+		    using Org.Isda.Cdm.MetaFields;
+		    using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+		
+		    interface IFoo
+		    {
+		        string? Attr { get; }
+		    }
+		}'''))
+	}
     
     def generateCSharp(CharSequence model) {
     	val m = model.parseRosettaWithNoErrors
