@@ -44,9 +44,15 @@ class CSharpModelObjectGenerator {
     static final String DATA_RULES_FILENAME = "DataRules.cs"
     static final String VALIDATORS_FILENAME = "Validators.cs"
 
-    def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-        type.allSuperTypes.reverse.map[it.expandedAttributes].flatten
-    }
+	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
+		var attributeMap = newLinkedHashMap
+		for (Data t : type.allSuperTypes) {
+			for (ExpandedAttribute a : t.expandedAttributes) {
+				attributeMap.put(a.name, a)
+			}
+		}
+		attributeMap.values
+	}
 
     @org.eclipse.xtend.lib.annotations.Data
     static class ClassRule {

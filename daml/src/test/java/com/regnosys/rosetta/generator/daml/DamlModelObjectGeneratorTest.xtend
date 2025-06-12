@@ -394,6 +394,21 @@ class DamlModelObjectGeneratorTest {
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
+	@Test
+	def void shouldGenerateClassWitOverrideAttribute() {
+		val classes = '''
+			type Foo:
+			    attr string (0..1)
+			
+			type Bar extends Foo:
+			    override attr string (1..1)
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
+
+		assertTrue(classes.contains('''
+		data Foo = Foo with 
+		  attr : Optional Text
+		    deriving (Eq, Ord, Show)'''))
+	}
 	
 	
 	def generateDaml(CharSequence model) {
