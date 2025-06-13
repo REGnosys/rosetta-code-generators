@@ -138,7 +138,8 @@ class ScalaModelObjectGenerator {
 		var attributeMap = newLinkedHashMap
 		for (Data t : type.allSuperTypes) {
 			for (ExpandedAttribute a : t.expandedAttributes) {
-				attributeMap.put(a.name, a)
+				// method overriding not supported yet
+				attributeMap.putIfAbsent(a.name, a)
 			}
 		}
 		attributeMap.values
