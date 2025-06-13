@@ -457,8 +457,14 @@ class ScalaModelObjectGeneratorTest {
         
         val types = scala.get('Types.scala').toString
         
-	    assertTrue(types.contains('''
+		assertTrue(types.contains('''
 		case class Foo(attr: Option[String])
+		  extends FooTrait {
+		}'''))
+		
+	    
+        assertTrue(types.contains('''
+		case class Bar(attr: Option[String])
 		  extends FooTrait {
 		}'''))
     }
