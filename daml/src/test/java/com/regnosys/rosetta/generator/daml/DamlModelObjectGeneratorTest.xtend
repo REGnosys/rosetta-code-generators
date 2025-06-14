@@ -409,8 +409,7 @@ class DamlModelObjectGeneratorTest {
 		  attr : Optional Text
 		    deriving (Eq, Ord, Show)'''))
 	}
-	
-	
+
 	def generateDaml(CharSequence model) {
 		val m = model.parseRosettaWithNoErrors
 		val resourceSet = m.eResource.resourceSet
