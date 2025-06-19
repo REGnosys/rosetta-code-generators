@@ -413,6 +413,34 @@ class KotlinModelObjectGeneratorTest {
 			)
 	        '''))
     }
+    
+	@Test
+	def void shouldGenerateClassWitOverrideAttribute() {
+		val kotlin = '''
+			type Foo:
+			    attr string (0..1)
+			
+			type Bar extends Foo:
+			    override attr string (1..1)
+		'''.generateKotlin
+
+		val types = kotlin.values.join('\n').toString
+        
+        println(types)
+        
+	    assertTrue(types.contains('''
+	        @Serializable
+	        open class Foo (
+	          var attr: String? = null
+	        )'''))
+	       
+		// overriding not supported yet 
+	    assertTrue(types.contains('''
+			@Serializable
+			open class Bar (
+			)
+			: Foo()'''))
+	}
 
     def generateKotlin(CharSequence model) {
         val m = model.parseRosettaWithNoErrors

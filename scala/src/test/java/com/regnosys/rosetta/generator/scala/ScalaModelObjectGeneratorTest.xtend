@@ -252,20 +252,20 @@ class ScalaModelObjectGeneratorTest {
 		val types = scala.get('Types.scala').toString
 		//println(types)
 		assertTrue(types.contains('''
-		case class TestType(testTypeValue1: String,
-		    testTypeValue2: Option[Int],
+		case class TestType(testType3Value1: Option[String],
+		    testType4Value2: List[Int],
 		    testType2Value1: Option[scala.math.BigDecimal],
 		    testType2Value2: List[java.time.LocalDate],
-		    testType3Value1: Option[String],
-		    testType4Value2: List[Int])
+		    testTypeValue1: String,
+		    testTypeValue2: Option[Int])
 		  extends TestType2Trait {
 		}
 		'''))
 		assertTrue(types.contains('''
-		case class TestType2(testType2Value1: Option[scala.math.BigDecimal],
-		    testType2Value2: List[java.time.LocalDate],
-		    testType3Value1: Option[String],
-		    testType4Value2: List[Int])
+		case class TestType2(testType3Value1: Option[String],
+		    testType4Value2: List[Int],
+		    testType2Value1: Option[scala.math.BigDecimal],
+		    testType2Value2: List[java.time.LocalDate])
 		  extends TestType2Trait with TestType3Trait {
 		}
 		'''))
@@ -436,6 +436,37 @@ class ScalaModelObjectGeneratorTest {
 		  //require(numberOfPopulatedFields == 1)
 		}
 		'''))
+    }
+
+    @Test
+    def void shouldGenerateClassWitOverrideAttribute() {
+		val scala = '''
+			type Foo:
+			    attr string (0..1)
+			
+			type Bar extends Foo:
+			    override attr string (1..1)
+        '''.generateScala
+		
+        val traits = scala.get('Traits.scala').toString
+        
+	    assertTrue(traits.contains('''
+		trait FooTrait {
+		  val attr: Option[String]
+		}'''))
+        
+        val types = scala.get('Types.scala').toString
+        
+		assertTrue(types.contains('''
+		case class Foo(attr: Option[String])
+		  extends FooTrait {
+		}'''))
+		
+	    
+        assertTrue(types.contains('''
+		case class Bar(attr: Option[String])
+		  extends FooTrait {
+		}'''))
     }
 
 	def generateScala(CharSequence model) {

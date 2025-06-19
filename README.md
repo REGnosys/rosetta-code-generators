@@ -18,7 +18,7 @@ Do you want to adopt a technical standard expressed as a domain model in the *Ru
 
 ## Pre-reqs
 
-This project uses JDK 11
+This project uses JDK 21.
 
 ## Why Code Generation?
 
@@ -40,7 +40,7 @@ The mechanism is also future-proof to future version updates of the model. Distr
 
 [Rune](https://docs.rosetta-technology.io/rosetta/rune-dsl) is an open source *Domain-Specific Language* (DSL) comprising a *syntax* (or *grammar*) and a set of code generators. The [Rune DSL repository](https://github.com/REGnosys/rune-dsl) features one built-in code generator:
 
-- [Java](https://www.oracle.com/java/) (only Java 11 supported)
+- [Java](https://www.oracle.com/java/) (compatible with Java 8 or later versions)
 
 The [Rosetta Code Generator repository](https://github.com/REGnosys/rosetta-code-generators) provides additional code generators and allows the community to contribute code generators in any other languages. The languages currently supported are:
 
@@ -65,7 +65,7 @@ Here is an illustration of how code generation works:
 
 ## Quick start guide
 
-Note that you will need Java 11 SDK installed and referenced by the JAVA_HOME environment variable.
+Note that you will need Java 21 SDK installed and referenced by the JAVA_HOME environment variable.
 
 You will need [Maven](http://maven.apache.org/) and [Git](https://git-scm.com/) installed and configured in your environment.
 
