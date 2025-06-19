@@ -1,7 +1,7 @@
 ---
 title: "Rosetta Code Generators"
 date: 2022-02-09T00:38:25+09:00
-description: "Do you want to adopt a technical standard expressed as a domain model in the Rosetta DSL, but in a language other than the default (Java) distribution? You can use this guide to write your own code generator in the language of your choosing."
+description: "Do you want to adopt a technical standard expressed as a domain model in the Rune DSL, but in a language other than the default (Java) distribution? You can use this guide to write your own code generator in the language of your choosing."
 draft: false
 weight: 3
 ---
@@ -14,7 +14,7 @@ weight: 3
 
 **JavaDoc:** *Coming soon*
 
-Do you want to adopt a technical standard expressed as a domain model in the *Rosetta DSL*, but in a language other than the default (Java) distribution? You can use this guide to write your own *code generator* in the language of your choosing.
+Do you want to adopt a technical standard expressed as a domain model in the *Rune DSL*, but in a language other than the default (Java) distribution? You can use this guide to write your own *code generator* in the language of your choosing.
 
 ## Pre-reqs
 
@@ -38,7 +38,7 @@ The mechanism is also future-proof to future version updates of the model. Distr
 
 ## What Code Generators Are Available?
 
-[Rosetta](https://docs.rosetta-technology.io/rosetta/rosetta-dsl) is an open source *Domain-Specific Language* (DSL) comprising a *syntax* (or *grammar*) and a set of code generators. The [Rosetta DSL repository](https://github.com/REGnosys/rosetta-dsl) features one built-in code generator:
+[Rune](https://docs.rosetta-technology.io/rosetta/rune-dsl) is an open source *Domain-Specific Language* (DSL) comprising a *syntax* (or *grammar*) and a set of code generators. The [Rune DSL repository](https://github.com/REGnosys/rune-dsl) features one built-in code generator:
 
 - [Java](https://www.oracle.com/java/) (compatible with Java 8 or later versions)
 
@@ -53,11 +53,11 @@ The [Rosetta Code Generator repository](https://github.com/REGnosys/rosetta-code
 
 ## How Does It Work?
 
-Code generation consists in *translating* from the Rosetta DSL syntax into the syntax of the chosen programming language.
+Code generation consists in *translating* from the Rune DSL syntax into the syntax of the chosen programming language.
 
-The Rosetta DSL is based on the [Eclipse Modelling Framework](https://www.eclipse.org/modeling/emf/). Code generation works by allowing API hooks to access an [Ecore](https://wiki.eclipse.org/Ecore) representation of the model. The API expects a set *.rosetta* files as input. The files are parsed using an [ANTLR](https://www.antlr.org/)-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
+The Rune DSL is based on the [Eclipse Modelling Framework](https://www.eclipse.org/modeling/emf/). Code generation works by allowing API hooks to access an [Ecore](https://wiki.eclipse.org/Ecore) representation of the model. The API expects a set *.rosetta* files as input. The files are parsed using an [ANTLR](https://www.antlr.org/)-generated parser and an Ecore model instance is produced. This Ecore model is then accessible via an API hook in this repository.
 
-*Ecore* is a representation of a [syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree), which contains the entire information about a given model. Ecore therefore acts the pivot that allows to transform the model originally expressed in the Rosetta DSL into the model expressed in the chosen programming language. Code generation is based on [Xtext](https://www.eclipse.org/Xtext/) and the Rosetta DSL itself is expressed using Xtext.
+*Ecore* is a representation of a [syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree), which contains the entire information about a given model. Ecore therefore acts the pivot that allows to transform the model originally expressed in the Rune DSL into the model expressed in the chosen programming language. Code generation is based on [Xtext](https://www.eclipse.org/Xtext/) and the Rune DSL itself is expressed using Xtext.
 
 Here is an illustration of how code generation works:
 
@@ -113,7 +113,7 @@ Finally, the file `sample/src/test/resources/sample/Foo.groovy.sample` contains 
 
 The `test-helper` module contains some infrastructure code that is used to drive the tests in the other modules. It weaves together, using the [Google Guice](https://github.com/google/guice/) dependency injection mechanism, all the necessary elements to run a Rosetta-enabled application and parses a .rosetta file into the corresponding root Ecore object.
 
-In folder `test-helper/src/main/resources/rosetta` you can see the file: `types.rosetta`. It contains the basic types contained in the Rosetta DSL, like `string`, `int`, `time` etc.
+In folder `test-helper/src/main/resources/rosetta` you can see the file: `types.rosetta`. It contains the basic types contained in the Rune DSL, like `string`, `int`, `time` etc.
 
 These types are used to bootstrap the Rosetta-enabled application.
 
