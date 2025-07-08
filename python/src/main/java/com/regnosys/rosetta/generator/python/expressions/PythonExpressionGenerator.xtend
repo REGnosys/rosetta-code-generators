@@ -52,7 +52,7 @@ import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Condition
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.ShortcutDeclaration
-import com.regnosys.rosetta.rosetta.simple.impl.FunctionImpl
+import com.regnosys.rosetta.rosetta.simple.Function
 import java.util.ArrayList
 import java.util.List
 
@@ -423,8 +423,8 @@ class PythonExpressionGenerator {
             Attribute: {
                 if (isLambda) {
                     var notInput = true
-                    if (s.eContainer instanceof FunctionImpl) {
-                        var FunctionImpl c = s.eContainer as FunctionImpl
+                    if (s.eContainer instanceof Function) {
+                        val c = s.eContainer as Function
                         for (inputatt : c.inputs) {
                             if (inputatt.name.equals(s.name)) {
                                 notInput = false
@@ -463,7 +463,7 @@ class PythonExpressionGenerator {
 
     def String callableWithArgsCall(RosettaCallableWithArgs s, RosettaSymbolReference expr, int iflvl,
         boolean isLambda) {
-        if (s instanceof FunctionImpl)
+        if (s instanceof Function)
             addImportsFromConditions(s.getName(), (s.eContainer as RosettaModel).name + "." + "functions")
         else
             addImportsFromConditions(s.name, (s.eContainer as RosettaModel).name)

@@ -12,14 +12,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import com.google.inject.Inject;
 import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage;
 import com.regnosys.rosetta.generator.scala.enums.ScalaEnumGenerator;
 import com.regnosys.rosetta.generator.scala.object.ScalaModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.RosettaNamed;
-import com.regnosys.rosetta.rosetta.RosettaRootElement;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
 
