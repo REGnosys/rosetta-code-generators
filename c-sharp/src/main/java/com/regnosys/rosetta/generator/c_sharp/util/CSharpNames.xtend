@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages
-import com.regnosys.rosetta.generator.java.RosettaJavaPackages.RootPackage
 import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.util.RosettaAttributeExtensions
@@ -46,18 +45,18 @@ class CSharpNames {
 
     def CSharpType toCSharpType(ExpandedType type) {
         if (type.name == RosettaAttributeExtensions.METAFIELDS_CLASS_NAME || type.name == RosettaAttributeExtensions.META_AND_TEMPLATE_FIELDS_CLASS_NAME) {
-            return createCSharpType(packages.basicMetafields, type.name)
+            return createCSharpType(packages.defaultNamespace.child("metafields"), type.name)
         }
         if (type.builtInType) {
             return createForBasicType(type.name)
         }
-        createCSharpType(new RootPackage(type.model.name), type.name)
+        createCSharpType(DottedPath.splitOnDots(type.model.name), type.name)
     }
 
     def CSharpType toCSharpType(RosettaCallableWithArgs func) {
         switch (func) {
             Function:
-                createCSharpType(modelRootPackage(func).functions, func.name)
+                createCSharpType(modelRootPackage(func).child("functions"), func.name)
             RosettaExternalFunction:
                 createCSharpType(packages.defaultLibFunctions, func.name)
             default:
@@ -77,7 +76,7 @@ class CSharpNames {
                 createCSharpType(modelRootPackage(type), CSharpEnumGenerator.toCSharpName(type.name, true))
             RosettaRecordType:
                 CSharpType.create(type.name) ?:
-                    CSharpType.create(packages.defaultLibRecords.withDots + '.' + type.name.toFirstUpper)
+                    CSharpType.create(packages.defaultLib.child("records").withDots + '.' + type.name.toFirstUpper)
             RosettaExternalFunction:
                 createCSharpType(packages.defaultLibFunctions, type.name)
             RosettaTypeAlias:
@@ -97,7 +96,7 @@ class CSharpNames {
                 rType.EObject.toCSharpType
             RRecordType:
                 CSharpType.create(rType.name) ?:
-                    CSharpType.create(packages.defaultLibRecords.withDots + '.' + rType.name.toFirstUpper)
+                    CSharpType.create(packages.defaultLib.child("records").withDots + '.' + rType.name.toFirstUpper)
             default:
                 CSharpType.create(rType.name)
         }
@@ -113,30 +112,30 @@ class CSharpNames {
 
     def toMetaType(Attribute ctx, String name) {
         var model = ctx.typeCall.type.model
-        var pkg = new RootPackage(model.name).metaField
+        var pkg = DottedPath.splitOnDots(model.name).child("metafields")
         return createCSharpType(pkg, name)
     }
 
     def toMetaType(ExpandedAttribute type, String name) {
         if(type.type.isBuiltInType) {
             // built-in meta types are defined in metafield package
-            return createCSharpType(packages.basicMetafields, name)
+            return createCSharpType(packages.defaultNamespace.child("metafields"), name)
         }
-        var parentPKG = new RootPackage(type.type.model.name)
+        var parentPKG = DottedPath.splitOnDots(type.type.model.name)
         var metaParent = parentPKG.child(type.type.name).withDots
         
-        var metaPKG = parentPKG.metaField
+        var metaPKG = parentPKG.child("metafields")
         var meta = metaPKG.child(name).withDots
         createMetaType(metaParent, meta)
     }
 
-    def private RootPackage modelRootPackage(RosettaNamed namedType) {
+    def private DottedPath modelRootPackage(RosettaNamed namedType) {
         val rootElement = EcoreUtil2.getContainerOfType(namedType, RosettaRootElement)
         val model = rootElement.model
         if (model === null)
             // Faked attributes
             throw new IllegalArgumentException('''Can not compute package name for «namedType.eClass.name» «namedType.name». Element is not attached to a RosettaModel.''')
-        return new RootPackage(model.name)
+        return DottedPath.splitOnDots(model.name)
     }
 
     private def CSharpType createForBasicType(String typeName) {
