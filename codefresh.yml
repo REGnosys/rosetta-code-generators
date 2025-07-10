@@ -85,7 +85,7 @@ steps:
       - export CI_DEPLOY_PASSWORD="${{CI_DEPLOY_PASSWORD}}"
       - export GPG_KEYNAME="${{GPG_KEYNAME}}"
       - export GPG_PASSPHRASE="${{GPG_PASSPHRASE}}"
-      - mvn -s settings.xml -U -B ${{MVN_CLI_OPT}} clean install org.sonatype.central:central-publishing-maven-plugin:0.7.0:publish -P release
+      - mvn -s settings.xml -U -B ${{MVN_CLI_OPT}} clean install org.sonatype.central:central-publishing-maven-plugin:0.7.0:publish -P release,regnosys
 
   RunPythonUnitTests:
     title: Run Python Unit tests
