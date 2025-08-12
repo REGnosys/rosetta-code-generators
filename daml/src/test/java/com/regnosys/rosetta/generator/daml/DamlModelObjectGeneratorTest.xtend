@@ -17,6 +17,38 @@ class DamlModelObjectGeneratorTest {
 	@Inject extension ModelHelper
 	@Inject DamlCodeGenerator generator;
 	
+	@Test
+	def void shoulHandleLeadingUnderscoreTypeName() {
+		val classes = '''
+			namespace cdm.test
+			
+			type _Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
+			
+			import Org.Isda.Cdm.Enums
+			import Org.Isda.Cdm.ZonedDateTime
+			import Org.Isda.Cdm.MetaClasses
+			import Org.Isda.Cdm.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement)
+			
+			data Foo_ = Foo_ with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
+	}
 
 	@Test
 	def void shouldGenerateClassWithImports() {

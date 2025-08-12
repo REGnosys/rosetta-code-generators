@@ -61,7 +61,7 @@ class DamlModelObjectGenerator {
 		
 		«FOR c : rosettaClasses»
 			«classComment(c.definition)»
-			data «c.name» = «c.name» with 
+			data «handleUnderscoreNames(c.name)» = «handleUnderscoreNames(c.name)» with 
 			  «FOR attribute : c.allExpandedAttributes»
 			      «attribute.toAttributeName» : «attribute.toType»
 			        «methodComment(attribute.definition)»
@@ -71,6 +71,12 @@ class DamlModelObjectGenerator {
 		«ENDFOR»
 	'''}
 	
+	private def handleUnderscoreNames(String name) {
+		if (name.startsWith("_")) {
+			return name.substring(1) + "_"
+		}
+		return name
+	}
 	
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
 		var attributeMap = newLinkedHashMap
