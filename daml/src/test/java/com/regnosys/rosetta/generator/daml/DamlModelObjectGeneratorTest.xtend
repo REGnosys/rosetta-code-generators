@@ -16,7 +16,40 @@ class DamlModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
 	@Inject DamlCodeGenerator generator;
-	
+
+	@Test
+	def void shouldGenerateClassWithDifferentNamespace() {
+		val classes = '''
+			namespace other.test
+			
+			type Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Other/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Other.Classes
+			  ( module Org.Isda.Other.Classes ) where
+			
+			import Org.Isda.Other.Enums
+			import Org.Isda.Other.ZonedDateTime
+			import Org.Isda.Other.MetaClasses
+			import Org.Isda.Other.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement)
+			
+			data Foo = Foo with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
+	}
+		
 	@Test
 	def void shoulHandleLeadingUnderscoreTypeName() {
 		val classes = '''
