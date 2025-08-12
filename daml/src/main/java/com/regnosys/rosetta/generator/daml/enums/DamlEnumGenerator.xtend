@@ -5,22 +5,26 @@ import com.regnosys.rosetta.generator.daml.object.DamlModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaEnumValue
 import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import java.util.ArrayList
+import java.util.HashMap
 import java.util.List
+import java.util.Map
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
-import java.util.Map
-import java.util.HashMap
 
 class DamlEnumGenerator {
 	
 	@Inject extension DamlModelObjectBoilerPlate
 	
-	static final String FILENAME = 'Org/Isda/Cdm/Enums.daml'
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
+		val enumsByNameSpace = rosettaEnums.groupBy[model.name.split("\\.").first]
+				
 		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums(version).replaceTabsWithSpaces
-		result.put(FILENAME,enums)
+		enumsByNameSpace.forEach[k,v|
+			val enum = v.sortBy[name].generateEnums(k.toFirstUpper, version).replaceTabsWithSpaces
+			result.put('Org/Isda/' + k.toFirstUpper + '/Enums.daml' ,enum)
+		]
+
 		return result;
 	}
 
@@ -39,12 +43,12 @@ class DamlEnumGenerator {
 		return enumValues.sortBy[name];
 	}
 
-	private def generateEnums(List<RosettaEnumeration> enums, String version)  '''
+	private def generateEnums(List<RosettaEnumeration> enums, String namespace, String version)  '''
 		daml 1.2
 		
 		«fileComment(version)»
-		module Org.Isda.Cdm.Enums
-		  ( module Org.Isda.Cdm.Enums ) where
+		module Org.Isda.«namespace».Enums
+		  ( module Org.Isda.«namespace».Enums ) where
 		
 		«FOR e : enums»
 			«val allEnumValues = allEnumsValues(e)»

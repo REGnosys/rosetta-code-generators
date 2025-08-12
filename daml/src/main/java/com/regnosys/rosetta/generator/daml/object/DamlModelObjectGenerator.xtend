@@ -19,19 +19,21 @@ class DamlModelObjectGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
 	@Inject extension DamlMetaFieldGenerator
 	
-	static final String CLASSES_FILENAME = 'Org/Isda/Cdm/Classes.daml'
-	static final String META_FIELDS_FILENAME = 'Org/Isda/Cdm/MetaFields.daml'
-	static final String META_CLASSES_FILENAME = 'Org/Isda/Cdm/MetaClasses.daml'
-	static final String ZONE_DATTTIME_FILENAME = 'Org/Isda/Cdm/ZonedDateTime.daml'
-	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+		val classesByNamespace = rosettaClasses.groupBy[model.name.split("\\.").first]
+		
 		val result = new HashMap
-		val classes = rosettaClasses.sortBy[name].generateClasses(version).replaceTabsWithSpaces
-		result.put(CLASSES_FILENAME, classes)
-		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-		result.put(META_FIELDS_FILENAME, metaFields)
-		result.put(META_CLASSES_FILENAME, metaClasses)
-		result.put(ZONE_DATTTIME_FILENAME, zonedDateTime)
+		classesByNamespace.forEach[k,v|
+			val namespance = k.toFirstUpper
+			val class = v.sortBy[name].generateClasses(namespance, version).replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespance»/Classes.daml''', class)
+			val metaFields = generateMetaFields(metaTypes, namespance, version).replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespance»/MetaFields.daml''', metaFields)
+			result.put('''Org/Isda/«namespance»/MetaClasses.daml''', metaClasses)
+			result.put('''Org/Isda/«namespance»/ZonedDateTime.daml''', zonedDateTime)
+		
+		]
+		
 		result;
 	}
 
@@ -43,7 +45,7 @@ class DamlModelObjectGenerator {
 	 * - must contain "import Prelude hiding (...)" line to avoid name clashes with DAML keywords
 	 * - nullable fields must be declared with the keyword "Optional"
 	 */
-	private def generateClasses(List<Data> rosettaClasses, String version) {
+	private def generateClasses(List<Data> rosettaClasses, String namespace, String version) {
 	'''
 		daml 1.2
 		
