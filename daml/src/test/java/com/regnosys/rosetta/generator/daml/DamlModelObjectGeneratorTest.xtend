@@ -22,13 +22,16 @@ class DamlModelObjectGeneratorTest {
 		val classes = '''
 			namespace cdm.test
 			
+			type InputFoo:
+				field1 string (1..1)
+			
 			func Foo:
 				inputs:
-					fooIn string (1..1)
+					fooIn InputFoo (1..1)
 				output:
 					fooOut string (1..1)
 					
-			set fooOut: fooIn
+			set fooOut: fooIn -> field1
 		'''.generateDaml
 		
 		val fileContent = classes.get("Org/Isda/Cdm/Test/Functions.daml").toString		
@@ -42,22 +45,20 @@ class DamlModelObjectGeneratorTest {
 		module Org.Isda.Cdm.Test.Functions
 		  ( module Org.Isda.Cdm.Test.Functions ) where
 		
-		import Org.Isda.Cdm.Test.Classes
-		import Org.Isda.Cdm.Test.Enums
 		import Org.Isda.Cdm.Test.ZonedDateTime
+		import Org.Isda.Cdm.Test.Classes
 		import Org.Isda.Cdm.Test.MetaClasses
-		import Org.Isda.Cdm.Test.MetaFields
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		-- | Function argument object definition for Foo
 		data FooSpec = FooSpec with
-		  fooIn : Text
+		  fooIn : InputFoo
 		    deriving (Eq, Ord, Show)
 		
 		-- | Function definition for Foo
 		fooFunc : (FooSpec -> Text) -> FooSpec -> Text
 		fooFunc impl spec = impl spec
-		
+
 		'''.toString, fileContent)	
 	}
 	
@@ -112,10 +113,8 @@ class DamlModelObjectGeneratorTest {
 			module Org.Isda.Other.Test.Classes
 			  ( module Org.Isda.Other.Test.Classes ) where
 			
-			import Org.Isda.Other.Test.Enums
-			import Org.Isda.Other.Test.ZonedDateTime
 			import Org.Isda.Other.Test.MetaClasses
-			import Org.Isda.Other.Test.MetaFields
+			import Org.Isda.Other.Test.ZonedDateTime
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo = Foo with 
@@ -145,10 +144,8 @@ class DamlModelObjectGeneratorTest {
 			module Org.Isda.Cdm.Test.Classes
 			  ( module Org.Isda.Cdm.Test.Classes ) where
 			
-			import Org.Isda.Cdm.Test.Enums
-			import Org.Isda.Cdm.Test.ZonedDateTime
 			import Org.Isda.Cdm.Test.MetaClasses
-			import Org.Isda.Cdm.Test.MetaFields
+			import Org.Isda.Cdm.Test.ZonedDateTime
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo_ = Foo_ with 
@@ -169,7 +166,6 @@ class DamlModelObjectGeneratorTest {
 		
 		val classes = daml.get("Org/Isda/Cdm/Test/Classes.daml").toString
 		
-		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.Enums'''))
 		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.ZonedDateTime'''))
 		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.MetaClasses'''))
 		assertTrue(classes.contains('''import Prelude hiding (Party, exercise, id, product, agreement)'''))
@@ -204,10 +200,8 @@ class DamlModelObjectGeneratorTest {
 			module Org.Isda.Cdm.Test.Classes
 			  ( module Org.Isda.Cdm.Test.Classes ) where
 			
-			import Org.Isda.Cdm.Test.Enums
-			import Org.Isda.Cdm.Test.ZonedDateTime
 			import Org.Isda.Cdm.Test.MetaClasses
-			import Org.Isda.Cdm.Test.MetaFields
+			import Org.Isda.Cdm.Test.ZonedDateTime
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo = Foo with 
@@ -577,5 +571,12 @@ class DamlModelObjectGeneratorTest {
 		val resourceSet = m.eResource.resourceSet
 		
 		generator.afterAllGenerate(resourceSet, #{m}, "test")
+	}
+	
+		def generateDaml(CharSequence[] model) {
+		val m = model.parseRosettaWithNoErrors
+		val resourceSet = m.first.eResource.resourceSet
+		
+		generator.afterAllGenerate(resourceSet, m, "test")
 	}
 }

@@ -12,6 +12,8 @@ import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.RosettaEcoreUtil
+import com.google.common.collect.Multimap
+import com.google.common.collect.SetMultimap
 
 class DamlModelObjectGenerator {
 
@@ -19,18 +21,18 @@ class DamlModelObjectGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
 	@Inject extension DamlMetaFieldGenerator
 	
-	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, SetMultimap<String, String> imports, String version) {
 		val classesByNamespace = rosettaClasses.groupBy[model.name.split("\\.").map[toFirstUpper].join(".")]
 		
 		val result = new HashMap
 		classesByNamespace.forEach[k,v|
 			val namespace = k
 			val folderPart = namespace.split("\\.").join("/")
-			val class = v.sortBy[name].generateClasses(namespace, version).replaceTabsWithSpaces
+			val class = v.sortBy[name].generateClasses(namespace, imports, version).replaceTabsWithSpaces
 			result.put('''Org/Isda/«folderPart»/Classes.daml''', class)
 			val metaFields = generateMetaFields(metaTypes, namespace, version).replaceTabsWithSpaces
 			result.put('''Org/Isda/«folderPart»/MetaFields.daml''', metaFields)
-			result.put('''Org/Isda/«folderPart»/MetaClasses.daml''', metaClasses(namespace))
+			result.put('''Org/Isda/«folderPart»/MetaClasses.daml''', metaClasses(namespace, imports))
 			result.put('''Org/Isda/«folderPart»/ZonedDateTime.daml''', zonedDateTime(namespace))
 		
 		]
@@ -46,7 +48,7 @@ class DamlModelObjectGenerator {
 	 * - must contain "import Prelude hiding (...)" line to avoid name clashes with DAML keywords
 	 * - nullable fields must be declared with the keyword "Optional"
 	 */
-	private def generateClasses(List<Data> rosettaClasses, String namespace, String version) {
+	private def generateClasses(List<Data> rosettaClasses, String namespace, Multimap<String, String> imports, String version) {
 	'''
 		daml 1.2
 		
@@ -54,10 +56,9 @@ class DamlModelObjectGenerator {
 		module Org.Isda.«namespace».Classes
 		  ( module Org.Isda.«namespace».Classes ) where
 		
-		import Org.Isda.«namespace».Enums
-		import Org.Isda.«namespace».ZonedDateTime
-		import Org.Isda.«namespace».MetaClasses
-		import Org.Isda.«namespace».MetaFields
+		«FOR i : imports.get(namespace)»
+			«IF !i.endsWith(".Classes")»import «i»«ENDIF»
+		«ENDFOR»
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR c : rosettaClasses»
@@ -89,7 +90,7 @@ class DamlModelObjectGenerator {
 		attributeMap.values
 	}
 	
-	private def metaClasses(String namespace) '''
+	private def metaClasses(String namespace, Multimap<String, String> imports) '''
 		daml 1.2
 		
 		-- | This file is auto-generated from the ISDA Common
@@ -98,7 +99,9 @@ class DamlModelObjectGenerator {
 		module Org.Isda.«namespace».MetaClasses
 		  ( module Org.Isda.«namespace».MetaClasses ) where
 		
-		import Org.Isda.«namespace».MetaFields
+		«FOR i : imports.get(namespace)»
+			«IF i.endsWith("MetaFields")»import «i»«ENDIF»
+		«ENDFOR»
 		
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
