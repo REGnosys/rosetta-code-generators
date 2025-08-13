@@ -1,4 +1,4 @@
-namespace "cdm.test"
+namespace "cdm"
 version "test"
 
 type Foo:<"A sample class">
