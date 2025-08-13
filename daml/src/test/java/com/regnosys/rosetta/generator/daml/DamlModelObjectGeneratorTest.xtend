@@ -18,9 +18,53 @@ class DamlModelObjectGeneratorTest {
 	@Inject DamlCodeGenerator generator;
 	
 	@Test
+	def void shouldGenerateFunctions() {
+		val classes = '''
+			namespace cdm.test
+			
+			func Foo:
+				inputs:
+					fooIn string (1..1)
+				output:
+					fooOut string (1..1)
+					
+			set fooOut: fooIn
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Cdm/Test/Functions.daml").toString		
+		
+		assertEquals('''
+		daml 1.2
+		
+		-- | This file is auto-generated from the ISDA Common
+		--   Domain Model, do not edit.
+		--   @version test
+		module Org.Isda.Cdm.Test.Functions
+		  ( module Org.Isda.Cdm.Test.Functions ) where
+		
+		import Org.Isda.Cdm.Test.Classes
+		import Org.Isda.Cdm.Test.Enums
+		import Org.Isda.Cdm.Test.ZonedDateTime
+		import Org.Isda.Cdm.Test.MetaClasses
+		import Org.Isda.Cdm.Test.MetaFields
+		import Prelude hiding (Party, exercise, id, product, agreement)
+		
+		-- | Function argument object definition for Foo
+		data FooSpec = FooSpec with
+		  fooIn : Text
+		    deriving (Eq, Ord, Show)
+		
+		-- | Function definition for Foo
+		fooFunc : (FooSpec -> Text) -> FooSpec -> Text
+		fooFunc impl spec = impl spec
+		
+		'''.toString, fileContent)	
+	}
+	
+	@Test
 	def void shouldGenerateEnum() {
 		val classes = '''
-			namespace other.test
+			namespace cdm.test
 			
 			enum FooEnum:
 			    A
@@ -28,7 +72,7 @@ class DamlModelObjectGeneratorTest {
 			    C
 		'''.generateDaml
 		
-		val fileContent = classes.get("Org/Isda/Other/Test/Enums.daml").toString
+		val fileContent = classes.get("Org/Isda/Cdm/Test/Enums.daml").toString
 
 		assertEquals('''
 			daml 1.2
@@ -36,8 +80,8 @@ class DamlModelObjectGeneratorTest {
 			-- | This file is auto-generated from the ISDA Common
 			--   Domain Model, do not edit.
 			--   @version test
-			module Org.Isda.Other.Test.Enums
-			  ( module Org.Isda.Other.Test.Enums ) where
+			module Org.Isda.Cdm.Test.Enums
+			  ( module Org.Isda.Cdm.Test.Enums ) where
 			
 			data FooEnum 
 			  = FooEnum_A
