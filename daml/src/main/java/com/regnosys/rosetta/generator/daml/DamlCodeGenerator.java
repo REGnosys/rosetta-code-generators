@@ -53,8 +53,8 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
 				.map(RosettaEnumeration.class::cast).collect(Collectors.toList());
 		
-		List<Function> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(t -> Function.class.isInstance(t))
-				.map(Function.class::cast).collect(Collectors.toList());
+		List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(t -> Function.class.isInstance(t))
+				.map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
