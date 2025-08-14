@@ -94,10 +94,10 @@ class DamlModelObjectGenerator {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version ${project.version}
-		module Org.Isda.Cdm.MetaClasses
+		module Org.Isda.«namespace».MetaClasses
 		  ( module Org.Isda.«namespace».MetaClasses ) where
 		
-		import Org.Isda.Cdm.MetaFields
+		import Org.Isda.«namespace».MetaFields
 		
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
