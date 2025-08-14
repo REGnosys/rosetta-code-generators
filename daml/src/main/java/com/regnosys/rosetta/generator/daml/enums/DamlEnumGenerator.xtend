@@ -17,14 +17,12 @@ class DamlEnumGenerator {
 	
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
-		val enumsByNameSpace = rosettaEnums.groupBy[model.name.split("\\.").map[toFirstUpper].join(".")]
+		val enumsByNameSpace = rosettaEnums.groupBy[model.name.split("\\.").first]
 				
 		val result = new HashMap
 		enumsByNameSpace.forEach[k,v|
-			val namespace = k
-			val folderPart = namespace.split("\\.").join("/")
-			val enum = v.sortBy[name].generateEnums(namespace, version).replaceTabsWithSpaces
-			result.put('Org/Isda/' + folderPart + '/Enums.daml' ,enum)
+			val enum = v.sortBy[name].generateEnums(k.toFirstUpper, version).replaceTabsWithSpaces
+			result.put('Org/Isda/' + k.toFirstUpper + '/Enums.daml' ,enum)
 		]
 
 		return result;

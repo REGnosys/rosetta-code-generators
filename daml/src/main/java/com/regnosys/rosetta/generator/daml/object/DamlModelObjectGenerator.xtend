@@ -20,18 +20,17 @@ class DamlModelObjectGenerator {
 	@Inject extension DamlMetaFieldGenerator
 	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
-		val classesByNamespace = rosettaClasses.groupBy[model.name.split("\\.").map[toFirstUpper].join(".")]
+		val classesByNamespace = rosettaClasses.groupBy[model.name.split("\\.").first]
 		
 		val result = new HashMap
 		classesByNamespace.forEach[k,v|
-			val namespace = k
-			val folderPart = namespace.split("\\.").join("/")
+			val namespace = k.toFirstUpper
 			val class = v.sortBy[name].generateClasses(namespace, version).replaceTabsWithSpaces
-			result.put('''Org/Isda/«folderPart»/Classes.daml''', class)
+			result.put('''Org/Isda/«namespace»/Classes.daml''', class)
 			val metaFields = generateMetaFields(metaTypes, namespace, version).replaceTabsWithSpaces
-			result.put('''Org/Isda/«folderPart»/MetaFields.daml''', metaFields)
-			result.put('''Org/Isda/«folderPart»/MetaClasses.daml''', metaClasses(namespace))
-			result.put('''Org/Isda/«folderPart»/ZonedDateTime.daml''', zonedDateTime(namespace))
+			result.put('''Org/Isda/«namespace»/MetaFields.daml''', metaFields)
+			result.put('''Org/Isda/«namespace»/MetaClasses.daml''', metaClasses(namespace))
+			result.put('''Org/Isda/«namespace»/ZonedDateTime.daml''', zonedDateTime(namespace))
 		
 		]
 		
@@ -95,10 +94,10 @@ class DamlModelObjectGenerator {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version ${project.version}
-		module Org.Isda.«namespace».MetaClasses
+		module Org.Isda.Cdm.MetaClasses
 		  ( module Org.Isda.«namespace».MetaClasses ) where
 		
-		import Org.Isda.«namespace».MetaFields
+		import Org.Isda.Cdm.MetaFields
 		
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text

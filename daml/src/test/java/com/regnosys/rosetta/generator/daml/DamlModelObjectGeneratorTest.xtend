@@ -16,37 +16,6 @@ class DamlModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
 	@Inject DamlCodeGenerator generator;
-	
-	@Test
-	def void shouldGenerateEnum() {
-		val classes = '''
-			namespace other.test
-			
-			enum FooEnum:
-			    A
-			    B
-			    C
-		'''.generateDaml
-		
-		val fileContent = classes.get("Org/Isda/Other/Test/Enums.daml").toString
-
-		assertEquals('''
-			daml 1.2
-			
-			-- | This file is auto-generated from the ISDA Common
-			--   Domain Model, do not edit.
-			--   @version test
-			module Org.Isda.Other.Test.Enums
-			  ( module Org.Isda.Other.Test.Enums ) where
-			
-			data FooEnum 
-			  = FooEnum_A
-			  | FooEnum_B
-			  | FooEnum_C
-			    deriving (Eq, Ord, Show)
-			
-	    '''.toString, fileContent)		
-	}
 
 	@Test
 	def void shouldGenerateClassWithDifferentNamespace() {
@@ -57,7 +26,7 @@ class DamlModelObjectGeneratorTest {
 			    stringAttr string (1..1)
 		'''.generateDaml
 		
-		val fileContent = classes.get("Org/Isda/Other/Test/Classes.daml").toString
+		val fileContent = classes.get("Org/Isda/Other/Classes.daml").toString
 
 		assertEquals('''
 			daml 1.2
@@ -65,13 +34,13 @@ class DamlModelObjectGeneratorTest {
 			-- | This file is auto-generated from the ISDA Common
 			--   Domain Model, do not edit.
 			--   @version test
-			module Org.Isda.Other.Test.Classes
-			  ( module Org.Isda.Other.Test.Classes ) where
+			module Org.Isda.Other.Classes
+			  ( module Org.Isda.Other.Classes ) where
 			
-			import Org.Isda.Other.Test.Enums
-			import Org.Isda.Other.Test.ZonedDateTime
-			import Org.Isda.Other.Test.MetaClasses
-			import Org.Isda.Other.Test.MetaFields
+			import Org.Isda.Other.Enums
+			import Org.Isda.Other.ZonedDateTime
+			import Org.Isda.Other.MetaClasses
+			import Org.Isda.Other.MetaFields
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo = Foo with 
@@ -90,7 +59,7 @@ class DamlModelObjectGeneratorTest {
 			    stringAttr string (1..1)
 		'''.generateDaml
 		
-		val fileContent = classes.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
 
 		assertEquals('''
 			daml 1.2
@@ -98,13 +67,13 @@ class DamlModelObjectGeneratorTest {
 			-- | This file is auto-generated from the ISDA Common
 			--   Domain Model, do not edit.
 			--   @version test
-			module Org.Isda.Cdm.Test.Classes
-			  ( module Org.Isda.Cdm.Test.Classes ) where
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
 			
-			import Org.Isda.Cdm.Test.Enums
-			import Org.Isda.Cdm.Test.ZonedDateTime
-			import Org.Isda.Cdm.Test.MetaClasses
-			import Org.Isda.Cdm.Test.MetaFields
+			import Org.Isda.Cdm.Enums
+			import Org.Isda.Cdm.ZonedDateTime
+			import Org.Isda.Cdm.MetaClasses
+			import Org.Isda.Cdm.MetaFields
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo_ = Foo_ with 
@@ -123,11 +92,11 @@ class DamlModelObjectGeneratorTest {
 			    stringAttr string (0..1)
 		'''.generateDaml
 		
-		val classes = daml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val classes = daml.get("Org/Isda/Cdm/Classes.daml").toString
 		
-		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.Enums'''))
-		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.ZonedDateTime'''))
-		assertTrue(classes.contains('''import Org.Isda.Cdm.Test.MetaClasses'''))
+		assertTrue(classes.contains('''import Org.Isda.Cdm.Enums'''))
+		assertTrue(classes.contains('''import Org.Isda.Cdm.ZonedDateTime'''))
+		assertTrue(classes.contains('''import Org.Isda.Cdm.MetaClasses'''))
 		assertTrue(classes.contains('''import Prelude hiding (Party, exercise, id, product, agreement)'''))
 	}
 
@@ -149,7 +118,7 @@ class DamlModelObjectGeneratorTest {
 				eventTypeAttr eventType (1..1)
 		'''.generateDaml
 		
-		val fileContent = classes.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
 
 		assertEquals('''
 			daml 1.2
@@ -157,13 +126,13 @@ class DamlModelObjectGeneratorTest {
 			-- | This file is auto-generated from the ISDA Common
 			--   Domain Model, do not edit.
 			--   @version test
-			module Org.Isda.Cdm.Test.Classes
-			  ( module Org.Isda.Cdm.Test.Classes ) where
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
 			
-			import Org.Isda.Cdm.Test.Enums
-			import Org.Isda.Cdm.Test.ZonedDateTime
-			import Org.Isda.Cdm.Test.MetaClasses
-			import Org.Isda.Cdm.Test.MetaFields
+			import Org.Isda.Cdm.Enums
+			import Org.Isda.Cdm.ZonedDateTime
+			import Org.Isda.Cdm.MetaClasses
+			import Org.Isda.Cdm.MetaFields
 			import Prelude hiding (Party, exercise, id, product, agreement)
 			
 			data Foo = Foo with 
@@ -189,7 +158,7 @@ class DamlModelObjectGeneratorTest {
 			
 			type Foo:
 			    stringAttr string (0..1)
-		'''.generateDaml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
@@ -204,7 +173,7 @@ class DamlModelObjectGeneratorTest {
 			
 			type Foo: <"This is the class comment which should wrap if the line is long enough.">
 			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">
-		'''.generateDaml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		-- | This is the class comment which should wrap if the
@@ -223,7 +192,7 @@ class DamlModelObjectGeneratorTest {
 			
 			type Foo:
 			    stringAttrs string (0..*)
-		'''.generateDaml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
@@ -244,14 +213,14 @@ class DamlModelObjectGeneratorTest {
 			    [metadata scheme]
 		'''.generateDaml
 		
-		val classes = code.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
 		  stringAttr : (FieldWithMeta Text)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/Test/MetaFields.daml").toString
+		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
 //		println(metaFields)
 		
@@ -261,8 +230,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.Test.MetaFields
-		  ( module Org.Isda.Cdm.Test.MetaFields ) where
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  scheme : Optional Text
@@ -290,7 +259,7 @@ class DamlModelObjectGeneratorTest {
 			
 			type Bar:
 			    stringAttr string (1..1)
-		'''.generateDaml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
@@ -315,7 +284,7 @@ class DamlModelObjectGeneratorTest {
 			    stringAttr string (1..1)
 		'''.generateDaml
 		
-		val classes = code.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Bar = Bar with 
@@ -328,7 +297,7 @@ class DamlModelObjectGeneratorTest {
 		  barReference : Optional (ReferenceWithMeta Bar)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/Test/MetaFields.daml").toString
+		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
 		//println(metaFields)
 		
@@ -338,8 +307,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.Test.MetaFields
-		  ( module Org.Isda.Cdm.Test.MetaFields ) where
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
@@ -376,7 +345,7 @@ class DamlModelObjectGeneratorTest {
 			    stringAttr string (1..1)
 		'''.generateDaml
 		
-		val classes = code.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Baz = Baz with 
@@ -393,7 +362,7 @@ class DamlModelObjectGeneratorTest {
 		  bazAddress : (ReferenceWithMeta Baz)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaClasses = code.get("Org/Isda/Cdm/Test/MetaClasses.daml").toString
+		val metaClasses = code.get("Org/Isda/Cdm/MetaClasses.daml").toString
 		
 		assertTrue(metaClasses.contains('''
 		daml 1.2
@@ -401,10 +370,10 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version ${project.version}
-		module Org.Isda.Cdm.Test.MetaClasses
-		  ( module Org.Isda.Cdm.Test.MetaClasses ) where
+		module Org.Isda.Cdm.MetaClasses
+		  ( module Org.Isda.Cdm.MetaClasses ) where
 		
-		import Org.Isda.Cdm.Test.MetaFields
+		import Org.Isda.Cdm.MetaFields
 		
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
@@ -425,7 +394,7 @@ class DamlModelObjectGeneratorTest {
 		  meta : Optional MetaFields
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/Test/MetaFields.daml").toString
+		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
 		assertTrue(metaFields.contains('''
 		daml 1.2
@@ -433,8 +402,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.Test.MetaFields
-		  ( module Org.Isda.Cdm.Test.MetaFields ) where
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
@@ -476,14 +445,14 @@ class DamlModelObjectGeneratorTest {
 			    [metadata reference]
 		'''.generateDaml
 		
-		val classes = code.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
 		  stringReference : Optional (BasicReferenceWithMeta Text)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/Test/MetaFields.daml").toString
+		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
 		
 //		println(metaFields)
 		
@@ -493,8 +462,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.Test.MetaFields
-		  ( module Org.Isda.Cdm.Test.MetaFields ) where
+		module Org.Isda.Cdm.MetaFields
+		  ( module Org.Isda.Cdm.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
@@ -520,7 +489,7 @@ class DamlModelObjectGeneratorTest {
 			
 			type Bar extends Foo:
 			    override attr string (1..1)
-		'''.generateDaml.get("Org/Isda/Cdm/Test/Classes.daml").toString
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
 
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
