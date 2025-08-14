@@ -14,36 +14,37 @@ import java.util.Map
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
 import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
-import com.google.common.collect.SetMultimap
 
 class DamlFunctionGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
 	
 	
-	def Map<String, ? extends CharSequence> generate(Iterable<Function> rosettaFunctions, SetMultimap<String, String> imports, String version) {
+	def Map<String, ? extends CharSequence> generate(Iterable<Function> rosettaFunctions, String version) {
 		val functionsByNamespace = rosettaFunctions.groupBy[model.name.split("\\.").map[toFirstUpper].join(".")]
 		
 		val result = new HashMap
 		functionsByNamespace.forEach[k,v|
 			val namespace = k
 			val folderPart = namespace.split("\\.").join("/")
-			val functions = v.sortBy[name].generateFunctions(namespace, imports, version).replaceTabsWithSpaces
+			val functions = v.sortBy[name].generateFunctions(namespace, version).replaceTabsWithSpaces
 			result.put('''Org/Isda/«folderPart»/Functions.daml''',functions)
 		]
 		
 		return result;
 	}
 	
-	private def generateFunctions(List<Function> functions, String namespace, SetMultimap<String, String> imports, String version)  '''
+	private def generateFunctions(List<Function> functions, String namespace, String version)  '''
 		daml 1.2
 		
 		«fileComment(version)»
 		module Org.Isda.«namespace».Functions
 		  ( module Org.Isda.«namespace».Functions ) where
 		
-		«FOR i : imports.get(namespace)»
-			«IF !i.endsWith(".Functions")»import «i»«ENDIF»
-		«ENDFOR»
+		import Org.Isda.«namespace».Classes
+		import Org.Isda.«namespace».Enums
+		import Org.Isda.«namespace».ZonedDateTime
+		import Org.Isda.«namespace».MetaClasses
+		import Org.Isda.«namespace».MetaFields
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR f : functions»

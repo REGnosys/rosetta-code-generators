@@ -10,7 +10,6 @@ import java.util.List
 import java.util.Map
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
-import com.google.common.collect.SetMultimap
 
 class DamlEnumGenerator {
 	
