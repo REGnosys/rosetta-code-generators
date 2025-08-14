@@ -19,19 +19,21 @@ class DamlModelObjectGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
 	@Inject extension DamlMetaFieldGenerator
 	
-	static final String CLASSES_FILENAME = 'Org/Isda/Cdm/Classes.daml'
-	static final String META_FIELDS_FILENAME = 'Org/Isda/Cdm/MetaFields.daml'
-	static final String META_CLASSES_FILENAME = 'Org/Isda/Cdm/MetaClasses.daml'
-	static final String ZONE_DATTTIME_FILENAME = 'Org/Isda/Cdm/ZonedDateTime.daml'
-	
 	def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
+		val classesByNamespace = rosettaClasses.groupBy[model.name.split("\\.").first]
+		
 		val result = new HashMap
-		val classes = rosettaClasses.sortBy[name].generateClasses(version).replaceTabsWithSpaces
-		result.put(CLASSES_FILENAME, classes)
-		val metaFields = generateMetaFields(metaTypes, version).replaceTabsWithSpaces
-		result.put(META_FIELDS_FILENAME, metaFields)
-		result.put(META_CLASSES_FILENAME, metaClasses)
-		result.put(ZONE_DATTTIME_FILENAME, zonedDateTime)
+		classesByNamespace.forEach[k,v|
+			val namespace = k.toFirstUpper
+			val class = v.sortBy[name].generateClasses(namespace, version).replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespace»/Classes.daml''', class)
+			val metaFields = generateMetaFields(metaTypes, namespace, version).replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespace»/MetaFields.daml''', metaFields)
+			result.put('''Org/Isda/«namespace»/MetaClasses.daml''', metaClasses(namespace))
+			result.put('''Org/Isda/«namespace»/ZonedDateTime.daml''', zonedDateTime(namespace))
+		
+		]
+		
 		result;
 	}
 
@@ -43,23 +45,23 @@ class DamlModelObjectGenerator {
 	 * - must contain "import Prelude hiding (...)" line to avoid name clashes with DAML keywords
 	 * - nullable fields must be declared with the keyword "Optional"
 	 */
-	private def generateClasses(List<Data> rosettaClasses, String version) {
+	private def generateClasses(List<Data> rosettaClasses, String namespace, String version) {
 	'''
 		daml 1.2
 		
 		«fileComment(version)»
-		module Org.Isda.Cdm.Classes
-		  ( module Org.Isda.Cdm.Classes ) where
+		module Org.Isda.«namespace».Classes
+		  ( module Org.Isda.«namespace».Classes ) where
 		
-		import Org.Isda.Cdm.Enums
-		import Org.Isda.Cdm.ZonedDateTime
-		import Org.Isda.Cdm.MetaClasses
-		import Org.Isda.Cdm.MetaFields
+		import Org.Isda.«namespace».Enums
+		import Org.Isda.«namespace».ZonedDateTime
+		import Org.Isda.«namespace».MetaClasses
+		import Org.Isda.«namespace».MetaFields
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR c : rosettaClasses»
 			«classComment(c.definition)»
-			data «c.name» = «c.name» with 
+			data «handleUnderscoreNames(c.name)» = «handleUnderscoreNames(c.name)» with 
 			  «FOR attribute : c.allExpandedAttributes»
 			      «attribute.toAttributeName» : «attribute.toType»
 			        «methodComment(attribute.definition)»
@@ -69,6 +71,12 @@ class DamlModelObjectGenerator {
 		«ENDFOR»
 	'''}
 	
+	private def handleUnderscoreNames(String name) {
+		if (name.startsWith("_")) {
+			return name.substring(1) + "_"
+		}
+		return name
+	}
 	
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
 		var attributeMap = newLinkedHashMap
@@ -80,16 +88,16 @@ class DamlModelObjectGenerator {
 		attributeMap.values
 	}
 	
-	private def metaClasses() '''
+	private def metaClasses(String namespace) '''
 		daml 1.2
 		
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version ${project.version}
-		module Org.Isda.Cdm.MetaClasses
-		  ( module Org.Isda.Cdm.MetaClasses ) where
+		module Org.Isda.«namespace».MetaClasses
+		  ( module Org.Isda.«namespace».MetaClasses ) where
 		
-		import Org.Isda.Cdm.MetaFields
+		import Org.Isda.«namespace».MetaFields
 		
 		data ReferenceWithMeta a = ReferenceWithMeta with
 		  globalReference : Optional Text
@@ -112,14 +120,14 @@ class DamlModelObjectGenerator {
 		
 	'''
 	
-	private def zonedDateTime() '''
+	private def zonedDateTime(String namespace) '''
 		daml 1.2
 		
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version ${project.version}
-		module Org.Isda.Cdm.ZonedDateTime
-		  ( module Org.Isda.Cdm.ZonedDateTime ) where
+		module Org.Isda.«namespace».ZonedDateTime
+		  ( module Org.Isda.«namespace».ZonedDateTime ) where
 		
 		data ZonedDateTime = ZonedDateTime with
 		  dateTime : Time

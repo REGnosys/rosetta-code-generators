@@ -16,11 +16,78 @@ class DamlModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
 	@Inject DamlCodeGenerator generator;
-	
+
+	@Test
+	def void shouldGenerateClassWithDifferentNamespace() {
+		val classes = '''
+			namespace other.test
+			
+			type Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Other/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Other.Classes
+			  ( module Org.Isda.Other.Classes ) where
+			
+			import Org.Isda.Other.Enums
+			import Org.Isda.Other.ZonedDateTime
+			import Org.Isda.Other.MetaClasses
+			import Org.Isda.Other.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement)
+			
+			data Foo = Foo with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
+	}
+		
+	@Test
+	def void shoulHandleLeadingUnderscoreTypeName() {
+		val classes = '''
+			namespace cdm.test
+			
+			type _Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
+			
+			import Org.Isda.Cdm.Enums
+			import Org.Isda.Cdm.ZonedDateTime
+			import Org.Isda.Cdm.MetaClasses
+			import Org.Isda.Cdm.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement)
+			
+			data Foo_ = Foo_ with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
+	}
 
 	@Test
 	def void shouldGenerateClassWithImports() {
 		val daml = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml
@@ -36,6 +103,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypes() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (1..1)
 			    intAttr int (1..1)
@@ -85,6 +154,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalBasicType() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -98,6 +169,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithComments() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo: <"This is the class comment which should wrap if the line is long enough.">
 			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -115,6 +188,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeList() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttrs string (0..*)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -128,6 +203,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeAndMetaFieldScheme() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType scheme string
 			metaType location string
 			
@@ -175,6 +252,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalRosettaType() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    barAttr Bar (0..1)
 			
@@ -191,6 +270,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithRosettaTypeAndMetaReference() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType location string
 			
@@ -246,6 +327,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithRosettaTypeLocationAndAddress() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType address string
 			metaType location string
@@ -349,6 +432,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithRosettaTypeAndMetaBasicReference() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType id string
 			metaType key string
@@ -397,6 +482,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWitOverrideAttribute() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    attr string (0..1)
 			

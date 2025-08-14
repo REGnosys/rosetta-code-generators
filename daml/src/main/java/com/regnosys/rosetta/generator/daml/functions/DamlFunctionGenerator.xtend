@@ -17,28 +17,36 @@ import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.
 
 class DamlFunctionGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
-	
-	static final String FILENAME = 'Org/Isda/Cdm/Functions.daml'
+			
+	def Map<String, ? extends CharSequence> generate(Iterable<Function> rosettaFunctions, String version) {
+		val functionsByNamespace = rosettaFunctions.groupBy[model.name.split("\\.").first]
 		
-	def Map<String, ? extends CharSequence> generate(Iterable<RosettaNamed> rosettaFunctions, String version) {
 		val result = new HashMap
-		val functions = rosettaFunctions.sortBy[name].generateFunctions(version).replaceTabsWithSpaces
-		result.put(FILENAME,functions)
+		functionsByNamespace.forEach[k,v|
+			val namespace = k.toFirstUpper
+			val functions = v.sortBy[name].generateFunctions(namespace, version).replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespace»/Functions.daml''',functions)
+		]
+		
 		return result;
 	}
 	
-	private def generateFunctions(List<RosettaNamed> functions, String version)  '''
+	private def generateFunctions(List<Function> functions, String namespace, String version)  '''
 		daml 1.2
 		
 		«fileComment(version)»
-		module Org.Isda.Cdm.Functions
-		  ( module Org.Isda.Cdm.Functions ) where
+		module Org.Isda.«namespace».Functions
+		  ( module Org.Isda.«namespace».Functions ) where
 		
-		import Org.Isda.Cdm.Classes
-		import Org.Isda.Cdm.Enums
-		import Org.Isda.Cdm.ZonedDateTime
-		import Org.Isda.Cdm.MetaClasses
-		import Org.Isda.Cdm.MetaFields
+		import Org.Isda.«namespace».Classes
+		import Org.Isda.«namespace».Enums
+		import Org.Isda.«namespace».ZonedDateTime
+		import Org.Isda.«namespace».MetaClasses
+		import Org.Isda.«namespace».MetaFields
+		«IF namespace=="Cdm"»
+			import Org.Isda.Fpml.Classes
+			import Org.Isda.Fpml.Enums
+		«ENDIF»
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR f : functions»
