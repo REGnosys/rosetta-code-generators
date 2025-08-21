@@ -144,7 +144,7 @@
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
         <rosetta.dsl.version>9.64.1</rosetta.dsl.version>
-        <rosetta.bundle.version>11.79.0</rosetta.bundle.version>
+        <rosetta.bundle.version>11.79.1</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
