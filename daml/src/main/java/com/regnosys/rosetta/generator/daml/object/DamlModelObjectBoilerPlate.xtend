@@ -1,65 +1,64 @@
 package com.regnosys.rosetta.generator.daml.object
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.types.RAttribute
+import com.regnosys.rosetta.types.RMetaAttribute
 
-import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.toDamlType
+import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.*
 
 class DamlModelObjectBoilerPlate {
 		
-	def toAttributeName(ExpandedAttribute attribute) {
-		if (attribute.name == "type")
+	def toAttributeName(RAttribute rAttr) {
+		if (rAttr.name == "type")
 			'''_type'''
 		else
-			attribute.name.toFirstLower
+			rAttr.name.toFirstLower
+	}
+	
+	def toAttributeName(RMetaAttribute rMetaAttr) {
+		if (rMetaAttr.name == "type")
+			'''_type'''
+		else
+			rMetaAttr.name.toFirstLower
 	}
 	
 	def replaceTabsWithSpaces(CharSequence code) {
 		code.toString.replace('\t', '  ')
 	}
 	
-	def toType(ExpandedAttribute attribute) {
-		if (attribute.isMultiple) 
-			'''[«attribute.toRawType»]'''
+	def toType(RAttribute rAttr) {
+		if (rAttr.isMulti) 
+			'''[«rAttr.toRawType»]'''
 		else
-			attribute.toRawType
-				.wrapSingleMetaInBrackets(attribute)
-				.prefixSingleOptional(attribute)
+			rAttr.toRawType
+				.wrapSingleMetaInBrackets(rAttr)
+				.prefixSingleOptional(rAttr)
 	}
 	
-	private def toRawType(ExpandedAttribute attribute) {
-		if (!attribute.hasMetas) 
-			attribute.type.name.toDamlType
-		else if (attribute.refIndex>=0) {
-			if (attribute.type.isType)
-				attribute.type.name.toReferenceWithMetaTypeName
-			else 
-				attribute.type.name.toBasicReferenceWithMetaTypeName
+	def toType(RMetaAttribute rMetaAttr) {
+		rMetaAttr.RType.toDamlType
+	}
+	
+	private def toRawType(RAttribute rAttr) {
+		val rMetaAnnotatedType = rAttr.RMetaAnnotatedType
+		if (!rMetaAnnotatedType.hasMeta) 
+			rAttr.RMetaAnnotatedType.RType.toDamlType
+		else if (rMetaAnnotatedType.hasMetaAttribute("reference") || rMetaAnnotatedType.hasMetaAttribute("address")) {
+			'''ReferenceWithMeta «rMetaAnnotatedType.RType.toDamlType»'''
 		}
 		else 
-			attribute.type.name.toFieldWithMetaTypeName
+			'''FieldWithMeta «rMetaAnnotatedType.RType.toDamlType»'''
 	}
 	
-	private def toReferenceWithMetaTypeName(String type) {
-		'''ReferenceWithMeta «type.toDamlType.toFirstUpper»'''
-	}
-	
-	private def toBasicReferenceWithMetaTypeName(String type) {
-		'''BasicReferenceWithMeta «type.toDamlType.toFirstUpper»'''
-	}
-	
-	private def toFieldWithMetaTypeName(String type) {
-		'''FieldWithMeta «type.toDamlType.toFirstUpper»'''
-	}
-	
-	private def prefixSingleOptional(CharSequence type, ExpandedAttribute attribute) {
-		if (attribute.isSingleOptional)
+	private def prefixSingleOptional(CharSequence type, RAttribute rAttr) {
+		val card = rAttr.cardinality
+		if (!card.multi && card.isOptional)
 			'''Optional «type»'''
 		else
 			type
 	}
 	
-	private def wrapSingleMetaInBrackets(CharSequence type, ExpandedAttribute attribute) {
-		if (attribute.hasMetas) 
+	private def wrapSingleMetaInBrackets(CharSequence type, RAttribute rAttr) {
+		if (rAttr.RMetaAnnotatedType.hasMeta) 
 			'''(«type»)'''
 		else
 			type

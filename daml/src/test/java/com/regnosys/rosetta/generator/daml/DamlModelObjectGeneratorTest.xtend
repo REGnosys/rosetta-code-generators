@@ -267,6 +267,33 @@ class DamlModelObjectGeneratorTest {
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
+		
+	@Test
+	def void shouldGenerateClassWithOptionalTypeAlias() {
+		val classes = '''
+			namespace cdm.test
+			
+			typeAlias CountryCode: string(pattern: "[A-Z]{2,2}")
+			typeAlias BaseOne18Rate: number(digits: 18, fractionalDigits: 13)
+			typeAlias ISODate: date
+			typeAlias Max5Int: int(digits: 5)
+			
+			type Foo:
+			    countryCode CountryCode (0..1)
+			    baseOne18Rate BaseOne18Rate (0..1)
+			    isoDate ISODate (0..1)
+			    max5Int Max5Int (0..1)
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
+		
+		assertTrue(classes.contains('''
+			data Foo = Foo with 
+			  countryCode : Optional Text
+			  baseOne18Rate : Optional Decimal
+			  isoDate : Optional Date
+			  max5Int : Optional Int
+			    deriving (Eq, Ord, Show)'''))
+	}
+	
 	@Test
 	def void shouldGenerateClassWithRosettaTypeAndMetaReference() {
 		val code = '''
@@ -449,7 +476,7 @@ class DamlModelObjectGeneratorTest {
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
-		  stringReference : Optional (BasicReferenceWithMeta Text)
+		  stringReference : Optional (ReferenceWithMeta Text)
 		    deriving (Eq, Ord, Show)'''))
 
 		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
@@ -480,7 +507,7 @@ class DamlModelObjectGeneratorTest {
 	}
 	
 	@Test
-	def void shouldGenerateClassWitOverrideAttribute() {
+	def void shouldGenerateClassWithOverrideAttribute() {
 		val classes = '''
 			namespace cdm.test
 			

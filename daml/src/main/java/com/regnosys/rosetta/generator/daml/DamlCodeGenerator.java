@@ -57,7 +57,7 @@ public class DamlCodeGenerator extends AbstractExternalGenerator {
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
-		result.putAll(functionGenerator.generate(rosettaFunctions, version));
+		//result.putAll(functionGenerator.generate(rosettaFunctions, version));
 		return result;
 	}
 

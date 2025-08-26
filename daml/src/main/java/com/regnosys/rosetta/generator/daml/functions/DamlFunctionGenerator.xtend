@@ -40,9 +40,10 @@ class DamlFunctionGenerator {
 		
 		import Org.Isda.«namespace».Classes
 		import Org.Isda.«namespace».Enums
-		import Org.Isda.«namespace».ZonedDateTime
-		import Org.Isda.«namespace».MetaClasses
-		import Org.Isda.«namespace».MetaFields
+		import Com.Regnosys.Meta.DateTime
+		import Com.Regnosys.Meta.ZonedDateTime
+		import Com.Regnosys.Meta.MetaClasses hiding (Reference)
+		import Com.Regnosys.Meta.MetaFields
 		«IF namespace=="Cdm"»
 			import Org.Isda.Fpml.Classes
 			import Org.Isda.Fpml.Enums
@@ -82,7 +83,7 @@ class DamlFunctionGenerator {
 	}
 	
 	private def toRawType(Attribute input) {
-		input.typeCall.type.name.toDamlType	
+		input.typeCall.type.toDamlType	
 	}
 	
 	private def prefixSingleOptional(CharSequence type, RosettaCardinality card) {
