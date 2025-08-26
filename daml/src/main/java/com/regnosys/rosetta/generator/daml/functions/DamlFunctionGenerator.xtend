@@ -2,14 +2,15 @@ package com.regnosys.rosetta.generator.daml.functions
 
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaCardinality
+import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
+import jakarta.inject.Inject
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import jakarta.inject.Inject
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
@@ -24,11 +25,21 @@ class DamlFunctionGenerator {
 		val result = new HashMap
 		functionsByNamespace.forEach[k,v|
 			val namespace = k.toFirstUpper
-			val functions = v.sortBy[name].generateFunctions(namespace, version).replaceTabsWithSpaces
+			val functions = v
+				.filter[excludeIngestNamespaces(model)]
+				.sortBy[name]
+				.toList
+				.generateFunctions(namespace, version)
+				.replaceTabsWithSpaces
 			result.put('''Org/Isda/«namespace»/Functions.daml''',functions)
 		]
 		
 		return result;
+	}
+	
+	private def boolean excludeIngestNamespaces(RosettaModel model) {
+		val namespaceElements = model.name.split("\\.")
+		!namespaceElements.contains("ingest") && !namespaceElements.contains("mapping") 
 	}
 	
 	private def generateFunctions(List<Function> functions, String namespace, String version)  '''
@@ -44,10 +55,6 @@ class DamlFunctionGenerator {
 		import Com.Regnosys.Meta.ZonedDateTime
 		import Com.Regnosys.Meta.MetaClasses hiding (Reference)
 		import Com.Regnosys.Meta.MetaFields
-		«IF namespace=="Cdm"»
-			import Org.Isda.Fpml.Classes
-			import Org.Isda.Fpml.Enums
-		«ENDIF»
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR f : functions»

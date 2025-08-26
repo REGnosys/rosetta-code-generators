@@ -41,7 +41,7 @@ public class DamlCodeGeneratorTest {
 	}
 
 	private void assertGenerated(URL source, Map<String, ? extends CharSequence> map) {
-		assertEquals(6, map.entrySet().size());
+		assertEquals(7, map.entrySet().size());
 		assertTrue(map.containsKey("Org/Isda/Cdm/Classes.daml"));
 		assertThat(map.get("Org/Isda/Cdm/Classes.daml").toString(), equalToCompressingWhiteSpace(toStringContents(source)));
 	}
