@@ -29,10 +29,6 @@ class DamlTranslator {
 				'Text'
 			case 'date':
 				'Date'
-			case 'dateTime':
-				'Datetime'
-			case 'zonedDateTime':
-				'ZonedDateTime'
 			case 'number':
 				'Decimal'
 			case 'boolean':
