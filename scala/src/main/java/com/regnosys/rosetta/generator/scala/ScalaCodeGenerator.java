@@ -1,6 +1,5 @@
 package com.regnosys.rosetta.generator.scala;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,9 +17,7 @@ import com.regnosys.rosetta.generator.scala.object.ScalaModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.rosetta.simple.Function;
 import com.rosetta.util.DottedPath;
 
 public class ScalaCodeGenerator extends AbstractExternalGenerator {
@@ -45,7 +42,7 @@ public class ScalaCodeGenerator extends AbstractExternalGenerator {
 		Map<String, CharSequence> result = new HashMap<>();
 
 		Collection<? extends RosettaModel> supportedModels = models.stream()
-				.filter(this::filterSupportedModels)
+				.filter(this::isSupportedModel)
 				.toList();
 		
 		List<Data> rosettaClasses = supportedModels.stream().flatMap(m->m.getElements().stream())
@@ -62,7 +59,7 @@ public class ScalaCodeGenerator extends AbstractExternalGenerator {
 		return result;
 	}
 
-	private boolean filterSupportedModels(RosettaModel model) {
+	private boolean isSupportedModel(RosettaModel model) {
 		DottedPath namespace = DottedPath.splitOnDots(model.getName());
 		boolean isFpmlModel = "fpml".equals(namespace.first());
 		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));

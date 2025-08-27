@@ -39,7 +39,7 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 		Map<String, CharSequence> result = new HashMap<>();
 
 		Collection<? extends RosettaModel> supportedModels = models.stream()
-				.filter(this::filterSupportedModels)
+				.filter(this::isSupportedModel)
 				.toList();
 		
 		List<Data> rosettaClasses = supportedModels.stream().flatMap(m -> m.getElements().stream())
@@ -62,7 +62,7 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 		return Collections.emptyMap();
 	}
 	
-	private boolean filterSupportedModels(RosettaModel model) {
+	private boolean isSupportedModel(RosettaModel model) {
 		DottedPath namespace = DottedPath.splitOnDots(model.getName());
 		boolean isFpmlModel = "fpml".equals(namespace.first());
 		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));

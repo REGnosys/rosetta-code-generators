@@ -6,6 +6,7 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration
 import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
+import com.rosetta.util.DottedPath
 import java.io.ByteArrayOutputStream
 import java.util.Base64
 import java.util.Collection
@@ -29,13 +30,16 @@ class ExcelGenerator extends AbstractExternalGenerator {
 	}
 
 	override afterAllGenerate(ResourceSet set, Collection<? extends RosettaModel> models, String version) {
+		val supportedModels = models.stream()
+				.filter[isSupportedModel]
+				.toList
 
 		val workbook = new XSSFWorkbook();
 
 		val typesSheet = workbook.createSheet("types");
 		val typesHeader = typesSheet.createRow(0);
 		populateRow(typesHeader, dataTypeHeader())
-		models.flatMap[elements].filter(Data).flatMap[dataAndAttributes].forEach [ row, index |
+		supportedModels.flatMap[elements].filter(Data).flatMap[dataAndAttributes].forEach [ row, index |
 			val typesRow = typesSheet.createRow(index + 1);
 			populateRow(typesRow, row)
 		]
@@ -43,7 +47,7 @@ class ExcelGenerator extends AbstractExternalGenerator {
 		val enumsSheet = workbook.createSheet("enums");
 		val enumsHeader = enumsSheet.createRow(0);
 		populateRow(enumsHeader, enumHeader())
-		models.flatMap[elements].filter(RosettaEnumeration).flatMap[enumAndValues].forEach [ row, index |
+		supportedModels.flatMap[elements].filter(RosettaEnumeration).flatMap[enumAndValues].forEach [ row, index |
 			val enumsRow = enumsSheet.createRow(index + 1);
 			populateRow(enumsRow, row)
 		]
@@ -146,4 +150,10 @@ class ExcelGenerator extends AbstractExternalGenerator {
 
 	}
 
+	def boolean isSupportedModel(RosettaModel model) {
+		val namespace = DottedPath.splitOnDots(model.getName());
+		val isFpmlModel = "fpml".equals(namespace.first());
+		val isIngestOrMappingModel = namespace.stream().anyMatch[it.equals("ingest") || it.equals("mapping")];
+		return !isFpmlModel && !isIngestOrMappingModel;
+	}
 }
