@@ -19,15 +19,9 @@ class ScalaEnumGenerator {
 	static final String FILENAME = 'Enums.scala'
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
-		val enumsByNamespace = rosettaEnums.groupBy[model.name.split("\\.").first]
-				
 		val result = new HashMap
-		enumsByNamespace
-			.filter[k,v|k !== "fpml"]
-			.forEach[k,v|
-			val enums = v.sortBy[name].generateEnums(version).replaceTabsWithSpaces
-			result.put(FILENAME,enums)
-		]
+		val enums = rosettaEnums.sortBy[name].generateEnums(version).replaceTabsWithSpaces
+		result.put(FILENAME,enums)
 		return result;
 	}
 

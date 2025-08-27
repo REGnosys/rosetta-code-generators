@@ -97,8 +97,7 @@ class CSharpModelObjectGenerator {
         element.definition
     }
 
-    def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes,
-        String version, CSharpCodeInfo cSharpCodeInfo) {
+    def Map<String, ? extends CharSequence> generate(Iterable<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version, CSharpCodeInfo cSharpCodeInfo) {
         val result = new HashMap
 
         val superTypes = rosettaClasses
