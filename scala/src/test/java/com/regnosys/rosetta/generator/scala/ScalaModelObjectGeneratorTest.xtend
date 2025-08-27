@@ -67,18 +67,18 @@ class ScalaModelObjectGeneratorTest {
 		  * Test enum description.
 		  */
 		object TestEnum extends Enumeration {
-		  
-		  class Class extends TypeReference[this.type]
-		  
-		  /**
-		    * Test enum value 1
-		    */
-		  val TEST_ENUM_VALUE_1 = Value
-		  
-		  /**
-		    * Test enum value 2
-		    */
-		  val TEST_ENUM_VALUE_2 = Value
+		    
+		    class Class extends TypeReference[this.type]
+		    
+		    /**
+		      * Test enum value 1
+		      */
+		    val TEST_ENUM_VALUE_1 = Value
+		    
+		    /**
+		      * Test enum value 2
+		      */
+		    val TEST_ENUM_VALUE_2 = Value
 		}
 		'''))
 	}

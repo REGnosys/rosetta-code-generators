@@ -12,6 +12,7 @@ import com.regnosys.rosetta.rosetta.simple.Attribute
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.nodemodel.ILeafNode
+import com.rosetta.util.DottedPath
 
 class CsvGenerator extends AbstractExternalGenerator {
 
@@ -26,14 +27,18 @@ class CsvGenerator extends AbstractExternalGenerator {
 	override afterAllGenerate(ResourceSet set, Collection<? extends RosettaModel> models, String version) {
 		val res = newHashMap
 
+		val supportedModels = models.stream()
+				.filter[isSupportedModel]
+				.toList
+
 		val dataLines = newArrayList;
 		dataLines.add(dataTypeHeader)
-		models.flatMap[elements].filter(Data).flatMap[dataAndAttributes].forEach[dataLines.add(it)]
+		supportedModels.flatMap[elements].filter(Data).flatMap[dataAndAttributes].forEach[dataLines.add(it)]
 		res.put("types.csv", dataLines.join(System.lineSeparator))
 
 		val enumLines = newArrayList;
 		enumLines.add(enumHeader)
-		models.flatMap[elements].filter(RosettaEnumeration).flatMap[enumAndValues].forEach[enumLines.add(it)]
+		supportedModels.flatMap[elements].filter(RosettaEnumeration).flatMap[enumAndValues].forEach[enumLines.add(it)]
 		res.put("enums.csv", enumLines.join(System.lineSeparator))
 
 		return res
@@ -122,5 +127,12 @@ class CsvGenerator extends AbstractExternalGenerator {
 			res = res.replace('"','\'')
 
 		res = res.replaceAll('\\R',' ')
+	}
+	
+	def boolean isSupportedModel(RosettaModel model) {
+		val namespace = DottedPath.splitOnDots(model.getName());
+		val isFpmlModel = "fpml".equals(namespace.first());
+		val isIngestOrMappingModel = namespace.stream().anyMatch[it.equals("ingest") || it.equals("mapping")];
+		return !isFpmlModel && !isIngestOrMappingModel;
 	}
 }

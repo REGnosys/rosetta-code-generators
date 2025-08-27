@@ -11,14 +11,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import com.google.inject.Inject;
-import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpCodeInfo;
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectGenerator;
+import com.regnosys.rosetta.generator.external.AbstractExternalGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.simple.Data;
+import com.rosetta.util.DottedPath;
 
 public abstract class CSharpCodeGenerator extends AbstractExternalGenerator implements CSharpCodeInfo {
 	
@@ -37,13 +38,17 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set, Collection<? extends RosettaModel> models, String version) {
 		Map<String, CharSequence> result = new HashMap<>();
 
-		List<Data> rosettaClasses = models.stream().flatMap(m -> m.getElements().stream())
+		Collection<? extends RosettaModel> supportedModels = models.stream()
+				.filter(this::isSupportedModel)
+				.toList();
+		
+		List<Data> rosettaClasses = supportedModels.stream().flatMap(m -> m.getElements().stream())
 				.filter((e) -> e instanceof Data).map(Data.class::cast).collect(Collectors.toList());
-		List<RosettaMetaType> metaTypes = models.stream().flatMap(m -> m.getElements().stream())
+		List<RosettaMetaType> metaTypes = supportedModels.stream().flatMap(m -> m.getElements().stream())
 				.filter(RosettaMetaType.class::isInstance).map(RosettaMetaType.class::cast)
 				.collect(Collectors.toList());
 
-		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m -> m.getElements().stream())
+		List<RosettaEnumeration> rosettaEnums = supportedModels.stream().flatMap(m -> m.getElements().stream())
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
@@ -55,5 +60,12 @@ public abstract class CSharpCodeGenerator extends AbstractExternalGenerator impl
 	@Override
 	public Map<String, ? extends CharSequence> generate(Resource resource, RosettaModel model, String version) {
 		return Collections.emptyMap();
+	}
+	
+	private boolean isSupportedModel(RosettaModel model) {
+		DottedPath namespace = DottedPath.splitOnDots(model.getName());
+		boolean isFpmlModel = "fpml".equals(namespace.first());
+		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));
+		return !isFpmlModel && !isIngestOrMappingModel;
 	}
 }

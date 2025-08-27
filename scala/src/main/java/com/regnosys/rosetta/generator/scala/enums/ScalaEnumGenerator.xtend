@@ -40,27 +40,27 @@ class ScalaEnumGenerator {
 		return enumValues.sortBy[name];
 	}
 
-	private def generateEnums(List<RosettaEnumeration> enums, String version)  '''		
+	private def generateEnums(List<RosettaEnumeration> enums, String version) '''
 		«fileComment(version)»
 		package org.isda.cdm
 		
 		import com.fasterxml.jackson.core.`type`.TypeReference
 		
 		«FOR e : enums»
-			«val allEnumValues = allEnumsValues(e)»
-			«comment(e.definition)»
-			object «e.name» extends Enumeration {
-				
-				class Class extends TypeReference[this.type]
-				
-				«FOR value: allEnumValues SEPARATOR '\n'»
-					«comment(value.definition)»
-					val «EnumHelper.convertValue(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
-				«ENDFOR»
-			}
-			
+		    «val allEnumValues = allEnumsValues(e)»
+		    «comment(e.definition)»
+		    object «e.name» extends Enumeration {
+		        
+		        class Class extends TypeReference[this.type]
+		        
+		        «FOR value: allEnumValues SEPARATOR '\n'»
+		        	«comment(value.definition)»
+		        	val «EnumHelper.convertValue(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
+		        «ENDFOR»
+		    }
+		    
 		«ENDFOR»
-	'''
+		'''
 	
 	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
 		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0

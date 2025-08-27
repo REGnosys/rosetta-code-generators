@@ -16,6 +16,7 @@ import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.simple.Data;
+import com.rosetta.util.DottedPath;
 
 public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 
@@ -41,14 +42,18 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set,
 			Collection<? extends RosettaModel> models, String version) {
 
-		List<Data> rosettaData = models.stream().flatMap(m -> m.getElements().stream()).filter((e) -> e instanceof Data)
+		Collection<? extends RosettaModel> supportedModels = models.stream()
+				.filter(this::isSupportedModel)
+				.toList();
+		
+		List<Data> rosettaData = supportedModels.stream().flatMap(m -> m.getElements().stream()).filter((e) -> e instanceof Data)
 				.map(Data.class::cast).collect(Collectors.toList());
 
-		List<RosettaMetaType> metaTypes = models.stream().flatMap(m -> m.getElements().stream())
+		List<RosettaMetaType> metaTypes = supportedModels.stream().flatMap(m -> m.getElements().stream())
 				.filter(RosettaMetaType.class::isInstance).map(RosettaMetaType.class::cast)
 				.collect(Collectors.toList());
 
-		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m -> m.getElements().stream())
+		List<RosettaEnumeration> rosettaEnums = supportedModels.stream().flatMap(m -> m.getElements().stream())
 				.filter(RosettaEnumeration.class::isInstance).map(RosettaEnumeration.class::cast)
 				.collect(Collectors.toList());
 
@@ -61,4 +66,10 @@ public class JsonSchemaCodeGenerator extends AbstractExternalGenerator {
 		return result;
 	}
 
+	private boolean isSupportedModel(RosettaModel model) {
+		DottedPath namespace = DottedPath.splitOnDots(model.getName());
+		boolean isFpmlModel = "fpml".equals(namespace.first());
+		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));
+		return !isFpmlModel && !isIngestOrMappingModel;
+	}
 }

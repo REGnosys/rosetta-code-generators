@@ -12,6 +12,8 @@ import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 import com.regnosys.rosetta.rosetta.simple.Data;
 import com.regnosys.rosetta.rosetta.simple.Function;
+import com.rosetta.util.DottedPath;
+
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.slf4j.Logger;
@@ -54,6 +56,10 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
 
         Map<String, CharSequence> result = new HashMap<>();
 
+        if (!isSupportedModel(model)) {
+        	return result;
+        }
+        
         List<Data> rosettaClasses = model.getElements().stream()
                 .filter(Data.class::isInstance)
                 .map(Data.class::cast)
@@ -103,8 +109,12 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
         result.putAll(generateWorkspaces(workspaces, cleanVersion));
         result.putAll(generateInits(subfolders));
 
-        if (namespace == null && !models.isEmpty()) {
-            namespace = Util.getNamespace(models.iterator().next());
+        Collection<? extends RosettaModel> supportedModels = models.stream()
+				.filter(this::isSupportedModel)
+				.toList();
+        
+        if (namespace == null && !supportedModels.isEmpty()) {
+            namespace = Util.getNamespace(supportedModels.iterator().next());
         }
 
         if (namespace != null) {
@@ -168,4 +178,11 @@ public class PythonCodeGenerator extends AbstractExternalGenerator {
             subfolders.add(subfolder);
         }
     }
+    
+	private boolean isSupportedModel(RosettaModel model) {
+		DottedPath namespace = DottedPath.splitOnDots(model.getName());
+		boolean isFpmlModel = "fpml".equals(namespace.first());
+		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));
+		return !isFpmlModel && !isIngestOrMappingModel;
+	}
 }

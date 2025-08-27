@@ -2,14 +2,15 @@ package com.regnosys.rosetta.generator.daml.functions
 
 import com.regnosys.rosetta.generator.daml.object.DamlModelObjectBoilerPlate
 import com.regnosys.rosetta.rosetta.RosettaCardinality
+import com.regnosys.rosetta.rosetta.RosettaModel
 import com.regnosys.rosetta.rosetta.RosettaNamed
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Function
 import com.regnosys.rosetta.rosetta.simple.FunctionDispatch
+import jakarta.inject.Inject
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import jakarta.inject.Inject
 
 import static com.regnosys.rosetta.generator.daml.util.DamlModelGeneratorUtil.*
 
@@ -17,28 +18,43 @@ import static extension com.regnosys.rosetta.generator.daml.util.DamlTranslator.
 
 class DamlFunctionGenerator {
 	@Inject extension DamlModelObjectBoilerPlate
-	
-	static final String FILENAME = 'Org/Isda/Cdm/Functions.daml'
+			
+	def Map<String, ? extends CharSequence> generate(Iterable<Function> rosettaFunctions, String version) {
+		val functionsByNamespace = rosettaFunctions.groupBy[model.name.split("\\.").first]
 		
-	def Map<String, ? extends CharSequence> generate(Iterable<RosettaNamed> rosettaFunctions, String version) {
 		val result = new HashMap
-		val functions = rosettaFunctions.sortBy[name].generateFunctions(version).replaceTabsWithSpaces
-		result.put(FILENAME,functions)
+		functionsByNamespace.forEach[k,v|
+			val namespace = k.toFirstUpper
+			val functions = v
+				.filter[excludeIngestNamespaces(model)]
+				.sortBy[name]
+				.toList
+				.generateFunctions(namespace, version)
+				.replaceTabsWithSpaces
+			result.put('''Org/Isda/«namespace»/Functions.daml''',functions)
+		]
+		
 		return result;
 	}
 	
-	private def generateFunctions(List<RosettaNamed> functions, String version)  '''
+	private def boolean excludeIngestNamespaces(RosettaModel model) {
+		val namespaceElements = model.name.split("\\.")
+		!namespaceElements.contains("ingest") && !namespaceElements.contains("mapping") 
+	}
+	
+	private def generateFunctions(List<Function> functions, String namespace, String version)  '''
 		daml 1.2
 		
 		«fileComment(version)»
-		module Org.Isda.Cdm.Functions
-		  ( module Org.Isda.Cdm.Functions ) where
+		module Org.Isda.«namespace».Functions
+		  ( module Org.Isda.«namespace».Functions ) where
 		
-		import Org.Isda.Cdm.Classes
-		import Org.Isda.Cdm.Enums
-		import Org.Isda.Cdm.ZonedDateTime
-		import Org.Isda.Cdm.MetaClasses
-		import Org.Isda.Cdm.MetaFields
+		import Org.Isda.«namespace».Classes
+		import Org.Isda.«namespace».Enums
+		import Com.Regnosys.Meta.DateTime
+		import Com.Regnosys.Meta.ZonedDateTime
+		import Com.Regnosys.Meta.MetaClasses hiding (Reference)
+		import Com.Regnosys.Meta.MetaFields
 		import Prelude hiding (Party, exercise, id, product, agreement)
 		
 		«FOR f : functions»
@@ -74,7 +90,7 @@ class DamlFunctionGenerator {
 	}
 	
 	private def toRawType(Attribute input) {
-		input.typeCall.type.name.toDamlType	
+		input.typeCall.type.toDamlType	
 	}
 	
 	private def prefixSingleOptional(CharSequence type, RosettaCardinality card) {

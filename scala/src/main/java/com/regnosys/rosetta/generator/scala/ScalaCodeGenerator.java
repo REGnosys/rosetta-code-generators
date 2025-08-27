@@ -17,9 +17,8 @@ import com.regnosys.rosetta.generator.scala.object.ScalaModelObjectGenerator;
 import com.regnosys.rosetta.rosetta.RosettaEnumeration;
 import com.regnosys.rosetta.rosetta.RosettaMetaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
-import com.regnosys.rosetta.rosetta.RosettaNamed;
 import com.regnosys.rosetta.rosetta.simple.Data;
-import com.regnosys.rosetta.rosetta.simple.Function;
+import com.rosetta.util.DottedPath;
 
 public class ScalaCodeGenerator extends AbstractExternalGenerator {
 
@@ -42,21 +41,28 @@ public class ScalaCodeGenerator extends AbstractExternalGenerator {
 	public Map<String, ? extends CharSequence> afterAllGenerate(ResourceSet set, Collection<? extends RosettaModel> models, String version) {		
 		Map<String, CharSequence> result = new HashMap<>();
 
-		List<Data> rosettaClasses = models.stream().flatMap(m->m.getElements().stream())
+		Collection<? extends RosettaModel> supportedModels = models.stream()
+				.filter(this::isSupportedModel)
+				.toList();
+		
+		List<Data> rosettaClasses = supportedModels.stream().flatMap(m->m.getElements().stream())
 				.filter((e)-> e instanceof Data)
 				.map(Data.class::cast).collect(Collectors.toList());
-		List<RosettaMetaType> metaTypes = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
+		List<RosettaMetaType> metaTypes = supportedModels.stream().flatMap(m->m.getElements().stream()).filter(RosettaMetaType.class::isInstance)
 				.map(RosettaMetaType.class::cast).collect(Collectors.toList());
 
-		List<RosettaEnumeration> rosettaEnums = models.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
+		List<RosettaEnumeration> rosettaEnums = supportedModels.stream().flatMap(m->m.getElements().stream()).filter(RosettaEnumeration.class::isInstance)
 				.map(RosettaEnumeration.class::cast).collect(Collectors.toList());
-		
-		List<RosettaNamed> rosettaFunctions = models.stream().flatMap(m->m.getElements().stream()).filter(t -> Function.class.isInstance(t))
-				.map(RosettaNamed.class::cast).collect(Collectors.toList());
 
 		result.putAll(pojoGenerator.generate(rosettaClasses, metaTypes, version));
 		result.putAll(enumGenerator.generate(rosettaEnums, version));
 		return result;
 	}
 
+	private boolean isSupportedModel(RosettaModel model) {
+		DottedPath namespace = DottedPath.splitOnDots(model.getName());
+		boolean isFpmlModel = "fpml".equals(namespace.first());
+		boolean isIngestOrMappingModel = namespace.stream().anyMatch(element -> element.equals("ingest") || element.equals("mapping"));
+		return !isFpmlModel && !isIngestOrMappingModel;
+	}
 }

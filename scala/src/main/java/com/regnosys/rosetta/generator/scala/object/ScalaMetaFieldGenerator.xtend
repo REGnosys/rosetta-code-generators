@@ -26,10 +26,7 @@ class ScalaMetaFieldGenerator {
 		var referenceWithMeta = '';
 		
 		for (ref:refs) {
-			if (ref.isType)
 				referenceWithMeta += generateReferenceWithMeta(ref).toString
-			else
-				referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
 		}
 		
 		val metas =  rosettaClasses
@@ -87,14 +84,6 @@ class ScalaMetaFieldGenerator {
 	
 	private def generateReferenceWithMeta(ExpandedType type) '''
 		case class ReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
-				globalReference: Option[String],
-				externalReference: Option[String],
-				address: Option[Reference]) {}
-		
-	'''
-
-	private def generateBasicReferenceWithMeta(ExpandedType type) '''
-		case class BasicReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
 				globalReference: Option[String],
 				externalReference: Option[String],
 				address: Option[Reference]) {}

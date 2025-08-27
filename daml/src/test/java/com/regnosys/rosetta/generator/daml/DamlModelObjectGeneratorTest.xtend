@@ -16,11 +16,80 @@ class DamlModelObjectGeneratorTest {
 
 	@Inject extension ModelHelper
 	@Inject DamlCodeGenerator generator;
-	
+
+	@Test
+	def void shouldGenerateClassWithDifferentNamespace() {
+		val classes = '''
+			namespace other.test
+			
+			type Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Other/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Other.Classes
+			  ( module Org.Isda.Other.Classes ) where
+			
+			import Org.Isda.Other.Enums
+			import Com.Regnosys.Meta.ZonedDateTime
+			import Com.Regnosys.Meta.DateTime
+			import Com.Regnosys.Meta.MetaClasses hiding (Reference)
+			import Com.Regnosys.Meta.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement, ContractId)
+			
+			data Foo = Foo with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    	'''.toString, fileContent)
+	}
+		
+	@Test
+	def void shoulHandleLeadingUnderscoreTypeName() {
+		val classes = '''
+			namespace cdm.test
+			
+			type _Foo:
+			    stringAttr string (1..1)
+		'''.generateDaml
+		
+		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
+
+		assertEquals('''
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Org.Isda.Cdm.Classes
+			  ( module Org.Isda.Cdm.Classes ) where
+			
+			import Org.Isda.Cdm.Enums
+			import Com.Regnosys.Meta.ZonedDateTime
+			import Com.Regnosys.Meta.DateTime
+			import Com.Regnosys.Meta.MetaClasses hiding (Reference)
+			import Com.Regnosys.Meta.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement, ContractId)
+			
+			data Foo_ = Foo_ with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)
+			
+	    '''.toString, fileContent)
+	}
 
 	@Test
 	def void shouldGenerateClassWithImports() {
 		val daml = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml
@@ -28,14 +97,18 @@ class DamlModelObjectGeneratorTest {
 		val classes = daml.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''import Org.Isda.Cdm.Enums'''))
-		assertTrue(classes.contains('''import Org.Isda.Cdm.ZonedDateTime'''))
-		assertTrue(classes.contains('''import Org.Isda.Cdm.MetaClasses'''))
-		assertTrue(classes.contains('''import Prelude hiding (Party, exercise, id, product, agreement)'''))
+		assertTrue(classes.contains('''import Com.Regnosys.Meta.ZonedDateTime'''))
+		assertTrue(classes.contains('''import Com.Regnosys.Meta.ZonedDateTime'''))
+		assertTrue(classes.contains('''import Com.Regnosys.Meta.MetaClasses hiding (Reference)'''))
+		assertTrue(classes.contains('''import Com.Regnosys.Meta.MetaFields'''))
+		assertTrue(classes.contains('''import Prelude hiding (Party, exercise, id, product, agreement, ContractId)'''))
 	}
 
 	@Test
 	def void shouldGenerateClassWithBasicTypes() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (1..1)
 			    intAttr int (1..1)
@@ -44,6 +117,7 @@ class DamlModelObjectGeneratorTest {
 			    dateAttr date (1..1)
 			    timeAttr time (1..1)
 				zonedDateTimeAttr zonedDateTime (1..1)
+				dateTimeAttr dateTime (1..1)
 				calculationAttr calculation (1..1)
 				productTypeAttr productType (1..1)
 				eventTypeAttr eventType (1..1)
@@ -61,10 +135,11 @@ class DamlModelObjectGeneratorTest {
 			  ( module Org.Isda.Cdm.Classes ) where
 			
 			import Org.Isda.Cdm.Enums
-			import Org.Isda.Cdm.ZonedDateTime
-			import Org.Isda.Cdm.MetaClasses
-			import Org.Isda.Cdm.MetaFields
-			import Prelude hiding (Party, exercise, id, product, agreement)
+			import Com.Regnosys.Meta.ZonedDateTime
+			import Com.Regnosys.Meta.DateTime
+			import Com.Regnosys.Meta.MetaClasses hiding (Reference)
+			import Com.Regnosys.Meta.MetaFields
+			import Prelude hiding (Party, exercise, id, product, agreement, ContractId)
 			
 			data Foo = Foo with 
 			  stringAttr : Text
@@ -74,6 +149,7 @@ class DamlModelObjectGeneratorTest {
 			  dateAttr : Date
 			  timeAttr : Text
 			  zonedDateTimeAttr : ZonedDateTime
+			  dateTimeAttr : DateTime
 			  calculationAttr : Text
 			  productTypeAttr : Text
 			  eventTypeAttr : Text
@@ -85,6 +161,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalBasicType() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttr string (0..1)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -98,6 +176,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithComments() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo: <"This is the class comment which should wrap if the line is long enough.">
 			    stringAttr string (0..1) <"This is the attribute comment which should also wrap if long enough">
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -115,6 +195,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeList() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    stringAttrs string (0..*)
 		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
@@ -128,6 +210,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithBasicTypeAndMetaFieldScheme() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType scheme string
 			metaType location string
 			
@@ -143,7 +227,7 @@ class DamlModelObjectGeneratorTest {
 		  stringAttr : (FieldWithMeta Text)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
+		val metaFields = code.get("Com/Regnosys/Meta/MetaFields.daml").toString
 		
 //		println(metaFields)
 		
@@ -153,8 +237,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.MetaFields
-		  ( module Org.Isda.Cdm.MetaFields ) where
+		module Com.Regnosys.Meta.MetaFields
+		  ( module Com.Regnosys.Meta.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  scheme : Optional Text
@@ -175,6 +259,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithOptionalRosettaType() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    barAttr Bar (0..1)
 			
@@ -188,9 +274,38 @@ class DamlModelObjectGeneratorTest {
 		    deriving (Eq, Ord, Show)'''))
 	}
 	
+		
+	@Test
+	def void shouldGenerateClassWithOptionalTypeAlias() {
+		val classes = '''
+			namespace cdm.test
+			
+			typeAlias CountryCode: string(pattern: "[A-Z]{2,2}")
+			typeAlias BaseOne18Rate: number(digits: 18, fractionalDigits: 13)
+			typeAlias ISODate: date
+			typeAlias Max5Int: int(digits: 5)
+			
+			type Foo:
+			    countryCode CountryCode (0..1)
+			    baseOne18Rate BaseOne18Rate (0..1)
+			    isoDate ISODate (0..1)
+			    max5Int Max5Int (0..1)
+		'''.generateDaml.get("Org/Isda/Cdm/Classes.daml").toString
+		
+		assertTrue(classes.contains('''
+			data Foo = Foo with 
+			  countryCode : Optional Text
+			  baseOne18Rate : Optional Decimal
+			  isoDate : Optional Date
+			  max5Int : Optional Int
+			    deriving (Eq, Ord, Show)'''))
+	}
+	
 	@Test
 	def void shouldGenerateClassWithRosettaTypeAndMetaReference() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType location string
 			
@@ -216,7 +331,7 @@ class DamlModelObjectGeneratorTest {
 		  barReference : Optional (ReferenceWithMeta Bar)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
+		val metaFields = code.get("Com/Regnosys/Meta/MetaFields.daml").toString
 		
 		//println(metaFields)
 		
@@ -226,8 +341,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.MetaFields
-		  ( module Org.Isda.Cdm.MetaFields ) where
+		module Com.Regnosys.Meta.MetaFields
+		  ( module Com.Regnosys.Meta.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
@@ -246,6 +361,8 @@ class DamlModelObjectGeneratorTest {
 	@Test
 	def void shouldGenerateClassWithRosettaTypeLocationAndAddress() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType address string
 			metaType location string
@@ -265,90 +382,85 @@ class DamlModelObjectGeneratorTest {
 		val classes = code.get("Org/Isda/Cdm/Classes.daml").toString
 		
 		assertTrue(classes.contains('''
-		data Baz = Baz with 
-		  stringAttr : Text
-		    deriving (Eq, Ord, Show)'''))
+			data Baz = Baz with 
+			  stringAttr : Text
+			    deriving (Eq, Ord, Show)'''))
 
 		assertTrue(classes.contains('''
-		data Bar = Bar with 
-		  bazLocation : (FieldWithMeta Baz)
-		    deriving (Eq, Ord, Show)'''))
+			data Bar = Bar with 
+			  bazLocation : (FieldWithMeta Baz)
+			    deriving (Eq, Ord, Show)'''))
 		
 		assertTrue(classes.contains('''
-		data Foo = Foo with 
-		  bazAddress : (ReferenceWithMeta Baz)
-		    deriving (Eq, Ord, Show)'''))
+			data Foo = Foo with 
+			  bazAddress : (ReferenceWithMeta Baz)
+			    deriving (Eq, Ord, Show)'''))
 
-		val metaClasses = code.get("Org/Isda/Cdm/MetaClasses.daml").toString
+		val metaClasses = code.get("Com/Regnosys/Meta/MetaClasses.daml").toString
 		
 		assertTrue(metaClasses.contains('''
-		daml 1.2
-		
-		-- | This file is auto-generated from the ISDA Common
-		--   Domain Model, do not edit.
-		--   @version ${project.version}
-		module Org.Isda.Cdm.MetaClasses
-		  ( module Org.Isda.Cdm.MetaClasses ) where
-		
-		import Org.Isda.Cdm.MetaFields
-		
-		data ReferenceWithMeta a = ReferenceWithMeta with
-		  globalReference : Optional Text
-		  externalReference : Optional Text
-		  address: Optional Reference
-		  value : Optional a
-		    deriving (Eq, Ord, Show)
-		
-		data BasicReferenceWithMeta a = BasicReferenceWithMeta with
-		  globalReference : Optional Text
-		  externalReference : Optional Text
-		  address: Optional Reference
-		  value : Optional a
-		    deriving (Eq, Ord, Show)
-		
-		data FieldWithMeta a = FieldWithMeta with
-		  value : a
-		  meta : Optional MetaFields
-		    deriving (Eq, Ord, Show)'''))
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version ${project.version}
+			module Com.Regnosys.Meta.MetaClasses
+			  ( module Com.Regnosys.Meta.MetaClasses ) where
+			
+			import Com.Regnosys.Meta.MetaFields
+			
+			data ReferenceWithMeta a = ReferenceWithMeta with
+			  globalReference : Optional Text
+			  externalReference : Optional Text
+			  address: Optional Reference
+			  value : Optional a
+			    deriving (Eq, Ord, Show)
+			
+			data FieldWithMeta a = FieldWithMeta with
+			  value : a
+			  meta : Optional MetaFields
+			    deriving (Eq, Ord, Show)
+			
+			data Reference = Reference with
+			  scope : Optional Text
+			  value : Optional Text
+			    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
+		val metaFields = code.get("Com/Regnosys/Meta/MetaFields.daml").toString
 		
 		assertTrue(metaFields.contains('''
-		daml 1.2
-		
-		-- | This file is auto-generated from the ISDA Common
-		--   Domain Model, do not edit.
-		--   @version test
-		module Org.Isda.Cdm.MetaFields
-		  ( module Org.Isda.Cdm.MetaFields ) where
-		
-		data MetaFields = MetaFields with
-		  globalKey : Optional Text
-		  externalKey : Optional Text
-		  location: [Key]
-		    deriving (Eq, Ord, Show)
-		
-		data MetaAndTemplateFields = MetaAndTemplateFields with
-		  globalKey : Optional Text
-		  externalKey : Optional Text
-		  templateGlobalReference : Optional Text
-		  location: [Key]
-		    deriving (Eq, Ord, Show)
-		
-		data Key = Key with
-		  scope : Optional Text
-		  value : Optional Text
-		    deriving (Eq, Ord, Show)
-		
-		data Reference = Reference with
-		  scope : Optional Text
-		  value : Optional Text
-		    deriving (Eq, Ord, Show)'''))
+			daml 1.2
+			
+			-- | This file is auto-generated from the ISDA Common
+			--   Domain Model, do not edit.
+			--   @version test
+			module Com.Regnosys.Meta.MetaFields
+			  ( module Com.Regnosys.Meta.MetaFields ) where
+			
+			data MetaFields = MetaFields with
+			  globalKey : Optional Text
+			  externalKey : Optional Text
+			  location: [Key]
+			    deriving (Eq, Ord, Show)
+			
+			data MetaAndTemplateFields = MetaAndTemplateFields with
+			  globalKey : Optional Text
+			  externalKey : Optional Text
+			  templateGlobalReference : Optional Text
+			  location: [Key]
+			    deriving (Eq, Ord, Show)
+			
+			data Key = Key with
+			  scope : Optional Text
+			  value : Optional Text
+			    deriving (Eq, Ord, Show)'''))
 	}
 	
 	@Test
 	def void shouldGenerateClassWithRosettaTypeAndMetaBasicReference() {
 		val code = '''
+			namespace cdm.test
+			
 			metaType reference string
 			metaType id string
 			metaType key string
@@ -364,10 +476,10 @@ class DamlModelObjectGeneratorTest {
 		
 		assertTrue(classes.contains('''
 		data Foo = Foo with 
-		  stringReference : Optional (BasicReferenceWithMeta Text)
+		  stringReference : Optional (ReferenceWithMeta Text)
 		    deriving (Eq, Ord, Show)'''))
 
-		val metaFields = code.get("Org/Isda/Cdm/MetaFields.daml").toString
+		val metaFields = code.get("Com/Regnosys/Meta/MetaFields.daml").toString
 		
 //		println(metaFields)
 		
@@ -377,8 +489,8 @@ class DamlModelObjectGeneratorTest {
 		-- | This file is auto-generated from the ISDA Common
 		--   Domain Model, do not edit.
 		--   @version test
-		module Org.Isda.Cdm.MetaFields
-		  ( module Org.Isda.Cdm.MetaFields ) where
+		module Com.Regnosys.Meta.MetaFields
+		  ( module Com.Regnosys.Meta.MetaFields ) where
 		
 		data MetaFields = MetaFields with
 		  globalKey : Optional Text
@@ -395,8 +507,10 @@ class DamlModelObjectGeneratorTest {
 	}
 	
 	@Test
-	def void shouldGenerateClassWitOverrideAttribute() {
+	def void shouldGenerateClassWithOverrideAttribute() {
 		val classes = '''
+			namespace cdm.test
+			
 			type Foo:
 			    attr string (0..1)
 			

@@ -10,6 +10,10 @@ class ScalaModelObjectBoilerPlate {
 	def toAttributeName(ExpandedAttribute attribute) {
 		if (attribute.name == "val")
 			'''_val'''
+		else if (attribute.name == "object")
+			'''_object'''
+		else if (attribute.name == "return")
+			'''_return'''
 		else
 			attribute.name.toFirstLower
 	}
@@ -35,10 +39,7 @@ class ScalaModelObjectBoilerPlate {
 		if (!attribute.hasMetas) 
 			attribute.type.toScalaType
 		else if (attribute.refIndex >= 0) {
-			if (attribute.type.isType)
 				attribute.type.toReferenceWithMetaTypeName
-			else 
-				attribute.type.toBasicReferenceWithMetaTypeName
 		}
 		else 
 			attribute.type.toFieldWithMetaTypeName
@@ -46,10 +47,6 @@ class ScalaModelObjectBoilerPlate {
 	
 	def toReferenceWithMetaTypeName(ExpandedType type) {
 		'''ReferenceWithMeta«type.toMetaTypeName»'''
-	}
-	
-	def toBasicReferenceWithMetaTypeName(ExpandedType type) {
-		'''BasicReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
 	def toFieldWithMetaTypeName(ExpandedType type) {

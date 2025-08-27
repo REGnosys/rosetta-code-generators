@@ -85,7 +85,6 @@ class CSharpEnumGenerator {
         result.put(FILENAME, enums)
         return result;
     }
-    
 
     private def generateEnums(List<RosettaEnumeration> enums, String version) // TODO: Handle synonyms via attribute??
     '''        
