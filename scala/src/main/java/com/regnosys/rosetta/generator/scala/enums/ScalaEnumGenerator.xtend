@@ -19,9 +19,15 @@ class ScalaEnumGenerator {
 	static final String FILENAME = 'Enums.scala'
 		
 	def Map<String, ? extends CharSequence> generate(Iterable<RosettaEnumeration> rosettaEnums, String version) {
+		val enumsByNamespace = rosettaEnums.groupBy[model.name.split("\\.").first]
+				
 		val result = new HashMap
-		val enums = rosettaEnums.sortBy[name].generateEnums(version).replaceTabsWithSpaces
-		result.put(FILENAME,enums)
+		enumsByNamespace
+			.filter[k,v|k !== "fpml"]
+			.forEach[k,v|
+			val enums = v.sortBy[name].generateEnums(version).replaceTabsWithSpaces
+			result.put(FILENAME,enums)
+		]
 		return result;
 	}
 
@@ -40,27 +46,27 @@ class ScalaEnumGenerator {
 		return enumValues.sortBy[name];
 	}
 
-	private def generateEnums(List<RosettaEnumeration> enums, String version)  '''		
+	private def generateEnums(List<RosettaEnumeration> enums, String version) '''
 		«fileComment(version)»
 		package org.isda.cdm
 		
 		import com.fasterxml.jackson.core.`type`.TypeReference
 		
 		«FOR e : enums»
-			«val allEnumValues = allEnumsValues(e)»
-			«comment(e.definition)»
-			object «e.name» extends Enumeration {
-				
-				class Class extends TypeReference[this.type]
-				
-				«FOR value: allEnumValues SEPARATOR '\n'»
-					«comment(value.definition)»
-					val «EnumHelper.convertValue(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
-				«ENDFOR»
-			}
-			
+		    «val allEnumValues = allEnumsValues(e)»
+		    «comment(e.definition)»
+		    object «e.name» extends Enumeration {
+		        
+		        class Class extends TypeReference[this.type]
+		        
+		        «FOR value: allEnumValues SEPARATOR '\n'»
+		        	«comment(value.definition)»
+		        	val «EnumHelper.convertValue(value)» = Value«IF value.display !== null»("«value.display»")«ENDIF»
+		        «ENDFOR»
+		    }
+		    
 		«ENDFOR»
-	'''
+		'''
 	
 	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
 		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0
