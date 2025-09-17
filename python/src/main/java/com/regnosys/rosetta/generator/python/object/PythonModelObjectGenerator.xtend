@@ -19,6 +19,10 @@ import java.util.List
 import java.util.ArrayList
 import java.util.Map
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonModelObjectGenerator {
 
     @Inject extension RObjectFactory

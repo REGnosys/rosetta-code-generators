@@ -27,6 +27,10 @@ import org.eclipse.emf.common.util.EList
 import com.regnosys.rosetta.rosetta.RosettaFeature
 import com.regnosys.rosetta.rosetta.RosettaTyped
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonFunctionGenerator {
 
     static final Logger LOGGER = LoggerFactory.getLogger(PythonFunctionGenerator);

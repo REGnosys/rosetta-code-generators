@@ -5,6 +5,10 @@ import com.regnosys.rosetta.types.RAttribute
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonModelGeneratorUtil {
 
     static def fileComment(String version) {

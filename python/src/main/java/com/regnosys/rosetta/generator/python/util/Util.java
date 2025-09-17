@@ -8,6 +8,10 @@ import java.util.function.Function;
 import com.regnosys.rosetta.rosetta.RosettaType;
 import com.regnosys.rosetta.rosetta.RosettaModel;
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 public class Util {
 
     public static <T> Iterable<T> distinct(Iterable<T> parentIterable) {
