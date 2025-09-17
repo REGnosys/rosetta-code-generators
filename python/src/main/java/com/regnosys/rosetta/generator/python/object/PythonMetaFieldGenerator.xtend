@@ -18,6 +18,10 @@ import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
 import com.regnosys.rosetta.generator.python.util.PythonModelGeneratorUtil
 import java.util.Set
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonMetaFieldGenerator {
 
     @Inject extension RObjectFactory

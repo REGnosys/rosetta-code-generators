@@ -5,6 +5,10 @@ import com.regnosys.rosetta.types.RType
 import com.regnosys.rosetta.types.REnumType
 import static extension com.regnosys.rosetta.generator.python.util.PythonTranslator.toPythonType
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonModelObjectBoilerPlate {
 
     def toAttributeName(RAttribute attribute) {

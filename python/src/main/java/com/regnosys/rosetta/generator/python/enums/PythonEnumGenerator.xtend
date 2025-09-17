@@ -10,6 +10,10 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.Map
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonEnumGenerator {
 
     @Inject extension PythonModelObjectBoilerPlate

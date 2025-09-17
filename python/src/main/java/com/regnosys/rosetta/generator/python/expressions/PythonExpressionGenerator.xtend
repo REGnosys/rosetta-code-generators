@@ -56,6 +56,10 @@ import com.regnosys.rosetta.rosetta.simple.Function
 import java.util.ArrayList
 import java.util.List
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonExpressionGenerator {
 
     public var List<String> importsFound

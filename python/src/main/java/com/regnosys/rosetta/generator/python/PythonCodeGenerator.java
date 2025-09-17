@@ -23,6 +23,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 public class PythonCodeGenerator extends AbstractExternalGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PythonCodeGenerator.class);
 

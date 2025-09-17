@@ -7,6 +7,10 @@ import com.regnosys.rosetta.types.RAttribute
 import java.util.Arrays
 
 // ExpandedType --> RDataType
+/**
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
+ */
+@Deprecated
 class PythonTranslator {
     static private def String toPythonBasicTypeInnerFunction(String rosettaType) {
         // inner private function to convert from Rosetta type to Python type

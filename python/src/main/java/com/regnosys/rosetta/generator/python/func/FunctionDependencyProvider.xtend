@@ -31,7 +31,9 @@ import org.eclipse.xtext.EcoreUtil2
 
 /**
  * Determine the Rosetta dependencies for a Rosetta object
+ * @deprecated Use the generator located at https://github.com/finos/rune-python-generator instead
  */
+@Deprecated
 class FunctionDependencyProvider {
     @Inject RObjectFactory rTypeBuilderFactory;
 
