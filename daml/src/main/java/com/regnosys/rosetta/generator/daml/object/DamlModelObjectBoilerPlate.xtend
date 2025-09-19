@@ -40,7 +40,7 @@ class DamlModelObjectBoilerPlate {
 	
 	private def toRawType(RAttribute rAttr) {
 		val rMetaAnnotatedType = rAttr.RMetaAnnotatedType
-		if (!rMetaAnnotatedType.hasMeta) 
+		if (!rMetaAnnotatedType.hasAttributeMeta) 
 			rAttr.RMetaAnnotatedType.RType.toDamlType
 		else if (rMetaAnnotatedType.hasMetaAttribute("reference") || rMetaAnnotatedType.hasMetaAttribute("address")) {
 			'''ReferenceWithMeta «rMetaAnnotatedType.RType.toDamlType»'''
@@ -58,7 +58,7 @@ class DamlModelObjectBoilerPlate {
 	}
 	
 	private def wrapSingleMetaInBrackets(CharSequence type, RAttribute rAttr) {
-		if (rAttr.RMetaAnnotatedType.hasMeta) 
+		if (rAttr.RMetaAnnotatedType.hasAttributeMeta) 
 			'''(«type»)'''
 		else
 			type
