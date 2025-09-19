@@ -143,8 +143,8 @@
         <gpg.passphrase>configured-by-release-profile</gpg.passphrase>
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
-        <rosetta.dsl.version>9.65.2</rosetta.dsl.version>
-        <rosetta.bundle.version>11.82.2</rosetta.bundle.version>
+        <rosetta.dsl.version>9.65.3</rosetta.dsl.version>
+        <rosetta.bundle.version>11.82.5</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
