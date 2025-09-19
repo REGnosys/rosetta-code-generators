@@ -39,7 +39,7 @@ class PythonModelObjectGenerator {
         }
 
         var metaAnnotations = ra.RMetaAnnotatedType
-        if (metaAnnotations !== null && metaAnnotations.hasMeta) {
+        if (metaAnnotations !== null && metaAnnotations.hasAttributeMeta) {
             var helperClass = "Attribute";
             var hasRef = false;
             var hasAddress = false;
