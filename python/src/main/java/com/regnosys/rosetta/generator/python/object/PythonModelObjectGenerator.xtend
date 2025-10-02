@@ -50,8 +50,10 @@ class PythonModelObjectGenerator {
                     hasRef = true;
                 } else if (mname == "address") {
                     hasAddress = true;
-                } else if (mname == "key" || mname == "id" || mname == "scheme" || mname == "location") {
+                } else if (mname == "id" || mname == "scheme" || mname == "location") {
                     hasMeta = true;
+                } else if (mname == "key") {
+                	// Ignore keys
                 } else {
                     helperClass += "---" + mname + "---";
                 }

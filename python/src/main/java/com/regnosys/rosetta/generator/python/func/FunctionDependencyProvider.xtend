@@ -43,7 +43,7 @@ class FunctionDependencyProvider {
 
     def Set<EObject> findDependencies(EObject object) {
         if (visited.contains(object)) {
-            return newHashSet();
+            return newLinkedHashSet();
         }
         return generateDependencies(object);
     }
@@ -51,12 +51,12 @@ class FunctionDependencyProvider {
     def Set<EObject> generateDependencies(EObject object) {
         switch object {
             RosettaBinaryOperation: {
-                dependencies = newHashSet(
+                dependencies = newLinkedHashSet(
                     generateDependencies(object.left) + generateDependencies(object.right)
                 )
             }
             RosettaConditionalExpression: {
-                dependencies = newHashSet(
+                dependencies = newLinkedHashSet(
                     generateDependencies(object.^if) + generateDependencies(object.ifthen) +
                         generateDependencies(object.elsethen))
             }
@@ -64,7 +64,7 @@ class FunctionDependencyProvider {
                 dependencies = findDependenciesFromIterable(object.args)
             }
             RosettaFunctionalOperation: {
-                dependencies = newHashSet(generateDependencies(object.argument) + generateDependencies(object.function))
+                dependencies = newLinkedHashSet(generateDependencies(object.argument) + generateDependencies(object.function))
             }
             RosettaUnaryOperation: {
                 dependencies = generateDependencies(object.argument)
@@ -72,26 +72,26 @@ class FunctionDependencyProvider {
             RosettaFeatureCall:
                 dependencies = generateDependencies(object.receiver)
             RosettaSymbolReference: {
-                dependencies = newHashSet(generateDependencies(object.symbol) +
+                dependencies = newLinkedHashSet(generateDependencies(object.symbol) +
                     findDependenciesFromIterable(object.args))
             }
             Function,
             Data,
             RosettaEnumeration: {
-                dependencies = newHashSet(object)
+                dependencies = newLinkedHashSet(object)
             }
             InlineFunction: {
                 dependencies = generateDependencies(object.body)
             }
             ListLiteral: {
-                dependencies = newHashSet(object.elements.flatMap[generateDependencies])
+                dependencies = newLinkedHashSet(object.elements.flatMap[generateDependencies])
             }
             RosettaConstructorExpression: {
-                val typeDependencies = (object.typeCall?.type !== null) ? newHashSet(
-                        object.typeCall.type) : newHashSet()
+                val typeDependencies = (object.typeCall?.type !== null) ? newLinkedHashSet(
+                        object.typeCall.type) : newLinkedHashSet()
                 val keyValuePairsDependencies = object.values.map[valuePair|generateDependencies(valuePair.value)].
                     flatten
-                dependencies = newHashSet(typeDependencies + keyValuePairsDependencies)
+                dependencies = newLinkedHashSet(typeDependencies + keyValuePairsDependencies)
             }
             RosettaExternalFunction,
             RosettaEnumValueReference,
@@ -99,12 +99,12 @@ class FunctionDependencyProvider {
             RosettaReference,
             RosettaSymbol,
             RosettaDeepFeatureCall:
-                dependencies = newHashSet()
+                dependencies = newLinkedHashSet()
             default:
                 if (object !== null)
                     throw new IllegalArgumentException('''«object?.eClass?.name»: generating dependency in a function for this type is not yet implemented.''')
                 else
-                    dependencies = newHashSet()
+                    dependencies = newLinkedHashSet()
         }
         if (dependencies !== null) {
             visited.add(object)
@@ -114,7 +114,7 @@ class FunctionDependencyProvider {
 
     def Set<EObject> findDependenciesFromIterable(Iterable<? extends EObject> objects) {
         val allDependencies = objects.map[object|generateDependencies(object)].flatten.toSet
-        newHashSet(allDependencies)
+        newLinkedHashSet(allDependencies)
     }
 
     def Set<RFunction> rFunctionDependencies(RosettaExpression expression) {
@@ -127,7 +127,7 @@ class FunctionDependencyProvider {
         val allFunctionDependencies = expressions.flatMap [
             rFunctionDependencies
         ].toSet
-        newHashSet(allFunctionDependencies)
+        newLinkedHashSet(allFunctionDependencies)
     }
 
     def void reset() {

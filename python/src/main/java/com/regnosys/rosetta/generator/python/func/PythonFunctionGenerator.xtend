@@ -177,7 +177,7 @@ class PythonFunctionGenerator {
     }
 
     private def collectFunctionDependencies(Function func) {
-        val Set<EObject> dependencies = newHashSet()
+        val Set<EObject> dependencies = newLinkedHashSet()
 
         func.shortcuts.forEach [ shortcut |
             dependencies.addAll(functionDependencyProvider.findDependencies(shortcut.expression))
