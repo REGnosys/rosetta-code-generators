@@ -77,7 +77,10 @@
 	</profiles>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
 			<artifactId>daml</artifactId>

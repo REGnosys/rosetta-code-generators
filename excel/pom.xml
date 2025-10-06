@@ -50,6 +50,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.regnosys.rosetta</groupId>
+			<artifactId>com.regnosys.rosetta</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.regnosys.rosetta</groupId>
 			<artifactId>com.regnosys.rosetta.lib</artifactId>
 		</dependency>
 		<dependency>
