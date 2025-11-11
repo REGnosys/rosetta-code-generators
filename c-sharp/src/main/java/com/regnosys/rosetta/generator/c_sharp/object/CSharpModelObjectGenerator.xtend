@@ -46,7 +46,7 @@ class CSharpModelObjectGenerator {
 
 	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
 		var attributeMap = newLinkedHashMap
-		for (Data t : type.allSuperTypes) {
+		for (Data t : type.allSuperTypes.reverse) { // use "reverse" because C# doesn't support return type covariance ensure that only the super type return types are used
 			for (ExpandedAttribute a : t.expandedAttributes) {
 				attributeMap.put(a.name, a)
 			}
