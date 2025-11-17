@@ -36,7 +36,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaIntLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaStringLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.SortOperation
@@ -256,8 +255,11 @@ class PythonExpressionGenerator {
                 val argument = expr.argument as RosettaExpression
                 '''(not rosetta_attr_exists(«generateExpression(argument, iflvl, isLambda)»))'''
             }
-            RosettaReference: {
-                reference(expr, iflvl, isLambda)
+            RosettaSymbolReference: {
+                symbolReference(expr, iflvl, isLambda)
+            }
+            RosettaImplicitVariable: {
+            	implicitVariable(expr, iflvl, isLambda)
             }
             RosettaNumberLiteral: {
                 '''«expr.value»'''
@@ -406,15 +408,8 @@ class PythonExpressionGenerator {
         }
     }
 
-    protected def String reference(RosettaReference expr, int iflvl, boolean isLambda) {
-        switch (expr) {
-            RosettaImplicitVariable: {
-                '''«expr.name»'''
-            }
-            RosettaSymbolReference: {
-                symbolReference(expr, iflvl, isLambda)
-            }
-        }
+    protected def String implicitVariable(RosettaImplicitVariable expr, int iflvl, boolean isLambda) {
+        '''«expr.name»'''
     }
 
     def String symbolReference(RosettaSymbolReference expr, int iflvl, boolean isLambda) {
