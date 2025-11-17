@@ -15,7 +15,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaFeatureCall
 import com.regnosys.rosetta.rosetta.expression.RosettaFunctionalOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaLiteral
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyExistsExpression
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.RosettaUnaryOperation
 import com.regnosys.rosetta.rosetta.expression.RosettaDeepFeatureCall
@@ -28,6 +27,7 @@ import java.util.Set
 import jakarta.inject.Inject
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
+import com.regnosys.rosetta.rosetta.expression.RosettaImplicitVariable
 
 /**
  * Determine the Rosetta dependencies for a Rosetta object
@@ -96,7 +96,7 @@ class FunctionDependencyProvider {
             RosettaExternalFunction,
             RosettaEnumValueReference,
             RosettaLiteral,
-            RosettaReference,
+            RosettaImplicitVariable,
             RosettaSymbol,
             RosettaDeepFeatureCall:
                 dependencies = newLinkedHashSet()

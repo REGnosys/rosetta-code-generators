@@ -44,7 +44,6 @@ import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
 import com.regnosys.rosetta.rosetta.expression.RosettaUnaryOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
 import com.regnosys.rosetta.rosetta.expression.ExistsModifier
-import com.regnosys.rosetta.rosetta.expression.RosettaReference
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
 import com.regnosys.rosetta.RosettaEcoreUtil
@@ -98,7 +97,7 @@ class ExpressionGenerator {
             RosettaAbsentExpression: {
                 absentExpr(expr, expr.argument, params)
             }
-            RosettaReference: {
+            RosettaSymbolReference: {
 				reference(expr, params, isLast)
 			}
             RosettaNumberLiteral: {
@@ -248,38 +247,32 @@ class ExpressionGenerator {
         }
     }
     
-    protected def StringConcatenationClient reference(RosettaReference expr, ParamMap params, boolean isLast) {
-		switch (expr) {
-			RosettaSymbolReference: {
-				val s = expr.symbol
-				switch (s)  {
-					Data: {
-						'''«params.getClass(s)»'''
-					}
-					Attribute: {
-						// Data Attributes can only be called from their conditions
-		                // The current container (Data) is stored in Params, but we need also look for superTypes
-		                // so we could also do: (call.eContainer as Data).allSuperTypes.map[it|params.getClass(it)].filterNull.head
-		                if (s.eContainer instanceof Data) {
-		                    val variableName = EcoreUtil2.getContainerOfType(expr, Data).getName.toFirstLower
-		                    '''«variableName»«buildMapFunc(s, false, true)»'''
-		                }
-		                else
-		                    '''«s.name»'''
-					}
-					ShortcutDeclaration: {
-		                '''«s.name»(«aliasCallArgs(s)»).«IF exprHelper.usesOutputParameter(s.expression)»build()«ELSE»get()«ENDIF»'''
-		            }
-					RosettaEnumeration: '''Enums.«s.toCSharpType»'''
-					RosettaCallableWithArgs: {
-						callableWithArgs(expr, params)
-					}
-					default: 
-						throw new UnsupportedOperationException("Unsupported symbol type of " + s?.class?.name)
-				}
+    protected def StringConcatenationClient reference(RosettaSymbolReference expr, ParamMap params, boolean isLast) {
+		val s = expr.symbol
+		switch (s)  {
+			Data: {
+				'''«params.getClass(s)»'''
+			}
+			Attribute: {
+				// Data Attributes can only be called from their conditions
+                // The current container (Data) is stored in Params, but we need also look for superTypes
+                // so we could also do: (call.eContainer as Data).allSuperTypes.map[it|params.getClass(it)].filterNull.head
+                if (s.eContainer instanceof Data) {
+                    val variableName = EcoreUtil2.getContainerOfType(expr, Data).getName.toFirstLower
+                    '''«variableName»«buildMapFunc(s, false, true)»'''
+                }
+                else
+                    '''«s.name»'''
+			}
+			ShortcutDeclaration: {
+                '''«s.name»(«aliasCallArgs(s)»).«IF exprHelper.usesOutputParameter(s.expression)»build()«ELSE»get()«ENDIF»'''
+            }
+			RosettaEnumeration: '''Enums.«s.toCSharpType»'''
+			RosettaCallableWithArgs: {
+				callableWithArgs(expr, params)
 			}
 			default: 
-				throw new UnsupportedOperationException("Unsupported reference type of " + expr?.class?.name)
+				throw new UnsupportedOperationException("Unsupported symbol type of " + s?.class?.name)
 		}
 	}
 
@@ -699,7 +692,7 @@ class ExpressionGenerator {
 
         val receiver = call.receiver
         val left = switch receiver {
-            RosettaReference: '''''' // (receiver.callable as RosettaClass).name
+            RosettaSymbolReference: '''''' // (receiver.callable as RosettaClass).name
             RosettaFeatureCall:
                 toNodeLabel(receiver)
             default:
