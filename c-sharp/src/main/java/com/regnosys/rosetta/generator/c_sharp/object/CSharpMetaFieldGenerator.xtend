@@ -1,43 +1,62 @@
 package com.regnosys.rosetta.generator.c_sharp.object
 
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.List
 
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.c_sharp.object.CSharpModelObjectBoilerPlate.*
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
+import com.regnosys.rosetta.types.RType
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator
+import com.regnosys.rosetta.types.RDataType
 
 class CSharpMetaFieldGenerator {
+	@Inject
+	extension CSharpModelObjectBoilerPlate
+	@Inject
+	extension RObjectFactory
+	@Inject
+	extension CSharpTranslator
 
     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
         val metaFieldsImports = generateMetaFieldsImports.toString
 
-        val refs = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && metas.exists[name == "reference" || name =="address"]].map [
-            type
-        ].toSet
+        val refs = rosettaClasses
+            .map[buildRDataType]
+            .flatMap[ownAttributes]
+            .filter[RMetaAnnotatedType.hasAttributeMeta && RMetaAnnotatedType.metaAttributes.exists[name=="reference" || name =="address"]]
+            .map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
+            .toSet
 
         var referenceWithMeta = '';
 
         for (ref : refs) {
-            if (ref.isType)
+            if (ref instanceof RDataType)
                 referenceWithMeta += generateReferenceWithMeta(ref).toString
             else
                 referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
         }
 
         // Any enumerations with comments currently fails to parse correctly.
-        val missing = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name === null].toSet
+        val missing = rosettaClasses
+            .map[buildRDataType]
+            .flatMap[ownAttributes]
+            .filter[RMetaAnnotatedType.hasAttributeMeta && !RMetaAnnotatedType.metaAttributes.exists[name == "reference" || name =="address"] && RMetaAnnotatedType.RType.name === null]
+            .toSet
         for (m : missing) {
-            println("Missing: " + m.name + " enclosed by: " + m.enclosingType + " : " +  m.type)
+            println("Missing: " + m.name + " enclosed by: " + m.RMetaAnnotatedType.RType + " : " +  m.RMetaAnnotatedType.RType)
         }
 
-        val metas = rosettaClasses.flatMap[expandedAttributes].filter[hasMetas && !metas.exists[name == "reference" || name =="address"] && type.name !== null].
-            map[type].toSet
+        val metas = rosettaClasses
+            .map[buildRDataType]
+            .flatMap[ownAttributes]
+            .filter[RMetaAnnotatedType.hasAttributeMeta && !RMetaAnnotatedType.metaAttributes.exists[name == "reference" || name =="address"] && RMetaAnnotatedType.RType.name !== null]
+            .map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
+            .toSet
 
         for (meta : metas) {
             referenceWithMeta += generateFieldWithMeta(meta).toString
@@ -87,22 +106,27 @@ class CSharpMetaFieldGenerator {
         }'''
     }
 
-    private def generateAttribute(ExpandedType type, boolean isOptional) '''
-        «IF type.enumeration»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF type.isDate»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
-        public «IF isOptional»«type.toOptionalCSharpType»«ELSE»«type.toQualifiedCSharpType»«ENDIF» Value { get; }'''
+    private def generateAttribute(RType rawType, boolean isOptional) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        '''
+        «IF type instanceof REnumType»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF rawType.isDate»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
+        public «IF isOptional»«rawType.toOptionalCSharpType»«ELSE»«rawType.toQualifiedCSharpType»«ENDIF» Value { get; }'''
+    }
 
-    private def generateInterface(ExpandedType type, boolean isReference) '''
-        I«IF type.enumeration»Enum«ELSEIF type.isStruct»Value«ENDIF»«IF isReference»Reference«ELSE»Field«ENDIF»WithMeta<«type.toQualifiedCSharpType»>'''
+    private def generateInterface(RType rawType, boolean isReference) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        '''I«IF type instanceof REnumType»Enum«ELSEIF rawType.isStruct»Value«ENDIF»«IF isReference»Reference«ELSE»Field«ENDIF»WithMeta<«rawType.toQualifiedCSharpType»>'''
+    }
 
-    private def generateFieldInterface(ExpandedType type) {
+    private def generateFieldInterface(RType type) {
         generateInterface(type, false)
     }
 
-    private def generateReferenceInterface(ExpandedType type) {
+    private def generateReferenceInterface(RType type) {
         generateInterface(type, true)
     }
 
-    private def generateBasicReferenceWithMeta(ExpandedType type) '''
+    private def generateBasicReferenceWithMeta(RType type) '''
         «""»
             public class BasicReferenceWithMeta«type.toMetaTypeName» : «generateReferenceInterface(type)»
             {
@@ -123,10 +147,10 @@ class CSharpMetaFieldGenerator {
                 
                 public Reference? Address { get; }
             }
-            
+
     '''
 
-    private def generateFieldWithMeta(ExpandedType type) {
+    private def generateFieldWithMeta(RType type) {
         val metaTypeName = type.toMetaTypeName
     '''
         «IF type === null || metaTypeName?.length == 0»
@@ -148,7 +172,7 @@ class CSharpMetaFieldGenerator {
                     public MetaFields? Meta { get; }
                 }
         «ENDIF»
-            
+
     '''
     }
 
@@ -226,12 +250,14 @@ class CSharpMetaFieldGenerator {
         
     '''
 
-    private def generateReferenceWithMeta(ExpandedType type) '''
+    private def generateReferenceWithMeta(RType rawType) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        '''
         «""»
-            public class ReferenceWithMeta«type.toMetaTypeName»«IF type.enumeration»Enum«ENDIF» : «generateReferenceInterface(type)»
+            public class ReferenceWithMeta«rawType.toMetaTypeName»«IF type instanceof REnumType»Enum«ENDIF» : «generateReferenceInterface(rawType)»
             {
                 [JsonConstructor]
-                public ReferenceWithMeta«type.toMetaTypeName»(«type.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
+                public ReferenceWithMeta«rawType.toMetaTypeName»(«rawType.toOptionalCSharpType» value, string? globalReference, string? externalReference, Reference? address)
                 {
                     Value = value;
                     GlobalReference = globalReference;
@@ -239,7 +265,7 @@ class CSharpMetaFieldGenerator {
                     Address = address;
                 }
                 
-                «generateAttribute(type, true)»
+                «generateAttribute(rawType, true)»
                 
                 public string? GlobalReference { get; }
                 
@@ -247,6 +273,7 @@ class CSharpMetaFieldGenerator {
                 
                 public Reference? Address { get; }
             }
-            
+
     '''
+    }
 }

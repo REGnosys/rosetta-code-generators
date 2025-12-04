@@ -39,7 +39,6 @@ import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
 
 import static extension com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator.*
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 import com.regnosys.rosetta.rosetta.expression.RosettaOnlyElement
 import com.regnosys.rosetta.rosetta.expression.RosettaUnaryOperation
 import com.regnosys.rosetta.rosetta.expression.SumOperation
@@ -47,6 +46,7 @@ import com.regnosys.rosetta.rosetta.expression.ExistsModifier
 import com.regnosys.rosetta.rosetta.expression.RosettaSymbolReference
 import com.regnosys.rosetta.rosetta.expression.RosettaNumberLiteral
 import com.regnosys.rosetta.RosettaEcoreUtil
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator
 
 class ExpressionGenerator {
 
@@ -62,6 +62,8 @@ class ExpressionGenerator {
     extension RosettaEcoreUtil
     @Inject
     ExpressionHelper exprHelper
+    @Inject
+    extension CSharpTranslator
     
     def StringConcatenationClient csharpCode(RosettaExpression expr, ParamMap params) {
         // TODO: Convert expression to C# code via extension!!!
@@ -425,8 +427,8 @@ class ExpressionGenerator {
         val leftRtype = typeProvider.getRMetaAnnotatedType(expr.left).RType
         val rightRtype = typeProvider.getRMetaAnnotatedType(expr.right).RType
         val resultType = typeProvider.getRMetaAnnotatedType(expr).RType
-        val leftType = '''«leftRtype.name.toCSharpType»'''
-        val rightType = '''«rightRtype.name.toCSharpType»'''
+        val leftType = '''«leftRtype.toCSharpType»'''
+        val rightType = '''«rightRtype.toCSharpType»'''
 
         switch expr.operator {
             case ("and"): {

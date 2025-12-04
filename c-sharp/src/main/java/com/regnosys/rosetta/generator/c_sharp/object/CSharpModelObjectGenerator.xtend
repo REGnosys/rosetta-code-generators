@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.c_sharp.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.c_sharp.object.CSharpValidatorsGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.RosettaNamed
@@ -14,13 +13,15 @@ import java.util.Map
 import java.util.Set
 
 import static com.regnosys.rosetta.generator.c_sharp.util.CSharpModelGeneratorUtil.*
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
 
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.RosettaEcoreUtil
 import java.util.Collection
 import com.regnosys.rosetta.rosetta.expression.OneOfOperation
 import com.regnosys.rosetta.rosetta.expression.ChoiceOperation
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.types.RAttribute
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator
 
 class CSharpModelObjectGenerator {
 
@@ -32,9 +33,15 @@ class CSharpModelObjectGenerator {
 
     @Inject
     extension CSharpMetaFieldGenerator
-    
+
     @Inject
     extension CSharpValidatorsGenerator
+
+    @Inject
+    extension RObjectFactory
+    
+    @Inject
+    extension CSharpTranslator
 
     static final String ASSEMBLY_INFO_FILENAME = 'Properties/AssemblyInfo.cs'
     static final String CLASSES_FILENAME = 'Types.cs'
@@ -44,15 +51,6 @@ class CSharpModelObjectGenerator {
     static final String DATA_RULES_FILENAME = "DataRules.cs"
     static final String VALIDATORS_FILENAME = "Validators.cs"
 
-	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-		var attributeMap = newLinkedHashMap
-		for (Data t : type.allSuperTypes.reverse) { // use "reverse" because C# doesn't support return type covariance ensure that only the super type return types are used
-			for (ExpandedAttribute a : t.expandedAttributes) {
-				attributeMap.put(a.name, a)
-			}
-		}
-		attributeMap.values
-	}
 
     @org.eclipse.xtend.lib.annotations.Data
     static class ClassRule {
@@ -145,11 +143,11 @@ class CSharpModelObjectGenerator {
         '''
     }
 
-    private def generateAttributeComment(ExpandedAttribute attribute, Data c, Set<Data> superTypes) {
+    private def generateAttributeComment(RAttribute attribute, Data c, Set<Data> superTypes) {
         '''
             «IF attribute.definition !== null && !attribute.definition.isEmpty»
 «««             If attribute was defined in a parent interface, then it should inherit the documentation as well
-                «IF attribute.enclosingType != c.name || superTypes.contains(c)»
+                «IF attribute.enclosingType?.EObject != c || superTypes.contains(c)»
                     /// <inheritdoc/>
                 «ELSE»
                     «comment(attribute.definition)»
@@ -184,11 +182,12 @@ class CSharpModelObjectGenerator {
                 using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
                 
                 «FOR c : rosettaClasses SEPARATOR '\n'»
-                    «val allExpandedAttributes = c.allExpandedAttributes»
+                    «val t = c.buildRDataType»
+                    «val allAttributes = t.allAttributes»
 «««                     Filter out invalid types to prevent compilation errors
-                    «val expandedAttributes = allExpandedAttributes.filter[!isMissingType]»
+                    «val validAttributes = allAttributes.filter[!isMissingType]»
 «««                 Discriminated unions are not scheduled to be added until C# 10, so use a sealed class with all optional fields for the moment.
-«««                 Use of one-of condtion on a derived class is not properly defined, so mark it as an error and ignore. 
+«««                 Use of one-of condtion on a derived class is not properly defined, so mark it as an error and ignore.
                     «var properties = " { get; }"»
                     «classComment(c.definition)»
                     «val metaType = 'IRosettaMetaData<' + c.name +'>'»
@@ -197,25 +196,35 @@ class CSharpModelObjectGenerator {
                         private static readonly «metaType» metaData = new «c.name»Meta();
                         
                         [JsonConstructor]
-                        public «c.name»(«FOR attribute : expandedAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»)
+                        public «c.name»(«FOR attribute : validAttributes SEPARATOR ', '»«attribute.toType» «attribute.toParamName»«ENDFOR»«IF t.requiresMetaFields», _MetaFields? meta«ENDIF»)
                         {
-                            «FOR attribute : expandedAttributes»
+                            «FOR attribute : validAttributes»
                                 «attribute.toPropertyName» = «attribute.toParamName»;
                             «ENDFOR»
+                            «IF t.requiresMetaFields»
+                                Meta = meta;
+                            «ENDIF»
                         }
                         
                         /// <inheritdoc />
                         [JsonIgnore]
                         public override «metaType» MetaData => metaData;
                         
-                        «FOR attribute : allExpandedAttributes SEPARATOR '\n'»
+                        «FOR attribute : allAttributes SEPARATOR '\n'»
                             «generateAttributeComment(attribute, c, superTypes)»
-                            «IF attribute.enum  && !attribute.hasMetas»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF attribute.getType.isDate && !attribute.hasMetas»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
+                            «val metaAnnotatedType = attribute.RMetaAnnotatedType»
+                            «val rawType = metaAnnotatedType.RType»
+                            «val strippedType = rawType.stripFromTypeAliasesExceptInt»
+                            «IF strippedType instanceof REnumType && !metaAnnotatedType.hasAttributeMeta»[JsonConverter(typeof(StringEnumConverter))]«ELSEIF rawType.isDate && !metaAnnotatedType.hasAttributeMeta»[JsonConverter(typeof(Rosetta.Lib.LocalDateConverter))]«ENDIF»
                             «IF attribute.matchesEnclosingType»[JsonProperty(PropertyName = "«attribute.toJsonName»")]«ENDIF»
 «««                         NB: This property definition could be converted to use { get; init; } in C# 9 (.NET 5), which would allow us to remove the constructor.
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
                             «IF attribute.isMissingType»// MISSING «ENDIF»public «attribute.toType» «attribute.toPropertyName»«properties»
                         «ENDFOR»
+                        «IF t.requiresMetaFields»
+                            
+                            public _MetaFields? Meta«properties»
+                        «ENDIF»
                         «FOR condition : c.conditions»
                             «generateConditionLogic(c, condition)»
                         «ENDFOR»
@@ -318,14 +327,19 @@ class CSharpModelObjectGenerator {
                 using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
             
                 «FOR c : rosettaClasses SEPARATOR '\n'»
+                    «val t = c.buildRDataType»
                     «comment(c.definition)»
                     interface «getInterfaceName(c)»«IF c.superType !== null» : «getInterfaceName(c.superType)»«ENDIF»
                     {
-                        «FOR attribute : c.expandedAttributes SEPARATOR '\n'»
+                        «FOR attribute : t.ownAttributes SEPARATOR '\n'»
                             «comment(attribute.definition)»
 «««                         During testing many types are not parsed correctly by Rosetta, so comment them out to create compilable code
                             «IF attribute.isMissingType»// MISSING «ENDIF»«attribute.toType» «attribute.toPropertyName» { get; }
                         «ENDFOR»
+                        «IF t.requiresMetaFields»
+                            
+                            _MetaFields? Meta { get; }
+                        «ENDIF»
                     }
                 «ENDFOR»
             }

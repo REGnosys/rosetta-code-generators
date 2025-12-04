@@ -1,13 +1,17 @@
 package com.regnosys.rosetta.generator.kotlin.object
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-
-import static extension com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator.toKotlinType
-import com.regnosys.rosetta.generator.object.ExpandedType
+import com.regnosys.rosetta.types.RType
+import com.regnosys.rosetta.types.RAttribute
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator
+import com.regnosys.rosetta.types.RDataType
 
 class KotlinModelObjectBoilerPlate {
+	@Inject
+	extension KotlinTranslator
 
-    def toAttributeName(ExpandedAttribute attribute) {
+    def toAttributeName(RAttribute attribute) {
         if (attribute.name == "val")
         '''`val`'''
 		else
@@ -18,48 +22,60 @@ class KotlinModelObjectBoilerPlate {
         code.toString.replace('\t', '  ')
     }
 
-    def toEnumAnnotationType(ExpandedType type) {
+    def toEnumAnnotationType(RType type) {
         '''«type.name»'''
     }
 
-    def toType(ExpandedAttribute attribute) {
-        if (attribute.multiple)
+    def toType(RAttribute rawAttribute) {
+        val attribute = rawAttribute.originalAttribute
+        if (attribute.multi)
             '''MutableList<«attribute.toRawType»>'''
-		else if (attribute.singleOptional)
+		else if (attribute.cardinality.optional)
             '''«attribute.toRawType»'''
 		else
         '''«attribute.toRawType»'''
     }
 
-    private def toRawType(ExpandedAttribute attribute) {
-        if (!attribute.hasMetas)
-            attribute.type.toKotlinType
-        else if (attribute.refIndex >= 0) {
-            if (attribute.type.isType)
-                attribute.type.toReferenceWithMetaTypeName
-            else
-                attribute.type.toBasicReferenceWithMetaTypeName
-        }
-        else
-            attribute.type.toFieldWithMetaTypeName
+    private def originalAttribute(RAttribute attribute) {
+    	var current = attribute
+    	while (current.parentAttribute !== null) {
+    		current = current.parentAttribute
+    	}
+    	return current
     }
 
-    def toReferenceWithMetaTypeName(ExpandedType type) {
+    private def toRawType(RAttribute attribute) {
+        val t = attribute.RMetaAnnotatedType
+        val type = t.RType.stripFromTypeAliasesExceptInt
+        if (!t.hasAttributeMeta)
+            type.toKotlinType
+        else if (t.hasMetaAttribute("reference") || t.hasMetaAttribute("address")) {
+           if (type instanceof RDataType)
+                type.toReferenceWithMetaTypeName
+            else
+                type.toBasicReferenceWithMetaTypeName
+        }
+        else
+            type.toFieldWithMetaTypeName
+    }
+
+    def toReferenceWithMetaTypeName(RType type) {
         '''ReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+    def toBasicReferenceWithMetaTypeName(RType type) {
         '''BasicReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toFieldWithMetaTypeName(ExpandedType type) {
+    def toFieldWithMetaTypeName(RType type) {
         '''FieldWithMeta«type.toMetaTypeName»'''
     }
 
-    static def toMetaTypeName(ExpandedType type) {
-        val name = type.toKotlinType
+    def toMetaTypeName(RType rawType) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        val name = rawType.toKotlinType
 
-        if (type.enumeration) {
+        if (type instanceof REnumType) {
             return name
         } else if (name.contains(".")) {
             return name.substring(name.lastIndexOf(".") + 1).toFirstUpper

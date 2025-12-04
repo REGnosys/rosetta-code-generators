@@ -1,26 +1,31 @@
 package com.regnosys.rosetta.generator.c_sharp.object
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-
-import static extension com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator.*
-import com.regnosys.rosetta.generator.object.ExpandedType
 import java.util.HashSet
 import java.util.Arrays
+import com.regnosys.rosetta.types.RType
+import com.regnosys.rosetta.types.RAttribute
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.generator.c_sharp.util.CSharpTranslator
+import com.regnosys.rosetta.types.RDataType
 
 class CSharpModelObjectBoilerPlate {
+    @Inject
+    extension CSharpTranslator
     static val keywords = new HashSet<String>(Arrays.asList("string", "int", "decimal", "bool", "event"));
 
     def isKeyWord(String name) {
         keywords.contains(name)        
     }
 
-    def isMissingType(ExpandedAttribute attribute) {
+    def isMissingType(RAttribute attribute) {
         // TODO: Check for FieldWithMeta??
-        attribute.toRawType === null || (attribute.hasMetas && attribute.refIndex < 0 && attribute.type.name === null)
+        val t = attribute.RMetaAnnotatedType
+        attribute.toRawType === null || (t.hasAttributeMeta && !(t.hasMetaAttribute("reference") || t.hasMetaAttribute("address")) && t.RType.name === null)
     }
 
-    def matchesEnclosingType(ExpandedAttribute attribute) {
-        attribute.name.toFirstUpper == attribute.enclosingType
+    def matchesEnclosingType(RAttribute attribute) {
+        attribute.name.toFirstUpper == attribute.enclosingType?.name
     }
 
     static def removePackage(String name) {
@@ -36,35 +41,36 @@ class CSharpModelObjectBoilerPlate {
         code.toString.replace('\t', '    ')
     }
 
-    def toAttributeName(ExpandedAttribute attribute) {
+    def toAttributeName(RAttribute attribute) {
         attribute.name
     }
 
-    def toBasicReferenceWithMetaTypeName(ExpandedType type) {
+    def toBasicReferenceWithMetaTypeName(RType type) {
         '''BasicReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toEnumAnnotationType(ExpandedType type) {
+    def toEnumAnnotationType(RType type) {
         '''«type.name»'''
     }
 
-    def toFieldWithMetaTypeName(ExpandedType type) {
+    def toFieldWithMetaTypeName(RType type) {
         '''FieldWithMeta«type.toMetaTypeName»'''
     }
 
-    def toJsonName(ExpandedAttribute attribute) {
+    def toJsonName(RAttribute attribute) {
         return attribute.name.toFirstLower
     }
 
-    static def toMetaTypeName(ExpandedType type) {
-        removePackage(type.toCSharpType).toFirstUpper
-    }
-    
-    static def toQualifiedMetaTypeName(ExpandedType type) {
-        '''«IF type.enumeration»Enums.«ENDIF»«removePackage(type.toCSharpType)»'''
+    def toMetaTypeName(RType rawType) {
+        removePackage(rawType.toCSharpType).toFirstUpper
     }
 
-    def toParamName(ExpandedAttribute attribute) {
+    def toQualifiedMetaTypeName(RType rawType) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        '''«IF type instanceof REnumType»Enums.«ENDIF»«removePackage(rawType.toCSharpType)»'''
+    }
+
+    def toParamName(RAttribute attribute) {
         var name = attribute.name.toFirstLower
         // Ensure parameter name does not match C# keyWords
         if (isKeyWord(name)) {
@@ -73,47 +79,56 @@ class CSharpModelObjectBoilerPlate {
         return name
     }
 
-    def toPropertyName(ExpandedAttribute attribute) {
+    def toPropertyName(RAttribute attribute) {
         var name = attribute.name.toFirstUpper
         // Ensure property name does not match enclosing type
-        if (name == attribute.enclosingType) {
+        if (name == attribute.enclosingType.name) {
             name += "Value"
         }
         return name
     }
 
-    def toRawType(ExpandedAttribute attribute) {
-        if (!attribute.hasMetas) {
-            if (attribute.enum) {
-                val type = attribute.type
-                type.toQualifiedCSharpType
-                
+    def toRawType(RAttribute attribute) {
+        val t = attribute.originalAttribute.RMetaAnnotatedType
+        if (!t.hasAttributeMeta) {
+            val type = t.RType.stripFromTypeAliasesExceptInt
+            if (type instanceof REnumType) {
+                t.RType.toQualifiedCSharpType
             }
             else
-                removePackage(attribute.type.toCSharpType)
+                removePackage(t.RType.toCSharpType)
         }
-        else if (attribute.refIndex >= 0) {
-            if (attribute.type.isType)
-                attribute.type.toReferenceWithMetaTypeName
+        else if (t.hasMetaAttribute("reference") || t.hasMetaAttribute("address")) {
+            if (t.RType instanceof RDataType)
+                t.RType.toReferenceWithMetaTypeName
             else
-                attribute.type.toBasicReferenceWithMetaTypeName
+                t.RType.toBasicReferenceWithMetaTypeName
         } else
-            attribute.type.toFieldWithMetaTypeName
+            t.RType.toFieldWithMetaTypeName
     }
 
-    def toReferenceWithMetaTypeName(ExpandedType type) {
+    def toReferenceWithMetaTypeName(RType type) {
         '''ReferenceWithMeta«type.toMetaTypeName»'''
     }
 
-    def toType(ExpandedAttribute attribute) {
+    def toType(RAttribute rawAttr) {
+    	val attribute = rawAttr.originalAttribute
         val typeName = attribute.toRawType
-        if (attribute.multiple) {
+        if (attribute.multi) {
             // All fields of one-of have to be nullable.
             '''IEnumerable<«typeName»>'''
         }
-        else if (attribute.singleOptional)
+        else if (attribute.cardinality.optional)
             '''«typeName»?'''
         else
             '''«typeName»'''
+    }
+    
+    private def RAttribute originalAttribute(RAttribute attr) {
+    	var curr = attr
+    	while (curr.parentAttribute !== null) {
+    		curr = curr.parentAttribute
+    	}
+    	return curr
     }
 }

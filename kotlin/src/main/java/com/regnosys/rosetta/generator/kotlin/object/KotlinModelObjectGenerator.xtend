@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.kotlin.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.HashMap
@@ -11,14 +10,18 @@ import java.util.Set
 
 import static com.regnosys.rosetta.generator.kotlin.util.KotlinModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.RosettaEcoreUtil
+import com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.types.RAttribute
 
 class KotlinModelObjectGenerator {
 
     @Inject extension RosettaEcoreUtil
     @Inject extension KotlinModelObjectBoilerPlate
     @Inject extension KotlinMetaFieldGenerator
+    @Inject extension KotlinTranslator
+    @Inject extension RObjectFactory
 
     static final String CLASSES_FILENAME = 'Types.kt'
     static final String META_FILENAME = 'Metatypes.kt'
@@ -66,7 +69,8 @@ class KotlinModelObjectGenerator {
 		)
 
 		«FOR c : rosettaClasses SEPARATOR "\n"»
-		«classComment(c.definition, c.allExpandedAttributes)»
+		«val t = c.buildRDataType»
+		«classComment(c.definition, t.allAttributes)»
 		@Serializable
 		open class «c.name»«IF c.superType === null && !superTypes.contains(c)»«ENDIF» (
 			«generateAttributes(c)»
@@ -84,13 +88,16 @@ class KotlinModelObjectGenerator {
     }
 
     private def generateAttributes(Data c) {
-        '''«FOR attribute : c.allExpandedAttributes.filter[enclosingType == c.name] SEPARATOR ","»«generateExpandedAttribute(c, attribute)»«ENDFOR»'''
+        val t = c.buildRDataType
+        val attrs = t.allAttributes.filter[enclosingType?.EObject == c && parentAttribute === null]
+        '''
+        «FOR attribute : attrs SEPARATOR ",\n"»«generateAttribute(c, attribute)»«ENDFOR»«IF t.requiresMetaFields»«IF !attrs.isEmpty»,
+        «ENDIF»var meta: MetaFields? = null«ENDIF»
+        '''
     }
 
-    private def generateExpandedAttribute(Data c, ExpandedAttribute attribute) {
-	    '''
-	    var «attribute.toAttributeName»: «attribute.toType»? = null
-	    '''
+    private def generateAttribute(Data c, RAttribute attribute) {
+	    '''var «attribute.toAttributeName»: «attribute.toType»? = null'''
     }
 
 //    private def generateConditionLogic(Data c, Condition condition) {
@@ -107,15 +114,9 @@ class KotlinModelObjectGenerator {
 //        '''
 //    }
 
-	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-		var attributeMap = newLinkedHashMap
-		for (Data t : type.allSuperTypes) {
-			for (ExpandedAttribute a : t.expandedAttributes) {
-				// method overriding not supported yet
-				attributeMap.putIfAbsent(a.name, a)
-			}
-		}
-		attributeMap.values
+	def Iterable<RAttribute> allAttributes(Data type) {
+		val rDataType = type.buildRDataType
+		return rDataType.allAttributes
 	}
 
     

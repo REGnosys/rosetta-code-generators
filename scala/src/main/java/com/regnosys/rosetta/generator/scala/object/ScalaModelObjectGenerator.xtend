@@ -1,7 +1,6 @@
 package com.regnosys.rosetta.generator.scala.object
 
 import com.google.inject.Inject
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
 import com.regnosys.rosetta.generator.scala.serialization.ScalaObjectMapperGenerator
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Condition
@@ -13,8 +12,12 @@ import java.util.Set
 
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import com.regnosys.rosetta.RosettaEcoreUtil
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.types.RDataType
+import com.regnosys.rosetta.types.RAttribute
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.generator.scala.util.ScalaTranslator
 
 class ScalaModelObjectGenerator {
 
@@ -22,6 +25,8 @@ class ScalaModelObjectGenerator {
 	@Inject extension ScalaModelObjectBoilerPlate
 	@Inject extension ScalaMetaFieldGenerator
 	@Inject extension ScalaObjectMapperGenerator
+	@Inject extension RObjectFactory
+	@Inject extension ScalaTranslator
 	
 	static final String CLASSES_FILENAME = 'Types.scala'
 	static final String TRAITS_FILENAME = 'Traits.scala'
@@ -34,7 +39,7 @@ class ScalaModelObjectGenerator {
 		val superTypes = rosettaClasses
 				.filter[superType !== null]
                 .map[superType]
-                .map[allSuperTypes].flatten
+                .flatMap[allSuperTypes]
                 .toSet
 		
 		val classes = rosettaClasses.sortBy[name].generateClasses(superTypes, version).replaceTabsWithSpaces
@@ -64,8 +69,9 @@ class ScalaModelObjectGenerator {
 	import org.isda.cdm.metafields._
 	
 	«FOR c : rosettaClasses»
-		«classComment(c.definition, c.allExpandedAttributes)»
-		case class «c.name»(«generateAttributes(c)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
+		«val t = c.buildRDataType»
+		«classComment(c.definition, t.allAttributes)»
+		case class «c.name»(«generateAttributes(t)»)«IF c.superType === null && !superTypes.contains(c)» {«ENDIF»
 			«IF c.superType !== null && superTypes.contains(c)»extends «c.name»Trait with «c.superType.name»Trait {
 			«ELSEIF c.superType !== null»extends «c.superType.name»Trait {
 			«ELSEIF superTypes.contains(c)»extends «c.name»Trait {«ENDIF»
@@ -86,27 +92,32 @@ class ScalaModelObjectGenerator {
 	import org.isda.cdm.metafields._
 	
 	«FOR c : rosettaClasses»
+		«val t = c.buildRDataType»
 		«comment(c.definition)»
 		trait «c.name»Trait «IF c.superType !== null»extends «c.superType.name»Trait «ENDIF»{
-			«generateTraitAttributes(c)»
+			«generateTraitAttributes(t)»
 		}
 
 	«ENDFOR»
 	'''
 	}
 	
-	private def generateAttributes(Data c) {
-		'''«FOR attribute : c.allExpandedAttributes SEPARATOR ',\n		'»«generateAttribute(c, attribute)»«ENDFOR»'''
+	private def generateAttributes(RDataType t) {
+		'''
+		«FOR attribute : t.allAttributes SEPARATOR ',\n		'»«generateAttribute(t, attribute)»«ENDFOR»«IF t.requiresMetaFields»,
+				meta: Option[MetaFields]«ENDIF»'''
 	}
 	
-	private def generateAttribute(Data c, ExpandedAttribute attribute) {
-		if (attribute.enum && !attribute.hasMetas) {
-			if (attribute.singleOptional) {
-			'''@JsonDeserialize(contentAs = classOf[«attribute.type.toEnumAnnotationType».Value])
-		@JsonScalaEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
+	private def generateAttribute(RDataType t, RAttribute attribute) {
+		val metaType = attribute.RMetaAnnotatedType
+		val type = metaType.RType.stripFromTypeAliasesExceptInt
+		if (type instanceof REnumType && !metaType.hasAttributeMeta) {
+			if (!attribute.multi && attribute.cardinality.optional) {
+			'''@JsonDeserialize(contentAs = classOf[«type.toEnumAnnotationType».Value])
+		@JsonScalaEnumeration(classOf[«type.toEnumAnnotationType».Class])
 		«attribute.toAttributeName»: «attribute.toType»'''
 			} else {
-				'''@JsonScalaEnumeration(classOf[«attribute.type.toEnumAnnotationType».Class])
+				'''@JsonScalaEnumeration(classOf[«type.toEnumAnnotationType».Class])
 		«attribute.toAttributeName»: «attribute.toType»'''
 			}
 		} else {
@@ -114,15 +125,15 @@ class ScalaModelObjectGenerator {
 		}
 	}
 	
-	private def generateTraitAttributes(Data c) {
+	private def generateTraitAttributes(RDataType t) {
 		'''
-		«FOR attribute : c.expandedAttributes»
-			«generateTraitAttribute(c, attribute)»
+		«FOR attribute : t.ownAttributes»
+			«generateTraitAttribute(t, attribute)»
 		«ENDFOR»
-		'''
+		«IF t.requiresMetaFields»val meta: Option[MetaFields]«ENDIF»'''
 	}
 	
-	private def generateTraitAttribute(Data c, ExpandedAttribute attribute) {
+	private def generateTraitAttribute(RDataType t, RAttribute attribute) {
 		'''
 		«comment(attribute.definition)»
 		val «attribute.toAttributeName»: «attribute.toType»
@@ -132,17 +143,6 @@ class ScalaModelObjectGenerator {
 	private def generateConditionLogic(Data c, Condition condition) {
 		'''
 		'''
-	}
-
-	def Iterable<ExpandedAttribute> allExpandedAttributes(Data type) {
-		var attributeMap = newLinkedHashMap
-		for (Data t : type.allSuperTypes) {
-			for (ExpandedAttribute a : t.expandedAttributes) {
-				// method overriding not supported yet
-				attributeMap.putIfAbsent(a.name, a)
-			}
-		}
-		attributeMap.values
 	}
 	
 	def String definition(Data element){

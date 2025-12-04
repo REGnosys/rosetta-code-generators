@@ -1,26 +1,35 @@
 package com.regnosys.rosetta.generator.scala.object
 
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.List
 
 import static com.regnosys.rosetta.generator.scala.util.ScalaModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.scala.object.ScalaModelObjectBoilerPlate.*
 import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.*
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
+import com.regnosys.rosetta.types.RType
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.generator.scala.util.ScalaTranslator
 
 class ScalaMetaFieldGenerator {
+	@Inject
+	extension ScalaModelObjectBoilerPlate
+	@Inject
+	extension RObjectFactory
+	@Inject
+	extension ScalaTranslator
 	
 	def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
 		val metaFieldsImports = generateMetaFieldsImports.toString
 		
 		val refs = rosettaClasses
-			.flatMap[expandedAttributes]
-			.filter[hasMetas && metas.exists[name=="reference" || name =="address"]]
-			.map[type]
+			.map[buildRDataType]
+			.flatMap[ownAttributes]
+			.filter[RMetaAnnotatedType.hasAttributeMeta && RMetaAnnotatedType.metaAttributes.exists[name=="reference" || name =="address"]]
+			.map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
 			.toSet
 		
 		var referenceWithMeta = '';
@@ -29,10 +38,11 @@ class ScalaMetaFieldGenerator {
 				referenceWithMeta += generateReferenceWithMeta(ref).toString
 		}
 		
-		val metas =  rosettaClasses
-			.flatMap[expandedAttributes]
-			.filter[hasMetas && !metas.exists[name=="reference" || name =="address"]]
-			.map[type]
+		val metas = rosettaClasses
+			.map[buildRDataType]
+			.flatMap[ownAttributes]
+			.filter[RMetaAnnotatedType.hasAttributeMeta && !RMetaAnnotatedType.metaAttributes.exists[name=="reference" || name =="address"]]
+			.map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
 			.toSet
 
 		for (meta:metas) {
@@ -66,14 +76,15 @@ class ScalaMetaFieldGenerator {
 		
 	'''
 	
-	private def generateFieldWithMeta(ExpandedType type) '''
+	private def generateFieldWithMeta(RType type) '''
 		case class FieldWithMeta«type.toMetaTypeName»(«generateAttribute(type)»,
 				meta: Option[MetaFields]) {}
 		
 	'''
 	
-	private def generateAttribute(ExpandedType type) {
-		if (type.enumeration) {
+	private def generateAttribute(RType rawType) {
+		val type = rawType.stripFromTypeAliasesExceptInt
+		if (type instanceof REnumType) {
 			'''@JsonDeserialize(contentAs = classOf[«type.name».Value])
 		@JsonScalaEnumeration(classOf[«type.name».Class])
 		value: Option[«type.toScalaType»]'''
@@ -82,7 +93,7 @@ class ScalaMetaFieldGenerator {
 		}
 	}
 	
-	private def generateReferenceWithMeta(ExpandedType type) '''
+	private def generateReferenceWithMeta(RType type) '''
 		case class ReferenceWithMeta«type.toMetaTypeName»(value: Option[«type.toScalaType»],
 				globalReference: Option[String],
 				externalReference: Option[String],

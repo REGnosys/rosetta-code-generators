@@ -1,10 +1,13 @@
 package com.regnosys.rosetta.generator.kotlin.util
 
-import com.regnosys.rosetta.generator.object.ExpandedType
+import com.regnosys.rosetta.types.RType
+import com.regnosys.rosetta.types.RDataType
+import com.regnosys.rosetta.types.RAliasType
+import com.regnosys.rosetta.types.REnumType
 
 class KotlinTranslator {
 
-    static def toKotlinBasicType(String typename) {
+    def String toKotlinBasicType(String typename) {
         switch typename {
             case 'string',				
 			case 'calculation',				
@@ -22,14 +25,26 @@ class KotlinTranslator {
 
     }
 
-    static def toKotlinType(ExpandedType type) {
-        val basicType = KotlinTranslator.toKotlinBasicType(type.name);
+    def String toKotlinType(RType rawType) {
+    	val type = rawType.stripFromTypeAliasesExceptInt
+        val basicType = toKotlinBasicType(type.name);
         if (basicType !== null)
             return basicType
-        else if (type.enumeration)
+        else if (type instanceof REnumType)
             return '''«type.name.toFirstUpper»'''
 		else
         return type.name.toFirstUpper
     }
 
+	def RType stripFromTypeAliasesExceptInt(RType type) {
+		var curr = type
+		while (curr instanceof RAliasType && curr.name != "int") {
+			curr = (curr as RAliasType).refersTo
+		}
+		return curr
+	}
+	
+	def boolean requiresMetaFields(RDataType type) {
+		return type.hasMetaAttribute("key")
+	}
 }

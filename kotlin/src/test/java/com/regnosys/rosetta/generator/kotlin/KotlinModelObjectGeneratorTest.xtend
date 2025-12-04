@@ -415,7 +415,7 @@ class KotlinModelObjectGeneratorTest {
     }
     
 	@Test
-	def void shouldGenerateClassWitOverrideAttribute() {
+	def void shouldGenerateClassWithOverrideAttribute() {
 		val kotlin = '''
 			type Foo:
 			    attr string (0..1)

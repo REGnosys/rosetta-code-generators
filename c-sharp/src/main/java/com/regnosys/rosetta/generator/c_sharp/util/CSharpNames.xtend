@@ -4,8 +4,6 @@ import com.google.inject.Inject
 import com.google.inject.Injector
 import com.regnosys.rosetta.generator.c_sharp.enums.CSharpEnumGenerator
 import com.regnosys.rosetta.generator.java.RosettaJavaPackages
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.generator.util.RosettaAttributeExtensions
 import com.regnosys.rosetta.rosetta.RosettaBasicType
 import com.regnosys.rosetta.rosetta.RosettaCallableWithArgs
@@ -18,39 +16,29 @@ import com.regnosys.rosetta.rosetta.RosettaType
 import com.regnosys.rosetta.rosetta.simple.Attribute
 import com.regnosys.rosetta.rosetta.simple.Data
 import com.regnosys.rosetta.rosetta.simple.Function
-import com.regnosys.rosetta.types.RDataType
-import com.regnosys.rosetta.types.REnumType
-import com.regnosys.rosetta.types.RType
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend2.lib.StringConcatenationClient
 import org.eclipse.xtext.EcoreUtil2
 import com.regnosys.rosetta.rosetta.TypeCall
 import com.regnosys.rosetta.rosetta.RosettaTypeAlias
-import com.regnosys.rosetta.types.builtin.RRecordType
-import com.regnosys.rosetta.types.builtin.RBasicType
 import com.rosetta.util.DottedPath
+import com.regnosys.rosetta.types.RAttribute
 
 class CSharpNames {
 
     @Accessors(PUBLIC_GETTER)
     RosettaJavaPackages packages
+    
+    @Inject
+    extension CSharpTranslator
+    
 
-    def StringConcatenationClient toListOrSingleCSharpType(Attribute attribute) {
-        if (attribute.card.isIsMany) {
-            '''«List»<«attribute.typeCall.toCSharpType»>'''
+    def StringConcatenationClient toListOrSingleCSharpType(RAttribute attribute) {
+        if (attribute.multi) {
+            '''«List»<«attribute.RMetaAnnotatedType.RType.toCSharpType»>'''
         } else
-            '''«attribute.typeCall.toCSharpType»'''
-    }
-
-    def CSharpType toCSharpType(ExpandedType type) {
-        if (type.name == RosettaAttributeExtensions.METAFIELDS_CLASS_NAME || type.name == RosettaAttributeExtensions.META_AND_TEMPLATE_FIELDS_CLASS_NAME) {
-            return createCSharpType(packages.defaultNamespace.child("metafields"), type.name)
-        }
-        if (type.builtInType) {
-            return createForBasicType(type.name)
-        }
-        createCSharpType(DottedPath.splitOnDots(type.model.name), type.name)
+            '''«attribute.RMetaAnnotatedType.RType.toCSharpType»'''
     }
 
     def CSharpType toCSharpType(RosettaCallableWithArgs func) {
@@ -86,22 +74,6 @@ class CSharpNames {
         }
     }
 
-    def CSharpType toCSharpType(RType rType) {
-        switch (rType) {
-            RBasicType:
-                rType.name.createForBasicType
-            REnumType:
-                rType.EObject.toCSharpType
-            RDataType:
-                rType.EObject.toCSharpType
-            RRecordType:
-                CSharpType.create(rType.name) ?:
-                    CSharpType.create(packages.defaultLib.child("records").withDots + '.' + rType.name.toFirstUpper)
-            default:
-                CSharpType.create(rType.name)
-        }
-    }
-
     def createCSharpType(DottedPath pack, String typeName) {
         CSharpType.create(pack.child(typeName).withDots)
     }
@@ -114,19 +86,6 @@ class CSharpNames {
         var model = ctx.typeCall.type.model
         var pkg = DottedPath.splitOnDots(model.name).child("metafields")
         return createCSharpType(pkg, name)
-    }
-
-    def toMetaType(ExpandedAttribute type, String name) {
-        if(type.type.isBuiltInType) {
-            // built-in meta types are defined in metafield package
-            return createCSharpType(packages.defaultNamespace.child("metafields"), name)
-        }
-        var parentPKG = DottedPath.splitOnDots(type.type.model.name)
-        var metaParent = parentPKG.child(type.type.name).withDots
-        
-        var metaPKG = parentPKG.child("metafields")
-        var meta = metaPKG.child(name).withDots
-        createMetaType(metaParent, meta)
     }
 
     def private DottedPath modelRootPackage(RosettaNamed namedType) {

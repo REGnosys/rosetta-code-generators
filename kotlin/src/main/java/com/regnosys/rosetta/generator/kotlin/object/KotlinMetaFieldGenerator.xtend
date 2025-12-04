@@ -1,41 +1,51 @@
 package com.regnosys.rosetta.generator.kotlin.object
 
-import com.regnosys.rosetta.generator.object.ExpandedType
 import com.regnosys.rosetta.rosetta.RosettaMetaType
 import com.regnosys.rosetta.rosetta.simple.Data
 import java.util.List
 
 import static com.regnosys.rosetta.generator.kotlin.util.KotlinModelGeneratorUtil.*
 
-import static extension com.regnosys.rosetta.generator.kotlin.object.KotlinModelObjectBoilerPlate.*
-import static extension com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator.*
-import static extension com.regnosys.rosetta.generator.util.RosettaAttributeExtensions.*
 import static extension com.regnosys.rosetta.generator.util.IterableUtil.*
+import com.regnosys.rosetta.types.RType
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.types.RObjectFactory
+import com.regnosys.rosetta.generator.kotlin.util.KotlinTranslator
+import com.regnosys.rosetta.types.RDataType
 
 class KotlinMetaFieldGenerator {
+	@Inject
+	extension KotlinModelObjectBoilerPlate
+	@Inject
+	extension RObjectFactory
+	@Inject
+	extension KotlinTranslator
 
     def generateMetaFields(List<Data> rosettaClasses, Iterable<RosettaMetaType> metaTypes, String version) {
         val metaFieldsImports = generateMetaFieldsImports.toString
 
         val refs = rosettaClasses
-                .flatMap[expandedAttributes]
- 				.filter[hasMetas && metas.exists[name=="reference" || name=="address"]]
-                .map[type]
+                .map[buildRDataType]
+                .flatMap[ownAttributes]
+                .filter[RMetaAnnotatedType.hasAttributeMeta && RMetaAnnotatedType.metaAttributes.exists[name=="reference" || name=="address"]]
+                .map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
                 .toSet
 
         var referenceWithMeta = '';
 
         for (ref:refs) {
-            if (ref.isType)
+            if (ref instanceof RDataType)
                 referenceWithMeta += generateReferenceWithMeta(ref).toString
             else
                 referenceWithMeta += generateBasicReferenceWithMeta(ref).toString
         }
 
-        val metas =  rosettaClasses
-                .flatMap[expandedAttributes]
-                .filter[hasMetas && !metas.exists[name=="reference" || name=="address"]]
-                .map[type]
+        val metas = rosettaClasses
+                .map[buildRDataType]
+                .flatMap[ownAttributes]
+                .filter[RMetaAnnotatedType.hasAttributeMeta && !RMetaAnnotatedType.metaAttributes.exists[name=="reference" || name=="address"]]
+                .map[RMetaAnnotatedType.RType.stripFromTypeAliasesExceptInt]
                 .toSet
 
         for (meta:metas) {
@@ -55,7 +65,7 @@ class KotlinMetaFieldGenerator {
 	
 	'''
 
-    private def generateFieldWithMeta(ExpandedType type) '''
+    private def generateFieldWithMeta(RType type) '''
     @Serializable
     open class FieldWithMeta«type.toMetaTypeName» (
     	«generateAttribute(type)»
@@ -64,15 +74,16 @@ class KotlinMetaFieldGenerator {
 
 	'''
 
-    private def generateAttribute(ExpandedType type) {
-        if (type.enumeration) {
-            '''var value: «type.toKotlinType»? = null,'''
+    private def generateAttribute(RType rawType) {
+        val type = rawType.stripFromTypeAliasesExceptInt
+        if (type instanceof REnumType) {
+            '''var value: «rawType.toKotlinType»? = null,'''
         } else {
-            '''var value: «type.toKotlinType»? = null,'''
+            '''var value: «rawType.toKotlinType»? = null,'''
         }
     }
 
-    private def generateReferenceWithMeta(ExpandedType type)
+    private def generateReferenceWithMeta(RType type)
     '''
     @Serializable
     open class ReferenceWithMeta«type.toMetaTypeName» (
@@ -81,9 +92,9 @@ class KotlinMetaFieldGenerator {
     	var externalReference: String? = null,
     	var address: Reference? = null
     )
-    
+
 	'''
-    private def generateBasicReferenceWithMeta(ExpandedType type) 
+    private def generateBasicReferenceWithMeta(RType type)
     '''
     @Serializable
     open class BasicReferenceWithMeta«type.toMetaTypeName» (

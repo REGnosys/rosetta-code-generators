@@ -1,6 +1,6 @@
 package com.regnosys.rosetta.generator.scala.util
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
+import com.regnosys.rosetta.types.RAttribute
 
 class ScalaModelGeneratorUtil {
 	
@@ -19,7 +19,7 @@ class ScalaModelGeneratorUtil {
 		«ENDIF»
 	'''
 	
-	static def classComment(String definition, Iterable<ExpandedAttribute> attributes) '''
+	static def classComment(String definition, Iterable<RAttribute> attributes) '''
 		«IF definition !==null && !definition.isEmpty »
 			/**
 			  * «definition»

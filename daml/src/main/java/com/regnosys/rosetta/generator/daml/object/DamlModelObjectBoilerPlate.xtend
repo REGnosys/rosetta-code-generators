@@ -34,10 +34,6 @@ class DamlModelObjectBoilerPlate {
 				.prefixSingleOptional(rAttr)
 	}
 	
-	def toType(RMetaAttribute rMetaAttr) {
-		rMetaAttr.RType.toDamlType
-	}
-	
 	private def toRawType(RAttribute rAttr) {
 		val rMetaAnnotatedType = rAttr.RMetaAnnotatedType
 		if (!rMetaAnnotatedType.hasAttributeMeta) 
