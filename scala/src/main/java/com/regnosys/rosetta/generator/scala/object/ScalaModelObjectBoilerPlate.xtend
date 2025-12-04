@@ -1,13 +1,16 @@
 package com.regnosys.rosetta.generator.scala.object
 
-import com.regnosys.rosetta.generator.object.ExpandedAttribute
-
-import static extension com.regnosys.rosetta.generator.scala.util.ScalaTranslator.toScalaType
-import com.regnosys.rosetta.generator.object.ExpandedType
+import com.regnosys.rosetta.types.RType
+import com.regnosys.rosetta.types.RAttribute
+import jakarta.inject.Inject
+import com.regnosys.rosetta.types.REnumType
+import com.regnosys.rosetta.generator.scala.util.ScalaTranslator
 
 class ScalaModelObjectBoilerPlate {
+	@Inject
+	extension ScalaTranslator
 		
-	def toAttributeName(ExpandedAttribute attribute) {
+	def toAttributeName(RAttribute attribute) {
 		if (attribute.name == "val")
 			'''_val'''
 		else if (attribute.name == "object")
@@ -22,41 +25,51 @@ class ScalaModelObjectBoilerPlate {
 		code.toString.replace('\t', '  ')
 	}
 	
-	def toEnumAnnotationType(ExpandedType type) {
+	def toEnumAnnotationType(RType type) {
 		'''«type.name»'''
 	}
 	
-	def toType(ExpandedAttribute attribute) {
-		if (attribute.multiple)
+	def toType(RAttribute rawAttribute) {
+		val attribute = rawAttribute.originalAttribute
+		if (attribute.multi)
 			'''List[«attribute.toRawType»]'''
-		else if (attribute.singleOptional)
+		else if (attribute.cardinality.optional)
 			'''Option[«attribute.toRawType»]'''
 		else
 			'''«attribute.toRawType»'''
 	}
-	
-	private def toRawType(ExpandedAttribute attribute) {
-		if (!attribute.hasMetas) 
-			attribute.type.toScalaType
-		else if (attribute.refIndex >= 0) {
-				attribute.type.toReferenceWithMetaTypeName
+	private def originalAttribute(RAttribute attribute) {
+		var current = attribute
+		while (current.parentAttribute !== null) {
+			current = current.parentAttribute
 		}
-		else 
-			attribute.type.toFieldWithMetaTypeName
+		return current
 	}
 	
-	def toReferenceWithMetaTypeName(ExpandedType type) {
+	private def toRawType(RAttribute attribute) {
+		val t = attribute.RMetaAnnotatedType
+		if (!t.hasAttributeMeta) 
+			t.RType.toScalaType
+		else if (t.hasMetaAttribute("reference") || t.hasMetaAttribute("address")) {
+				t.RType.toReferenceWithMetaTypeName
+		}
+		else 
+			t.RType.toFieldWithMetaTypeName
+	}
+	
+	def toReferenceWithMetaTypeName(RType type) {
 		'''ReferenceWithMeta«type.toMetaTypeName»'''
 	}
 	
-	def toFieldWithMetaTypeName(ExpandedType type) {
+	def toFieldWithMetaTypeName(RType type) {
 		'''FieldWithMeta«type.toMetaTypeName»'''
 	}
 	
-	static def toMetaTypeName(ExpandedType type) {
+	def toMetaTypeName(RType rawType) {
+		val type = rawType.stripFromTypeAliasesExceptInt
 		val name = type.toScalaType
 		
-		if (type.enumeration) {
+		if (type instanceof REnumType) {
 			// Enums have scala types in the form "FooEnum.Value".  
 			// For the meta type name we just need "FooEnum"
 			return name.substring(0, name.lastIndexOf(".")).toFirstUpper
