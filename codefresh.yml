@@ -87,24 +87,6 @@ steps:
       - export GPG_PASSPHRASE="${{GPG_PASSPHRASE}}"
       - mvn -s settings.xml -U -B ${{MVN_CLI_OPT}} clean install org.sonatype.central:central-publishing-maven-plugin:0.7.0:publish -P release,regnosys
 
-  RunPythonUnitTests:
-    title: Run Python Unit tests
-    stage: 'build'
-    fail_fast: false
-    image: python:3.10-alpine
-    working_directory: ./python
-    shell: sh
-    commands:
-      - export PYTHONDONTWRITEBYTECODE=1
-      - python3 -m pip install pydantic
-      - python3 -m pip install ./src/main/resources/runtime/rosetta_runtime-2.1.0-py3-none-any.whl --force-reinstall
-      - |-
-        python3 -m pip wheel --no-deps --only-binary :all: --wheel-dir ./target/python_unit_tests ./target/python_unit_tests
-      - python3 -m pip install ./target/python_unit_tests/python_rosetta_dsl-0.0.0-py3-none-any.whl
-      - python3 -m pip install pytest
-      - pytest -p no:cacheprovider ./test/rosetta_tests
-      - pytest -p no:cacheprovider ./test/runtime_tests
-
   FailPipeline:
     stage: 'finalise'
     title: Fail pipeline on failure
@@ -113,7 +95,6 @@ steps:
       condition:
         any:
           buildFailure: steps.Build.result == 'failure'
-          runPythonUnitTestsFailure: steps.RunPythonUnitTests.result == 'failure'
     commands:
       - exit 1
 

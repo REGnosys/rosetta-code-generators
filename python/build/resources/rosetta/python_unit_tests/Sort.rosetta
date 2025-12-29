@@ -1,8 +1,0 @@
-namespace rosetta_dsl.test.semantic.sort_operator : <"generate Python unit tests from Rosetta.">
-
-type SortTest:
-    condition Test:
-        if [3, 2, 1] sort first = 1
-            then True
-        else
-            False

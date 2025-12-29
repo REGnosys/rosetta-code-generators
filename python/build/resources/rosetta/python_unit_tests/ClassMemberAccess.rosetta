@@ -1,5 +1,0 @@
-namespace rosetta_dsl.test.model : <"generate Python unit tests from Rosetta.">
-type ClassMemberAccess:
-    one int (1..1)
-    two int (0..1)
-    three int (0..*)
