@@ -178,7 +178,6 @@
         <module>golang</module>
         <module>kotlin</module>
         <module>c-sharp</module>
-        <module>python</module>
         <module>csv</module>
         <module>excel</module>
         <module>json-schema</module>
