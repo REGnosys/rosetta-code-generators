@@ -91,11 +91,10 @@ class CSharpEnumGenerator {
         «fileComment(version)»
         namespace Org.Isda.Cdm.Enums
         {
-            «IF enums.anyValueHasSynonym»
-                using System.Runtime.Serialization;
-                using Rosetta.Lib.Attributes;
-                
-            «ENDIF»
+            
+            using System.Runtime.Serialization;
+            using Rosetta.Lib.Attributes;
+            
             «FOR e : enums SEPARATOR '\n'»
             «val allEnumValues = allEnumsValues(e)»
             «comment(e.definition)»
