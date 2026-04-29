@@ -91,7 +91,6 @@ class CSharpEnumGenerator {
         «fileComment(version)»
         namespace Org.Isda.Cdm.Enums
         {
-            
             using System.Runtime.Serialization;
             using Rosetta.Lib.Attributes;
             
