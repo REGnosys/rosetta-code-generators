@@ -143,8 +143,8 @@
         <gpg.passphrase>configured-by-release-profile</gpg.passphrase>
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
-        <rosetta.dsl.version>9.78.0</rosetta.dsl.version>
-        <rosetta.bundle.version>11.117.0</rosetta.bundle.version>
+        <rosetta.dsl.version>10.0.0-dev.1</rosetta.dsl.version>
+        <rosetta.bundle.version>12.0.0-dev.1</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
@@ -271,19 +271,19 @@
             </dependency>
 
             <dependency>
-                <groupId>com.regnosys.rosetta</groupId>
-                <artifactId>com.regnosys.rosetta</artifactId>
+                <groupId>org.finos.rune</groupId>
+                <artifactId>rune-lang</artifactId>
                 <version>${rosetta.dsl.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.regnosys.rosetta</groupId>
-                <artifactId>com.regnosys.rosetta.tests</artifactId>
+                <groupId>org.finos.rune</groupId>
+                <artifactId>rune-testing</artifactId>
                 <version>${rosetta.dsl.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.regnosys.rosetta</groupId>
-                <artifactId>com.regnosys.rosetta.lib</artifactId>
+                <groupId>org.finos.rune</groupId>
+                <artifactId>rune-runtime</artifactId>
                 <version>${rosetta.dsl.version}</version>
             </dependency>
             <dependency>

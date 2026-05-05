@@ -52,8 +52,8 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-	        	<groupId>com.regnosys.rosetta</groupId>
-                <artifactId>com.regnosys.rosetta.tests</artifactId>
+                <groupId>org.finos.rune</groupId>
+                <artifactId>rune-testing</artifactId>
                 <version>${rosetta.dsl.version}</version>
 			</dependency>
 		</dependencies>
@@ -61,12 +61,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.regnosys.rosetta</groupId>
-            <artifactId>com.regnosys.rosetta</artifactId>
+            <groupId>org.finos.rune</groupId>
+            <artifactId>rune-lang</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.regnosys.rosetta</groupId>
-            <artifactId>com.regnosys.rosetta.tests</artifactId>
+            <groupId>org.finos.rune</groupId>
+            <artifactId>rune-testing</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.xtext</groupId>
