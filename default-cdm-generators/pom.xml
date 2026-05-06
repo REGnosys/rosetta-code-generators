@@ -60,14 +60,14 @@
 	                            <version>${project.version}</version>
 	                        </dependency>
 	                        <dependency>
-	                            <groupId>com.regnosys.rosetta</groupId>
-	                            <artifactId>com.regnosys.rosetta</artifactId>
-	                            <version>${rosetta.dsl.version}</version>
+								<groupId>org.finos.rune</groupId>
+								<artifactId>rune-lang</artifactId>
+	                            <version>${rune.dsl.version}</version>
 	                        </dependency>
 	                        <dependency>
-	                            <groupId>com.regnosys.rosetta</groupId>
-	                            <artifactId>com.regnosys.rosetta.lib</artifactId>
-	                            <version>${rosetta.dsl.version}</version>
+								<groupId>org.finos.rune</groupId>
+								<artifactId>rune-runtime</artifactId>
+	                            <version>${rune.dsl.version}</version>
 	                        </dependency>
 	                    </dependencies>
                     </plugin>
@@ -78,8 +78,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.regnosys.rosetta</groupId>
-			<artifactId>com.regnosys.rosetta</artifactId>
+			<groupId>org.finos.rune</groupId>
+			<artifactId>rune-lang</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.regnosys.rosetta.code-generators</groupId>
