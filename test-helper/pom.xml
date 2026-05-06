@@ -54,7 +54,7 @@
 			<dependency>
                 <groupId>org.finos.rune</groupId>
                 <artifactId>rune-testing</artifactId>
-                <version>${rosetta.dsl.version}</version>
+                <version>${rune.dsl.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
