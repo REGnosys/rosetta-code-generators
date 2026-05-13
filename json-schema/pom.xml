@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.regnosys.rosetta.code-generators</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.0.main-SNAPSHOT</version>
+        <version>0.0.0.11.x.x-SNAPSHOT</version>
     </parent>
 
     <artifactId>json-schema</artifactId>	
