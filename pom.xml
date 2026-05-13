@@ -82,7 +82,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.bundle.version>0.0.0.main-SNAPSHOT</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.11.x.x-SNAPSHOT</rosetta.bundle.version>
             </properties>
         </profile>
         <profile>
