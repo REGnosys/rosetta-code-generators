@@ -23,7 +23,7 @@
     <groupId>com.regnosys.rosetta.code-generators</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.0.main-SNAPSHOT</version>
+    <version>0.0.0.11.x.x-SNAPSHOT</version>
 
     <name>code-gen-parent</name>
     <description>A place to write code generators for the rosetta DSL</description>
@@ -82,7 +82,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.bundle.version>0.0.0.main-SNAPSHOT</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.11.x.x-SNAPSHOT</rosetta.bundle.version>
             </properties>
         </profile>
         <profile>
