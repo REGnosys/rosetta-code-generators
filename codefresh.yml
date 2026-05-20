@@ -23,9 +23,9 @@ steps:
   MvnSettings:
     stage: 'setup'
     title: Setup Maven settings
-    image: alpine/git
+    image: alpine
     commands:
-      - cf_export MVN_CLI_OPT="-Dmaven.repo.local=\"${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}_m2/repository\""
+      - cf_export MVN_CLI_OPT="-Dmaven.repo.local=\"${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}_m2/repository\" -s ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/settings.xml"
 
   TagReleaseName:
     title: Setup RELEASE_NAME variable with tag
