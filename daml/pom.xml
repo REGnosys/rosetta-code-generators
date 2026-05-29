@@ -52,8 +52,8 @@
 			<artifactId>rune-lang</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.regnosys</groupId>
-			<artifactId>rosetta-common</artifactId>
+			<groupId>org.finos.rune-common</groupId>
+			<artifactId>rune-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
