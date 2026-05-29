@@ -51,10 +51,10 @@
 			<groupId>org.finos.rune</groupId>
 			<artifactId>rune-lang</artifactId>
 		</dependency>
-		     <dependency>
-            <groupId>org.finos.rune-common</groupId>
-            <artifactId>rune-common</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.finos.rune-common</groupId>
+			<artifactId>rune-common</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
