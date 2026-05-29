@@ -287,8 +287,8 @@
                 <version>${rune.dsl.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.regnosys</groupId>
-                <artifactId>rosetta-common</artifactId>
+                <groupId>org.finos.rune-common</groupId>
+                <artifactId>rune-common</artifactId>
                 <version>${rosetta.bundle.version}</version>
             </dependency>
             <dependency>
