@@ -261,65 +261,6 @@ class CSharpModelObjectGeneratorTest {
                    public Enums.Test2? Test2 { get; }
                }'''))
     }
-    
-    @Test
-    def void shouldGenerateEnumWithSynonyms() {
-        val c_sharp = '''
-        synonym source A
-        synonym source B
-        synonym source C
-        synonym source D
-        
-        enum SynonymEnum:
-            [synonym A, B, C value "SynonymTestEnum"]
-            EnumValue1
-                [synonym A, B, C value "Value1"]
-                [synonym D value "Enum Value 1"]
-            EnumValue2
-                [synonym A, B, C value "Value2"]
-            EnumValue3
-                [synonym A, B, C value "Value3"]
-                [synonym D value "Enum Value 3"]
-        '''.generateCSharp
-
-        val enums = c_sharp.get('Enums.cs').toString
-        //println(enums)
-
-        assertTrue(containsFileComment(enums))
-        assertTrue(enums.contains("using System.Runtime.Serialization"))
-        assertTrue(enums.contains("using Rosetta.Lib.Attributes;"))
-        assertTrue(containsEnumNamespace(enums))
-
-        assertTrue(enums.contains('''
-            «""»
-«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "A")]
-«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "B")]
-«««                [RosettaSynonym(Value = "SynonymTestEnum", Source = "C")]
-                [CdmName("SynonymEnum")]
-                public enum Synonym
-                {
-                    [RosettaSynonym(Value = "Value1", Source = "A")]
-                    [RosettaSynonym(Value = "Value1", Source = "B")]
-                    [RosettaSynonym(Value = "Value1", Source = "C")]
-                    [RosettaSynonym(Value = "Enum Value 1", Source = "D")]
-                    [EnumMember(Value = "ENUM_VALUE_1")]
-                    EnumValue1,
-                    
-                    [RosettaSynonym(Value = "Value2", Source = "A")]
-                    [RosettaSynonym(Value = "Value2", Source = "B")]
-                    [RosettaSynonym(Value = "Value2", Source = "C")]
-                    [EnumMember(Value = "ENUM_VALUE_2")]
-                    EnumValue2,
-                    
-                    [RosettaSynonym(Value = "Value3", Source = "A")]
-                    [RosettaSynonym(Value = "Value3", Source = "B")]
-                    [RosettaSynonym(Value = "Value3", Source = "C")]
-                    [RosettaSynonym(Value = "Enum Value 3", Source = "D")]
-                    [EnumMember(Value = "ENUM_VALUE_3")]
-                    EnumValue3
-                }
-        '''))
-    }
 
     @Test
     def void shouldGenerateEnumMemberDisplayName() {

@@ -143,8 +143,8 @@
         <gpg.passphrase>configured-by-release-profile</gpg.passphrase>
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
-        <rune.dsl.version>10.0.0-dev.13</rune.dsl.version>
-        <rosetta.bundle.version>12.0.0-dev.18</rosetta.bundle.version>
+        <rune.dsl.version>10.0.0-dev.14</rune.dsl.version>
+        <rosetta.bundle.version>12.0.0-dev.19</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
