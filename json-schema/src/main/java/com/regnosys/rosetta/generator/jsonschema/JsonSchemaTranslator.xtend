@@ -10,8 +10,7 @@ class JsonSchemaTranslator {
 			case 'time',
 			case 'date',
 			case 'dateTime',
-			case 'zonedDateTime',
-			case 'calculation':
+			case 'zonedDateTime':
 				'string'
 			case 'int':
 				'integer'

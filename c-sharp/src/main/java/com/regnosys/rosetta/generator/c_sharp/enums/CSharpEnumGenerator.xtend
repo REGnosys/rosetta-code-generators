@@ -30,11 +30,6 @@ class CSharpEnumGenerator {
      '''*/
 
     private def addAttributes(RosettaEnumValue e) '''
-        «FOR synonym : e.enumSynonyms»
-            «FOR source : synonym.sources»
-                [RosettaSynonym(Value = "«synonym.synonymValue»", Source = "«source.getName»")]
-            «ENDFOR»
-        «ENDFOR»
 «««     Output JSON and description which matches display name if specified, else Java format
         «val javaName = EnumHelper.formatEnumName(e.name)»
         «IF e.display !== null»[EnumMember(Value = "«e.display»")]«ELSEIF javaName != toCSharpEnumName(e)»[EnumMember(Value = "«javaName»")]«ENDIF»
@@ -69,10 +64,6 @@ class CSharpEnumGenerator {
 
     static def toCSharpMetaName(String name) {
         return name
-    }
-
-    def boolean anyValueHasSynonym(List<RosettaEnumeration> enums) {
-        !enums.filter[allEnumsValues.map[enumSynonyms].flatten.size > 0].isEmpty
     }
 
     def boolean anyValueHasDisplayName(RosettaEnumeration enumeration) {

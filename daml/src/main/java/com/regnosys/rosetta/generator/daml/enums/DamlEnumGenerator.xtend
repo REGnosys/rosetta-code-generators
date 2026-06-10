@@ -64,10 +64,6 @@ class DamlEnumGenerator {
 		«ENDFOR»
 	'''
 	
-	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
-		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0
-	}
-	
     def static convertValues(RosettaEnumValue enumValue) {
 		return formatEnumName(enumValue.name)
 	}

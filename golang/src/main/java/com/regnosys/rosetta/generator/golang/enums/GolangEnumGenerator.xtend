@@ -81,11 +81,6 @@ class GolangEnumGenerator {
 		val enumName = FOLDERNAME+"/"+ e.name+"/"+e.name+".go"		
 		dictionary.put(enumName, eString)
 		}		
-		return dictionary		
-	}
-	
-	
-	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
-		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0
+		return dictionary
 	}
 }

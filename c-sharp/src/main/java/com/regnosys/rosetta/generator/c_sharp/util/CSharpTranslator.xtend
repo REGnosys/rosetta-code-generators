@@ -15,10 +15,7 @@ class CSharpTranslator {
 				
 	def toCSharpBasicType(String typename) {
 		switch typename {
-			case 'string',				
-			case 'calculation',				
-			case 'productType',				
-			case 'eventType':
+			case 'string':
 				'string'
 			case 'int':
 				'int'

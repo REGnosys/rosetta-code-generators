@@ -135,60 +135,6 @@ class TypescriptModelObjectGeneratorTest {
 			'''))
 	}
 
-    @Test
-    def void shouldGenerateCalculationType() {
-        val typescript = '''
-			type Foo:
-			     attr calculation (0..1)
-        '''.generateTypescript
-
-		val types = typescript.get('types.ts').toString
-        
-        assertEquals('''
-	        /**
-	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-	         * Version: test
-	         */
-	        
-	        import { ReferenceWithMeta, FieldWithMeta, MetaFields } from './metatypes';
-	        import {
-	            } from './enums';
-	        
-	        export interface Foo {
-	          attr?: string;
-	        }
-	          
-        '''.toString, types.toString)
-    }
-    
-    @Test
-    def void shouldGenerateProductAndEventType() {
-        val typescript = '''
-			type Foo:
-			     productAttr productType (0..1)
-			     eventAttr eventType (0..1)
-        '''.generateTypescript
-
-		val types = typescript.get('types.ts').toString
-        
-        assertEquals('''
-	        /**
-	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
-	         * Version: test
-	         */
-	        
-	        import { ReferenceWithMeta, FieldWithMeta, MetaFields } from './metatypes';
-	        import {
-	            } from './enums';
-	        
-	        export interface Foo {
-	          productAttr?: string;
-	          eventAttr?: string;
-	        }
-	          
-        '''.toString, types.toString)
-    }
-
 
 
 	@Test
