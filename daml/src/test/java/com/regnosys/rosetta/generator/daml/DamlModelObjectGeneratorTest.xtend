@@ -118,9 +118,6 @@ class DamlModelObjectGeneratorTest {
 			    timeAttr time (1..1)
 				zonedDateTimeAttr zonedDateTime (1..1)
 				dateTimeAttr dateTime (1..1)
-				calculationAttr calculation (1..1)
-				productTypeAttr productType (1..1)
-				eventTypeAttr eventType (1..1)
 		'''.generateDaml
 		
 		val fileContent = classes.get("Org/Isda/Cdm/Classes.daml").toString
@@ -150,9 +147,6 @@ class DamlModelObjectGeneratorTest {
 			  timeAttr : Text
 			  zonedDateTimeAttr : ZonedDateTime
 			  dateTimeAttr : DateTime
-			  calculationAttr : Text
-			  productTypeAttr : Text
-			  eventTypeAttr : Text
 			    deriving (Eq, Ord, Show)
 			
 	    '''.toString, fileContent)

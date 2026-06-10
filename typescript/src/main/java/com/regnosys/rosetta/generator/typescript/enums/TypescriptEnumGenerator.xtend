@@ -55,8 +55,4 @@ class TypescriptEnumGenerator {
 			}
 		«ENDFOR»
 	'''
-	
-	def boolean anyValueHasSynonym(RosettaEnumeration enumeration) {
-		enumeration.allEnumsValues.map[enumSynonyms].flatten.size > 0
-	}
 }

@@ -65,6 +65,11 @@
             <artifactId>rune-lang</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.regnosys.rosetta.code-generators</groupId>
+            <artifactId>generator-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.finos.rune-common</groupId>
             <artifactId>rune-common</artifactId>
         </dependency>
