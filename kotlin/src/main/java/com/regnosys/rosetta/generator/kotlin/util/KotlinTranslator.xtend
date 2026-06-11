@@ -9,7 +9,8 @@ class KotlinTranslator {
 
     def String toKotlinBasicType(String typename) {
         switch typename {
-            case 'string':
+            case 'string',
+            case 'calculation':
             	'String'
             case 'int': 'Int'
             case 'time': 'String'

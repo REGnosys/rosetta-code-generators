@@ -553,6 +553,62 @@ class CSharpModelObjectGeneratorTest {
     }
     
     @Test
+    def void shouldGenerateCalculationType() {
+        val c_sharp = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateCSharp
+
+        val types = c_sharp.get('Types.cs')
+        
+        assertEquals('''
+	        // This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	        //
+	        // Version: test
+	        //
+	        [assembly: Rosetta.Lib.Attributes.CdmVersion("test")]
+	        
+	        #nullable enable // Allow nullable reference types
+	        
+	        namespace Org.Isda.Cdm
+	        {
+	            using System.Collections.Generic;
+	        
+	            using Newtonsoft.Json;
+	            using Newtonsoft.Json.Converters;
+	        
+	            using NodaTime;
+	        
+	            using Rosetta.Lib;
+	            using Rosetta.Lib.Attributes;
+	            using Rosetta.Lib.Meta;
+	            using Rosetta.Lib.Validation;
+	        
+	            using Org.Isda.Cdm.Meta;
+	            using Org.Isda.Cdm.MetaFields;
+	            using _MetaFields = Org.Isda.Cdm.MetaFields.MetaFields;
+	            
+	            public class Foo : AbstractRosettaModelObject<Foo>
+	            {
+	                private static readonly IRosettaMetaData<Foo> metaData = new FooMeta();
+	                
+	                [JsonConstructor]
+	                public Foo(string? attr)
+	                {
+	                    Attr = attr;
+	                }
+	                
+	                /// <inheritdoc />
+	                [JsonIgnore]
+	                public override IRosettaMetaData<Foo> MetaData => metaData;
+	                
+	                public string? Attr { get; }
+	            }
+	        }
+        '''.toString, types.toString)
+    }
+
+    @Test
     def void shouldGenerateTypesExtends() {
 
          val c_sharp = '''

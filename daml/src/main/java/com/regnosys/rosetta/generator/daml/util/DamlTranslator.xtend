@@ -18,7 +18,8 @@ class DamlTranslator {
 	static def toDamlBasicType(String typename) {
 		switch typename {
 			case 'String',
-			case 'string':
+			case 'string',
+			case 'calculation':
 				'Text'
 			case 'int':
 				'Int'

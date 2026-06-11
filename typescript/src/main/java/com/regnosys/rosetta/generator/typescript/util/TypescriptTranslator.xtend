@@ -5,7 +5,8 @@ class TypescriptTranslator {
 	static def toTSBasicType(String typename) {
 		switch typename {
 			case 'String',
-			case 'string':
+			case 'string',
+			case 'calculation':
 				'string'
 			case 'int':
 				'number'
