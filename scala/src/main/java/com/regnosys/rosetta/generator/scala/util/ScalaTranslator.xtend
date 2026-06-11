@@ -14,7 +14,8 @@ class ScalaTranslator {
 				
 	static def toScalaBasicType(String typename) {
 		switch typename {
-			case 'string':
+			case 'string',
+			case 'calculation':
 				'String'
 			case 'int':
 				'Int'

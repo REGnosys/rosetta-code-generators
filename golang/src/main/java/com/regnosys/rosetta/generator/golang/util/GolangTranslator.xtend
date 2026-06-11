@@ -5,7 +5,8 @@ class GolangTranslator {
 	static def toGOBasicType(String typename) {
 		switch typename {
 			case 'String',				
-			case 'string':
+			case 'string',
+			case 'calculation':
 				'string'								 			
 			case 'int':
 				'int'

@@ -148,6 +148,34 @@ class ScalaModelObjectGeneratorTest {
 
 
 
+    @Test
+    def void shouldGenerateCalculationType() {
+        val scala = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateScala
+
+		val types = scala.get('Types.scala').toString
+        
+        assertEquals('''
+	        /**
+	          * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	          * Version: test
+	          */
+	        package org.isda.cdm
+	        
+	        import com.fasterxml.jackson.core.`type`.TypeReference
+	        import com.fasterxml.jackson.module.scala.JsonScalaEnumeration
+	        import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+	        
+	        import org.isda.cdm.metafields._
+	        
+	        case class Foo(attr: Option[String]) {
+	        }
+	        
+        '''.toString, types.toString)
+    }
+
 	@Test
 	def void shouldGenerateTypesExtends() {
 		val scala = '''

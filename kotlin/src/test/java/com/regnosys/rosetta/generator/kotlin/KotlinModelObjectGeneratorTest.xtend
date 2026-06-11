@@ -127,6 +127,41 @@ class KotlinModelObjectGeneratorTest {
     }
     
     @Test
+    def void shouldGenerateCalculationType() {
+        val kotlin = '''
+			type Foo:
+			     attr calculation (0..1)
+        '''.generateKotlin
+
+		val types = kotlin.get('Types.kt').toString
+        
+        assertEquals('''
+	        /**
+	         * This file is auto-generated from the ISDA Common Domain Model, do not edit.
+	         * Version: test
+	         */
+	        package org.isda.cdm.kotlin
+	        
+	        import kotlinx.serialization.*
+	        
+	        /**
+	        * Basic Date implementation
+	        */
+	        @Serializable
+	        class Date (
+	          val year: Int,
+	          val month: Int,
+	          val day: Int
+	        )
+	        
+	        @Serializable
+	        open class Foo (
+	          var attr: String? = null
+	        )
+        '''.toString, types.toString)
+    }
+
+    @Test
     def void shouldGenerateTypesExtends() {
         val kotlin = '''
 			type TestType extends TestType2:
