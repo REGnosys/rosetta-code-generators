@@ -90,8 +90,9 @@ class KotlinModelObjectGenerator {
     private def generateAttributes(Data c) {
         val t = c.buildRDataType
         val attrs = t.allAttributes.filter[enclosingType?.EObject == c && parentAttribute === null]
+        val superTypeRequiresMeta = c.superType !== null && c.superType.buildRDataType.requiresMetaFields
         '''
-        «FOR attribute : attrs SEPARATOR ",\n"»«generateAttribute(c, attribute)»«ENDFOR»«IF t.requiresMetaFields»«IF !attrs.isEmpty»,
+        «FOR attribute : attrs SEPARATOR ",\n"»«generateAttribute(c, attribute)»«ENDFOR»«IF t.requiresMetaFields && !superTypeRequiresMeta»«IF !attrs.isEmpty»,
         «ENDIF»var meta: MetaFields? = null«ENDIF»
         '''
     }
