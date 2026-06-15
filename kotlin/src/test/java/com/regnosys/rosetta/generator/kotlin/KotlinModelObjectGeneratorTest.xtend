@@ -405,6 +405,38 @@ class KotlinModelObjectGeneratorTest {
 			: Foo()'''))
 	}
 
+    @Test
+    def void shouldGenerateOverrideMetaWhenSubtypeExtendsSupertypeWithMeta() {
+        val kotlin = '''
+            metaType scheme string
+            metaType key string
+
+            type SuperType:
+                [metadata key]
+                attr1 string (0..1)
+
+            type SubType extends SuperType:
+                [metadata key]
+                attr2 string (0..1)
+        '''.generateKotlin
+
+        val types = kotlin.get('Types.kt').toString
+        // println(types)
+        assertTrue(types.contains('''
+            @Serializable
+            open class SubType (
+              var attr2: String? = null
+            )
+            : SuperType()'''))
+
+        assertTrue(types.contains('''
+            @Serializable
+            open class SuperType (
+              var attr1: String? = null,
+              var meta: MetaFields? = null
+            )'''))
+    }
+
     def generateKotlin(CharSequence model) {
         val m = model.parseRosettaWithNoErrors
 		val resourceSet = m.eResource.resourceSet
