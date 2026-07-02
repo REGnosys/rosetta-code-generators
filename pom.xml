@@ -144,7 +144,7 @@
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
         <rune.dsl.version>10.1.0</rune.dsl.version>
-        <rosetta.bundle.version>12.1.4</rosetta.bundle.version>
+        <rosetta.bundle.version>12.1.5</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
