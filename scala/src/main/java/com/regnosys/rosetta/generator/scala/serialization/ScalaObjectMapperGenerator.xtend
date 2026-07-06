@@ -19,7 +19,7 @@ class ScalaObjectMapperGenerator {
 		import com.fasterxml.jackson.databind._
 		import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 		import com.fasterxml.jackson.module.scala.DefaultScalaModule
-		import com.fasterxml.jackson.module.scala.ScalaObjectMapper
+		import com.fasterxml.jackson.module.scala.ClassTagExtensions
 		
 		import com.fasterxml.jackson.databind.module.SimpleModule
 		import com.fasterxml.jackson.databind.ser.std.StdSerializer
@@ -56,7 +56,7 @@ class ScalaObjectMapperGenerator {
 		case class DateExtended(day: Int, month: Int, year: Int)
 		
 		object RosettaObjectMapper {
-		  val mapper = new ObjectMapper() with ScalaObjectMapper
+		  val mapper = new ObjectMapper() with ClassTagExtensions
 		
 		  mapper.registerModule(new JavaTimeModule())
 		  mapper.registerModule(DefaultScalaModule)
