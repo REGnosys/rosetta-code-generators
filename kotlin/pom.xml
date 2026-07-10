@@ -48,12 +48,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.regnosys.rosetta</groupId>
-      <artifactId>com.regnosys.rosetta.lib</artifactId>
+      <groupId>org.finos.rune</groupId>
+      <artifactId>rune-runtime</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.regnosys.rosetta</groupId>
-      <artifactId>com.regnosys.rosetta</artifactId>
+      <groupId>org.finos.rune</groupId>
+      <artifactId>rune-lang</artifactId>
     </dependency>
     <dependency>
       <groupId>com.regnosys</groupId>
@@ -69,8 +69,8 @@
 	</dependency>
 
     <dependency>
-      <groupId>com.regnosys.rosetta</groupId>
-      <artifactId>com.regnosys.rosetta.tests</artifactId>
+      <groupId>org.finos.rune</groupId>
+      <artifactId>rune-testing</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
