@@ -28,7 +28,7 @@ class CSharpModelGeneratorUtil {
      '''
 
      private static def splitDefinition(String definition) '''
-           «FOR line : definition.split("\n")»
+           «FOR line : definition.split("\r?\n")»
            /// «StringEscapeUtils.escapeXml11(line)»
            «ENDFOR»
      '''

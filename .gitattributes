@@ -1,0 +1,7 @@
+# Sources and expectation files are stored with LF and generator tests compare
+# generated output against fixtures, so check them out with LF on every
+# platform (overrides core.autocrlf on Windows).
+* text=auto eol=lf
+# C# template resources are shipped verbatim to .NET consumers, where CRLF is
+# conventional; keep them exactly as committed.
+c-sharp/src/main/resources/** -text
