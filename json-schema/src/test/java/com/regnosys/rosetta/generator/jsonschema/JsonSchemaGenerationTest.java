@@ -74,7 +74,7 @@ public class JsonSchemaGenerationTest {
     @MethodSource("load")
     void runTest(String generatedFileName, String expectedFile, String actualFile) {
     	LOGGER.info("Testing schema generation, file: {}", generatedFileName);
-        assertEquals(expectedFile, actualFile);
+        assertEquals(normaliseLineEndings(expectedFile), normaliseLineEndings(actualFile));
         validateJsonSchema(actualFile);
     }
 
@@ -118,5 +118,11 @@ public class JsonSchemaGenerationTest {
         for (ValidationMessage assertion : assertions) {
             fail(assertion.toString());
         }
+    }
+
+    private static String normaliseLineEndings(String text) {
+        // Xtend templates emit the platform line separator, so normalise both
+        // sides before comparing against the committed LF expectation files
+        return text == null ? null : text.replace("\r\n", "\n");
     }
 }
