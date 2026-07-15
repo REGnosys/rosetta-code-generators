@@ -19,8 +19,10 @@ jobs:
         java-version: '21'
         distribution: temurin
         cache: maven
+    # The regnosys profile resolves bundle dependencies as snapshots, like the
+    # internal CI does; the pom default points at the next (unreleased) bundle
     - name: Build with Maven
-      run: mvn -B clean package
+      run: mvn -B clean package -P regnosys
 
   build-on-windows:
     name: Maven Build on Windows
@@ -34,5 +36,7 @@ jobs:
         java-version: '21'
         distribution: temurin
         cache: maven
+    # The regnosys profile resolves bundle dependencies as snapshots, like the
+    # internal CI does; the pom default points at the next (unreleased) bundle
     - name: Build with Maven
-      run: mvn -B clean package
+      run: mvn -B clean package -P regnosys
