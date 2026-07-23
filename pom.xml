@@ -152,6 +152,12 @@
         <slf4j.version>2.0.13</slf4j.version>
         <logback.version>1.5.6</logback.version>
 
+        <!-- CVE fixes for transitive dependencies pulled in below their patched versions -->
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <jackson-databind.version>2.18.8</jackson-databind.version>
+        <log4j-api.version>2.25.4</log4j-api.version>
+        <plexus-utils.version>3.6.1</plexus-utils.version>
+
         <!-- test -->
         <junit.version>5.8.1</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
@@ -313,6 +319,29 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <!-- Force patched versions of transitive dependencies pulled in
+            below their fixed versions by rune/poi/jxls/json-schema-validator,
+            to resolve CVEs flagged by the CVE scanning workflow. -->
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus-utils.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
