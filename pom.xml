@@ -154,7 +154,7 @@
 
         <!-- CVE fixes for transitive dependencies pulled in below their patched versions -->
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <jackson-databind.version>2.18.8</jackson-databind.version>
+        <jackson-databind.version>2.18.10</jackson-databind.version>
         <log4j-api.version>2.25.4</log4j-api.version>
         <plexus-utils.version>3.6.1</plexus-utils.version>
 
