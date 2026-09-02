@@ -156,7 +156,6 @@
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
         <jackson-databind.version>2.18.10</jackson-databind.version>
         <log4j-api.version>2.25.4</log4j-api.version>
-        <plexus-utils.version>3.6.1</plexus-utils.version>
 
         <!-- test -->
         <junit.version>5.8.1</junit.version>
@@ -337,11 +336,6 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-utils</artifactId>
-                <version>${plexus-utils.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
