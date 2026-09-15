@@ -428,6 +428,25 @@
                             </rules>
                         </configuration>
                     </execution>
+                    <!-- logback must stay out of every module's runtime - it is a logging backend, not something production code should depend on directly or transitively. Test scope is fine. -->
+                    <execution>
+                        <id>ban-logback-outside-test</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>ch.qos.logback:*:*:*:compile</exclude>
+                                        <exclude>ch.qos.logback:*:*:*:runtime</exclude>
+                                        <exclude>ch.qos.logback:*:*:*:provided</exclude>
+                                        <exclude>ch.qos.logback:*:*:*:system</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
