@@ -13,7 +13,7 @@ jobs:
     name: Maven Build on Ubuntu
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: actions/setup-java@v6
       with:
         java-version: '21'
@@ -30,7 +30,7 @@ jobs:
     steps:
     - name: Enable git long paths
       run: git config --system core.longpaths true
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: actions/setup-java@v6
       with:
         java-version: '21'
