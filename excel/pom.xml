@@ -75,12 +75,12 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.0</version>
+			<version>5.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.0</version>
+			<version>5.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jxls</groupId>
@@ -104,12 +104,12 @@
 		<dependency>
 			<groupId>org.dhatim</groupId>
 			<artifactId>fastexcel-reader</artifactId>
-			<version>0.15.3</version>
+			<version>0.20.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.dhatim</groupId>
 			<artifactId>fastexcel</artifactId>
-			<version>0.15.3</version>
+			<version>0.20.2</version>
 		</dependency>
 	</dependencies>
 
