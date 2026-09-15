@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
-    - uses: actions/setup-java@v5
+    - uses: actions/setup-java@v6
       with:
         java-version: '21'
         distribution: temurin
@@ -31,7 +31,7 @@ jobs:
     - name: Enable git long paths
       run: git config --system core.longpaths true
     - uses: actions/checkout@v7
-    - uses: actions/setup-java@v5
+    - uses: actions/setup-java@v6
       with:
         java-version: '21'
         distribution: temurin

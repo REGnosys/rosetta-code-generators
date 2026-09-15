@@ -17,13 +17,21 @@ updates:
       - java
     # Rune artifacts are bumped deliberately as part of release
     # coordination, not by a bot.
-    # xtext-dev-bom and guava are kept off minor/major bumps entirely -
-    # only patch updates are allowed through, and standalone rather than
-    # grouped.
+    # xtext, xtend, jackson, and guava are kept off minor/major bumps
+    # entirely - only patch updates are allowed through, and standalone
+    # rather than grouped.
     ignore:
       - dependency-name: com.regnosys*
       - dependency-name: org.finos.rune*
-      - dependency-name: org.eclipse.xtext:xtext-dev-bom
+      - dependency-name: org.eclipse.xtext*
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+      - dependency-name: org.eclipse.xtend*
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+      - dependency-name: com.fasterxml.jackson*
         update-types:
           - version-update:semver-major
           - version-update:semver-minor
@@ -40,7 +48,9 @@ updates:
     groups:
       maven-minor-and-patch:
         exclude-patterns:
-          - org.eclipse.xtext:xtext-dev-bom
+          - org.eclipse.xtext*
+          - org.eclipse.xtend*
+          - com.fasterxml.jackson*
           - com.google.guava:guava
         update-types:
           - minor
