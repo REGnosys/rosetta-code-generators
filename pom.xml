@@ -163,7 +163,6 @@
 
         <!-- plugin -->
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-        <maven-checkstyle-plugin.version>3.4.0</maven-checkstyle-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
