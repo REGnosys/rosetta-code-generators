@@ -32,7 +32,7 @@ class CsvGeneratorTest {
 		generator.afterAllGenerate(resourceSet, #{m}, "test")
 	}
 
-	@org.junit.Test
+	@Test
 	@Disabled
 	def void generateCdm() {
 		val dirs = #[
