@@ -159,7 +159,7 @@
 
         <!-- test -->
         <junit.version>5.8.1</junit.version>
-        <hamcrest.version>2.2</hamcrest.version>
+        <hamcrest.version>3.0</hamcrest.version>
 
         <!-- plugin -->
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
