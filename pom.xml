@@ -200,6 +200,45 @@
                 <artifactId>commons-text</artifactId>
                 <version>${apache.commons.text.version}</version>
             </dependency>
+            <!-- xtext-dev-bom pins these junit-jupiter/junit-platform/junit-vintage artifacts to
+                 the JUnit version xtext itself was built against, which is older than junit-bom's
+                 version below. Pin them here, ahead of the xtext-dev-bom import, so the
+                 project's own junit.version wins instead. -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-commons</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
             <!-- xtext START -->
             <dependency>
                 <groupId>com.google.inject</groupId>
