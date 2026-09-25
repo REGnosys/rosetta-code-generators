@@ -154,7 +154,7 @@
 
         <!-- CVE fixes for transitive dependencies pulled in below their patched versions -->
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <jackson-databind.version>2.18.10</jackson-databind.version>
+        <jackson.version>2.18.11</jackson.version>
         <log4j-api.version>2.26.1</log4j-api.version>
 
         <!-- test -->
@@ -352,9 +352,11 @@
                 <version>${commons-beanutils.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson-databind.version}</version>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
