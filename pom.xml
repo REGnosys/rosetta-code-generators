@@ -82,7 +82,7 @@
         <profile>
             <id>regnosys</id>
             <properties>
-                <rosetta.bundle.version>0.0.0.main-SNAPSHOT</rosetta.bundle.version>
+                <rosetta.bundle.version>0.0.0.featurefix-serialization-format-main-SNAPSHOT</rosetta.bundle.version>
             </properties>
         </profile>
         <profile>
@@ -143,8 +143,8 @@
         <gpg.passphrase>configured-by-release-profile</gpg.passphrase>
         <stagingTimeoutInMinutes>20</stagingTimeoutInMinutes>
 
-        <rune.dsl.version>10.13.1</rune.dsl.version>
-        <rosetta.bundle.version>12.21.0</rosetta.bundle.version>
+        <rune.dsl.version>0.0.0.feature-fix-serialization-format-SNAPSHOT</rune.dsl.version>
+        <rosetta.bundle.version>0.0.0.featurefix-serialization-format-main-SNAPSHOT</rosetta.bundle.version>
 
         <xtext.version>2.38.0</xtext.version>
         <guice.version>6.0.0</guice.version>
