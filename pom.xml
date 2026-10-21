@@ -154,7 +154,7 @@
 
         <!-- CVE fixes for transitive dependencies pulled in below their patched versions -->
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <jackson.version>2.18.11</jackson.version>
+        <jackson.version>2.18.12</jackson.version>
         <log4j-api.version>2.26.1</log4j-api.version>
 
         <!-- test -->
