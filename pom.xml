@@ -41,7 +41,7 @@
         <url>https://www.regnosys.com/</url>
     </organization>
 
-    <licenses>
+    <licenses>             f
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
@@ -136,7 +136,7 @@
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
         <apache.commons.text.version>1.11.0</apache.commons.text.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <guava.version>33.8.0-jre</guava.version>
+        <guava.version>33.8.0-jre</guava.version> 
 
         <!-- Release -->
         <gpg.keyname>configured-by-release-profile</gpg.keyname>
